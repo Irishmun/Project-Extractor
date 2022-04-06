@@ -29,11 +29,11 @@ namespace ProjectExtractor
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("Projectnummer");
-            System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("Projecttitel");
-            System.Windows.Forms.ListViewItem listViewItem3 = new System.Windows.Forms.ListViewItem("Aantal uren werknemers");
-            System.Windows.Forms.ListViewItem listViewItem4 = new System.Windows.Forms.ListViewItem("Het project wordt/is gestart op");
-            System.Windows.Forms.ListViewItem listViewItem5 = new System.Windows.Forms.ListViewItem("integratie proefmodel");
+            System.Windows.Forms.ListViewItem listViewItem6 = new System.Windows.Forms.ListViewItem("Projectnummer");
+            System.Windows.Forms.ListViewItem listViewItem7 = new System.Windows.Forms.ListViewItem("Projecttitel");
+            System.Windows.Forms.ListViewItem listViewItem8 = new System.Windows.Forms.ListViewItem("Aantal uren werknemers");
+            System.Windows.Forms.ListViewItem listViewItem9 = new System.Windows.Forms.ListViewItem("Het project wordt/is gestart op");
+            System.Windows.Forms.ListViewItem listViewItem10 = new System.Windows.Forms.ListViewItem("integratie proefmodel");
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.TSSL_ExtractionProgress = new System.Windows.Forms.ToolStripStatusLabel();
@@ -51,9 +51,9 @@ namespace ProjectExtractor
             this.BT_BrowsePDF = new System.Windows.Forms.Button();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.LB_Unsaved = new System.Windows.Forms.Label();
-            this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.radioButton5 = new System.Windows.Forms.RadioButton();
-            this.radioButton4 = new System.Windows.Forms.RadioButton();
+            this.GB_ExportSettings = new System.Windows.Forms.GroupBox();
+            this.RB_ExportRichText = new System.Windows.Forms.RadioButton();
+            this.RB_ExportWord = new System.Windows.Forms.RadioButton();
             this.RB_ExportExcel = new System.Windows.Forms.RadioButton();
             this.RB_ExportTXT = new System.Windows.Forms.RadioButton();
             this.RB_ExportPDF = new System.Windows.Forms.RadioButton();
@@ -63,12 +63,13 @@ namespace ProjectExtractor
             this.LV_Keywords = new System.Windows.Forms.ListView();
             this.BT_KeywordsDelete = new System.Windows.Forms.Button();
             this.BT_KeywordsNew = new System.Windows.Forms.Button();
+            this.backgroundWorker = new System.ComponentModel.BackgroundWorker();
             this.statusStrip1.SuspendLayout();
             this.TC_MainView.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.tabPage2.SuspendLayout();
-            this.groupBox3.SuspendLayout();
+            this.GB_ExportSettings.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -154,14 +155,15 @@ namespace ProjectExtractor
             this.BT_Extract.TabIndex = 7;
             this.BT_Extract.Text = "Extract";
             this.BT_Extract.UseVisualStyleBackColor = true;
+            this.BT_Extract.Click += new System.EventHandler(this.BT_Extract_Click);
             // 
             // groupBox1
             // 
             this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.groupBox1.Controls.Add(this.RTB_SearchWords);
-            this.groupBox1.Location = new System.Drawing.Point(8, 159);
+            this.groupBox1.Location = new System.Drawing.Point(8, 130);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(200, 100);
+            this.groupBox1.Size = new System.Drawing.Size(200, 129);
             this.groupBox1.TabIndex = 6;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Keywords";
@@ -172,7 +174,7 @@ namespace ProjectExtractor
             this.RTB_SearchWords.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.RTB_SearchWords.Location = new System.Drawing.Point(6, 22);
             this.RTB_SearchWords.Name = "RTB_SearchWords";
-            this.RTB_SearchWords.Size = new System.Drawing.Size(188, 72);
+            this.RTB_SearchWords.Size = new System.Drawing.Size(188, 101);
             this.RTB_SearchWords.TabIndex = 7;
             this.RTB_SearchWords.Text = "";
             // 
@@ -238,7 +240,7 @@ namespace ProjectExtractor
             // 
             this.tabPage2.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.tabPage2.Controls.Add(this.LB_Unsaved);
-            this.tabPage2.Controls.Add(this.groupBox3);
+            this.tabPage2.Controls.Add(this.GB_ExportSettings);
             this.tabPage2.Controls.Add(this.BT_SettingsSave);
             this.tabPage2.Controls.Add(this.groupBox2);
             this.tabPage2.Location = new System.Drawing.Point(4, 24);
@@ -261,42 +263,42 @@ namespace ProjectExtractor
             this.LB_Unsaved.Text = "!UNSAVED CHANGES!";
             this.LB_Unsaved.Visible = false;
             // 
-            // groupBox3
+            // GB_ExportSettings
             // 
-            this.groupBox3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox3.Controls.Add(this.radioButton5);
-            this.groupBox3.Controls.Add(this.radioButton4);
-            this.groupBox3.Controls.Add(this.RB_ExportExcel);
-            this.groupBox3.Controls.Add(this.RB_ExportTXT);
-            this.groupBox3.Controls.Add(this.RB_ExportPDF);
-            this.groupBox3.Location = new System.Drawing.Point(257, 6);
-            this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(234, 103);
-            this.groupBox3.TabIndex = 2;
-            this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "Export Settings";
+            this.GB_ExportSettings.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.GB_ExportSettings.Controls.Add(this.RB_ExportRichText);
+            this.GB_ExportSettings.Controls.Add(this.RB_ExportWord);
+            this.GB_ExportSettings.Controls.Add(this.RB_ExportExcel);
+            this.GB_ExportSettings.Controls.Add(this.RB_ExportTXT);
+            this.GB_ExportSettings.Controls.Add(this.RB_ExportPDF);
+            this.GB_ExportSettings.Location = new System.Drawing.Point(257, 6);
+            this.GB_ExportSettings.Name = "GB_ExportSettings";
+            this.GB_ExportSettings.Size = new System.Drawing.Size(234, 103);
+            this.GB_ExportSettings.TabIndex = 2;
+            this.GB_ExportSettings.TabStop = false;
+            this.GB_ExportSettings.Text = "Export Settings";
             // 
-            // radioButton5
+            // RB_ExportRichText
             // 
-            this.radioButton5.AutoSize = true;
-            this.radioButton5.Location = new System.Drawing.Point(134, 47);
-            this.radioButton5.Name = "radioButton5";
-            this.radioButton5.Size = new System.Drawing.Size(103, 19);
-            this.radioButton5.TabIndex = 4;
-            this.radioButton5.Text = "Rich Text (*.rtf)";
-            this.radioButton5.UseVisualStyleBackColor = true;
-            this.radioButton5.Visible = false;
+            this.RB_ExportRichText.AutoSize = true;
+            this.RB_ExportRichText.Location = new System.Drawing.Point(134, 47);
+            this.RB_ExportRichText.Name = "RB_ExportRichText";
+            this.RB_ExportRichText.Size = new System.Drawing.Size(103, 19);
+            this.RB_ExportRichText.TabIndex = 4;
+            this.RB_ExportRichText.Text = "Rich Text (*.rtf)";
+            this.RB_ExportRichText.UseVisualStyleBackColor = true;
+            this.RB_ExportRichText.Visible = false;
             // 
-            // radioButton4
+            // RB_ExportWord
             // 
-            this.radioButton4.AutoSize = true;
-            this.radioButton4.Location = new System.Drawing.Point(134, 22);
-            this.radioButton4.Name = "radioButton4";
-            this.radioButton4.Size = new System.Drawing.Size(99, 19);
-            this.radioButton4.TabIndex = 3;
-            this.radioButton4.Text = "Word (*.docx)";
-            this.radioButton4.UseVisualStyleBackColor = true;
-            this.radioButton4.Visible = false;
+            this.RB_ExportWord.AutoSize = true;
+            this.RB_ExportWord.Location = new System.Drawing.Point(134, 22);
+            this.RB_ExportWord.Name = "RB_ExportWord";
+            this.RB_ExportWord.Size = new System.Drawing.Size(99, 19);
+            this.RB_ExportWord.TabIndex = 3;
+            this.RB_ExportWord.Text = "Word (*.docx)";
+            this.RB_ExportWord.UseVisualStyleBackColor = true;
+            this.RB_ExportWord.Visible = false;
             // 
             // RB_ExportExcel
             // 
@@ -375,11 +377,11 @@ namespace ProjectExtractor
             | System.Windows.Forms.AnchorStyles.Right)));
             this.LV_Keywords.HideSelection = false;
             this.LV_Keywords.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem1,
-            listViewItem2,
-            listViewItem3,
-            listViewItem4,
-            listViewItem5});
+            listViewItem6,
+            listViewItem7,
+            listViewItem8,
+            listViewItem9,
+            listViewItem10});
             this.LV_Keywords.LabelEdit = true;
             this.LV_Keywords.Location = new System.Drawing.Point(6, 22);
             this.LV_Keywords.MultiSelect = false;
@@ -413,6 +415,10 @@ namespace ProjectExtractor
             this.BT_KeywordsNew.UseVisualStyleBackColor = true;
             this.BT_KeywordsNew.Click += new System.EventHandler(this.BT_KeywordsNew_Click);
             // 
+            // backgroundWorker
+            // 
+            this.backgroundWorker.WorkerReportsProgress = true;
+            // 
             // ExtractorForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -432,8 +438,8 @@ namespace ProjectExtractor
             this.groupBox1.ResumeLayout(false);
             this.tabPage2.ResumeLayout(false);
             this.tabPage2.PerformLayout();
-            this.groupBox3.ResumeLayout(false);
-            this.groupBox3.PerformLayout();
+            this.GB_ExportSettings.ResumeLayout(false);
+            this.GB_ExportSettings.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -463,14 +469,15 @@ namespace ProjectExtractor
         private System.Windows.Forms.Button BT_KeywordsDelete;
         private System.Windows.Forms.Button BT_KeywordsNew;
         private System.Windows.Forms.Label LB_Unsaved;
-        private System.Windows.Forms.GroupBox groupBox3;
-        private System.Windows.Forms.RadioButton radioButton5;
-        private System.Windows.Forms.RadioButton radioButton4;
+        private System.Windows.Forms.GroupBox GB_ExportSettings;
+        private System.Windows.Forms.RadioButton RB_ExportRichText;
+        private System.Windows.Forms.RadioButton RB_ExportWord;
         private System.Windows.Forms.RadioButton RB_ExportExcel;
         private System.Windows.Forms.RadioButton RB_ExportTXT;
         private System.Windows.Forms.RadioButton RB_ExportPDF;
         private System.Windows.Forms.Button BT_Extract;
         private System.Windows.Forms.ListView LV_Keywords;
+        private System.ComponentModel.BackgroundWorker backgroundWorker;
     }
 }
 
