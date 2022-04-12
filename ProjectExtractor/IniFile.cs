@@ -20,7 +20,7 @@ namespace ProjectExtractor
         public IniFile(string IniPath = null)
         {
             //get path from passed inipath, otherwise use EXE variable as path
-            Path = new FileInfo(IniPath ?? EXE + ".ini").FullName;    
+            Path = new FileInfo(IniPath ?? EXE + ".ini").FullName;
         }
 
         /// <summary>
@@ -75,6 +75,37 @@ namespace ProjectExtractor
         public bool KeyExists(string Key, string Section = null)
         {
             return Read(Key, Section).Length > 0;
+        }
+
+        /// <summary>
+        /// Gets the value as a boolean
+        /// </summary>
+        /// <param name="Key">The key to look for</param>
+        /// <param name="Section">The section to look in</param>
+        /// <returns>true on "1","yes","true" and "on". returns false on everything else</returns>
+        public bool ReadBool(string Key, string Section = null)
+        {
+            string val = Read(Key, Section);
+            switch (val)
+            {
+                case "1":
+                case "yes":
+                case "true":
+                case "on":
+                    return true;
+                default:
+                    return false;
+            }
+        }
+        /// <summary>
+        /// Writes the boolean value as "on"/"off" on key in section
+        /// </summary>
+        /// <param name="Key">key to write to</param>
+        /// <param name="value">boolean value</param>
+        /// <param name="Section">section to write to</param>
+        public void WriteBool(string Key, bool value, string Section = null)
+        {
+            Write(Key, value ? "on" : "off", Section);
         }
     }
 }

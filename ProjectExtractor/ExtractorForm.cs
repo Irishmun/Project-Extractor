@@ -1,41 +1,90 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
+﻿using Microsoft.WindowsAPICodePack.Dialogs;
+using System;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace ProjectExtractor
 {
     public partial class ExtractorForm : Form
     {
-        private string ProgramPath = AppContext.BaseDirectory, ExportingFileName, ExportingFileNameNoExt;
+        private string ProgramPath = AppContext.BaseDirectory;
         private IniFile Settings;
+        private Extractor extractor;
+        private bool startingUp = false;
 
         public ExtractorForm()
         {
+            startingUp = true;
             InitializeComponent();
             Settings = new IniFile();
+            extractor = new Extractor();
             InitSettings();
             UpdateExtractorKeywords();
-
+            startingUp = false;
         }
 
         #region events
         private void BT_BrowsePDF_Click(object sender, EventArgs e)
         {
-            BrowseForFile(TB_PDFLocation, "Portable Document Format (*.pdf)|*.pdf|All files (*.*)|*.*");
+            string res = string.Empty;
+            DialogResult result;
+            //open file browser
+            using (OpenFileDialog fd = new OpenFileDialog())
+            {
+                fd.Filter = "Portable Document Format (*.pdf)|*.pdf|All files (*.*)|*.*";
+                if (!string.IsNullOrEmpty(TB_PDFLocation.Text))
+                {
+                    fd.FileName = TB_PDFLocation.Text;
+                }
+                result = fd.ShowDialog();
+
+                if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(fd.FileName))
+                {
+                    res = fd.FileName;
+                }
+            }
+            //check if it has changed, else leave it as what it is.
+            res = string.IsNullOrWhiteSpace(res) ? TB_PDFLocation.Text : res;
+            TB_PDFLocation.Text = res;
+            if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(TB_PDFLocation.Text))
+            {
+                UpdateFileStatus();
+                UpdateSettings();
+            }
 
         }
+
         private void BT_BrowseExtract_Click(object sender, EventArgs e)
         {
-            SaveFile(TB_ExtractLocation, GetExportSetting());//"Portable Document Format (*.pdf)|*.pdf|Text File (*.txt)|*.txt|Excel Worksheet (*.xlsx)|*.xlsx|Word Document (*.docx)|*.docx|Rich Text Format (*.rtf)|*.rtf");
+            string res = string.Empty;
+            CommonFileDialogResult result;
+            //open folder browser
+            using (CommonOpenFileDialog fd = new CommonOpenFileDialog())
+            {
+                fd.EnsurePathExists = true;
+                fd.IsFolderPicker = true;
+                fd.Multiselect = false;
+                result = fd.ShowDialog();
+                if (result == CommonFileDialogResult.Ok)
+                {
+                    res = Directory.Exists(fd.FileName) ? fd.FileName : Path.GetDirectoryName(fd.FileName);
+                    if (!res.EndsWith('\\'))
+                    {
+                        res += "\\";
+                    }
+                }
+            }
+            //check if it has changed, else leave it as what it is.
+            res = string.IsNullOrWhiteSpace(res) ? TB_ExtractLocation.Text : res;
+            TB_ExtractLocation.Text = res;
+            if (result == CommonFileDialogResult.Ok && !string.IsNullOrWhiteSpace(TB_ExtractLocation.Text))
+            {
+                UpdateFileStatus();
+                UpdateSettings();
+            }
         }
-
 
         private void TC_MainView_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -71,15 +120,17 @@ namespace ProjectExtractor
         {
             if (!string.IsNullOrWhiteSpace(TB_PDFLocation.Text) && !string.IsNullOrWhiteSpace(TB_ExtractLocation.Text))
             {
-                string exportFile = $"{TB_ExtractLocation.Text}Extracted-{ ExportingFileName}{ GetExportSetting()}";
-                MessageBox.Show(ProgramPath + ExportingFileName);
-                if (!File.Exists(exportFile))
-                {
-                    using (StreamWriter sw = File.CreateText(exportFile))
-                    {
-                        sw.WriteLine("test \n test2");//Put this in backgroundworker and extract all contents from pdf file
-                    }
-                }
+                string fileName = TB_PDFLocation.Text.Substring(TB_PDFLocation.Text.LastIndexOf('\\') + 1);
+                string exportFile = $"{TB_ExtractLocation.Text}Extracted-{Path.GetFileNameWithoutExtension(fileName)}{ GetExportSetting()}";
+                extractor.ExtractAll(TB_PDFLocation.Text, exportFile);
+                UpdateStatus("Extraction completed!");
+                //if (!File.Exists(exportFile))
+                //{
+                //    using (StreamWriter sw = File.CreateText(exportFile))
+                //    {
+                //        sw.WriteLine("test \n test2");//Put this in backgroundworker and extract all contents from pdf file
+                //    }
+                //}
             }
             else
             {
@@ -89,14 +140,38 @@ namespace ProjectExtractor
 
         private void RB_CheckedChanged(object sender, EventArgs e)
         {
-            UpdateSettings();
+            if (!startingUp)
+            {
+                UpdateSettings();
+            }
         }
+
         private void LV_Keywords_AfterLabelEdit(object sender, LabelEditEventArgs e)
         {
             UpdateSettings();
         }
-        #endregion
 
+        private void CB_SavePDFPath_CheckedChanged(object sender, EventArgs e)
+        {
+            if (!startingUp)
+            {
+                UpdateSettings();
+            }
+        }
+
+        private void CB_SaveExtractionPath_CheckedChanged(object sender, EventArgs e)
+        {
+            if (!startingUp)
+            {
+                UpdateSettings();
+            }
+        }
+        #endregion
+        #region methods
+        /// <summary>
+        /// Gets the current export setting radiobutton and returns its associated file extension
+        /// </summary>
+        /// <returns>string with the file extension (ex:".txt")</returns>
         private string GetExportSetting()
         {
             RadioButton btn = GB_ExportSettings.Controls.OfType<RadioButton>().FirstOrDefault(rb => rb.Checked);//get the first checked radiobutton
@@ -115,46 +190,13 @@ namespace ProjectExtractor
                     return ".txt";
             }
         }
-
-        private void BrowseForFile(TextBox resultBox, string filters)
-        {
-            string res = string.Empty;
-            //open file browser
-            using (OpenFileDialog fd = new OpenFileDialog())
-            {
-                fd.Filter = filters;
-                if (!string.IsNullOrEmpty(resultBox.Text))
-                {
-                    fd.FileName = resultBox.Text;
-                }
-                DialogResult result = fd.ShowDialog();
-
-                if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(fd.FileName))
-                {
-                    res = fd.FileName;
-                    ExportingFileNameNoExt = Path.GetFileNameWithoutExtension(fd.FileName);
-                    ExportingFileName = fd.SafeFileName;
-                }
-            }
-            //check if it has changed, else leave it as what it is.
-            res = string.IsNullOrWhiteSpace(res) ? resultBox.Text : res;
-            resultBox.Text = res;
-        }
-        private void SaveFile(TextBox resultBox, string filters)
-        {
-            string res = string.Empty;
-            using (SaveFileDialog sd = new SaveFileDialog())
-            {
-                sd.Filter = filters;
-                sd.FileName = $"Extracted-{ ExportingFileName}";
-                sd.ShowDialog();
-            }
-        }
+        /// <summary>
+        /// Updates the text box in the main view with the keywords from the settings list view
+        /// </summary>
         private void UpdateExtractorKeywords()
         {
             RTB_SearchWords.Text = ConvertKeywordsToString();
         }
-
         /// <summary>
         /// Update the text in the toolstrip status label
         /// </summary>
@@ -163,7 +205,27 @@ namespace ProjectExtractor
         {
             TSSL_ExtractionProgress.Text = newStatus;
         }
-
+        /// <summary>
+        /// Updates the text in the toolstrip status label if the file extraction can start or not
+        /// </summary>
+        private void UpdateFileStatus()
+        {
+            if (string.IsNullOrWhiteSpace(TB_ExtractLocation.Text))
+            {
+                UpdateStatus("Extraction location missing!");
+            }
+            else if (string.IsNullOrWhiteSpace(TB_PDFLocation.Text))
+            {
+                UpdateStatus("PDF file missing!");
+            }
+            else
+            {
+                UpdateStatus("Ready for extraction.");
+            }
+        }
+        /// <summary>
+        /// Initialize the settings and update the correct fields
+        /// </summary>
         private void InitSettings()
         {
             //get and update the export settings radiobutton
@@ -201,18 +263,58 @@ namespace ProjectExtractor
                 }
             }
 
+            //get and update pdf file path setting
+            if (Settings.KeyExists("Save_PDF_Path", "Paths"))
+            {
+                bool savepdf = Settings.ReadBool("Save_PDF_Path", "Paths");
+                if (savepdf && Settings.KeyExists("PDF_Path", "Paths"))
+                {
+                    TB_PDFLocation.Text = Settings.Read("PDF_Path", "Paths");
+                }
+                CB_SavePDFPath.Checked = savepdf;
+            }
+
+            //get and update extraction path setting
+            if (Settings.KeyExists("Save_Extract_Path", "Paths"))
+            {
+                bool saveExtract = Settings.ReadBool("Save_Extract_Path", "Paths");
+                TB_ExtractLocation.Text = Settings.Read("Extract_Path", "Paths");
+                CB_SaveExtractionPath.Checked = saveExtract;
+            }
             UpdateSettings();
         }
 
-
-
+        /// <summary>
+        /// Update the settings ini file with the new values
+        /// </summary>
         private void UpdateSettings()
         {
             string exportVal = GetExportSetting().Trim('.');
             Settings.Write("ExportExtension", exportVal, "Export");
             Settings.Write("Keywords", ConvertKeywordsToString(), "Export");
+            Settings.WriteBool("Save_PDF_Path", CB_SavePDFPath.Checked, "Paths");
+            if (CB_SavePDFPath.Checked)
+            {
+                Settings.Write("PDF_Path", TB_PDFLocation.Text, "Paths");
+            }
+            else
+            {
+                Settings.DeleteKey("PDF_Path", "Paths");
+            }
+            Settings.WriteBool("Save_Extract_Path", CB_SaveExtractionPath.Checked, "Paths");
+            if (CB_SaveExtractionPath.Checked)
+            {
+                Settings.Write("Extract_Path", TB_ExtractLocation.Text, "Paths");
+            }
+            else
+            {
+                Settings.DeleteKey("Extract_Path", "Paths");
+            }
         }
-
+        /// <summary>
+        /// Converts the keywords from the list view to a comma seperated string
+        /// </summary>
+        /// <returns></returns>
         private string ConvertKeywordsToString()
         {
             StringBuilder builder = new StringBuilder();
@@ -227,5 +329,6 @@ namespace ProjectExtractor
             }
             return builder.ToString();
         }
+        #endregion
     }
 }
