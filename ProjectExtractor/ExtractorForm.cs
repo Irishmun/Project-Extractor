@@ -14,12 +14,17 @@ namespace ProjectExtractor
     public partial class ExtractorForm : Form
     {
         private string ProgramPath = AppContext.BaseDirectory, ExportingFileName, ExportingFileNameNoExt;
+        private IniFile Settings;
 
         public ExtractorForm()
         {
             InitializeComponent();
+            Settings = new IniFile();
+            InitSettings();
             UpdateExtractorKeywords();
+
         }
+
         #region events
         private void BT_BrowsePDF_Click(object sender, EventArgs e)
         {
@@ -59,6 +64,7 @@ namespace ProjectExtractor
         private void BT_KeywordsDelete_Click(object sender, EventArgs e)
         {
             LV_Keywords.Items.RemoveAt(LV_Keywords.SelectedIndices[0]);
+            UpdateSettings();
         }
 
         private void BT_Extract_Click(object sender, EventArgs e)
@@ -79,6 +85,15 @@ namespace ProjectExtractor
             {
                 MessageBox.Show("PDF file or extract location is empty!", "Empty field", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
+        }
+
+        private void RB_CheckedChanged(object sender, EventArgs e)
+        {
+            UpdateSettings();
+        }
+        private void LV_Keywords_AfterLabelEdit(object sender, LabelEditEventArgs e)
+        {
+            UpdateSettings();
         }
         #endregion
 
@@ -137,6 +152,69 @@ namespace ProjectExtractor
         }
         private void UpdateExtractorKeywords()
         {
+            RTB_SearchWords.Text = ConvertKeywordsToString();
+        }
+
+        /// <summary>
+        /// Update the text in the toolstrip status label
+        /// </summary>
+        /// <param name="newStatus"></param>
+        private void UpdateStatus(string newStatus)
+        {
+            TSSL_ExtractionProgress.Text = newStatus;
+        }
+
+        private void InitSettings()
+        {
+            //get and update the export settings radiobutton
+            if (Settings.KeyExists("ExportExtension", "Export"))
+            {
+                switch (Settings.Read("ExportExtension", "Export"))
+                {
+                    case "pdf":
+                        RB_ExportPDF.Checked = true;
+                        break;
+                    case "xlsx":
+                        RB_ExportExcel.Checked = true;
+                        break;
+                    case "docx":
+                        RB_ExportWord.Checked = true;
+                        break;
+                    case "rtf":
+                        RB_ExportRichText.Checked = true;
+                        break;
+                    case "txt":
+                    default:
+                        RB_ExportTXT.Checked = true;
+                        break;
+                }
+            }
+
+            //get and update keywords list 
+            if (Settings.KeyExists("Keywords", "Export"))
+            {
+                LV_Keywords.Clear();
+                string[] items = Settings.Read("Keywords", "Export").Split(", ");
+                for (int i = 0; i < items.Length; i++)
+                {
+                    LV_Keywords.Items.Add(new ListViewItem(items[i]));
+                }
+            }
+
+            UpdateSettings();
+        }
+
+
+
+        private void UpdateSettings()
+        {
+            string exportVal = GetExportSetting().Trim('.');
+            Settings.Write("ExportExtension", exportVal, "Export");
+            Settings.Write("Keywords", ConvertKeywordsToString(), "Export");
+        }
+
+        private string ConvertKeywordsToString()
+        {
             StringBuilder builder = new StringBuilder();
             //add all list items to the display rich text box
             for (int i = 0; i < LV_Keywords.Items.Count; i++)
@@ -147,21 +225,7 @@ namespace ProjectExtractor
                     builder.Append(", ");
                 }
             }
-            RTB_SearchWords.Text = builder.ToString();
+            return builder.ToString();
         }
-
-        private void GetSettings()
-        {
-            //TODO: create settings file
-        }
-
-
-        private void UpdateSettings()
-        {
-            //TODO: update settings file, create path
-        }
-
-
-
     }
 }

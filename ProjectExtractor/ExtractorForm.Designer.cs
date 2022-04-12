@@ -29,11 +29,11 @@ namespace ProjectExtractor
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.ListViewItem listViewItem6 = new System.Windows.Forms.ListViewItem("Projectnummer");
-            System.Windows.Forms.ListViewItem listViewItem7 = new System.Windows.Forms.ListViewItem("Projecttitel");
-            System.Windows.Forms.ListViewItem listViewItem8 = new System.Windows.Forms.ListViewItem("Aantal uren werknemers");
-            System.Windows.Forms.ListViewItem listViewItem9 = new System.Windows.Forms.ListViewItem("Het project wordt/is gestart op");
-            System.Windows.Forms.ListViewItem listViewItem10 = new System.Windows.Forms.ListViewItem("integratie proefmodel");
+            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("Projectnummer");
+            System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("Projecttitel");
+            System.Windows.Forms.ListViewItem listViewItem3 = new System.Windows.Forms.ListViewItem("Aantal uren werknemers");
+            System.Windows.Forms.ListViewItem listViewItem4 = new System.Windows.Forms.ListViewItem("Het project wordt/is gestart op");
+            System.Windows.Forms.ListViewItem listViewItem5 = new System.Windows.Forms.ListViewItem("integratie proefmodel");
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.TSSL_ExtractionProgress = new System.Windows.Forms.ToolStripStatusLabel();
@@ -50,14 +50,12 @@ namespace ProjectExtractor
             this.TB_PDFLocation = new System.Windows.Forms.TextBox();
             this.BT_BrowsePDF = new System.Windows.Forms.Button();
             this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.LB_Unsaved = new System.Windows.Forms.Label();
             this.GB_ExportSettings = new System.Windows.Forms.GroupBox();
             this.RB_ExportRichText = new System.Windows.Forms.RadioButton();
             this.RB_ExportWord = new System.Windows.Forms.RadioButton();
             this.RB_ExportExcel = new System.Windows.Forms.RadioButton();
             this.RB_ExportTXT = new System.Windows.Forms.RadioButton();
             this.RB_ExportPDF = new System.Windows.Forms.RadioButton();
-            this.BT_SettingsSave = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.BT_KeywordsEdit = new System.Windows.Forms.Button();
             this.LV_Keywords = new System.Windows.Forms.ListView();
@@ -239,9 +237,7 @@ namespace ProjectExtractor
             // tabPage2
             // 
             this.tabPage2.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.tabPage2.Controls.Add(this.LB_Unsaved);
             this.tabPage2.Controls.Add(this.GB_ExportSettings);
-            this.tabPage2.Controls.Add(this.BT_SettingsSave);
             this.tabPage2.Controls.Add(this.groupBox2);
             this.tabPage2.Location = new System.Drawing.Point(4, 24);
             this.tabPage2.Name = "tabPage2";
@@ -250,18 +246,6 @@ namespace ProjectExtractor
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Settings";
             this.tabPage2.UseVisualStyleBackColor = true;
-            // 
-            // LB_Unsaved
-            // 
-            this.LB_Unsaved.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.LB_Unsaved.AutoSize = true;
-            this.LB_Unsaved.Location = new System.Drawing.Point(313, 218);
-            this.LB_Unsaved.Name = "LB_Unsaved";
-            this.LB_Unsaved.Size = new System.Drawing.Size(121, 15);
-            this.LB_Unsaved.TabIndex = 3;
-            this.LB_Unsaved.Text = "!UNSAVED CHANGES!";
-            this.LB_Unsaved.Visible = false;
             // 
             // GB_ExportSettings
             // 
@@ -288,6 +272,7 @@ namespace ProjectExtractor
             this.RB_ExportRichText.Text = "Rich Text (*.rtf)";
             this.RB_ExportRichText.UseVisualStyleBackColor = true;
             this.RB_ExportRichText.Visible = false;
+            this.RB_ExportRichText.CheckedChanged += new System.EventHandler(this.RB_CheckedChanged);
             // 
             // RB_ExportWord
             // 
@@ -299,6 +284,7 @@ namespace ProjectExtractor
             this.RB_ExportWord.Text = "Word (*.docx)";
             this.RB_ExportWord.UseVisualStyleBackColor = true;
             this.RB_ExportWord.Visible = false;
+            this.RB_ExportWord.CheckedChanged += new System.EventHandler(this.RB_CheckedChanged);
             // 
             // RB_ExportExcel
             // 
@@ -309,6 +295,7 @@ namespace ProjectExtractor
             this.RB_ExportExcel.TabIndex = 2;
             this.RB_ExportExcel.Text = "Worksheet (*.xlsx)";
             this.RB_ExportExcel.UseVisualStyleBackColor = true;
+            this.RB_ExportExcel.CheckedChanged += new System.EventHandler(this.RB_CheckedChanged);
             // 
             // RB_ExportTXT
             // 
@@ -321,6 +308,7 @@ namespace ProjectExtractor
             this.RB_ExportTXT.TabStop = true;
             this.RB_ExportTXT.Text = "Text (*.txt)";
             this.RB_ExportTXT.UseVisualStyleBackColor = true;
+            this.RB_ExportTXT.CheckedChanged += new System.EventHandler(this.RB_CheckedChanged);
             // 
             // RB_ExportPDF
             // 
@@ -331,16 +319,7 @@ namespace ProjectExtractor
             this.RB_ExportPDF.TabIndex = 0;
             this.RB_ExportPDF.Text = "PDF (*.pdf)";
             this.RB_ExportPDF.UseVisualStyleBackColor = true;
-            // 
-            // BT_SettingsSave
-            // 
-            this.BT_SettingsSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.BT_SettingsSave.Location = new System.Drawing.Point(257, 236);
-            this.BT_SettingsSave.Name = "BT_SettingsSave";
-            this.BT_SettingsSave.Size = new System.Drawing.Size(234, 23);
-            this.BT_SettingsSave.TabIndex = 1;
-            this.BT_SettingsSave.Text = "Save";
-            this.BT_SettingsSave.UseVisualStyleBackColor = true;
+            this.RB_ExportPDF.CheckedChanged += new System.EventHandler(this.RB_CheckedChanged);
             // 
             // groupBox2
             // 
@@ -377,11 +356,11 @@ namespace ProjectExtractor
             | System.Windows.Forms.AnchorStyles.Right)));
             this.LV_Keywords.HideSelection = false;
             this.LV_Keywords.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem6,
-            listViewItem7,
-            listViewItem8,
-            listViewItem9,
-            listViewItem10});
+            listViewItem1,
+            listViewItem2,
+            listViewItem3,
+            listViewItem4,
+            listViewItem5});
             this.LV_Keywords.LabelEdit = true;
             this.LV_Keywords.Location = new System.Drawing.Point(6, 22);
             this.LV_Keywords.MultiSelect = false;
@@ -390,6 +369,7 @@ namespace ProjectExtractor
             this.LV_Keywords.TabIndex = 4;
             this.LV_Keywords.UseCompatibleStateImageBehavior = false;
             this.LV_Keywords.View = System.Windows.Forms.View.List;
+            this.LV_Keywords.AfterLabelEdit += new System.Windows.Forms.LabelEditEventHandler(this.LV_Keywords_AfterLabelEdit);
             this.LV_Keywords.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.LV_Keywords_ItemSelectionChanged);
             // 
             // BT_KeywordsDelete
@@ -437,7 +417,6 @@ namespace ProjectExtractor
             this.tabPage1.PerformLayout();
             this.groupBox1.ResumeLayout(false);
             this.tabPage2.ResumeLayout(false);
-            this.tabPage2.PerformLayout();
             this.GB_ExportSettings.ResumeLayout(false);
             this.GB_ExportSettings.PerformLayout();
             this.groupBox2.ResumeLayout(false);
@@ -464,11 +443,9 @@ namespace ProjectExtractor
         private System.Windows.Forms.TextBox TB_ExtractLocation;
         private System.Windows.Forms.Button BT_BrowseExtract;
         private System.Windows.Forms.GroupBox groupBox2;
-        private System.Windows.Forms.Button BT_SettingsSave;
         private System.Windows.Forms.Button BT_KeywordsEdit;
         private System.Windows.Forms.Button BT_KeywordsDelete;
         private System.Windows.Forms.Button BT_KeywordsNew;
-        private System.Windows.Forms.Label LB_Unsaved;
         private System.Windows.Forms.GroupBox GB_ExportSettings;
         private System.Windows.Forms.RadioButton RB_ExportRichText;
         private System.Windows.Forms.RadioButton RB_ExportWord;
