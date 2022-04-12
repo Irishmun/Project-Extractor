@@ -12,17 +12,17 @@ namespace ProjectExtractor
         private string ProgramPath = AppContext.BaseDirectory;
         private IniFile Settings;
         private Extractor extractor;
-        private bool startingUp = false;
+        private bool StartingUp = false;
 
         public ExtractorForm()
         {
-            startingUp = true;
+            StartingUp = true;
             InitializeComponent();
             Settings = new IniFile();
             extractor = new Extractor();
             InitSettings();
             UpdateExtractorKeywords();
-            startingUp = false;
+            StartingUp = false;
         }
 
         #region events
@@ -118,29 +118,16 @@ namespace ProjectExtractor
 
         private void BT_Extract_Click(object sender, EventArgs e)
         {
-            if (!string.IsNullOrWhiteSpace(TB_PDFLocation.Text) && !string.IsNullOrWhiteSpace(TB_ExtractLocation.Text))
+            if (!backgroundWorker.IsBusy)
             {
-                string fileName = TB_PDFLocation.Text.Substring(TB_PDFLocation.Text.LastIndexOf('\\') + 1);
-                string exportFile = $"{TB_ExtractLocation.Text}Extracted-{Path.GetFileNameWithoutExtension(fileName)}{ GetExportSetting()}";
-                extractor.ExtractAll(TB_PDFLocation.Text, exportFile);
-                UpdateStatus("Extraction completed!");
-                //if (!File.Exists(exportFile))
-                //{
-                //    using (StreamWriter sw = File.CreateText(exportFile))
-                //    {
-                //        sw.WriteLine("test \n test2");//Put this in backgroundworker and extract all contents from pdf file
-                //    }
-                //}
-            }
-            else
-            {
-                MessageBox.Show("PDF file or extract location is empty!", "Empty field", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                BT_Extract.Enabled = false;
+                backgroundWorker.RunWorkerAsync();
             }
         }
 
         private void RB_CheckedChanged(object sender, EventArgs e)
         {
-            if (!startingUp)
+            if (!StartingUp)
             {
                 UpdateSettings();
             }
@@ -153,7 +140,7 @@ namespace ProjectExtractor
 
         private void CB_SavePDFPath_CheckedChanged(object sender, EventArgs e)
         {
-            if (!startingUp)
+            if (!StartingUp)
             {
                 UpdateSettings();
             }
@@ -161,11 +148,53 @@ namespace ProjectExtractor
 
         private void CB_SaveExtractionPath_CheckedChanged(object sender, EventArgs e)
         {
-            if (!startingUp)
+            if (!StartingUp)
             {
                 UpdateSettings();
             }
         }
+
+        private void backgroundWorker_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
+        {
+            if (!string.IsNullOrWhiteSpace(TB_PDFLocation.Text) && !string.IsNullOrWhiteSpace(TB_ExtractLocation.Text))
+            {
+                string fileName = TB_PDFLocation.Text.Substring(TB_PDFLocation.Text.LastIndexOf('\\') + 1);//create filename from original file
+
+                string exportFile = $"{TB_ExtractLocation.Text}Extracted-{Path.GetFileNameWithoutExtension(fileName)}{ GetExportSetting()}";//add path and file extension
+                //TODO: make it possible to extract to the other supported formats
+                extractor.ExtractToTXT(TB_PDFLocation.Text, exportFile, ConvertKeywordsToArray(), TB_Chapter.Text, TB_StopChapter.Text, sender as System.ComponentModel.BackgroundWorker);
+                UpdateStatus("Extraction completed!");
+            }
+            else
+            {
+                MessageBox.Show("PDF file or extract location is empty!", "Empty field", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+        private void backgroundWorker_ProgressChanged(object sender, System.ComponentModel.ProgressChangedEventArgs e)
+        {
+            TSPB_Extraction.Value = e.ProgressPercentage;
+        }
+        private void backgroundWorker_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
+        {
+            BT_Extract.Enabled = true;
+        }
+        private void TB_Chapter_TextChanged(object sender, EventArgs e)
+        {
+            if (!StartingUp)
+            {
+                UpdateSettings();
+            }
+        }
+
+        private void TB_StopChapter_TextChanged(object sender, EventArgs e)
+        {
+            if (!StartingUp)
+            {
+                UpdateSettings();
+            }
+        }
+
         #endregion
         #region methods
         /// <summary>
@@ -281,6 +310,17 @@ namespace ProjectExtractor
                 TB_ExtractLocation.Text = Settings.Read("Extract_Path", "Paths");
                 CB_SaveExtractionPath.Checked = saveExtract;
             }
+
+            if (Settings.KeyExists("ChapterStart", "Chapters"))
+            {
+                TB_Chapter.Text = Settings.Read("ChapterStart", "Chapters");
+            }
+
+            if (Settings.KeyExists("ChapterEnd", "Chapters"))
+            {
+                TB_StopChapter.Text = Settings.Read("ChapterEnd", "Chapters");
+            }
+
             UpdateSettings();
         }
 
@@ -310,6 +350,8 @@ namespace ProjectExtractor
             {
                 Settings.DeleteKey("Extract_Path", "Paths");
             }
+            Settings.Write("ChapterStart", TB_Chapter.Text, "Chapters");
+            Settings.Write("ChapterEnd", TB_StopChapter.Text, "Chapters");
         }
         /// <summary>
         /// Converts the keywords from the list view to a comma seperated string
@@ -329,6 +371,19 @@ namespace ProjectExtractor
             }
             return builder.ToString();
         }
+
+        private string[] ConvertKeywordsToArray()
+        {
+            string[] res = new string[LV_Keywords.Items.Count];
+            for (int i = 0; i < LV_Keywords.Items.Count; i++)
+            {
+                res[i] = LV_Keywords.Items[i].Text;
+            }
+            return res;
+        }
+
         #endregion
+
+
     }
 }

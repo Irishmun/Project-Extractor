@@ -29,11 +29,11 @@ namespace ProjectExtractor
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.ListViewItem listViewItem11 = new System.Windows.Forms.ListViewItem("Projectnummer");
-            System.Windows.Forms.ListViewItem listViewItem12 = new System.Windows.Forms.ListViewItem("Projecttitel");
-            System.Windows.Forms.ListViewItem listViewItem13 = new System.Windows.Forms.ListViewItem("Aantal uren werknemers");
-            System.Windows.Forms.ListViewItem listViewItem14 = new System.Windows.Forms.ListViewItem("Het project wordt/is gestart op");
-            System.Windows.Forms.ListViewItem listViewItem15 = new System.Windows.Forms.ListViewItem("integratie proefmodel");
+            System.Windows.Forms.ListViewItem listViewItem16 = new System.Windows.Forms.ListViewItem("Projectnummer");
+            System.Windows.Forms.ListViewItem listViewItem17 = new System.Windows.Forms.ListViewItem("Projecttitel");
+            System.Windows.Forms.ListViewItem listViewItem18 = new System.Windows.Forms.ListViewItem("Aantal uren werknemers");
+            System.Windows.Forms.ListViewItem listViewItem19 = new System.Windows.Forms.ListViewItem("Het project wordt/is gestart op");
+            System.Windows.Forms.ListViewItem listViewItem20 = new System.Windows.Forms.ListViewItem("integratie proefmodel");
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.TSPB_Extraction = new System.Windows.Forms.ToolStripProgressBar();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
@@ -50,6 +50,14 @@ namespace ProjectExtractor
             this.TB_PDFLocation = new System.Windows.Forms.TextBox();
             this.BT_BrowsePDF = new System.Windows.Forms.Button();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.label4 = new System.Windows.Forms.Label();
+            this.TB_StopChapter = new System.Windows.Forms.TextBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.TB_Chapter = new System.Windows.Forms.TextBox();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.CB_SaveExtractionPath = new System.Windows.Forms.CheckBox();
+            this.CB_SavePDFPath = new System.Windows.Forms.CheckBox();
             this.GB_ExportSettings = new System.Windows.Forms.GroupBox();
             this.RB_ExportRichText = new System.Windows.Forms.RadioButton();
             this.RB_ExportWord = new System.Windows.Forms.RadioButton();
@@ -62,17 +70,15 @@ namespace ProjectExtractor
             this.BT_KeywordsDelete = new System.Windows.Forms.Button();
             this.BT_KeywordsNew = new System.Windows.Forms.Button();
             this.backgroundWorker = new System.ComponentModel.BackgroundWorker();
-            this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.CB_SavePDFPath = new System.Windows.Forms.CheckBox();
-            this.CB_SaveExtractionPath = new System.Windows.Forms.CheckBox();
             this.statusStrip1.SuspendLayout();
             this.TC_MainView.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.tabPage2.SuspendLayout();
+            this.groupBox4.SuspendLayout();
+            this.groupBox3.SuspendLayout();
             this.GB_ExportSettings.SuspendLayout();
             this.groupBox2.SuspendLayout();
-            this.groupBox3.SuspendLayout();
             this.SuspendLayout();
             // 
             // statusStrip1
@@ -98,8 +104,8 @@ namespace ProjectExtractor
             | System.Windows.Forms.ToolStripStatusLabelBorderSides.Bottom)));
             this.toolStripStatusLabel1.BorderStyle = System.Windows.Forms.Border3DStyle.SunkenOuter;
             this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            this.toolStripStatusLabel1.Size = new System.Drawing.Size(59, 19);
-            this.toolStripStatusLabel1.Text = "Progress:";
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(46, 19);
+            this.toolStripStatusLabel1.Text = "Status:";
             this.toolStripStatusLabel1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // TSSL_ExtractionProgress
@@ -240,6 +246,7 @@ namespace ProjectExtractor
             // tabPage2
             // 
             this.tabPage2.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.tabPage2.Controls.Add(this.groupBox4);
             this.tabPage2.Controls.Add(this.groupBox3);
             this.tabPage2.Controls.Add(this.GB_ExportSettings);
             this.tabPage2.Controls.Add(this.groupBox2);
@@ -250,6 +257,100 @@ namespace ProjectExtractor
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Settings";
             this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // groupBox4
+            // 
+            this.groupBox4.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox4.Controls.Add(this.label4);
+            this.groupBox4.Controls.Add(this.TB_StopChapter);
+            this.groupBox4.Controls.Add(this.label3);
+            this.groupBox4.Controls.Add(this.TB_Chapter);
+            this.groupBox4.Location = new System.Drawing.Point(6, 188);
+            this.groupBox4.Name = "groupBox4";
+            this.groupBox4.Size = new System.Drawing.Size(485, 71);
+            this.groupBox4.TabIndex = 5;
+            this.groupBox4.TabStop = false;
+            this.groupBox4.Text = "Chapters";
+            // 
+            // label4
+            // 
+            this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(246, 24);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(110, 15);
+            this.label4.TabIndex = 3;
+            this.label4.Text = "After Dates Chapter";
+            // 
+            // TB_StopChapter
+            // 
+            this.TB_StopChapter.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.TB_StopChapter.Location = new System.Drawing.Point(246, 42);
+            this.TB_StopChapter.Name = "TB_StopChapter";
+            this.TB_StopChapter.Size = new System.Drawing.Size(233, 23);
+            this.TB_StopChapter.TabIndex = 2;
+            this.TB_StopChapter.Text = "Update project";
+            this.TB_StopChapter.TextChanged += new System.EventHandler(this.TB_StopChapter_TextChanged);
+            // 
+            // label3
+            // 
+            this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(6, 24);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(81, 15);
+            this.label3.TabIndex = 1;
+            this.label3.Text = "Dates Chapter";
+            // 
+            // TB_Chapter
+            // 
+            this.TB_Chapter.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.TB_Chapter.Location = new System.Drawing.Point(6, 42);
+            this.TB_Chapter.Name = "TB_Chapter";
+            this.TB_Chapter.Size = new System.Drawing.Size(233, 23);
+            this.TB_Chapter.TabIndex = 0;
+            this.TB_Chapter.Text = "Fasering werkzaamheden";
+            this.TB_Chapter.TextChanged += new System.EventHandler(this.TB_Chapter_TextChanged);
+            // 
+            // groupBox3
+            // 
+            this.groupBox3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox3.Controls.Add(this.CB_SaveExtractionPath);
+            this.groupBox3.Controls.Add(this.CB_SavePDFPath);
+            this.groupBox3.Location = new System.Drawing.Point(257, 115);
+            this.groupBox3.Name = "groupBox3";
+            this.groupBox3.Size = new System.Drawing.Size(234, 73);
+            this.groupBox3.TabIndex = 5;
+            this.groupBox3.TabStop = false;
+            this.groupBox3.Text = "File dialog settings";
+            // 
+            // CB_SaveExtractionPath
+            // 
+            this.CB_SaveExtractionPath.AutoSize = true;
+            this.CB_SaveExtractionPath.Checked = true;
+            this.CB_SaveExtractionPath.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.CB_SaveExtractionPath.Location = new System.Drawing.Point(6, 47);
+            this.CB_SaveExtractionPath.Name = "CB_SaveExtractionPath";
+            this.CB_SaveExtractionPath.Size = new System.Drawing.Size(167, 19);
+            this.CB_SaveExtractionPath.TabIndex = 1;
+            this.CB_SaveExtractionPath.Text = "Save Extraction folder path";
+            this.CB_SaveExtractionPath.UseVisualStyleBackColor = true;
+            this.CB_SaveExtractionPath.CheckedChanged += new System.EventHandler(this.CB_SaveExtractionPath_CheckedChanged);
+            // 
+            // CB_SavePDFPath
+            // 
+            this.CB_SavePDFPath.AutoSize = true;
+            this.CB_SavePDFPath.Location = new System.Drawing.Point(6, 22);
+            this.CB_SavePDFPath.Name = "CB_SavePDFPath";
+            this.CB_SavePDFPath.Size = new System.Drawing.Size(120, 19);
+            this.CB_SavePDFPath.TabIndex = 0;
+            this.CB_SavePDFPath.Text = "Save PDF file path";
+            this.CB_SavePDFPath.UseVisualStyleBackColor = true;
+            this.CB_SavePDFPath.CheckedChanged += new System.EventHandler(this.CB_SavePDFPath_CheckedChanged);
             // 
             // GB_ExportSettings
             // 
@@ -293,6 +394,7 @@ namespace ProjectExtractor
             // RB_ExportExcel
             // 
             this.RB_ExportExcel.AutoSize = true;
+            this.RB_ExportExcel.Enabled = false;
             this.RB_ExportExcel.Location = new System.Drawing.Point(6, 72);
             this.RB_ExportExcel.Name = "RB_ExportExcel";
             this.RB_ExportExcel.Size = new System.Drawing.Size(120, 19);
@@ -317,6 +419,7 @@ namespace ProjectExtractor
             // RB_ExportPDF
             // 
             this.RB_ExportPDF.AutoSize = true;
+            this.RB_ExportPDF.Enabled = false;
             this.RB_ExportPDF.Location = new System.Drawing.Point(6, 22);
             this.RB_ExportPDF.Name = "RB_ExportPDF";
             this.RB_ExportPDF.Size = new System.Drawing.Size(83, 19);
@@ -336,7 +439,7 @@ namespace ProjectExtractor
             this.groupBox2.Controls.Add(this.BT_KeywordsNew);
             this.groupBox2.Location = new System.Drawing.Point(6, 6);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(245, 253);
+            this.groupBox2.Size = new System.Drawing.Size(245, 182);
             this.groupBox2.TabIndex = 0;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Keywords";
@@ -360,16 +463,16 @@ namespace ProjectExtractor
             | System.Windows.Forms.AnchorStyles.Right)));
             this.LV_Keywords.HideSelection = false;
             this.LV_Keywords.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem11,
-            listViewItem12,
-            listViewItem13,
-            listViewItem14,
-            listViewItem15});
+            listViewItem16,
+            listViewItem17,
+            listViewItem18,
+            listViewItem19,
+            listViewItem20});
             this.LV_Keywords.LabelEdit = true;
             this.LV_Keywords.Location = new System.Drawing.Point(6, 22);
             this.LV_Keywords.MultiSelect = false;
             this.LV_Keywords.Name = "LV_Keywords";
-            this.LV_Keywords.Size = new System.Drawing.Size(121, 225);
+            this.LV_Keywords.Size = new System.Drawing.Size(121, 154);
             this.LV_Keywords.TabIndex = 4;
             this.LV_Keywords.UseCompatibleStateImageBehavior = false;
             this.LV_Keywords.View = System.Windows.Forms.View.List;
@@ -402,42 +505,9 @@ namespace ProjectExtractor
             // backgroundWorker
             // 
             this.backgroundWorker.WorkerReportsProgress = true;
-            // 
-            // groupBox3
-            // 
-            this.groupBox3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox3.Controls.Add(this.CB_SaveExtractionPath);
-            this.groupBox3.Controls.Add(this.CB_SavePDFPath);
-            this.groupBox3.Location = new System.Drawing.Point(257, 115);
-            this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(234, 73);
-            this.groupBox3.TabIndex = 5;
-            this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "File dialog settings";
-            // 
-            // CB_SavePDFPath
-            // 
-            this.CB_SavePDFPath.AutoSize = true;
-            this.CB_SavePDFPath.Location = new System.Drawing.Point(6, 22);
-            this.CB_SavePDFPath.Name = "CB_SavePDFPath";
-            this.CB_SavePDFPath.Size = new System.Drawing.Size(120, 19);
-            this.CB_SavePDFPath.TabIndex = 0;
-            this.CB_SavePDFPath.Text = "Save PDF file path";
-            this.CB_SavePDFPath.UseVisualStyleBackColor = true;
-            this.CB_SavePDFPath.CheckedChanged += new System.EventHandler(this.CB_SavePDFPath_CheckedChanged);
-            // 
-            // CB_SaveExtractionPath
-            // 
-            this.CB_SaveExtractionPath.AutoSize = true;
-            this.CB_SaveExtractionPath.Checked = true;
-            this.CB_SaveExtractionPath.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.CB_SaveExtractionPath.Location = new System.Drawing.Point(6, 47);
-            this.CB_SaveExtractionPath.Name = "CB_SaveExtractionPath";
-            this.CB_SaveExtractionPath.Size = new System.Drawing.Size(167, 19);
-            this.CB_SaveExtractionPath.TabIndex = 1;
-            this.CB_SaveExtractionPath.Text = "Save Extraction folder path";
-            this.CB_SaveExtractionPath.UseVisualStyleBackColor = true;
-            this.CB_SaveExtractionPath.CheckedChanged += new System.EventHandler(this.CB_SaveExtractionPath_CheckedChanged);
+            this.backgroundWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker_DoWork);
+            this.backgroundWorker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorker_ProgressChanged);
+            this.backgroundWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker_RunWorkerCompleted);
             // 
             // ExtractorForm
             // 
@@ -457,11 +527,13 @@ namespace ProjectExtractor
             this.tabPage1.PerformLayout();
             this.groupBox1.ResumeLayout(false);
             this.tabPage2.ResumeLayout(false);
+            this.groupBox4.ResumeLayout(false);
+            this.groupBox4.PerformLayout();
+            this.groupBox3.ResumeLayout(false);
+            this.groupBox3.PerformLayout();
             this.GB_ExportSettings.ResumeLayout(false);
             this.GB_ExportSettings.PerformLayout();
             this.groupBox2.ResumeLayout(false);
-            this.groupBox3.ResumeLayout(false);
-            this.groupBox3.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -500,6 +572,11 @@ namespace ProjectExtractor
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.CheckBox CB_SaveExtractionPath;
         private System.Windows.Forms.CheckBox CB_SavePDFPath;
+        private System.Windows.Forms.GroupBox groupBox4;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.TextBox TB_Chapter;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.TextBox TB_StopChapter;
     }
 }
 
