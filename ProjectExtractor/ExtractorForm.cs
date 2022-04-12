@@ -1,5 +1,6 @@
 ﻿using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -9,7 +10,7 @@ namespace ProjectExtractor
 {
     public partial class ExtractorForm : Form
     {
-        private string ProgramPath = AppContext.BaseDirectory;
+        private string ProgramPath = AppContext.BaseDirectory, ExportFile;
         private IniFile Settings;
         private Extractor extractor;
         private bool StartingUp = false;
@@ -154,31 +155,6 @@ namespace ProjectExtractor
             }
         }
 
-        private void backgroundWorker_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
-        {
-            if (!string.IsNullOrWhiteSpace(TB_PDFLocation.Text) && !string.IsNullOrWhiteSpace(TB_ExtractLocation.Text))
-            {
-                string fileName = TB_PDFLocation.Text.Substring(TB_PDFLocation.Text.LastIndexOf('\\') + 1);//create filename from original file
-
-                string exportFile = $"{TB_ExtractLocation.Text}Extracted-{Path.GetFileNameWithoutExtension(fileName)}{ GetExportSetting()}";//add path and file extension
-                //TODO: make it possible to extract to the other supported formats
-                extractor.ExtractToTXT(TB_PDFLocation.Text, exportFile, ConvertKeywordsToArray(), TB_Chapter.Text, TB_StopChapter.Text, sender as System.ComponentModel.BackgroundWorker);
-                UpdateStatus("Extraction completed!");
-            }
-            else
-            {
-                MessageBox.Show("PDF file or extract location is empty!", "Empty field", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            }
-        }
-
-        private void backgroundWorker_ProgressChanged(object sender, System.ComponentModel.ProgressChangedEventArgs e)
-        {
-            TSPB_Extraction.Value = e.ProgressPercentage;
-        }
-        private void backgroundWorker_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
-        {
-            BT_Extract.Enabled = true;
-        }
         private void TB_Chapter_TextChanged(object sender, EventArgs e)
         {
             if (!StartingUp)
@@ -195,6 +171,39 @@ namespace ProjectExtractor
             }
         }
 
+        private void backgroundWorker_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
+        {
+            if (!string.IsNullOrWhiteSpace(TB_PDFLocation.Text) && !string.IsNullOrWhiteSpace(TB_ExtractLocation.Text))
+            {
+                string fileName = TB_PDFLocation.Text.Substring(TB_PDFLocation.Text.LastIndexOf('\\') + 1);//create filename from original file
+
+                ExportFile = $"{TB_ExtractLocation.Text}Extracted-{Path.GetFileNameWithoutExtension(fileName)}{ GetExportSetting()}";//add path and file extension
+                //TODO: make it possible to extract to the other supported formats
+                extractor.ExtractToTXT(TB_PDFLocation.Text, ExportFile, ConvertKeywordsToArray(), TB_Chapter.Text, TB_StopChapter.Text, sender as System.ComponentModel.BackgroundWorker);
+                UpdateStatus("Extraction completed!");
+            }
+            else
+            {
+                MessageBox.Show("PDF file or extract location is empty!", "Empty field", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+        private void backgroundWorker_ProgressChanged(object sender, System.ComponentModel.ProgressChangedEventArgs e)
+        {
+            TSPB_Extraction.Value = e.ProgressPercentage;
+        }
+        private void backgroundWorker_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
+        {
+            //open the created file in its default application
+            Process process = new Process();
+            process.StartInfo = new ProcessStartInfo()
+            {
+                UseShellExecute = true,
+                FileName = ExportFile
+            };
+            process.Start();
+            BT_Extract.Enabled = true;
+        }
         #endregion
         #region methods
         /// <summary>
