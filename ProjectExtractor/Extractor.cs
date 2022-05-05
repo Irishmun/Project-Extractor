@@ -1,36 +1,50 @@
 ﻿using iText.Kernel.Pdf;
 using iText.Kernel.Pdf.Canvas.Parser;
 using System;
+using System.ComponentModel;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
+using Microsoft.Office.Interop.Excel;
 
 namespace ProjectExtractor
 {
     class Extractor
     {
-        public void ExtractToTXT(string file, string extractPath, string[] Keywords, string chapters, string stopChapters, System.ComponentModel.BackgroundWorker Worker)
+        /*
+         *NOTES ON DOCUMENT VARIATIONS:
+         *2016 & 2017 are written with spaces as as spacing values, (remove those)
+         *2018 is written with key and value on seperate lines (use value of next array entry)
+         *2022 is written as regular document, with tabs/whitespace for spacing of values (automatically removed)
+         */
+        internal int ExtractToTXT(string file, string extractPath, string[] Keywords, string chapters, string stopChapters, System.ComponentModel.BackgroundWorker Worker)
         {
-            //TODO: Put this in backgroundworker and extract all contents from pdf file
+            //TODO: figure out way to handle different file structure versions
+            //open pdf file for reading
+            ErrorCodes returnCode = ErrorCodes.none;
             PdfReader reader = new PdfReader(file);
             PdfDocument pdf = new PdfDocument(reader);
             StringBuilder str = new StringBuilder();
 
             for (int i = 1; i < pdf.GetNumberOfPages(); i++)
             {
+                ///get the text from every page to search through
                 str.Append(PdfTextExtractor.GetTextFromPage(pdf.GetPage(i)));
             }
+            //get only lines with text on them, reduces total worktime by ignoring empties
             string[] lines = str.ToString().Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
             str.Clear();
+
             for (int lineIndex = 0; lineIndex < lines.Length; lineIndex++)
             {
-                //2020.82
+                //start searching for the keywords and their corresponding values
                 if (lines[lineIndex].StartsWith(Keywords[0]))
-                {
+                {//get first keyword and apply two newlines, this give a better division between each project
                     str.Append(Environment.NewLine + Environment.NewLine);
                 }
                 for (int keyIndex = 0; keyIndex < Keywords.Length; keyIndex++)
                 {
+                    //append every other keyword that can be found and sho its value
                     if (lines[lineIndex].StartsWith(Keywords[keyIndex]))
                     {
                         str.Append(lines[lineIndex].Replace(Keywords[keyIndex], Keywords[keyIndex] + ": ") + " | ");
@@ -38,17 +52,22 @@ namespace ProjectExtractor
                 }
                 if (lines[lineIndex].Contains(chapters))
                 {
+                    //get the latest date and put it's line in there, skip to past that point
                     int skipTo = GetLatestDate(lines, lineIndex, stopChapters);
                     lineIndex = skipTo;
                     str.Append(lines[lineIndex]);
                 }
+                //progress for the progress bar
                 double progress = (double)(((double)lineIndex + 1d) * 100d / (double)lines.Length);
                 Worker.ReportProgress((int)progress);
             }
             using (StreamWriter sw = File.CreateText(extractPath))
             {
-                sw.WriteLine(str.ToString());
+                //write the final result to a text document
+                sw.Write(str.ToString());
+                sw.Close();
             }
+            return (int)returnCode;
         }
 
         private int GetLatestDate(string[] lines, int startIndex, string stopLine)
@@ -59,14 +78,12 @@ namespace ProjectExtractor
             {
                 if (lines[i].StartsWith(stopLine))
                 {
-                    break;
+                    return index;
                 }
-                //string[] subLine = lines[i].Split();
-                //for (int s = 0; s < subLine.Length; s++)
-                //{
                 try
                 {
-                    Match match = Regex.Match(lines[i], @"\d{2}(?:\/|-|)(?:\d{2}|[a-z]{0,10})(?:\/|-|)\d{4}");
+                    //try and find a datetime text matching the smallest to the largest structure
+                    Match match = Regex.Match(lines[i], @"\d{2}(?:\/|-|)(?:\d{2}|[a-z]{0,10})(?:\/|-|)\d{1,4}");
                     if (!string.IsNullOrEmpty(match.Value))
                     {
                         DateTime current = DateTime.Parse(match.Value);//, new System.Globalization.CultureInfo("nl", false));
@@ -80,9 +97,113 @@ namespace ProjectExtractor
                 catch (Exception)
                 {
                 }
-                //}
             }
             return index;
         }
+
+        internal int ExtractToXLSX(string file, string extractPath, string[] Keywords, string chapters, string stopChapters, System.ComponentModel.BackgroundWorker Worker)
+        {
+            ErrorCodes ReturnCode = 0;
+            Application xlApp = new Application();
+            if (xlApp == null)
+            {
+                //Excel is not installed, therefore it will not work
+                ReturnCode = ErrorCodes.NotInstalled; //Not Installed (n = 15, i= 9)
+                return (int)ReturnCode;
+            }
+            return (int)ReturnCode;
+        }
+
+        internal int ExtractToPDF(string file, string extractPath, string[] Keywords, string chapters, string stopChapters, System.ComponentModel.BackgroundWorker Worker)
+        {
+            ErrorCodes ReturnCode = 0;
+
+            //TODO: implement ExtractToPDF
+            ReturnCode = ErrorCodes.notImplemented;
+
+            return (int)ReturnCode;
+        }
+        internal int ExtractToDOCX(string file, string extractPath, string[] Keywords, string chapters, string stopChapters, System.ComponentModel.BackgroundWorker Worker)
+        {
+            ErrorCodes ReturnCode = 0;
+
+            //TODO: implement ExtractToPDF
+            ReturnCode = ErrorCodes.notImplemented;
+
+            return (int)ReturnCode;
+        }
+        internal int ExtractToRTF(string file, string extractPath, string[] Keywords, string chapters, string stopChapters, System.ComponentModel.BackgroundWorker Worker)
+        {
+            ErrorCodes ReturnCode = 0;
+
+            //TODO: implement ExtractToPDF
+            ReturnCode = ErrorCodes.notImplemented;
+
+            return (int)ReturnCode;
+        }
+
+        internal int ExtractAllToTXT(string file, string extractPath, string[] Keywords, string chapters, string stopChapters, System.ComponentModel.BackgroundWorker Worker, bool keepEmpties = false)
+        {
+            ErrorCodes returnCode = ErrorCodes.none;
+            PdfReader reader = new PdfReader(file);
+            PdfDocument pdf = new PdfDocument(reader);
+            StringBuilder str = new StringBuilder();
+            string[] lines;
+            for (int i = 1; i < pdf.GetNumberOfPages(); i++)
+            {
+                str.Append(PdfTextExtractor.GetTextFromPage(pdf.GetPage(i)));
+            }
+            if (keepEmpties == false)
+            {
+                lines = str.ToString().Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+            }
+            else
+            {
+                lines = str.ToString().Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+            }
+            //str.Clear();
+            //for (int i = 0; i < lines.Length; i++)
+            //{
+            //    if (lines[i].StartsWith("Projecttitel"))
+            //    {
+            //        str.Append(lines[i] + Environment.NewLine);
+            //    }
+            //}
+            string res = string.Join(Environment.NewLine, lines);
+            File.WriteAllText(extractPath, res);
+            //using (StreamWriter sw = File.CreateText(extractPath))
+            //{
+            //    sw.Write(res);//Put this in backgroundworker and extract all contents from pdf file
+            //    sw.Close();
+            //}
+            return (int)returnCode;
+        }
+
+        internal string GetErrorCode(int code)
+        {
+            switch ((ErrorCodes)code)
+            {
+                case ErrorCodes.none:
+                    return null;
+                case ErrorCodes.error:
+                    return "Fatal error";
+                case ErrorCodes.notImplemented:
+                    return "Not Implemented";
+                case ErrorCodes.NotInstalled:
+                    return "Program not installed";
+                default:
+                    return "Unknown error";
+            }
+        }
+
+        private enum ErrorCodes
+        {
+            none = 0,
+            error = 1,
+            notImplemented = 2,
+            NotInstalled = 159
+        }
+
+
     }
 }

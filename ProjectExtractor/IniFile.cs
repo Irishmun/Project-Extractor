@@ -86,7 +86,7 @@ namespace ProjectExtractor
         public bool ReadBool(string Key, string Section = null)
         {
             string val = Read(Key, Section);
-            switch (val)
+            switch (val.ToLower())
             {
                 case "1":
                 case "yes":

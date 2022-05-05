@@ -29,11 +29,10 @@ namespace ProjectExtractor
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.ListViewItem listViewItem16 = new System.Windows.Forms.ListViewItem("Projectnummer");
-            System.Windows.Forms.ListViewItem listViewItem17 = new System.Windows.Forms.ListViewItem("Projecttitel");
-            System.Windows.Forms.ListViewItem listViewItem18 = new System.Windows.Forms.ListViewItem("Aantal uren werknemers");
-            System.Windows.Forms.ListViewItem listViewItem19 = new System.Windows.Forms.ListViewItem("Het project wordt/is gestart op");
-            System.Windows.Forms.ListViewItem listViewItem20 = new System.Windows.Forms.ListViewItem("integratie proefmodel");
+            System.Windows.Forms.ListViewItem listViewItem5 = new System.Windows.Forms.ListViewItem("Projectnummer");
+            System.Windows.Forms.ListViewItem listViewItem6 = new System.Windows.Forms.ListViewItem("Projecttitel");
+            System.Windows.Forms.ListViewItem listViewItem7 = new System.Windows.Forms.ListViewItem("Aantal uren werknemers");
+            System.Windows.Forms.ListViewItem listViewItem8 = new System.Windows.Forms.ListViewItem("Het project wordt/is gestart op");
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.TSPB_Extraction = new System.Windows.Forms.ToolStripProgressBar();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
@@ -70,6 +69,7 @@ namespace ProjectExtractor
             this.BT_KeywordsDelete = new System.Windows.Forms.Button();
             this.BT_KeywordsNew = new System.Windows.Forms.Button();
             this.backgroundWorker = new System.ComponentModel.BackgroundWorker();
+            this.BT_DebugExtract = new System.Windows.Forms.Button();
             this.statusStrip1.SuspendLayout();
             this.TC_MainView.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -137,6 +137,7 @@ namespace ProjectExtractor
             // tabPage1
             // 
             this.tabPage1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.tabPage1.Controls.Add(this.BT_DebugExtract);
             this.tabPage1.Controls.Add(this.BT_Extract);
             this.tabPage1.Controls.Add(this.groupBox1);
             this.tabPage1.Controls.Add(this.label2);
@@ -370,25 +371,25 @@ namespace ProjectExtractor
             // RB_ExportRichText
             // 
             this.RB_ExportRichText.AutoSize = true;
+            this.RB_ExportRichText.Enabled = false;
             this.RB_ExportRichText.Location = new System.Drawing.Point(134, 47);
             this.RB_ExportRichText.Name = "RB_ExportRichText";
             this.RB_ExportRichText.Size = new System.Drawing.Size(103, 19);
             this.RB_ExportRichText.TabIndex = 4;
             this.RB_ExportRichText.Text = "Rich Text (*.rtf)";
             this.RB_ExportRichText.UseVisualStyleBackColor = true;
-            this.RB_ExportRichText.Visible = false;
             this.RB_ExportRichText.CheckedChanged += new System.EventHandler(this.RB_CheckedChanged);
             // 
             // RB_ExportWord
             // 
             this.RB_ExportWord.AutoSize = true;
+            this.RB_ExportWord.Enabled = false;
             this.RB_ExportWord.Location = new System.Drawing.Point(134, 22);
             this.RB_ExportWord.Name = "RB_ExportWord";
             this.RB_ExportWord.Size = new System.Drawing.Size(99, 19);
             this.RB_ExportWord.TabIndex = 3;
             this.RB_ExportWord.Text = "Word (*.docx)";
             this.RB_ExportWord.UseVisualStyleBackColor = true;
-            this.RB_ExportWord.Visible = false;
             this.RB_ExportWord.CheckedChanged += new System.EventHandler(this.RB_CheckedChanged);
             // 
             // RB_ExportExcel
@@ -463,11 +464,10 @@ namespace ProjectExtractor
             | System.Windows.Forms.AnchorStyles.Right)));
             this.LV_Keywords.HideSelection = false;
             this.LV_Keywords.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem16,
-            listViewItem17,
-            listViewItem18,
-            listViewItem19,
-            listViewItem20});
+            listViewItem5,
+            listViewItem6,
+            listViewItem7,
+            listViewItem8});
             this.LV_Keywords.LabelEdit = true;
             this.LV_Keywords.Location = new System.Drawing.Point(6, 22);
             this.LV_Keywords.MultiSelect = false;
@@ -508,6 +508,17 @@ namespace ProjectExtractor
             this.backgroundWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker_DoWork);
             this.backgroundWorker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorker_ProgressChanged);
             this.backgroundWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker_RunWorkerCompleted);
+            // 
+            // BT_DebugExtract
+            // 
+            this.BT_DebugExtract.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.BT_DebugExtract.Location = new System.Drawing.Point(332, 143);
+            this.BT_DebugExtract.Name = "BT_DebugExtract";
+            this.BT_DebugExtract.Size = new System.Drawing.Size(147, 55);
+            this.BT_DebugExtract.TabIndex = 8;
+            this.BT_DebugExtract.Text = "[DEBUG] Extract Everything";
+            this.BT_DebugExtract.UseVisualStyleBackColor = true;
+            this.BT_DebugExtract.Click += new System.EventHandler(this.BT_DebugExtract_Click);
             // 
             // ExtractorForm
             // 
@@ -577,6 +588,7 @@ namespace ProjectExtractor
         private System.Windows.Forms.TextBox TB_Chapter;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TextBox TB_StopChapter;
+        private System.Windows.Forms.Button BT_DebugExtract;
     }
 }
 

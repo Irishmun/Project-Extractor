@@ -14,10 +14,13 @@ namespace ProjectExtractor
         private IniFile Settings;
         private Extractor extractor;
         private bool StartingUp = false;
-
+        private int ExtractionResult = 0;
         public ExtractorForm()
         {
             StartingUp = true;
+#if !DEBUG
+            BT_DebugExtract.Visible = false;
+#endif
             InitializeComponent();
             Settings = new IniFile();
             extractor = new Extractor();
@@ -126,6 +129,17 @@ namespace ProjectExtractor
             }
         }
 
+        private void BT_DebugExtract_Click(object sender, EventArgs e)
+        {
+#if DEBUG
+            if (!backgroundWorker.IsBusy)
+            {
+                BT_Extract.Enabled = false;
+                backgroundWorker.RunWorkerAsync("DEBUG");
+            }
+#endif
+        }
+
         private void RB_CheckedChanged(object sender, EventArgs e)
         {
             if (!StartingUp)
@@ -178,9 +192,45 @@ namespace ProjectExtractor
                 string fileName = TB_PDFLocation.Text.Substring(TB_PDFLocation.Text.LastIndexOf('\\') + 1);//create filename from original file
 
                 ExportFile = $"{TB_ExtractLocation.Text}Extracted-{Path.GetFileNameWithoutExtension(fileName)}{ GetExportSetting()}";//add path and file extension
-                //TODO: make it possible to extract to the other supported formats
-                extractor.ExtractToTXT(TB_PDFLocation.Text, ExportFile, ConvertKeywordsToArray(), TB_Chapter.Text, TB_StopChapter.Text, sender as System.ComponentModel.BackgroundWorker);
-                UpdateStatus("Extraction completed!");
+                                                                                                                                     //TODO: make it possible to extract to the other supported formats
+#if DEBUG
+                if (!string.IsNullOrEmpty(e.Argument.ToString()) && e.Argument.ToString() == "DEBUG")
+                {
+                    ExtractionResult = extractor.ExtractAllToTXT(TB_PDFLocation.Text, ExportFile, ConvertKeywordsToArray(), TB_Chapter.Text, TB_StopChapter.Text, sender as System.ComponentModel.BackgroundWorker, true);
+                }
+                else
+#endif
+                switch (GetExportSetting())
+                {
+                    case ".txt":
+                        ExtractionResult = extractor.ExtractToTXT(TB_PDFLocation.Text, ExportFile, ConvertKeywordsToArray(), TB_Chapter.Text, TB_StopChapter.Text, sender as System.ComponentModel.BackgroundWorker);
+                        break;
+                    case ".pdf":
+                        ExtractionResult = extractor.ExtractToPDF(TB_PDFLocation.Text, ExportFile, ConvertKeywordsToArray(), TB_Chapter.Text, TB_StopChapter.Text, sender as System.ComponentModel.BackgroundWorker);
+                        break;
+                    case ".xlsx":
+                        ExtractionResult = extractor.ExtractToXLSX(TB_PDFLocation.Text, ExportFile, ConvertKeywordsToArray(), TB_Chapter.Text, TB_StopChapter.Text, sender as System.ComponentModel.BackgroundWorker);
+                        break;
+                    case ".docx":
+                        ExtractionResult = extractor.ExtractToDOCX(TB_PDFLocation.Text, ExportFile, ConvertKeywordsToArray(), TB_Chapter.Text, TB_StopChapter.Text, sender as System.ComponentModel.BackgroundWorker);
+                        break;
+                    case ".rtf":
+                        ExtractionResult = extractor.ExtractToRTF(TB_PDFLocation.Text, ExportFile, ConvertKeywordsToArray(), TB_Chapter.Text, TB_StopChapter.Text, sender as System.ComponentModel.BackgroundWorker);
+                        break;
+                    default:
+                        UpdateStatus("Invalid file extension marked!");
+                        return;
+                }
+                if (ExtractionResult > 0)//something went wrong
+                {
+                    string code = extractor.GetErrorCode(ExtractionResult);
+                    UpdateStatus("ERROR extracting: " + code);
+                    MessageBox.Show("An Error was thrown whilst extracting from the file:\n" + code, "Error extracting", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                else
+                {
+                    UpdateStatus("Extraction completed.");
+                }
             }
             else
             {
@@ -195,13 +245,19 @@ namespace ProjectExtractor
         private void backgroundWorker_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
         {
             //open the created file in its default application
-            Process process = new Process();
-            process.StartInfo = new ProcessStartInfo()
+            if (ExtractionResult == 0)
             {
-                UseShellExecute = true,
-                FileName = ExportFile
-            };
-            process.Start();
+                if (File.Exists(ExportFile))
+                {
+                    Process process = new Process();
+                    process.StartInfo = new ProcessStartInfo()
+                    {
+                        UseShellExecute = true,
+                        FileName = ExportFile
+                    };
+                    process.Start();
+                }
+            }
             BT_Extract.Enabled = true;
         }
         #endregion
@@ -332,7 +388,6 @@ namespace ProjectExtractor
 
             UpdateSettings();
         }
-
         /// <summary>
         /// Update the settings ini file with the new values
         /// </summary>
