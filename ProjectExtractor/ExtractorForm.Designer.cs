@@ -39,6 +39,7 @@ namespace ProjectExtractor
             this.TSSL_ExtractionProgress = new System.Windows.Forms.ToolStripStatusLabel();
             this.TC_MainView = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.BT_DebugExtract = new System.Windows.Forms.Button();
             this.BT_Extract = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.RTB_SearchWords = new System.Windows.Forms.RichTextBox();
@@ -69,7 +70,7 @@ namespace ProjectExtractor
             this.BT_KeywordsDelete = new System.Windows.Forms.Button();
             this.BT_KeywordsNew = new System.Windows.Forms.Button();
             this.backgroundWorker = new System.ComponentModel.BackgroundWorker();
-            this.BT_DebugExtract = new System.Windows.Forms.Button();
+            this.CB_WriteKeywordsToFile = new System.Windows.Forms.CheckBox();
             this.statusStrip1.SuspendLayout();
             this.TC_MainView.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -153,6 +154,17 @@ namespace ProjectExtractor
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Extractor";
             this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // BT_DebugExtract
+            // 
+            this.BT_DebugExtract.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.BT_DebugExtract.Location = new System.Drawing.Point(332, 143);
+            this.BT_DebugExtract.Name = "BT_DebugExtract";
+            this.BT_DebugExtract.Size = new System.Drawing.Size(147, 55);
+            this.BT_DebugExtract.TabIndex = 8;
+            this.BT_DebugExtract.Text = "[DEBUG] Extract Everything";
+            this.BT_DebugExtract.UseVisualStyleBackColor = true;
+            this.BT_DebugExtract.Click += new System.EventHandler(this.BT_DebugExtract_Click);
             // 
             // BT_Extract
             // 
@@ -434,6 +446,7 @@ namespace ProjectExtractor
             this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox2.Controls.Add(this.CB_WriteKeywordsToFile);
             this.groupBox2.Controls.Add(this.BT_KeywordsEdit);
             this.groupBox2.Controls.Add(this.LV_Keywords);
             this.groupBox2.Controls.Add(this.BT_KeywordsDelete);
@@ -509,16 +522,18 @@ namespace ProjectExtractor
             this.backgroundWorker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorker_ProgressChanged);
             this.backgroundWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker_RunWorkerCompleted);
             // 
-            // BT_DebugExtract
+            // CB_WriteKeywordsToFile
             // 
-            this.BT_DebugExtract.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.BT_DebugExtract.Location = new System.Drawing.Point(332, 143);
-            this.BT_DebugExtract.Name = "BT_DebugExtract";
-            this.BT_DebugExtract.Size = new System.Drawing.Size(147, 55);
-            this.BT_DebugExtract.TabIndex = 8;
-            this.BT_DebugExtract.Text = "[DEBUG] Extract Everything";
-            this.BT_DebugExtract.UseVisualStyleBackColor = true;
-            this.BT_DebugExtract.Click += new System.EventHandler(this.BT_DebugExtract_Click);
+            this.CB_WriteKeywordsToFile.AutoSize = true;
+            this.CB_WriteKeywordsToFile.Checked = true;
+            this.CB_WriteKeywordsToFile.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.CB_WriteKeywordsToFile.Location = new System.Drawing.Point(133, 157);
+            this.CB_WriteKeywordsToFile.Name = "CB_WriteKeywordsToFile";
+            this.CB_WriteKeywordsToFile.Size = new System.Drawing.Size(108, 19);
+            this.CB_WriteKeywordsToFile.TabIndex = 5;
+            this.CB_WriteKeywordsToFile.Text = "Write Keywords";
+            this.CB_WriteKeywordsToFile.UseVisualStyleBackColor = true;
+            this.CB_WriteKeywordsToFile.CheckedChanged += new System.EventHandler(this.CB_WriteKeywordsToFile_CheckedChanged);
             // 
             // ExtractorForm
             // 
@@ -545,6 +560,7 @@ namespace ProjectExtractor
             this.GB_ExportSettings.ResumeLayout(false);
             this.GB_ExportSettings.PerformLayout();
             this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -589,6 +605,7 @@ namespace ProjectExtractor
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TextBox TB_StopChapter;
         private System.Windows.Forms.Button BT_DebugExtract;
+        private System.Windows.Forms.CheckBox CB_WriteKeywordsToFile;
     }
 }
 

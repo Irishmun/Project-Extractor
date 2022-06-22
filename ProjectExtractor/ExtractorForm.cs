@@ -18,10 +18,10 @@ namespace ProjectExtractor
         public ExtractorForm()
         {
             StartingUp = true;
+            InitializeComponent();
 #if !DEBUG
             BT_DebugExtract.Visible = false;
 #endif
-            InitializeComponent();
             Settings = new IniFile();
             extractor = new Extractor();
             InitSettings();
@@ -59,7 +59,6 @@ namespace ProjectExtractor
             }
 
         }
-
         private void BT_BrowseExtract_Click(object sender, EventArgs e)
         {
             string res = string.Empty;
@@ -89,37 +88,31 @@ namespace ProjectExtractor
                 UpdateSettings();
             }
         }
-
         private void TC_MainView_SelectedIndexChanged(object sender, EventArgs e)
         {
             //update the keywords display if the tab has been swapped back to the main tab
             if (TC_MainView.SelectedIndex == 0) UpdateExtractorKeywords();
         }
-
         private void LV_Keywords_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
         {
             bool selected = LV_Keywords.SelectedItems.Count > 0;
             BT_KeywordsEdit.Enabled = selected;
             BT_KeywordsDelete.Enabled = selected;
         }
-
         private void BT_KeywordsNew_Click(object sender, EventArgs e)
         {
             ListViewItem newItem = LV_Keywords.Items.Add(new ListViewItem());
             newItem.BeginEdit();
         }
-
         private void BT_KeywordsEdit_Click(object sender, EventArgs e)
         {
             LV_Keywords.SelectedItems[0].BeginEdit();
         }
-
         private void BT_KeywordsDelete_Click(object sender, EventArgs e)
         {
             LV_Keywords.Items.RemoveAt(LV_Keywords.SelectedIndices[0]);
             UpdateSettings();
         }
-
         private void BT_Extract_Click(object sender, EventArgs e)
         {
             if (!backgroundWorker.IsBusy)
@@ -128,7 +121,6 @@ namespace ProjectExtractor
                 backgroundWorker.RunWorkerAsync();
             }
         }
-
         private void BT_DebugExtract_Click(object sender, EventArgs e)
         {
 #if DEBUG
@@ -139,50 +131,33 @@ namespace ProjectExtractor
             }
 #endif
         }
-
         private void RB_CheckedChanged(object sender, EventArgs e)
         {
-            if (!StartingUp)
-            {
-                UpdateSettings();
-            }
+            UpdateSettingsIfNotStarting();
         }
-
         private void LV_Keywords_AfterLabelEdit(object sender, LabelEditEventArgs e)
         {
             UpdateSettings();
         }
-
         private void CB_SavePDFPath_CheckedChanged(object sender, EventArgs e)
         {
-            if (!StartingUp)
-            {
-                UpdateSettings();
-            }
+            UpdateSettingsIfNotStarting();
         }
-
         private void CB_SaveExtractionPath_CheckedChanged(object sender, EventArgs e)
         {
-            if (!StartingUp)
-            {
-                UpdateSettings();
-            }
+            UpdateSettingsIfNotStarting();
         }
-
+        private void CB_WriteKeywordsToFile_CheckedChanged(object sender, EventArgs e)
+        {
+            UpdateSettingsIfNotStarting();
+        }
         private void TB_Chapter_TextChanged(object sender, EventArgs e)
         {
-            if (!StartingUp)
-            {
-                UpdateSettings();
-            }
+            UpdateSettingsIfNotStarting();
         }
-
         private void TB_StopChapter_TextChanged(object sender, EventArgs e)
         {
-            if (!StartingUp)
-            {
-                UpdateSettings();
-            }
+            UpdateSettingsIfNotStarting();
         }
 
         private void backgroundWorker_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
@@ -194,33 +169,36 @@ namespace ProjectExtractor
                 ExportFile = $"{TB_ExtractLocation.Text}Extracted-{Path.GetFileNameWithoutExtension(fileName)}{ GetExportSetting()}";//add path and file extension
                                                                                                                                      //TODO: make it possible to extract to the other supported formats
 #if DEBUG
-                if (!string.IsNullOrEmpty(e.Argument.ToString()) && e.Argument.ToString() == "DEBUG")
+                if (e.Argument != null)
                 {
-                    ExtractionResult = extractor.ExtractAllToTXT(TB_PDFLocation.Text, ExportFile, ConvertKeywordsToArray(), TB_Chapter.Text, TB_StopChapter.Text, sender as System.ComponentModel.BackgroundWorker, true);
+                    if (!string.IsNullOrEmpty(e.Argument.ToString()) && e.Argument.ToString() == "DEBUG")
+                    {
+                        ExtractionResult = extractor.ExtractAllToTXT(TB_PDFLocation.Text, ExportFile, ConvertKeywordsToArray(), TB_Chapter.Text, TB_StopChapter.Text, sender as System.ComponentModel.BackgroundWorker, true);
+                    }
                 }
                 else
 #endif
-                switch (GetExportSetting())
-                {
-                    case ".txt":
-                        ExtractionResult = extractor.ExtractToTXT(TB_PDFLocation.Text, ExportFile, ConvertKeywordsToArray(), TB_Chapter.Text, TB_StopChapter.Text, sender as System.ComponentModel.BackgroundWorker);
-                        break;
-                    case ".pdf":
-                        ExtractionResult = extractor.ExtractToPDF(TB_PDFLocation.Text, ExportFile, ConvertKeywordsToArray(), TB_Chapter.Text, TB_StopChapter.Text, sender as System.ComponentModel.BackgroundWorker);
-                        break;
-                    case ".xlsx":
-                        ExtractionResult = extractor.ExtractToXLSX(TB_PDFLocation.Text, ExportFile, ConvertKeywordsToArray(), TB_Chapter.Text, TB_StopChapter.Text, sender as System.ComponentModel.BackgroundWorker);
-                        break;
-                    case ".docx":
-                        ExtractionResult = extractor.ExtractToDOCX(TB_PDFLocation.Text, ExportFile, ConvertKeywordsToArray(), TB_Chapter.Text, TB_StopChapter.Text, sender as System.ComponentModel.BackgroundWorker);
-                        break;
-                    case ".rtf":
-                        ExtractionResult = extractor.ExtractToRTF(TB_PDFLocation.Text, ExportFile, ConvertKeywordsToArray(), TB_Chapter.Text, TB_StopChapter.Text, sender as System.ComponentModel.BackgroundWorker);
-                        break;
-                    default:
-                        UpdateStatus("Invalid file extension marked!");
-                        return;
-                }
+                    switch (GetExportSetting())
+                    {
+                        case ".txt":
+                            ExtractionResult = extractor.ExtractToTXT(TB_PDFLocation.Text, ExportFile, ConvertKeywordsToArray(), TB_Chapter.Text, TB_StopChapter.Text, CB_WriteKeywordsToFile.Checked, sender as System.ComponentModel.BackgroundWorker);
+                            break;
+                        case ".pdf":
+                            ExtractionResult = extractor.ExtractToPDF(TB_PDFLocation.Text, ExportFile, ConvertKeywordsToArray(), TB_Chapter.Text, TB_StopChapter.Text, CB_WriteKeywordsToFile.Checked, sender as System.ComponentModel.BackgroundWorker);
+                            break;
+                        case ".xlsx":
+                            ExtractionResult = extractor.ExtractToXLSX(TB_PDFLocation.Text, ExportFile, ConvertKeywordsToArray(), TB_Chapter.Text, TB_StopChapter.Text, CB_WriteKeywordsToFile.Checked, sender as System.ComponentModel.BackgroundWorker);
+                            break;
+                        case ".docx":
+                            ExtractionResult = extractor.ExtractToDOCX(TB_PDFLocation.Text, ExportFile, ConvertKeywordsToArray(), TB_Chapter.Text, TB_StopChapter.Text, CB_WriteKeywordsToFile.Checked, sender as System.ComponentModel.BackgroundWorker);
+                            break;
+                        case ".rtf":
+                            ExtractionResult = extractor.ExtractToRTF(TB_PDFLocation.Text, ExportFile, ConvertKeywordsToArray(), TB_Chapter.Text, TB_StopChapter.Text, CB_WriteKeywordsToFile.Checked, sender as System.ComponentModel.BackgroundWorker);
+                            break;
+                        default:
+                            UpdateStatus("Invalid file extension marked!");
+                            return;
+                    }
                 if (ExtractionResult > 0)//something went wrong
                 {
                     string code = extractor.GetErrorCode(ExtractionResult);
@@ -318,6 +296,35 @@ namespace ProjectExtractor
             }
         }
         /// <summary>
+        /// Converts the keywords from the list view to a comma seperated string
+        /// </summary>
+        /// <returns></returns>
+        private string ConvertKeywordsToString()
+        {
+            StringBuilder builder = new StringBuilder();
+            //add all list items to the display rich text box
+            for (int i = 0; i < LV_Keywords.Items.Count; i++)
+            {
+                builder.Append(LV_Keywords.Items[i].Text);
+                if (i < LV_Keywords.Items.Count - 1)
+                {
+                    builder.Append(", ");
+                }
+            }
+            return builder.ToString();
+        }
+        private string[] ConvertKeywordsToArray()
+        {
+            string[] res = new string[LV_Keywords.Items.Count];
+            for (int i = 0; i < LV_Keywords.Items.Count; i++)
+            {
+                res[i] = LV_Keywords.Items[i].Text;
+            }
+            return res;
+        }
+
+        //Settings file alterations
+        /// <summary>
         /// Initialize the settings and update the correct fields
         /// </summary>
         private void InitSettings()
@@ -386,6 +393,11 @@ namespace ProjectExtractor
                 TB_StopChapter.Text = Settings.Read("ChapterEnd", "Chapters");
             }
 
+            if (Settings.KeyExists("Write_Keywords_To_File", "Export"))
+            {
+                CB_WriteKeywordsToFile.Checked = Settings.ReadBool("Write_Keywords_To_File", "Export");
+            }
+
             UpdateSettings();
         }
         /// <summary>
@@ -396,6 +408,7 @@ namespace ProjectExtractor
             string exportVal = GetExportSetting().Trim('.');
             Settings.Write("ExportExtension", exportVal, "Export");
             Settings.Write("Keywords", ConvertKeywordsToString(), "Export");
+            Settings.WriteBool("Write_Keywords_To_File", CB_WriteKeywordsToFile.Checked, "Export");
             Settings.WriteBool("Save_PDF_Path", CB_SavePDFPath.Checked, "Paths");
             if (CB_SavePDFPath.Checked)
             {
@@ -417,35 +430,13 @@ namespace ProjectExtractor
             Settings.Write("ChapterStart", TB_Chapter.Text, "Chapters");
             Settings.Write("ChapterEnd", TB_StopChapter.Text, "Chapters");
         }
-        /// <summary>
-        /// Converts the keywords from the list view to a comma seperated string
-        /// </summary>
-        /// <returns></returns>
-        private string ConvertKeywordsToString()
+        private void UpdateSettingsIfNotStarting()
         {
-            StringBuilder builder = new StringBuilder();
-            //add all list items to the display rich text box
-            for (int i = 0; i < LV_Keywords.Items.Count; i++)
+            if (!StartingUp)
             {
-                builder.Append(LV_Keywords.Items[i].Text);
-                if (i < LV_Keywords.Items.Count - 1)
-                {
-                    builder.Append(", ");
-                }
+                UpdateSettings();
             }
-            return builder.ToString();
         }
-
-        private string[] ConvertKeywordsToArray()
-        {
-            string[] res = new string[LV_Keywords.Items.Count];
-            for (int i = 0; i < LV_Keywords.Items.Count; i++)
-            {
-                res[i] = LV_Keywords.Items[i].Text;
-            }
-            return res;
-        }
-
         #endregion
 
 

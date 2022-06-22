@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
-using Microsoft.Office.Interop.Excel;
+//using Microsoft.Office.Interop.Excel;
 
 namespace ProjectExtractor
 {
@@ -13,11 +13,11 @@ namespace ProjectExtractor
     {
         /*
          *NOTES ON DOCUMENT VARIATIONS:
-         *2016 & 2017 are written with spaces as as spacing values, (remove those)
+         *2016 & 2017 are written with spaces as spacing values, (remove those)
          *2018 is written with key and value on seperate lines (use value of next array entry)
          *2022 is written as regular document, with tabs/whitespace for spacing of values (automatically removed)
          */
-        internal int ExtractToTXT(string file, string extractPath, string[] Keywords, string chapters, string stopChapters, System.ComponentModel.BackgroundWorker Worker)
+        internal int ExtractToTXT(string file, string extractPath, string[] Keywords, string chapters, string stopChapters, bool WriteKeywordsToFile, System.ComponentModel.BackgroundWorker Worker)
         {
             //TODO: figure out way to handle different file structure versions
             //open pdf file for reading
@@ -38,16 +38,23 @@ namespace ProjectExtractor
             for (int lineIndex = 0; lineIndex < lines.Length; lineIndex++)
             {
                 //start searching for the keywords and their corresponding values
-                if (lines[lineIndex].StartsWith(Keywords[0]))
+                if (lines[lineIndex].Contains(Keywords[0]))
                 {//get first keyword and apply two newlines, this give a better division between each project
                     str.Append(Environment.NewLine + Environment.NewLine);
                 }
                 for (int keyIndex = 0; keyIndex < Keywords.Length; keyIndex++)
                 {
-                    //append every other keyword that can be found and sho its value
-                    if (lines[lineIndex].StartsWith(Keywords[keyIndex]))
+                    //append every other keyword that can be found and show its value
+                    if (lines[lineIndex].Contains(Keywords[keyIndex]))
                     {
-                        str.Append(lines[lineIndex].Replace(Keywords[keyIndex], Keywords[keyIndex] + ": ") + " | ");
+                        if (WriteKeywordsToFile)
+                        {
+                            str.Append(lines[lineIndex].Replace(Keywords[keyIndex], Keywords[keyIndex] + ": ") + " | ");
+                        }
+                        else
+                        {
+                            str.Append(lines[lineIndex].Substring(lines[lineIndex].IndexOf(Keywords[keyIndex]) + Keywords[keyIndex].Length) +" | ");//
+                        }
                     }
                 }
                 if (lines[lineIndex].Contains(chapters))
@@ -69,52 +76,19 @@ namespace ProjectExtractor
             }
             return (int)returnCode;
         }
-
-        private int GetLatestDate(string[] lines, int startIndex, string stopLine)
-        {
-            DateTime latestDate = new DateTime(0);
-            int index = startIndex;
-            for (int i = startIndex; i < lines.Length; i++)
-            {
-                if (lines[i].StartsWith(stopLine))
-                {
-                    return index;
-                }
-                try
-                {
-                    //try and find a datetime text matching the smallest to the largest structure
-                    Match match = Regex.Match(lines[i], @"\d{2}(?:\/|-|)(?:\d{2}|[a-z]{0,10})(?:\/|-|)\d{1,4}");
-                    if (!string.IsNullOrEmpty(match.Value))
-                    {
-                        DateTime current = DateTime.Parse(match.Value);//, new System.Globalization.CultureInfo("nl", false));
-                        if (current > latestDate)
-                        {
-                            latestDate = current;
-                            index = i;
-                        }
-                    }
-                }
-                catch (Exception)
-                {
-                }
-            }
-            return index;
-        }
-
-        internal int ExtractToXLSX(string file, string extractPath, string[] Keywords, string chapters, string stopChapters, System.ComponentModel.BackgroundWorker Worker)
+        internal int ExtractToXLSX(string file, string extractPath, string[] Keywords, string chapters, string stopChapters, bool WriteKeywordsToFile, System.ComponentModel.BackgroundWorker Worker)
         {
             ErrorCodes ReturnCode = 0;
-            Application xlApp = new Application();
-            if (xlApp == null)
-            {
-                //Excel is not installed, therefore it will not work
-                ReturnCode = ErrorCodes.NotInstalled; //Not Installed (n = 15, i= 9)
-                return (int)ReturnCode;
-            }
+            //Application xlApp = new Application();
+            //if (xlApp == null)
+            //{
+            //    //Excel is not installed, therefore it will not work
+            //    ReturnCode = ErrorCodes.NotInstalled; //Not Installed (n = 15, i= 9)
+            //    return (int)ReturnCode;
+            //}
             return (int)ReturnCode;
         }
-
-        internal int ExtractToPDF(string file, string extractPath, string[] Keywords, string chapters, string stopChapters, System.ComponentModel.BackgroundWorker Worker)
+        internal int ExtractToPDF(string file, string extractPath, string[] Keywords, string chapters, string stopChapters, bool WriteKeywordsToFile, System.ComponentModel.BackgroundWorker Worker)
         {
             ErrorCodes ReturnCode = 0;
 
@@ -123,7 +97,7 @@ namespace ProjectExtractor
 
             return (int)ReturnCode;
         }
-        internal int ExtractToDOCX(string file, string extractPath, string[] Keywords, string chapters, string stopChapters, System.ComponentModel.BackgroundWorker Worker)
+        internal int ExtractToDOCX(string file, string extractPath, string[] Keywords, string chapters, string stopChapters, bool WriteKeywordsToFile, System.ComponentModel.BackgroundWorker Worker)
         {
             ErrorCodes ReturnCode = 0;
 
@@ -132,7 +106,7 @@ namespace ProjectExtractor
 
             return (int)ReturnCode;
         }
-        internal int ExtractToRTF(string file, string extractPath, string[] Keywords, string chapters, string stopChapters, System.ComponentModel.BackgroundWorker Worker)
+        internal int ExtractToRTF(string file, string extractPath, string[] Keywords, string chapters, string stopChapters, bool WriteKeywordsToFile, System.ComponentModel.BackgroundWorker Worker)
         {
             ErrorCodes ReturnCode = 0;
 
@@ -141,7 +115,6 @@ namespace ProjectExtractor
 
             return (int)ReturnCode;
         }
-
         internal int ExtractAllToTXT(string file, string extractPath, string[] Keywords, string chapters, string stopChapters, System.ComponentModel.BackgroundWorker Worker, bool keepEmpties = false)
         {
             ErrorCodes returnCode = ErrorCodes.none;
@@ -178,6 +151,38 @@ namespace ProjectExtractor
             //}
             return (int)returnCode;
         }
+
+        private int GetLatestDate(string[] lines, int startIndex, string stopLine)
+        {
+            DateTime latestDate = new DateTime(0);
+            int index = startIndex;
+            for (int i = startIndex; i < lines.Length; i++)
+            {
+                if (lines[i].StartsWith(stopLine))
+                {
+                    return index;
+                }
+                try
+                {
+                    //try and find a datetime text matching the smallest to the largest structure
+                    Match match = Regex.Match(lines[i], @"\d{2}(?:\/|-|)(?:\d{2}|[a-z]{0,10})(?:\/|-|)\d{1,4}");
+                    if (!string.IsNullOrEmpty(match.Value))
+                    {
+                        DateTime current = DateTime.Parse(match.Value);//, new System.Globalization.CultureInfo("nl", false));
+                        if (current > latestDate)
+                        {
+                            latestDate = current;
+                            index = i;
+                        }
+                    }
+                }
+                catch (Exception)
+                {
+                }
+            }
+            return index;
+        }
+
 
         internal string GetErrorCode(int code)
         {
