@@ -39,8 +39,8 @@ namespace ProjectExtractor
             {
                 //start searching for the keywords and their corresponding values
                 if (lines[lineIndex].Contains(Keywords[0]))
-                {//get first keyword and apply two newlines, this give a better division between each project
-                    str.Append(Environment.NewLine + Environment.NewLine);
+                {//get first keyword and apply one newline, this give a better division between each project
+                    str.Append(Environment.NewLine);
                 }
                 for (int keyIndex = 0; keyIndex < Keywords.Length; keyIndex++)
                 {
@@ -49,11 +49,12 @@ namespace ProjectExtractor
                     {
                         if (WriteKeywordsToFile)
                         {
-                            str.Append(lines[lineIndex].Replace(Keywords[keyIndex], Keywords[keyIndex] + ": ") + " | ");
+                            //str.Append(lines[lineIndex].Replace(Keywords[keyIndex], Keywords[keyIndex] + ": ") + " | ");
+                            str.Append(Keywords[keyIndex] + ":" + lines[lineIndex].Substring(lines[lineIndex].IndexOf(Keywords[keyIndex]) + Keywords[keyIndex].Length) + " | ");//
                         }
                         else
                         {
-                            str.Append(lines[lineIndex].Substring(lines[lineIndex].IndexOf(Keywords[keyIndex]) + Keywords[keyIndex].Length) +" | ");//
+                            str.Append(lines[lineIndex].Substring(lines[lineIndex].IndexOf(Keywords[keyIndex]) + Keywords[keyIndex].Length) + " | ");//
                         }
                     }
                 }

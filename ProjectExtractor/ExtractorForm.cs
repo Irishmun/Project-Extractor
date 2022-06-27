@@ -15,6 +15,7 @@ namespace ProjectExtractor
         private Extractor extractor;
         private bool StartingUp = false;
         private int ExtractionResult = 0;
+        private string[] Keywords;
         public ExtractorForm()
         {
             StartingUp = true;
@@ -118,6 +119,7 @@ namespace ProjectExtractor
             if (!backgroundWorker.IsBusy)
             {
                 BT_Extract.Enabled = false;
+                Keywords = ConvertKeywordsToArray();
                 backgroundWorker.RunWorkerAsync();
             }
         }
@@ -168,37 +170,39 @@ namespace ProjectExtractor
 
                 ExportFile = $"{TB_ExtractLocation.Text}Extracted-{Path.GetFileNameWithoutExtension(fileName)}{ GetExportSetting()}";//add path and file extension
                                                                                                                                      //TODO: make it possible to extract to the other supported formats
-#if DEBUG
                 if (e.Argument != null)
                 {
+#if DEBUG
                     if (!string.IsNullOrEmpty(e.Argument.ToString()) && e.Argument.ToString() == "DEBUG")
                     {
-                        ExtractionResult = extractor.ExtractAllToTXT(TB_PDFLocation.Text, ExportFile, ConvertKeywordsToArray(), TB_Chapter.Text, TB_StopChapter.Text, sender as System.ComponentModel.BackgroundWorker, true);
+                        ExtractionResult = extractor.ExtractAllToTXT(TB_PDFLocation.Text, ExportFile, Keywords, TB_Chapter.Text, TB_StopChapter.Text, sender as System.ComponentModel.BackgroundWorker, true);
                     }
+#endif
                 }
                 else
-#endif
+                {
                     switch (GetExportSetting())
                     {
                         case ".txt":
-                            ExtractionResult = extractor.ExtractToTXT(TB_PDFLocation.Text, ExportFile, ConvertKeywordsToArray(), TB_Chapter.Text, TB_StopChapter.Text, CB_WriteKeywordsToFile.Checked, sender as System.ComponentModel.BackgroundWorker);
+                            ExtractionResult = extractor.ExtractToTXT(TB_PDFLocation.Text, ExportFile, Keywords, TB_Chapter.Text, TB_StopChapter.Text, CB_WriteKeywordsToFile.Checked, sender as System.ComponentModel.BackgroundWorker);
                             break;
                         case ".pdf":
-                            ExtractionResult = extractor.ExtractToPDF(TB_PDFLocation.Text, ExportFile, ConvertKeywordsToArray(), TB_Chapter.Text, TB_StopChapter.Text, CB_WriteKeywordsToFile.Checked, sender as System.ComponentModel.BackgroundWorker);
+                            ExtractionResult = extractor.ExtractToPDF(TB_PDFLocation.Text, ExportFile, Keywords, TB_Chapter.Text, TB_StopChapter.Text, CB_WriteKeywordsToFile.Checked, sender as System.ComponentModel.BackgroundWorker);
                             break;
                         case ".xlsx":
-                            ExtractionResult = extractor.ExtractToXLSX(TB_PDFLocation.Text, ExportFile, ConvertKeywordsToArray(), TB_Chapter.Text, TB_StopChapter.Text, CB_WriteKeywordsToFile.Checked, sender as System.ComponentModel.BackgroundWorker);
+                            ExtractionResult = extractor.ExtractToXLSX(TB_PDFLocation.Text, ExportFile, Keywords, TB_Chapter.Text, TB_StopChapter.Text, CB_WriteKeywordsToFile.Checked, sender as System.ComponentModel.BackgroundWorker);
                             break;
                         case ".docx":
-                            ExtractionResult = extractor.ExtractToDOCX(TB_PDFLocation.Text, ExportFile, ConvertKeywordsToArray(), TB_Chapter.Text, TB_StopChapter.Text, CB_WriteKeywordsToFile.Checked, sender as System.ComponentModel.BackgroundWorker);
+                            ExtractionResult = extractor.ExtractToDOCX(TB_PDFLocation.Text, ExportFile, Keywords, TB_Chapter.Text, TB_StopChapter.Text, CB_WriteKeywordsToFile.Checked, sender as System.ComponentModel.BackgroundWorker);
                             break;
                         case ".rtf":
-                            ExtractionResult = extractor.ExtractToRTF(TB_PDFLocation.Text, ExportFile, ConvertKeywordsToArray(), TB_Chapter.Text, TB_StopChapter.Text, CB_WriteKeywordsToFile.Checked, sender as System.ComponentModel.BackgroundWorker);
+                            ExtractionResult = extractor.ExtractToRTF(TB_PDFLocation.Text, ExportFile, Keywords, TB_Chapter.Text, TB_StopChapter.Text, CB_WriteKeywordsToFile.Checked, sender as System.ComponentModel.BackgroundWorker);
                             break;
                         default:
                             UpdateStatus("Invalid file extension marked!");
                             return;
                     }
+                }
                 if (ExtractionResult > 0)//something went wrong
                 {
                     string code = extractor.GetErrorCode(ExtractionResult);
@@ -315,10 +319,20 @@ namespace ProjectExtractor
         }
         private string[] ConvertKeywordsToArray()
         {
+
             string[] res = new string[LV_Keywords.Items.Count];
             for (int i = 0; i < LV_Keywords.Items.Count; i++)
             {
-                res[i] = LV_Keywords.Items[i].Text;
+                try
+                {
+                    ListViewItem item = LV_Keywords.Items[i];
+                    res[i] = item.Text;
+                }
+                catch (Exception e)
+                {
+
+                    throw;
+                }
             }
             return res;
         }
