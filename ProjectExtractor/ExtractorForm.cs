@@ -1,5 +1,6 @@
 ﻿using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -99,6 +100,30 @@ namespace ProjectExtractor
             bool selected = LV_Keywords.SelectedItems.Count > 0;
             BT_KeywordsEdit.Enabled = selected;
             BT_KeywordsDelete.Enabled = selected;
+            if (selected && LV_Keywords.SelectedIndices[0] < LV_Keywords.Items.Count - 1)
+            {
+                BT_KeywordsDown.Enabled = selected;
+            }
+            else
+            {
+                BT_KeywordsDown.Enabled = false;
+            }
+            if (selected && LV_Keywords.SelectedIndices[0] > 0)
+            {
+                BT_KeywordsUp.Enabled = selected;
+            }
+            else
+            {
+                BT_KeywordsUp.Enabled = false;
+            }
+        }
+        private void LV_Keywords_ItemActivate(object sender, EventArgs e)
+        {
+            bool selected = LV_Keywords.SelectedItems.Count > 0;
+            if (selected)
+            {
+                LV_Keywords.SelectedItems[0].BeginEdit();
+            }
         }
         private void BT_KeywordsNew_Click(object sender, EventArgs e)
         {
@@ -113,6 +138,26 @@ namespace ProjectExtractor
         {
             LV_Keywords.Items.RemoveAt(LV_Keywords.SelectedIndices[0]);
             UpdateSettings();
+        }
+        private void BT_KeywordsUp_Click(object sender, EventArgs e)
+        {
+            ListViewItem selected = LV_Keywords.SelectedItems[0];
+            int index = LV_Keywords.SelectedIndices[0];
+            if (index > 0)
+            {
+                LV_Keywords.Items.RemoveAt(LV_Keywords.SelectedIndices[0]);
+                LV_Keywords.Items.Insert(index - 1, selected);
+            }
+        }
+        private void BT_KeywordsDown_Click(object sender, EventArgs e)
+        {
+            ListViewItem selected = LV_Keywords.SelectedItems[0];
+            int index = LV_Keywords.SelectedIndices[0];
+            if (index < LV_Keywords.Items.Count - 1)
+            {
+                LV_Keywords.Items.RemoveAt(LV_Keywords.SelectedIndices[0]);
+                LV_Keywords.Items.Insert(index + 1, selected);
+            }
         }
         private void BT_Extract_Click(object sender, EventArgs e)
         {
