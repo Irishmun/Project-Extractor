@@ -29,16 +29,18 @@ namespace ProjectExtractor
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.ListViewItem listViewItem5 = new System.Windows.Forms.ListViewItem("Projectnummer");
-            System.Windows.Forms.ListViewItem listViewItem6 = new System.Windows.Forms.ListViewItem("Projecttitel");
-            System.Windows.Forms.ListViewItem listViewItem7 = new System.Windows.Forms.ListViewItem("Aantal uren werknemers");
-            System.Windows.Forms.ListViewItem listViewItem8 = new System.Windows.Forms.ListViewItem("Het project wordt/is gestart op");
+            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("Projectnummer");
+            System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("Projecttitel");
+            System.Windows.Forms.ListViewItem listViewItem3 = new System.Windows.Forms.ListViewItem("Aantal uren werknemers");
+            System.Windows.Forms.ListViewItem listViewItem4 = new System.Windows.Forms.ListViewItem("Het project wordt/is gestart op");
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.TSPB_Extraction = new System.Windows.Forms.ToolStripProgressBar();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.TSSL_ExtractionProgress = new System.Windows.Forms.ToolStripStatusLabel();
             this.TC_MainView = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.label5 = new System.Windows.Forms.Label();
+            this.TB_FullPath = new System.Windows.Forms.TextBox();
             this.BT_DebugExtract = new System.Windows.Forms.Button();
             this.BT_Extract = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
@@ -65,12 +67,12 @@ namespace ProjectExtractor
             this.RB_ExportTXT = new System.Windows.Forms.RadioButton();
             this.RB_ExportPDF = new System.Windows.Forms.RadioButton();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.CB_WriteKeywordsToFile = new System.Windows.Forms.CheckBox();
             this.BT_KeywordsEdit = new System.Windows.Forms.Button();
             this.LV_Keywords = new System.Windows.Forms.ListView();
             this.BT_KeywordsDelete = new System.Windows.Forms.Button();
             this.BT_KeywordsNew = new System.Windows.Forms.Button();
             this.backgroundWorker = new System.ComponentModel.BackgroundWorker();
-            this.CB_WriteKeywordsToFile = new System.Windows.Forms.CheckBox();
             this.statusStrip1.SuspendLayout();
             this.TC_MainView.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -138,6 +140,8 @@ namespace ProjectExtractor
             // tabPage1
             // 
             this.tabPage1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.tabPage1.Controls.Add(this.label5);
+            this.tabPage1.Controls.Add(this.TB_FullPath);
             this.tabPage1.Controls.Add(this.BT_DebugExtract);
             this.tabPage1.Controls.Add(this.BT_Extract);
             this.tabPage1.Controls.Add(this.groupBox1);
@@ -154,6 +158,28 @@ namespace ProjectExtractor
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Extractor";
             this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(8, 104);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(56, 15);
+            this.label5.TabIndex = 11;
+            this.label5.Text = "Full Path:";
+            // 
+            // TB_FullPath
+            // 
+            this.TB_FullPath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.TB_FullPath.Location = new System.Drawing.Point(73, 101);
+            this.TB_FullPath.Multiline = true;
+            this.TB_FullPath.Name = "TB_FullPath";
+            this.TB_FullPath.ReadOnly = true;
+            this.TB_FullPath.ScrollBars = System.Windows.Forms.ScrollBars.Horizontal;
+            this.TB_FullPath.Size = new System.Drawing.Size(406, 36);
+            this.TB_FullPath.TabIndex = 10;
+            this.TB_FullPath.WordWrap = false;
             // 
             // BT_DebugExtract
             // 
@@ -181,9 +207,9 @@ namespace ProjectExtractor
             // 
             this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.groupBox1.Controls.Add(this.RTB_SearchWords);
-            this.groupBox1.Location = new System.Drawing.Point(8, 130);
+            this.groupBox1.Location = new System.Drawing.Point(8, 143);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(200, 129);
+            this.groupBox1.Size = new System.Drawing.Size(200, 116);
             this.groupBox1.TabIndex = 6;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Keywords";
@@ -215,6 +241,7 @@ namespace ProjectExtractor
             this.TB_ExtractLocation.Name = "TB_ExtractLocation";
             this.TB_ExtractLocation.Size = new System.Drawing.Size(383, 23);
             this.TB_ExtractLocation.TabIndex = 4;
+            this.TB_ExtractLocation.TextChanged += new System.EventHandler(this.TB_ExtractLocation_TextChanged);
             // 
             // BT_BrowseExtract
             // 
@@ -244,6 +271,7 @@ namespace ProjectExtractor
             this.TB_PDFLocation.Name = "TB_PDFLocation";
             this.TB_PDFLocation.Size = new System.Drawing.Size(383, 23);
             this.TB_PDFLocation.TabIndex = 1;
+            this.TB_PDFLocation.TextChanged += new System.EventHandler(this.TB_PDFLocation_TextChanged);
             // 
             // BT_BrowsePDF
             // 
@@ -458,6 +486,19 @@ namespace ProjectExtractor
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Keywords";
             // 
+            // CB_WriteKeywordsToFile
+            // 
+            this.CB_WriteKeywordsToFile.AutoSize = true;
+            this.CB_WriteKeywordsToFile.Checked = true;
+            this.CB_WriteKeywordsToFile.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.CB_WriteKeywordsToFile.Location = new System.Drawing.Point(133, 157);
+            this.CB_WriteKeywordsToFile.Name = "CB_WriteKeywordsToFile";
+            this.CB_WriteKeywordsToFile.Size = new System.Drawing.Size(108, 19);
+            this.CB_WriteKeywordsToFile.TabIndex = 5;
+            this.CB_WriteKeywordsToFile.Text = "Write Keywords";
+            this.CB_WriteKeywordsToFile.UseVisualStyleBackColor = true;
+            this.CB_WriteKeywordsToFile.CheckedChanged += new System.EventHandler(this.CB_WriteKeywordsToFile_CheckedChanged);
+            // 
             // BT_KeywordsEdit
             // 
             this.BT_KeywordsEdit.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -477,10 +518,10 @@ namespace ProjectExtractor
             | System.Windows.Forms.AnchorStyles.Right)));
             this.LV_Keywords.HideSelection = false;
             this.LV_Keywords.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem5,
-            listViewItem6,
-            listViewItem7,
-            listViewItem8});
+            listViewItem1,
+            listViewItem2,
+            listViewItem3,
+            listViewItem4});
             this.LV_Keywords.LabelEdit = true;
             this.LV_Keywords.Location = new System.Drawing.Point(6, 22);
             this.LV_Keywords.MultiSelect = false;
@@ -521,19 +562,6 @@ namespace ProjectExtractor
             this.backgroundWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker_DoWork);
             this.backgroundWorker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorker_ProgressChanged);
             this.backgroundWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker_RunWorkerCompleted);
-            // 
-            // CB_WriteKeywordsToFile
-            // 
-            this.CB_WriteKeywordsToFile.AutoSize = true;
-            this.CB_WriteKeywordsToFile.Checked = true;
-            this.CB_WriteKeywordsToFile.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.CB_WriteKeywordsToFile.Location = new System.Drawing.Point(133, 157);
-            this.CB_WriteKeywordsToFile.Name = "CB_WriteKeywordsToFile";
-            this.CB_WriteKeywordsToFile.Size = new System.Drawing.Size(108, 19);
-            this.CB_WriteKeywordsToFile.TabIndex = 5;
-            this.CB_WriteKeywordsToFile.Text = "Write Keywords";
-            this.CB_WriteKeywordsToFile.UseVisualStyleBackColor = true;
-            this.CB_WriteKeywordsToFile.CheckedChanged += new System.EventHandler(this.CB_WriteKeywordsToFile_CheckedChanged);
             // 
             // ExtractorForm
             // 
@@ -606,6 +634,8 @@ namespace ProjectExtractor
         private System.Windows.Forms.TextBox TB_StopChapter;
         private System.Windows.Forms.Button BT_DebugExtract;
         private System.Windows.Forms.CheckBox CB_WriteKeywordsToFile;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.TextBox TB_FullPath;
     }
 }
 

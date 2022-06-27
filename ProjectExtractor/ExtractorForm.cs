@@ -161,7 +161,15 @@ namespace ProjectExtractor
         {
             UpdateSettingsIfNotStarting();
         }
+        private void TB_PDFLocation_TextChanged(object sender, EventArgs e)
+        {
+            DisplayFullExtractionFilePath();
+        }
 
+        private void TB_ExtractLocation_TextChanged(object sender, EventArgs e)
+        {
+            DisplayFullExtractionFilePath();
+        }
         private void backgroundWorker_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
             if (!string.IsNullOrWhiteSpace(TB_PDFLocation.Text) && !string.IsNullOrWhiteSpace(TB_ExtractLocation.Text))
@@ -242,11 +250,26 @@ namespace ProjectExtractor
             }
             BT_Extract.Enabled = true;
         }
+
         #endregion
         #region methods
-        /// <summary>
-        /// Gets the current export setting radiobutton and returns its associated file extension
-        /// </summary>
+        /// <summary>Generates and displays the to be extracted file path</summary>
+        private void DisplayFullExtractionFilePath()
+        {
+            if (!string.IsNullOrWhiteSpace(TB_ExtractLocation.Text) && !string.IsNullOrWhiteSpace(TB_PDFLocation.Text))
+            {
+                string file = Path.GetFileName(TB_PDFLocation.Text);
+                if (TB_ExtractLocation.Text.EndsWith("\\"))
+                {
+                    TB_FullPath.Text = TB_ExtractLocation.Text + file;
+                }
+                else
+                {
+                    TB_FullPath.Text = TB_ExtractLocation.Text + "\\" + file;
+                }
+            }
+        }
+        /// <summary>Gets the current export setting radiobutton and returns its associated file extension</summary>
         /// <returns>string with the file extension (ex:".txt")</returns>
         private string GetExportSetting()
         {
@@ -266,24 +289,18 @@ namespace ProjectExtractor
                     return ".txt";
             }
         }
-        /// <summary>
-        /// Updates the text box in the main view with the keywords from the settings list view
-        /// </summary>
+        /// <summary>Updates the text box in the main view with the keywords from the settings list view</summary>
         private void UpdateExtractorKeywords()
         {
             RTB_SearchWords.Text = ConvertKeywordsToString();
         }
-        /// <summary>
-        /// Update the text in the toolstrip status label
-        /// </summary>
+        /// <summary>Update the text in the toolstrip status label</summary>
         /// <param name="newStatus"></param>
         private void UpdateStatus(string newStatus)
         {
             TSSL_ExtractionProgress.Text = newStatus;
         }
-        /// <summary>
-        /// Updates the text in the toolstrip status label if the file extraction can start or not
-        /// </summary>
+        /// <summary>Updates the text in the toolstrip status label if the file extraction can start or not</summary>
         private void UpdateFileStatus()
         {
             if (string.IsNullOrWhiteSpace(TB_ExtractLocation.Text))
@@ -296,13 +313,11 @@ namespace ProjectExtractor
             }
             else
             {
+                //display full extraction path
                 UpdateStatus("Ready for extraction.");
             }
         }
-        /// <summary>
-        /// Converts the keywords from the list view to a comma seperated string
-        /// </summary>
-        /// <returns></returns>
+        /// <summary>Converts the keywords from the list view to a comma seperated string</summary>
         private string ConvertKeywordsToString()
         {
             StringBuilder builder = new StringBuilder();
@@ -338,9 +353,7 @@ namespace ProjectExtractor
         }
 
         //Settings file alterations
-        /// <summary>
-        /// Initialize the settings and update the correct fields
-        /// </summary>
+        /// <summary>Initialize the settings and update the correct fields</summary>
         private void InitSettings()
         {
             //get and update the export settings radiobutton
@@ -414,9 +427,7 @@ namespace ProjectExtractor
 
             UpdateSettings();
         }
-        /// <summary>
-        /// Update the settings ini file with the new values
-        /// </summary>
+        /// <summary>Update the settings ini file with the new values</summary>
         private void UpdateSettings()
         {
             string exportVal = GetExportSetting().Trim('.');
@@ -444,6 +455,7 @@ namespace ProjectExtractor
             Settings.Write("ChapterStart", TB_Chapter.Text, "Chapters");
             Settings.Write("ChapterEnd", TB_StopChapter.Text, "Chapters");
         }
+        /// <summary>Only Updates the settings if the program is not considered starting up</summary>
         private void UpdateSettingsIfNotStarting()
         {
             if (!StartingUp)
