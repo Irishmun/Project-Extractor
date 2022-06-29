@@ -1,7 +1,6 @@
 ﻿using iText.Kernel.Pdf;
 using iText.Kernel.Pdf.Canvas.Parser;
 using System;
-using System.ComponentModel;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -25,7 +24,7 @@ namespace ProjectExtractor
             PdfReader reader = new PdfReader(file);
             PdfDocument pdf = new PdfDocument(reader);
             StringBuilder str = new StringBuilder();
-
+            string[] CurrentKeywordCollection = null;//current set of items to be added to the extracted file, sorted by keyword order
             for (int i = 1; i < pdf.GetNumberOfPages(); i++)
             {
                 ///get the text from every page to search through
@@ -40,7 +39,16 @@ namespace ProjectExtractor
                 //start searching for the keywords and their corresponding values
                 if (lines[lineIndex].Contains(Keywords[0]))
                 {//get first keyword and apply one newline, this give a better division between each project
-                    str.Append(Environment.NewLine);
+                    if (CurrentKeywordCollection != null && CurrentKeywordCollection.Length > 0)
+                    {
+                        //TODO: Implement
+
+                    }
+                    else
+                    {
+                        str.Append(Environment.NewLine);
+                        CurrentKeywordCollection = new string[Keywords.Length + 1];
+                    }
                 }
                 for (int keyIndex = 0; keyIndex < Keywords.Length; keyIndex++)
                 {
