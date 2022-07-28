@@ -6,9 +6,10 @@ using System.Text;
 using System.Text.RegularExpressions;
 //using Microsoft.Office.Interop.Excel;
 
-namespace ProjectExtractor
+namespace ProjectExtractor.Extractors
+
 {
-    class Extractor
+    class DetailExtractor
     {
         /*
          *NOTES ON DOCUMENT VARIATIONS:
