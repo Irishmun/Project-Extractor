@@ -35,9 +35,9 @@ namespace ProjectExtractor
             System.Windows.Forms.ListViewItem listViewItem4 = new System.Windows.Forms.ListViewItem("Het project wordt/is gestart op");
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ExtractorForm));
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
-            this.TSPB_Extraction = new System.Windows.Forms.ToolStripProgressBar();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.TSSL_ExtractionProgress = new System.Windows.Forms.ToolStripStatusLabel();
+            this.TSPB_Extraction = new System.Windows.Forms.ToolStripProgressBar();
             this.TC_MainView = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.button1 = new System.Windows.Forms.Button();
@@ -64,6 +64,8 @@ namespace ProjectExtractor
             this.RB_ExportTXT = new System.Windows.Forms.RadioButton();
             this.RB_ExportPDF = new System.Windows.Forms.RadioButton();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.CB_WriteKeywordsToFile = new System.Windows.Forms.CheckBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.label4 = new System.Windows.Forms.Label();
             this.TB_StopChapter = new System.Windows.Forms.TextBox();
@@ -72,7 +74,6 @@ namespace ProjectExtractor
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.BT_KeywordsDown = new System.Windows.Forms.Button();
             this.BT_KeywordsUp = new System.Windows.Forms.Button();
-            this.CB_WriteKeywordsToFile = new System.Windows.Forms.CheckBox();
             this.BT_KeywordsEdit = new System.Windows.Forms.Button();
             this.LV_Keywords = new System.Windows.Forms.ListView();
             this.BT_KeywordsDelete = new System.Windows.Forms.Button();
@@ -87,6 +88,7 @@ namespace ProjectExtractor
             this.groupBox3.SuspendLayout();
             this.GB_ExportSettings.SuspendLayout();
             this.tabPage2.SuspendLayout();
+            this.groupBox5.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
@@ -94,25 +96,22 @@ namespace ProjectExtractor
             // statusStrip1
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.TSPB_Extraction,
             this.toolStripStatusLabel1,
-            this.TSSL_ExtractionProgress});
+            this.TSSL_ExtractionProgress,
+            this.TSPB_Extraction});
+            this.statusStrip1.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
             this.statusStrip1.Location = new System.Drawing.Point(0, 347);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(572, 24);
             this.statusStrip1.TabIndex = 0;
             this.statusStrip1.Text = "statusStrip1";
             // 
-            // TSPB_Extraction
-            // 
-            this.TSPB_Extraction.Name = "TSPB_Extraction";
-            this.TSPB_Extraction.Size = new System.Drawing.Size(200, 18);
-            // 
             // toolStripStatusLabel1
             // 
             this.toolStripStatusLabel1.BorderSides = ((System.Windows.Forms.ToolStripStatusLabelBorderSides)(((System.Windows.Forms.ToolStripStatusLabelBorderSides.Left | System.Windows.Forms.ToolStripStatusLabelBorderSides.Top) 
             | System.Windows.Forms.ToolStripStatusLabelBorderSides.Bottom)));
             this.toolStripStatusLabel1.BorderStyle = System.Windows.Forms.Border3DStyle.SunkenOuter;
+            this.toolStripStatusLabel1.Margin = new System.Windows.Forms.Padding(3, 3, 0, 2);
             this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
             this.toolStripStatusLabel1.Size = new System.Drawing.Size(46, 19);
             this.toolStripStatusLabel1.Text = "Status:";
@@ -129,6 +128,14 @@ namespace ProjectExtractor
             this.TSSL_ExtractionProgress.Size = new System.Drawing.Size(30, 19);
             this.TSSL_ExtractionProgress.Text = "Idle";
             this.TSSL_ExtractionProgress.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // TSPB_Extraction
+            // 
+            this.TSPB_Extraction.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.TSPB_Extraction.Margin = new System.Windows.Forms.Padding(1, 3, 5, 3);
+            this.TSPB_Extraction.Name = "TSPB_Extraction";
+            this.TSPB_Extraction.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.TSPB_Extraction.Size = new System.Drawing.Size(200, 18);
             // 
             // TC_MainView
             // 
@@ -177,7 +184,7 @@ namespace ProjectExtractor
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(147, 55);
             this.button1.TabIndex = 6;
-            this.button1.Text = "Extract Projects";
+            this.button1.Text = "&Extract Projects";
             this.button1.UseVisualStyleBackColor = true;
             // 
             // label5
@@ -208,9 +215,9 @@ namespace ProjectExtractor
             this.BT_DebugExtract.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.BT_DebugExtract.Location = new System.Drawing.Point(6, 156);
             this.BT_DebugExtract.Name = "BT_DebugExtract";
-            this.BT_DebugExtract.Size = new System.Drawing.Size(135, 25);
+            this.BT_DebugExtract.Size = new System.Drawing.Size(161, 25);
             this.BT_DebugExtract.TabIndex = 80;
-            this.BT_DebugExtract.Text = "[DEBUG] Extract Everything";
+            this.BT_DebugExtract.Text = "[DEBUG] &Extract Everything";
             this.BT_DebugExtract.UseVisualStyleBackColor = true;
             this.BT_DebugExtract.Click += new System.EventHandler(this.BT_DebugExtract_Click);
             // 
@@ -221,7 +228,7 @@ namespace ProjectExtractor
             this.BT_Extract.Name = "BT_Extract";
             this.BT_Extract.Size = new System.Drawing.Size(147, 55);
             this.BT_Extract.TabIndex = 5;
-            this.BT_Extract.Text = "Extract Details";
+            this.BT_Extract.Text = "&Extract Details";
             this.BT_Extract.UseVisualStyleBackColor = true;
             this.BT_Extract.Click += new System.EventHandler(this.BT_Extract_Click);
             // 
@@ -242,7 +249,7 @@ namespace ProjectExtractor
             this.RTB_SearchWords.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.RTB_SearchWords.Location = new System.Drawing.Point(6, 22);
             this.RTB_SearchWords.Name = "RTB_SearchWords";
-            this.RTB_SearchWords.Size = new System.Drawing.Size(188, 101);
+            this.RTB_SearchWords.Size = new System.Drawing.Size(188, 88);
             this.RTB_SearchWords.TabIndex = 99;
             this.RTB_SearchWords.TabStop = false;
             this.RTB_SearchWords.Text = "";
@@ -428,6 +435,7 @@ namespace ProjectExtractor
             // tabPage2
             // 
             this.tabPage2.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.tabPage2.Controls.Add(this.groupBox5);
             this.tabPage2.Controls.Add(this.groupBox4);
             this.tabPage2.Controls.Add(this.groupBox2);
             this.tabPage2.Location = new System.Drawing.Point(4, 24);
@@ -438,6 +446,31 @@ namespace ProjectExtractor
             this.tabPage2.Text = "Detail Settings";
             this.tabPage2.ToolTipText = "Settings for project detail extraction";
             this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // groupBox5
+            // 
+            this.groupBox5.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox5.Controls.Add(this.CB_WriteKeywordsToFile);
+            this.groupBox5.Location = new System.Drawing.Point(320, 6);
+            this.groupBox5.Name = "groupBox5";
+            this.groupBox5.Size = new System.Drawing.Size(234, 63);
+            this.groupBox5.TabIndex = 6;
+            this.groupBox5.TabStop = false;
+            this.groupBox5.Text = "File Details";
+            // 
+            // CB_WriteKeywordsToFile
+            // 
+            this.CB_WriteKeywordsToFile.AutoSize = true;
+            this.CB_WriteKeywordsToFile.Checked = true;
+            this.CB_WriteKeywordsToFile.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.CB_WriteKeywordsToFile.Location = new System.Drawing.Point(6, 22);
+            this.CB_WriteKeywordsToFile.Name = "CB_WriteKeywordsToFile";
+            this.CB_WriteKeywordsToFile.Size = new System.Drawing.Size(144, 19);
+            this.CB_WriteKeywordsToFile.TabIndex = 5;
+            this.CB_WriteKeywordsToFile.Text = "Write Keywords To File";
+            this.CB_WriteKeywordsToFile.UseVisualStyleBackColor = true;
+            this.CB_WriteKeywordsToFile.CheckedChanged += new System.EventHandler(this.CB_WriteKeywordsToFile_CheckedChanged);
             // 
             // groupBox4
             // 
@@ -503,7 +536,6 @@ namespace ProjectExtractor
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox2.Controls.Add(this.BT_KeywordsDown);
             this.groupBox2.Controls.Add(this.BT_KeywordsUp);
-            this.groupBox2.Controls.Add(this.CB_WriteKeywordsToFile);
             this.groupBox2.Controls.Add(this.BT_KeywordsEdit);
             this.groupBox2.Controls.Add(this.LV_Keywords);
             this.groupBox2.Controls.Add(this.BT_KeywordsDelete);
@@ -523,7 +555,7 @@ namespace ProjectExtractor
             this.BT_KeywordsDown.Name = "BT_KeywordsDown";
             this.BT_KeywordsDown.Size = new System.Drawing.Size(106, 23);
             this.BT_KeywordsDown.TabIndex = 7;
-            this.BT_KeywordsDown.Text = "Move Down";
+            this.BT_KeywordsDown.Text = "&Move Down";
             this.BT_KeywordsDown.UseVisualStyleBackColor = true;
             this.BT_KeywordsDown.Click += new System.EventHandler(this.BT_KeywordsDown_Click);
             // 
@@ -535,23 +567,9 @@ namespace ProjectExtractor
             this.BT_KeywordsUp.Name = "BT_KeywordsUp";
             this.BT_KeywordsUp.Size = new System.Drawing.Size(106, 23);
             this.BT_KeywordsUp.TabIndex = 6;
-            this.BT_KeywordsUp.Text = "Move Up";
+            this.BT_KeywordsUp.Text = "&Move Up";
             this.BT_KeywordsUp.UseVisualStyleBackColor = true;
             this.BT_KeywordsUp.Click += new System.EventHandler(this.BT_KeywordsUp_Click);
-            // 
-            // CB_WriteKeywordsToFile
-            // 
-            this.CB_WriteKeywordsToFile.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.CB_WriteKeywordsToFile.AutoSize = true;
-            this.CB_WriteKeywordsToFile.Checked = true;
-            this.CB_WriteKeywordsToFile.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.CB_WriteKeywordsToFile.Location = new System.Drawing.Point(194, 214);
-            this.CB_WriteKeywordsToFile.Name = "CB_WriteKeywordsToFile";
-            this.CB_WriteKeywordsToFile.Size = new System.Drawing.Size(108, 19);
-            this.CB_WriteKeywordsToFile.TabIndex = 5;
-            this.CB_WriteKeywordsToFile.Text = "Write Keywords";
-            this.CB_WriteKeywordsToFile.UseVisualStyleBackColor = true;
-            this.CB_WriteKeywordsToFile.CheckedChanged += new System.EventHandler(this.CB_WriteKeywordsToFile_CheckedChanged);
             // 
             // BT_KeywordsEdit
             // 
@@ -561,7 +579,7 @@ namespace ProjectExtractor
             this.BT_KeywordsEdit.Name = "BT_KeywordsEdit";
             this.BT_KeywordsEdit.Size = new System.Drawing.Size(106, 23);
             this.BT_KeywordsEdit.TabIndex = 3;
-            this.BT_KeywordsEdit.Text = "Edit";
+            this.BT_KeywordsEdit.Text = "&Edit";
             this.BT_KeywordsEdit.UseVisualStyleBackColor = true;
             this.BT_KeywordsEdit.Click += new System.EventHandler(this.BT_KeywordsEdit_Click);
             // 
@@ -596,7 +614,7 @@ namespace ProjectExtractor
             this.BT_KeywordsDelete.Name = "BT_KeywordsDelete";
             this.BT_KeywordsDelete.Size = new System.Drawing.Size(106, 23);
             this.BT_KeywordsDelete.TabIndex = 2;
-            this.BT_KeywordsDelete.Text = "Delete";
+            this.BT_KeywordsDelete.Text = "&Delete";
             this.BT_KeywordsDelete.UseVisualStyleBackColor = true;
             this.BT_KeywordsDelete.Click += new System.EventHandler(this.BT_KeywordsDelete_Click);
             // 
@@ -607,7 +625,7 @@ namespace ProjectExtractor
             this.BT_KeywordsNew.Name = "BT_KeywordsNew";
             this.BT_KeywordsNew.Size = new System.Drawing.Size(106, 23);
             this.BT_KeywordsNew.TabIndex = 1;
-            this.BT_KeywordsNew.Text = "New";
+            this.BT_KeywordsNew.Text = "&New";
             this.BT_KeywordsNew.UseVisualStyleBackColor = true;
             this.BT_KeywordsNew.Click += new System.EventHandler(this.BT_KeywordsNew_Click);
             // 
@@ -653,10 +671,11 @@ namespace ProjectExtractor
             this.GB_ExportSettings.ResumeLayout(false);
             this.GB_ExportSettings.PerformLayout();
             this.tabPage2.ResumeLayout(false);
+            this.groupBox5.ResumeLayout(false);
+            this.groupBox5.PerformLayout();
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
             this.groupBox2.ResumeLayout(false);
-            this.groupBox2.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -709,6 +728,7 @@ namespace ProjectExtractor
         private System.Windows.Forms.RadioButton RB_ExportTXT;
         private System.Windows.Forms.RadioButton RB_ExportPDF;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.GroupBox groupBox5;
     }
 }
 

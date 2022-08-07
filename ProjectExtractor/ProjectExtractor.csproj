@@ -30,11 +30,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Extractors\" />
+    <Resource Include="Resources\ProjectExtractorIcon.ico" />
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Resources\ProjectExtractorIcon.ico" />
+    <Folder Include="Extractors\FullProject\" />
   </ItemGroup>
 
 </Project>

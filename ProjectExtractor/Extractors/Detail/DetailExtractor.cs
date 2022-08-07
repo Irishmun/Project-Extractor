@@ -6,9 +6,9 @@ using System.Text;
 using System.Text.RegularExpressions;
 //using Microsoft.Office.Interop.Excel;
 
-namespace ProjectExtractor.Extractors
-
+namespace ProjectExtractor.Extractors.Detail
 {
+    [Obsolete("Obsolete, use DetailExtractorBase implementations instead")]
     class DetailExtractor
     {
         /*

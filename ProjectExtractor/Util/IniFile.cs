@@ -10,6 +10,7 @@ namespace ProjectExtractor.Util
         string Path;
         string EXE = Assembly.GetExecutingAssembly().GetName().Name;
 
+        //NOTE: Kernel32 is Windows only! if cross platform support is needed, consider using non Kernel32 dependant ini implementation
         [DllImport("kernel32", CharSet = CharSet.Unicode)]
         static extern long WritePrivateProfileString(string Section, string Key, string Value, string FilePath);
 

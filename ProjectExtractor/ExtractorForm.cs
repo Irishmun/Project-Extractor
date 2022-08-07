@@ -8,14 +8,16 @@ using System.Text;
 using System.Windows.Forms;
 using ProjectExtractor.Extractors;
 using ProjectExtractor.Util;
+using ProjectExtractor.Extractors.Detail;
 
 namespace ProjectExtractor
 {
     public partial class ExtractorForm : Form
     {
         private string ProgramPath = AppContext.BaseDirectory, ExportFile;
+        private string ExtractionPrefix = "Extracted -";
         private IniFile Settings;
-        private DetailExtractor extractor;
+        private DetailExtractorBase extractor;
         private bool StartingUp = false;
         private int ExtractionResult = 0;
         private string[] Keywords;
@@ -27,7 +29,6 @@ namespace ProjectExtractor
             BT_DebugExtract.Visible = false;
 #endif
             Settings = new IniFile();
-            extractor = new DetailExtractor();
             InitSettings();
             UpdateExtractorKeywords();
             StartingUp = false;
@@ -137,25 +138,27 @@ namespace ProjectExtractor
             }
         }
         private void BT_Extract_Click(object sender, EventArgs e)
-        {
+        {//extract details from pdf file based on preferences
             if (!backgroundWorker.IsBusy)
             {
                 if (BothPathsExists())
                 {
                     BT_Extract.Enabled = false;
                     Keywords = ConvertKeywordsToArray();
+                    extractor = GetExportSetting();
                     backgroundWorker.RunWorkerAsync();
                 }
             }
         }
         private void BT_DebugExtract_Click(object sender, EventArgs e)
-        {
+        {//extract ALL contents from pdf file
 #if DEBUG
             if (!backgroundWorker.IsBusy)
             {
                 if (BothPathsExists())
                 {
                     BT_Extract.Enabled = false;
+                    extractor = new DetailExtractorALL();
                     backgroundWorker.RunWorkerAsync("DEBUG");
                 }
             }
@@ -185,6 +188,7 @@ namespace ProjectExtractor
                 LV_Keywords.Items.RemoveAt(LV_Keywords.SelectedIndices[0]);
                 LV_Keywords.Items.Insert(index - 1, selected);
             }
+            UpdateSettings();
         }
         private void BT_KeywordsDown_Click(object sender, EventArgs e)
         {
@@ -195,6 +199,7 @@ namespace ProjectExtractor
                 LV_Keywords.Items.RemoveAt(LV_Keywords.SelectedIndices[0]);
                 LV_Keywords.Items.Insert(index + 1, selected);
             }
+            UpdateSettings();
         }
         //full project extraction setting events
         #endregion
@@ -243,44 +248,53 @@ namespace ProjectExtractor
             {
                 string fileName = TB_PDFLocation.Text.Substring(TB_PDFLocation.Text.LastIndexOf('\\') + 1);//create filename from original file
 
-                ExportFile = $"{TB_ExtractLocation.Text}Extracted-{Path.GetFileNameWithoutExtension(fileName)}{ GetExportSetting()}";//add path and file extension
-                                                                                                                                     //TODO: make it possible to extract to the other supported formats
-                if (e.Argument != null)
+                ExportFile = $"{TB_ExtractLocation.Text}{ExtractionPrefix}{Path.GetFileNameWithoutExtension(fileName)}.{ extractor.ToString()}";//add path and file extension
+                                                                                                                                                //TODO: make it possible to extract to the other supported formats
+                if (extractor != null)
                 {
-#if DEBUG
-                    if (!string.IsNullOrEmpty(e.Argument.ToString()) && e.Argument.ToString() == "DEBUG")
-                    {
-                        ExtractionResult = extractor.ExtractAllToTXT(TB_PDFLocation.Text, ExportFile, Keywords, TB_Chapter.Text, TB_StopChapter.Text, sender as System.ComponentModel.BackgroundWorker, true);
-                    }
-#endif
+                    /* if (e.Argument != null)
+                     {
+ #if DEBUG
+                         if (!string.IsNullOrEmpty(e.Argument.ToString()) && e.Argument.ToString() == "DEBUG")
+                         {
+                             extractor = new DetailExtractorALL();//forcibly instantiate debug extractor
+                             ExtractionResult = extractor.Extract(TB_PDFLocation.Text, ExportFile, Keywords, TB_Chapter.Text, TB_StopChapter.Text, CB_WriteKeywordsToFile.Checked, sender as System.ComponentModel.BackgroundWorker);
+                         }
+ #endif
+                     }
+                     else
+                     {
+                         extractor.Extract(TB_PDFLocation.Text, ExportFile, Keywords, TB_Chapter.Text, TB_StopChapter.Text, CB_WriteKeywordsToFile.Checked, sender as System.ComponentModel.BackgroundWorker);
+                         *//*switch (GetExportSetting())//this one would not have to happen, as I could just call the extract method of whichever instance extractor would be
+                         {
+                             case ".txt":
+                                 ExtractionResult = extractor.ExtractToTXT(TB_PDFLocation.Text, ExportFile, Keywords, TB_Chapter.Text, TB_StopChapter.Text, CB_WriteKeywordsToFile.Checked, sender as System.ComponentModel.BackgroundWorker);
+                                 break;
+                             case ".pdf":
+                                 ExtractionResult = extractor.ExtractToPDF(TB_PDFLocation.Text, ExportFile, Keywords, TB_Chapter.Text, TB_StopChapter.Text, CB_WriteKeywordsToFile.Checked, sender as System.ComponentModel.BackgroundWorker);
+                                 break;
+                             case ".xlsx":
+                                 ExtractionResult = extractor.ExtractToXLSX(TB_PDFLocation.Text, ExportFile, Keywords, TB_Chapter.Text, TB_StopChapter.Text, CB_WriteKeywordsToFile.Checked, sender as System.ComponentModel.BackgroundWorker);
+                                 break;
+                             case ".docx":
+                                 ExtractionResult = extractor.ExtractToDOCX(TB_PDFLocation.Text, ExportFile, Keywords, TB_Chapter.Text, TB_StopChapter.Text, CB_WriteKeywordsToFile.Checked, sender as System.ComponentModel.BackgroundWorker);
+                                 break;
+                             case ".rtf":
+                                 ExtractionResult = extractor.ExtractToRTF(TB_PDFLocation.Text, ExportFile, Keywords, TB_Chapter.Text, TB_StopChapter.Text, CB_WriteKeywordsToFile.Checked, sender as System.ComponentModel.BackgroundWorker);
+                                 break;
+                             default:
+                                 return;
+                         }*//*
+                     }*/
+                    extractor.Extract(TB_PDFLocation.Text, ExportFile, Keywords, TB_Chapter.Text, TB_StopChapter.Text, CB_WriteKeywordsToFile.Checked, sender as System.ComponentModel.BackgroundWorker);
                 }
                 else
                 {
-                    switch (GetExportSetting())
-                    {
-                        case ".txt":
-                            ExtractionResult = extractor.ExtractToTXT(TB_PDFLocation.Text, ExportFile, Keywords, TB_Chapter.Text, TB_StopChapter.Text, CB_WriteKeywordsToFile.Checked, sender as System.ComponentModel.BackgroundWorker);
-                            break;
-                        case ".pdf":
-                            ExtractionResult = extractor.ExtractToPDF(TB_PDFLocation.Text, ExportFile, Keywords, TB_Chapter.Text, TB_StopChapter.Text, CB_WriteKeywordsToFile.Checked, sender as System.ComponentModel.BackgroundWorker);
-                            break;
-                        case ".xlsx":
-                            ExtractionResult = extractor.ExtractToXLSX(TB_PDFLocation.Text, ExportFile, Keywords, TB_Chapter.Text, TB_StopChapter.Text, CB_WriteKeywordsToFile.Checked, sender as System.ComponentModel.BackgroundWorker);
-                            break;
-                        case ".docx":
-                            ExtractionResult = extractor.ExtractToDOCX(TB_PDFLocation.Text, ExportFile, Keywords, TB_Chapter.Text, TB_StopChapter.Text, CB_WriteKeywordsToFile.Checked, sender as System.ComponentModel.BackgroundWorker);
-                            break;
-                        case ".rtf":
-                            ExtractionResult = extractor.ExtractToRTF(TB_PDFLocation.Text, ExportFile, Keywords, TB_Chapter.Text, TB_StopChapter.Text, CB_WriteKeywordsToFile.Checked, sender as System.ComponentModel.BackgroundWorker);
-                            break;
-                        default:
-                            UpdateStatus("Invalid file extension marked!");
-                            return;
-                    }
+                    UpdateStatus("Invalid file extension marked!");
                 }
                 if (ExtractionResult > 0)//something went wrong
                 {
-                    string code = extractor.GetErrorCode(ExtractionResult);
+                    string code = extractor.GetReturnCode(ExtractionResult);
                     UpdateStatus("ERROR extracting: " + code);
                     MessageBox.Show("An Error was thrown whilst extracting from the file:\n" + code, "Error extracting", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
@@ -324,14 +338,15 @@ namespace ProjectExtractor
         {
             if (!string.IsNullOrWhiteSpace(TB_ExtractLocation.Text) && !string.IsNullOrWhiteSpace(TB_PDFLocation.Text))
             {
-                string file = Path.GetFileName(TB_PDFLocation.Text);
+                string file = Path.GetFileNameWithoutExtension(TB_PDFLocation.Text);
+                string extension = $".{Settings.Read("ExportExtension", "Export")}";
                 if (TB_ExtractLocation.Text.EndsWith("\\"))
                 {
-                    TB_FullPath.Text = TB_ExtractLocation.Text + file;
+                    TB_FullPath.Text = TB_ExtractLocation.Text + ExtractionPrefix + file + extension;
                 }
                 else
                 {
-                    TB_FullPath.Text = TB_ExtractLocation.Text + "\\" + file;
+                    TB_FullPath.Text = TB_ExtractLocation.Text + "\\" + ExtractionPrefix + file + extension;
                 }
             }
         }
@@ -414,22 +429,22 @@ namespace ProjectExtractor
         #endregion
         #region Settings methods
         /// <summary>Gets the current export setting radiobutton and returns its associated file extension (ex:".txt")</summary>
-        private string GetExportSetting()
+        private DetailExtractorBase GetExportSetting()
         {
             RadioButton btn = GB_ExportSettings.Controls.OfType<RadioButton>().FirstOrDefault(rb => rb.Checked);//get the first checked radiobutton
             switch (btn.Name)
             {
                 case "RB_ExportPDF":
-                    return ".pdf";
+                    return new DetailExtractorPDF();
                 case "RB_ExportExcel":
-                    return ".xlsx";
+                    return new DetailExtractorCSV();
                 case "RB_ExportWord":
-                    return ".docx";
+                    return new DetailExtractorDOCX();
                 case "RB_ExportRichText":
-                    return ".rtf";
+                    return new DetailExtractorRTF();
                 case "RB_ExportTXT":
                 default:
-                    return ".txt";
+                    return new DetailExtractorTXT();
             }
         }
 
@@ -513,7 +528,8 @@ namespace ProjectExtractor
         /// <summary>Update the settings ini file with the new values</summary>
         private void UpdateSettings()
         {
-            string exportVal = GetExportSetting().Trim('.');
+            extractor ??= new DetailExtractorTXT();//fall back to txt extraction if extractor doesn't exist yet
+            string exportVal = extractor.ToString();
             Settings.Write("ExportExtension", exportVal, "Export");//save current export filetype
 
             Settings.Write("Keywords", ConvertKeywordsToString(), "Export");//save current keywords 
