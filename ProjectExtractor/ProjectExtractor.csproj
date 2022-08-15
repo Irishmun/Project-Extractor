@@ -33,8 +33,4 @@
     <Resource Include="Resources\ProjectExtractorIcon.ico" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Extractors\FullProject\" />
-  </ItemGroup>
-
 </Project>

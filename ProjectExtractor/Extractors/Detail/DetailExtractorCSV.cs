@@ -20,9 +20,6 @@ namespace ProjectExtractor.Extractors.Detail
             return (int)returnCode;
         }
 
-        public override string ToString()
-        {
-            return "csv";
-        }
+        public override string ToString() => "csv";
     }
 }

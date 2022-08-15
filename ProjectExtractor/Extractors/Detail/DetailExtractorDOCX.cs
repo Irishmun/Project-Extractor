@@ -20,9 +20,6 @@ namespace ProjectExtractor.Extractors.Detail
             return (int)returnCode;
         }
 
-        public override string ToString()
-        {
-            return "docx";
-        }
+        public override string ToString() => "docx";
     }
 }

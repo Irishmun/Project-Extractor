@@ -40,9 +40,6 @@ namespace ProjectExtractor.Extractors.Detail
             return (int)returnCode;
         }
 
-        public override string ToString()
-        {
-            return "txt";
-        }
+        public override string ToString() => "txt";
     }
 }

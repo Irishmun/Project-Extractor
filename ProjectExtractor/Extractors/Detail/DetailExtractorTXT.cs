@@ -1,6 +1,7 @@
 ﻿using iText.Kernel.Pdf;
 using iText.Kernel.Pdf.Canvas.Parser;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Text;
@@ -29,10 +30,11 @@ namespace ProjectExtractor.Extractors.Detail
             string[] lines = str.ToString().Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
             str.Clear();
 
+            //go through all content filled lines and search for the keywords and get their values
             for (int lineIndex = 0; lineIndex < lines.Length; lineIndex++)
             {
                 //start searching for the keywords and their corresponding values
-                if (lines[lineIndex].Contains(Keywords[0]))
+                if (lines[lineIndex].Contains(Keywords[0]))//contains instead of startswith. If a keywords starts right after a page change, the page number is added to the text, making the keyword not the start.
                 {
                     //get first keyword and apply one newline, this give a better division between each project
                     if (CurrentKeywordCollection != null && CurrentKeywordCollection.Length > 0)
@@ -54,7 +56,7 @@ namespace ProjectExtractor.Extractors.Detail
                         }
                     }
                 }
-                for (int keyIndex = 0; keyIndex < Keywords.Length; keyIndex++)
+                for (int keyIndex = 0; keyIndex < Keywords.Length; keyIndex++)//iterate through keywords to see if this line hase one
                 {
                     //append every other keyword that can be found and show its value
                     if (lines[lineIndex].Contains(Keywords[keyIndex]))
@@ -91,9 +93,6 @@ namespace ProjectExtractor.Extractors.Detail
             return (int)returnCode;
         }
 
-        public override string ToString()
-        {
-            return "txt";
-        }
+        public override string ToString() => "txt";
     }
 }
