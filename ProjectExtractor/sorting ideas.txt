@@ -1,0 +1,29 @@
+document:
+
+keyword1 [value]
+keyword2 [value]
+keyword3 [value]
+keyword4 [value]
+keyword5 [value]
+ChapterStart
+[dates]
+ChapterEnd
+
+repeating...
+
+
+searching and sorting systems:
+current:(top to bottom searching) (presumed fastest)
+1. get first keyword with value, append newline beforehand
+2. get remaining keywords with values
+3. look for and get date between chapterstart and chapterend
+
+new idea: (per project searching) (allows for easier project content sorting)
+1. get all keywords with values, ignoring order (put inside array)
+2. once chapterstart/end or already found keyword is found, sort found keywords by order
+3. look for and get date between chapterstart and chapterend
+
+newer idea: (search after file finished) (less memory efficient, allows for more search options)
+1. get all desired contents (keyword values, datetimechapters, etc.) and put them in struct
+2. put all structs inside list for later
+3. once done, sort all contents of structs and put them all from list to file
