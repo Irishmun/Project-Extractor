@@ -38,6 +38,7 @@ namespace ProjectExtractor
         private void TC_MainView_SelectedIndexChanged(object sender, EventArgs e)
         {
             //update the keywords display if the tab has been swapped back to the main tab
+            UpdateSettingsIfNotStarting();
             if (TC_MainView.SelectedIndex == 0) UpdateExtractorKeywords();
         }
         #endregion
@@ -74,7 +75,7 @@ namespace ProjectExtractor
         }
         private void LV_Keywords_AfterLabelEdit(object sender, LabelEditEventArgs e)
         {
-            UpdateSettings();
+            UpdateSettingsIfNotStarting();
         }
         #endregion
         #region Button events
@@ -286,13 +287,14 @@ namespace ProjectExtractor
                                  return;
                          }*//*
                      }*/
-                    extractor.Extract(TB_PDFLocation.Text, ExportFile, Keywords, TB_Chapter.Text, TB_StopChapter.Text, CB_WriteKeywordsToFile.Checked, sender as System.ComponentModel.BackgroundWorker);
+                    ExtractionResult = extractor.Extract(TB_PDFLocation.Text, ExportFile, Keywords, TB_Chapter.Text, TB_StopChapter.Text, CB_WriteKeywordsToFile.Checked, sender as System.ComponentModel.BackgroundWorker);
                 }
                 else
                 {
                     UpdateStatus("Invalid file extension marked!");
                 }
-                if (ExtractionResult > 0)//something went wrong
+
+                if (ExtractionResult != 0)//something went wrong
                 {
                     string code = extractor.GetReturnCode(ExtractionResult);
                     UpdateStatus("ERROR extracting: " + code);
@@ -315,7 +317,7 @@ namespace ProjectExtractor
         private void backgroundWorker_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
         {
             //open the created file in its default application
-            if (ExtractionResult == 0)
+            if (ExtractionResult == 0 || ExtractionResult == 3)//none error or flawed error
             {
                 if (File.Exists(ExportFile))
                 {
@@ -381,6 +383,7 @@ namespace ProjectExtractor
         /// <summary>Converts the keywords from the list view to a comma seperated string</summary>
         private string ConvertKeywordsToString()
         {
+            //TODO: fix issue where this doesn't store new keywords properly
             StringBuilder builder = new StringBuilder();
             //add all list items to the display rich text box
             for (int i = 0; i < LV_Keywords.Items.Count; i++)

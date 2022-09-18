@@ -61,6 +61,8 @@ namespace ProjectExtractor.Extractors.Detail
                     return "Not Implemented";
                 case ReturnCode.NotInstalled:
                     return "Program not installed";
+                case ReturnCode.flawed:
+                    return "Non fatal error occured, kept going.";
                 default:
                     return "Unknown error";
             }
@@ -68,10 +70,11 @@ namespace ProjectExtractor.Extractors.Detail
 
         protected enum ReturnCode
         {
-            none = 0,
-            error = 1,
-            notImplemented = 2,
-            NotInstalled = 159
+            none = 0,//all went well
+            error = 1,//something went horibly wrong
+            notImplemented = 2,//this extractor is not implemented yet
+            flawed = 3,//it finished, but something didn't go right
+            NotInstalled = 159//a required external dependency is not installed
         }
 
         public abstract override string ToString();//return file format of extractor, all lowercase, sans period (e.x: text extractor= "txt")

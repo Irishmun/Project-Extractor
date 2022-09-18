@@ -4,7 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Text;
+using ProjectExtractor.Util;
 
 namespace ProjectExtractor.Extractors.Detail
 {
@@ -15,12 +17,12 @@ namespace ProjectExtractor.Extractors.Detail
         {
             //TODO: figure out way to handle different file structure versions
             //open pdf file for reading
-            ReturnCode returnCode = ReturnCode.none;
-            PdfReader reader = new PdfReader(file);
-            PdfDocument pdf = new PdfDocument(reader);
-            StringBuilder str = new StringBuilder();
-            string[] CurrentKeywordCollection = null;//current set of items to be added to the extracted file, sorted by keyword order
-            bool firstProject = true;
+            ReturnCode returnCode = ReturnCode.none;//to return at the end
+            PdfReader reader = new PdfReader(file);//to read from the pdf
+            PdfDocument pdf = new PdfDocument(reader);//to access read data
+            StringBuilder str = new StringBuilder();//to create the text to write to the resulting file
+            Dictionary<string, string> keywordValuePairs = new Dictionary<string, string>();//to store the found keywords and their values
+
             for (int i = 1; i < pdf.GetNumberOfPages(); i++)
             {
                 ///get the text from every page to search through
@@ -29,57 +31,50 @@ namespace ProjectExtractor.Extractors.Detail
             //get only lines with text on them, reduces total worktime by ignoring empties
             string[] lines = str.ToString().Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
             str.Clear();
-
+            string possibleKeyword = string.Empty;
             //go through all content filled lines and search for the keywords and get their values
             for (int lineIndex = 0; lineIndex < lines.Length; lineIndex++)
             {
-                //start searching for the keywords and their corresponding values
-                if (lines[lineIndex].Contains(Keywords[0]))//contains instead of startswith. If a keywords starts right after a page change, the page number is added to the text, making the keyword not the start.
-                {
-                    //get first keyword and apply one newline, this give a better division between each project
-                    if (CurrentKeywordCollection != null && CurrentKeywordCollection.Length > 0)
-                    {
-                        //TODO: Implement sorting keyword values by preferred order and putting them in that order
-                        //str.Append(Environment.NewLine);
-                        //CurrentKeywordCollection = new string[Keywords.Length + 1];
+                possibleKeyword = Array.Find(Keywords, lines[lineIndex].Contains);
+
+                if (!string.IsNullOrWhiteSpace(possibleKeyword))
+                {//if any of the keywords are in the string, try add to dictionary
+                    if (!keywordValuePairs.ContainsKey(possibleKeyword))
+                    {//keyword not yet added to dictionary//add key and value to dictionary
+                        keywordValuePairs.Add(possibleKeyword, lines[lineIndex].Substring(lines[lineIndex].IndexOf(possibleKeyword) + possibleKeyword.Length));
                     }
-                    else
-                    {
-                        if (!firstProject)
-                        {
-                            str.Append(Environment.NewLine);
-                            //CurrentKeywordCollection = new string[Keywords.Length + 1];
-                        }
-                        else
-                        {
-                            firstProject = false;
-                        }
-                    }
-                }
-                for (int keyIndex = 0; keyIndex < Keywords.Length; keyIndex++)//iterate through keywords to see if this line hase one
-                {
-                    //append every other keyword that can be found and show its value
-                    if (lines[lineIndex].Contains(Keywords[keyIndex]))
-                    {
-                        if (WriteKeywordsToFile)
-                        {
-                            //TODO: check if changing this to a str.Append (Keywords[keyIndex] + ":") in the if and always doing the else changes anything in the result
-                            //str.Append(lines[lineIndex].Replace(Keywords[keyIndex], Keywords[keyIndex] + ": ") + " | ");
-                            str.Append(Keywords[keyIndex] + ":" + lines[lineIndex].Substring(lines[lineIndex].IndexOf(Keywords[keyIndex]) + Keywords[keyIndex].Length) + " | ");
-                        }
-                        else
-                        {
-                            str.Append(lines[lineIndex].Substring(lines[lineIndex].IndexOf(Keywords[keyIndex]) + Keywords[keyIndex].Length) + " | ");
-                        }
-                    }
+
                 }
                 if (lines[lineIndex].Contains(chapters))
                 {
+                    //assume that all keywords have been found, add them to "str"
+                    foreach (string keyword in Keywords)
+                    {
+                        try
+                        {
+                            KeyValuePair<string, string> dict = keywordValuePairs.GetEntry(keyword);
+                            if (WriteKeywordsToFile)
+                            {
+                                str.Append(dict.Key + ":");
+                            }
+                            str.Append(dict.Value + " | ");
+                        }
+                        catch (Exception)
+                        {//missing keyword was searched, it's fine but will return special case
+                            returnCode = ReturnCode.flawed;
+                        }
+
+                    }
+                    //clear dictionary for next project
+                    keywordValuePairs.Clear();
+
                     //get the latest date and put it's line in there, skip to past that point as the data on the preceded lines is not needed
                     int skipTo = GetLatestDate(lines, lineIndex, stopChapters);
                     lineIndex = skipTo;
-                    str.Append(lines[lineIndex]);
+                    str.Append(lines[lineIndex]); 
+                    str.Append(Environment.NewLine);
                 }
+
                 //progress for the progress bar
                 double progress = (double)(((double)lineIndex + 1d) * 100d / (double)lines.Length);
                 Worker.ReportProgress((int)progress);
@@ -96,3 +91,9 @@ namespace ProjectExtractor.Extractors.Detail
         public override string ToString() => "txt";
     }
 }
+
+/*
+ * get all keywords found, until a duplicate keyword is found
+ * store duplicate keyword in temporary spot OR set index to one line earlier
+ * before restarting keyword search at new index, sort found keyword-detail pairs on desired order
+ */
