@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace ProjectExtractor.Extractors.Detail
 {
     /// <summary>Used for extracting pdf details to CSV file format. intended for use in spreadsheet software such as excel</summary>
-    class DetailExtractorCSV : DetailExtractorBase
+    class DetailExtractorXLS : DetailExtractorBase
     {
         public override int Extract(string file, string extractPath, string[] Keywords, string chapters, string stopChapters, bool WriteKeywordsToFile, BackgroundWorker Worker)
         {

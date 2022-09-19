@@ -86,7 +86,7 @@ namespace ProjectExtractor.Extractors.Detail
             }
             return (int)returnCode;
         }
-        internal int ExtractToXLSX(string file, string extractPath, string[] Keywords, string chapters, string stopChapters, bool WriteKeywordsToFile, System.ComponentModel.BackgroundWorker Worker)
+        internal int ExtractToXLS(string file, string extractPath, string[] Keywords, string chapters, string stopChapters, bool WriteKeywordsToFile, System.ComponentModel.BackgroundWorker Worker)
         {
             ErrorCodes ReturnCode = 0;
             //Application xlApp = new Application();

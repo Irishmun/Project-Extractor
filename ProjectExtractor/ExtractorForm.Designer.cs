@@ -404,9 +404,9 @@ namespace ProjectExtractor
             this.RB_ExportExcel.Enabled = false;
             this.RB_ExportExcel.Location = new System.Drawing.Point(6, 72);
             this.RB_ExportExcel.Name = "RB_ExportExcel";
-            this.RB_ExportExcel.Size = new System.Drawing.Size(120, 19);
+            this.RB_ExportExcel.Size = new System.Drawing.Size(114, 19);
             this.RB_ExportExcel.TabIndex = 2;
-            this.RB_ExportExcel.Text = "Worksheet (*.xlsx)";
+            this.RB_ExportExcel.Text = "Worksheet (*.xls)";
             this.RB_ExportExcel.UseVisualStyleBackColor = true;
             // 
             // RB_ExportTXT

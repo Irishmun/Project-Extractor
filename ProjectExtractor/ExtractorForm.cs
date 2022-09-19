@@ -105,7 +105,7 @@ namespace ProjectExtractor
             if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(TB_PDFLocation.Text))
             {
                 UpdateFileStatus();
-                UpdateSettings();
+                UpdateSettingsIfNotStarting();
             }
 
         }
@@ -135,7 +135,7 @@ namespace ProjectExtractor
             if (result == CommonFileDialogResult.Ok && !string.IsNullOrWhiteSpace(TB_ExtractLocation.Text))
             {
                 UpdateFileStatus();
-                UpdateSettings();
+                UpdateSettingsIfNotStarting();;
             }
         }
         private void BT_Extract_Click(object sender, EventArgs e)
@@ -178,7 +178,7 @@ namespace ProjectExtractor
         private void BT_KeywordsDelete_Click(object sender, EventArgs e)
         {
             LV_Keywords.Items.RemoveAt(LV_Keywords.SelectedIndices[0]);
-            UpdateSettings();
+            UpdateSettingsIfNotStarting();;
         }
         private void BT_KeywordsUp_Click(object sender, EventArgs e)
         {
@@ -189,7 +189,7 @@ namespace ProjectExtractor
                 LV_Keywords.Items.RemoveAt(LV_Keywords.SelectedIndices[0]);
                 LV_Keywords.Items.Insert(index - 1, selected);
             }
-            UpdateSettings();
+            UpdateSettingsIfNotStarting();;
         }
         private void BT_KeywordsDown_Click(object sender, EventArgs e)
         {
@@ -200,7 +200,7 @@ namespace ProjectExtractor
                 LV_Keywords.Items.RemoveAt(LV_Keywords.SelectedIndices[0]);
                 LV_Keywords.Items.Insert(index + 1, selected);
             }
-            UpdateSettings();
+            UpdateSettingsIfNotStarting();;
         }
         //full project extraction setting events
         #endregion
@@ -275,7 +275,7 @@ namespace ProjectExtractor
                                  ExtractionResult = extractor.ExtractToPDF(TB_PDFLocation.Text, ExportFile, Keywords, TB_Chapter.Text, TB_StopChapter.Text, CB_WriteKeywordsToFile.Checked, sender as System.ComponentModel.BackgroundWorker);
                                  break;
                              case ".xlsx":
-                                 ExtractionResult = extractor.ExtractToXLSX(TB_PDFLocation.Text, ExportFile, Keywords, TB_Chapter.Text, TB_StopChapter.Text, CB_WriteKeywordsToFile.Checked, sender as System.ComponentModel.BackgroundWorker);
+                                 ExtractionResult = extractor.ExtractToXLS(TB_PDFLocation.Text, ExportFile, Keywords, TB_Chapter.Text, TB_StopChapter.Text, CB_WriteKeywordsToFile.Checked, sender as System.ComponentModel.BackgroundWorker);
                                  break;
                              case ".docx":
                                  ExtractionResult = extractor.ExtractToDOCX(TB_PDFLocation.Text, ExportFile, Keywords, TB_Chapter.Text, TB_StopChapter.Text, CB_WriteKeywordsToFile.Checked, sender as System.ComponentModel.BackgroundWorker);
@@ -440,7 +440,7 @@ namespace ProjectExtractor
                 case "RB_ExportPDF":
                     return new DetailExtractorPDF();
                 case "RB_ExportExcel":
-                    return new DetailExtractorCSV();
+                    return new DetailExtractorXLS();
                 case "RB_ExportWord":
                     return new DetailExtractorDOCX();
                 case "RB_ExportRichText":
@@ -531,10 +531,6 @@ namespace ProjectExtractor
         /// <summary>Update the settings ini file with the new values</summary>
         private void UpdateSettings()
         {
-            extractor ??= new DetailExtractorTXT();//fall back to txt extraction if extractor doesn't exist yet
-            string exportVal = extractor.ToString();
-            Settings.Write("ExportExtension", exportVal, "Export");//save current export filetype
-
             Settings.Write("Keywords", ConvertKeywordsToString(), "Export");//save current keywords 
             Settings.WriteBool("Write_Keywords_To_File", CB_WriteKeywordsToFile.Checked, "Export");//save if the keywords are to be written to the exported file
 
@@ -553,6 +549,10 @@ namespace ProjectExtractor
         {
             if (!StartingUp)
             {
+                //extractor ??= new DetailExtractorTXT();//fall back to txt extraction if extractor doesn't exist yet
+                extractor = GetExportSetting();
+                string exportVal = extractor.ToString();
+                Settings.Write("ExportExtension", exportVal, "Export");//save current export filetype
                 UpdateSettings();
             }
         }
