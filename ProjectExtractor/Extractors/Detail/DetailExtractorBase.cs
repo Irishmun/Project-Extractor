@@ -10,7 +10,7 @@ namespace ProjectExtractor.Extractors.Detail
     abstract class DetailExtractorBase
     {
 
-        public abstract int Extract(string file, string extractPath, string[] Keywords, string chapters, string stopChapters, bool WriteKeywordsToFile, System.ComponentModel.BackgroundWorker Worker);
+        public abstract int Extract(string file, string extractPath, string[] Keywords, string chapters, string stopChapters, string totalHoursKeyword, bool WriteTotalHoursToFile, bool WriteKeywordsToFile, System.ComponentModel.BackgroundWorker Worker);
 
         protected int GetLatestDate(string[] lines, int startIndex, string stopLine)
         {
@@ -18,7 +18,7 @@ namespace ProjectExtractor.Extractors.Detail
             int index = startIndex;
             for (int i = startIndex; i < lines.Length; i++)
             {
-                if (lines[i].StartsWith(stopLine))
+                if (lines[i].Contains(stopLine))
                 {
                     return index;
                 }
@@ -48,15 +48,15 @@ namespace ProjectExtractor.Extractors.Detail
         {
             switch ((ReturnCode)code)
             {
-                case ReturnCode.none:
+                case ReturnCode.NONE:
                     return string.Empty;
-                case ReturnCode.error:
+                case ReturnCode.ERROR:
                     return "Fatal error";
-                case ReturnCode.notImplemented:
+                case ReturnCode.NOT_IMPLEMENTED:
                     return "Not Implemented";
-                case ReturnCode.NotInstalled:
+                case ReturnCode.NOT_INSTALLED:
                     return "Program not installed";
-                case ReturnCode.flawed:
+                case ReturnCode.FLAWED:
                     return "Non fatal error occured, kept going.";
                 default:
                     return "Unknown error";
@@ -73,24 +73,24 @@ namespace ProjectExtractor.Extractors.Detail
             {
                 if (res == 1)//would be 1 as the first line should be the page number of page 1
                 {
-                    return ProjectLayoutRevision.RevisionOne;
+                    return ProjectLayoutRevision.REVISION_ONE;
                 }
                 else
                 {
-                    return ProjectLayoutRevision.Unknown;//using a unknown layout as of now
+                    return ProjectLayoutRevision.UNKNOWN_REVISION;//using a unknown layout as of now
                 }
             }
             //if it's not a number, the first line would most likely be that of the second revision, using an image at the top of the document
-            return ProjectLayoutRevision.RevisionTwo;
+            return ProjectLayoutRevision.REVISION_TWO;
         }
 
-        protected enum ReturnCode
+        public enum ReturnCode
         {
-            none = 0,//all went well
-            error = 1,//something went horibly wrong
-            notImplemented = 2,//this extractor is not implemented yet
-            flawed = 3,//it finished, but something didn't go right
-            NotInstalled = 159//a required external dependency is not installed
+            NONE = 0,//all went well
+            ERROR = 1,//something went horibly wrong
+            NOT_IMPLEMENTED = 2,//this extractor is not implemented yet
+            FLAWED = 3,//it finished, but something didn't go right
+            NOT_INSTALLED = 159//a required external dependency is not installed
         }
 
         /*
@@ -101,9 +101,9 @@ namespace ProjectExtractor.Extractors.Detail
         */
         public enum ProjectLayoutRevision
         {
-            RevisionOne = 1,//Projects using the old layout, starting with a page number and using tables
-            RevisionTwo = 2,//projects using the current layout, starting with an image (which is not read from by the reader)
-            Unknown = 3//new or unknown project type
+            REVISION_ONE = 1,//Projects using the old layout, starting with a page number and using tables
+            REVISION_TWO = 2,//projects using the current layout, starting with an image (which is not read from by the reader)
+            UNKNOWN_REVISION = 3//new or unknown project type
         }
 
         public abstract override string ToString();//return file format of extractor, all lowercase, sans period (e.x: text extractor= "txt")

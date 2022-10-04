@@ -13,19 +13,19 @@ namespace ProjectExtractor.Extractors.Detail
     /// <summary>Used for extracting pdf details to TXT file format. intended as ASCII plain text</summary>
     class DetailExtractorTXT : DetailExtractorBase
     {
-        public override int Extract(string file, string extractPath, string[] Keywords, string chapters, string stopChapters, bool WriteKeywordsToFile, BackgroundWorker Worker)
+        public override int Extract(string file, string extractPath, string[] Keywords, string chapters, string stopChapters, string totalHoursKeyword, bool WriteTotalHoursToFile, bool WriteKeywordsToFile, BackgroundWorker Worker)
         {
             //TODO: figure out way to handle different file structure versions
             //open pdf file for reading
-            ReturnCode returnCode = ReturnCode.none;//to return at the end
+            ReturnCode returnCode = ReturnCode.NONE;//to return at the end
             PdfReader reader = new PdfReader(file);//to read from the pdf
             PdfDocument pdf = new PdfDocument(reader);//to access read data
             StringBuilder str = new StringBuilder();//to create the text to write to the resulting file
             Dictionary<string, string> keywordValuePairs = new Dictionary<string, string>();//to store the found keywords and their values
-            ProjectLayoutRevision rev = ProjectLayoutRevision.Unknown;
+            ProjectLayoutRevision rev = ProjectLayoutRevision.UNKNOWN_REVISION;
+            int pageCount = pdf.GetNumberOfPages();
 
-
-            for (int i = 1; i < pdf.GetNumberOfPages(); i++)
+            for (int i = 1; i < pageCount + 1; i++)
             {
                 ///get the text from every page to search through
                 str.Append(PdfTextExtractor.GetTextFromPage(pdf.GetPage(i)));
@@ -39,7 +39,7 @@ namespace ProjectExtractor.Extractors.Detail
             //go through all content filled lines and search for the keywords and get their values
             for (int lineIndex = 0; lineIndex < lines.Length; lineIndex++)
             {
-                if (rev == ProjectLayoutRevision.RevisionTwo)
+                if (rev == ProjectLayoutRevision.REVISION_TWO)
                 {
 
                     possibleKeyword = Array.Find(Keywords, lines[lineIndex].Contains);
@@ -68,7 +68,7 @@ namespace ProjectExtractor.Extractors.Detail
                             }
                             catch (Exception)
                             {//missing keyword was searched, it's fine but will return special case
-                                returnCode = ReturnCode.flawed;
+                                returnCode = ReturnCode.FLAWED;
                             }
 
                         }
@@ -81,11 +81,20 @@ namespace ProjectExtractor.Extractors.Detail
                         str.Append(lines[lineIndex]);
                         str.Append(Environment.NewLine);
                     }
+
+                    if (WriteTotalHoursToFile)
+                    {
+                        if (lines[lineIndex].Contains(totalHoursKeyword))
+                        {
+                            str.Append(totalHoursKeyword + ": " + lines[lineIndex].Substring(lines[lineIndex].IndexOf(totalHoursKeyword) + totalHoursKeyword.Length));
+                            //break out of loop here? it should be the last section of the document. 
+                        }
+                    }
                 }
-                else if (rev == ProjectLayoutRevision.RevisionOne)
+                else if (rev == ProjectLayoutRevision.REVISION_ONE)
                 {
                     Worker.ReportProgress(100);
-                    return (int)ReturnCode.notImplemented;//not implemented yet
+                    return (int)ReturnCode.NOT_IMPLEMENTED;//not implemented yet
                 }
 
                 //progress for the progress bar

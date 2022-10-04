@@ -10,16 +10,23 @@ namespace ProjectExtractor.Extractors.Detail
     /// <summary>!DEBUG EXTRACTOR! intended to extract all contents of pdf file to plain text TXT file</summary>
     class DetailExtractorALL : DetailExtractorBase
     {
-        public override int Extract(string file, string extractPath, string[] Keywords, string chapters, string stopChapters, bool WriteKeywordsToFile, BackgroundWorker Worker)
+        public override int Extract(string file, string extractPath, string[] Keywords, string chapters, string stopChapters, string totalHoursKeyword, bool WriteTotalHoursToFile, bool WriteKeywordsToFile, BackgroundWorker Worker)
         {
-            ReturnCode returnCode = ReturnCode.none;
+            ReturnCode returnCode = ReturnCode.NONE;
             PdfReader reader = new PdfReader(file);
             PdfDocument pdf = new PdfDocument(reader);
             StringBuilder str = new StringBuilder();
             string[] lines;
-            for (int i = 1; i < pdf.GetNumberOfPages(); i++)
+            int pageCount = pdf.GetNumberOfPages();
+            for (int i = 0; i <= pageCount; i++)
             {
+                try
+                {
                 str.Append(PdfTextExtractor.GetTextFromPage(pdf.GetPage(i)));
+                }
+                catch (Exception)
+                {
+                }
             }
             lines = str.ToString().Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
             //str.Clear();

@@ -135,7 +135,7 @@ namespace ProjectExtractor
             if (result == CommonFileDialogResult.Ok && !string.IsNullOrWhiteSpace(TB_ExtractLocation.Text))
             {
                 UpdateFileStatus();
-                UpdateSettingsIfNotStarting();;
+                UpdateSettingsIfNotStarting(); ;
             }
         }
         private void BT_Extract_Click(object sender, EventArgs e)
@@ -178,7 +178,7 @@ namespace ProjectExtractor
         private void BT_KeywordsDelete_Click(object sender, EventArgs e)
         {
             LV_Keywords.Items.RemoveAt(LV_Keywords.SelectedIndices[0]);
-            UpdateSettingsIfNotStarting();;
+            UpdateSettingsIfNotStarting(); ;
         }
         private void BT_KeywordsUp_Click(object sender, EventArgs e)
         {
@@ -189,7 +189,7 @@ namespace ProjectExtractor
                 LV_Keywords.Items.RemoveAt(LV_Keywords.SelectedIndices[0]);
                 LV_Keywords.Items.Insert(index - 1, selected);
             }
-            UpdateSettingsIfNotStarting();;
+            UpdateSettingsIfNotStarting(); ;
         }
         private void BT_KeywordsDown_Click(object sender, EventArgs e)
         {
@@ -200,7 +200,7 @@ namespace ProjectExtractor
                 LV_Keywords.Items.RemoveAt(LV_Keywords.SelectedIndices[0]);
                 LV_Keywords.Items.Insert(index + 1, selected);
             }
-            UpdateSettingsIfNotStarting();;
+            UpdateSettingsIfNotStarting(); ;
         }
         //full project extraction setting events
         #endregion
@@ -222,6 +222,10 @@ namespace ProjectExtractor
         private void CB_WriteKeywordsToFile_CheckedChanged(object sender, EventArgs e)
         {
             UpdateSettingsIfNotStarting();
+        }
+        private void CB_TotalHoursEnabled_CheckedChanged(object sender, EventArgs e)
+        {
+            TB_TotalHours.Enabled = CB_TotalHoursEnabled.Checked;
         }
         #endregion
         #region TextBox events
@@ -287,14 +291,14 @@ namespace ProjectExtractor
                                  return;
                          }*//*
                      }*/
-                    ExtractionResult = extractor.Extract(TB_PDFLocation.Text, ExportFile, Keywords, TB_Chapter.Text, TB_StopChapter.Text, CB_WriteKeywordsToFile.Checked, sender as System.ComponentModel.BackgroundWorker);
+                    ExtractionResult = extractor.Extract(TB_PDFLocation.Text, ExportFile, Keywords, TB_Chapter.Text, TB_StopChapter.Text, TB_TotalHours.Text, CB_TotalHoursEnabled.Checked, CB_WriteKeywordsToFile.Checked, sender as System.ComponentModel.BackgroundWorker);
                 }
                 else
                 {
                     UpdateStatus("Invalid file extension marked!");
                 }
 
-                if (ExtractionResult != 0)//something went wrong
+                if (ExtractionResult != (int)DetailExtractorBase.ReturnCode.NONE && ExtractionResult != (int)DetailExtractorBase.ReturnCode.FLAWED)//something went wrong
                 {
                     string code = extractor.GetReturnCode(ExtractionResult);
                     UpdateStatus("ERROR extracting: " + code);
@@ -317,7 +321,7 @@ namespace ProjectExtractor
         private void backgroundWorker_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
         {
             //open the created file in its default application
-            if (ExtractionResult == 0 || ExtractionResult == 3)//none error or flawed error
+            if (ExtractionResult == (int)DetailExtractorBase.ReturnCode.NONE || ExtractionResult == (int)DetailExtractorBase.ReturnCode.FLAWED)//none error or flawed error
             {
                 if (File.Exists(ExportFile))
                 {
@@ -330,7 +334,17 @@ namespace ProjectExtractor
                     process.Start();
                 }
             }
+            if (ExtractionResult == (int)DetailExtractorBase.ReturnCode.FLAWED)
+            {
+                UpdateStatus("Non fatal error occured, check for missing items.");
+            }
             BT_Extract.Enabled = true;
+        }
+        #endregion
+        #region Form Events
+        private void ExtractorForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            UpdateSettingsIfNotStarting();
         }
         #endregion
 
@@ -525,6 +539,16 @@ namespace ProjectExtractor
                 CB_WriteKeywordsToFile.Checked = Settings.ReadBool("Write_Keywords_To_File", "Export");
             }
 
+            if (Settings.KeyExists("WriteTotalHours"))
+            {
+                CB_TotalHoursEnabled.Checked = Settings.ReadBool("WriteTotalHours", "Hours");
+            }
+
+            if (Settings.KeyExists("TotalHoursKeyword", "Hours"))
+            {
+                TB_TotalHours.Text = Settings.Read("TotalHoursKeyword", "Hours");
+            }
+
             UpdateSettings();
         }
 
@@ -542,6 +566,9 @@ namespace ProjectExtractor
 
             Settings.Write("ChapterStart", TB_Chapter.Text, "Chapters");//save the start of the dates section in the projects
             Settings.Write("ChapterEnd", TB_StopChapter.Text, "Chapters");//save the end of the dates section in the projects
+
+            Settings.WriteBool("WriteTotalHours", CB_TotalHoursEnabled.Checked, "Hours");
+            Settings.Write("TotalHoursKeyword", TB_TotalHours.Text, "Hours");
         }
 
         /// <summary>Only Updates the settings if the program is not considered starting up</summary>
@@ -556,6 +583,8 @@ namespace ProjectExtractor
                 UpdateSettings();
             }
         }
+
+
 
         /// <summary>Saves or deletes the key (if it exists) for the given string, depending on the bool value</summary>
         /// <param name="Key">Key to save/delete</param>

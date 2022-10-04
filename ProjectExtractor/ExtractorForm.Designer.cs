@@ -64,6 +64,10 @@ namespace ProjectExtractor
             this.RB_ExportTXT = new System.Windows.Forms.RadioButton();
             this.RB_ExportPDF = new System.Windows.Forms.RadioButton();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.groupBox6 = new System.Windows.Forms.GroupBox();
+            this.CB_TotalHoursEnabled = new System.Windows.Forms.CheckBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.TB_TotalHours = new System.Windows.Forms.TextBox();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.CB_WriteKeywordsToFile = new System.Windows.Forms.CheckBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
@@ -88,6 +92,7 @@ namespace ProjectExtractor
             this.groupBox3.SuspendLayout();
             this.GB_ExportSettings.SuspendLayout();
             this.tabPage2.SuspendLayout();
+            this.groupBox6.SuspendLayout();
             this.groupBox5.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -186,6 +191,7 @@ namespace ProjectExtractor
             this.button1.TabIndex = 6;
             this.button1.Text = "&Extract Projects";
             this.button1.UseVisualStyleBackColor = true;
+            this.button1.Visible = false;
             // 
             // label5
             // 
@@ -435,6 +441,7 @@ namespace ProjectExtractor
             // tabPage2
             // 
             this.tabPage2.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.tabPage2.Controls.Add(this.groupBox6);
             this.tabPage2.Controls.Add(this.groupBox5);
             this.tabPage2.Controls.Add(this.groupBox4);
             this.tabPage2.Controls.Add(this.groupBox2);
@@ -446,6 +453,52 @@ namespace ProjectExtractor
             this.tabPage2.Text = "Detail Settings";
             this.tabPage2.ToolTipText = "Settings for project detail extraction";
             this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // groupBox6
+            // 
+            this.groupBox6.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox6.Controls.Add(this.CB_TotalHoursEnabled);
+            this.groupBox6.Controls.Add(this.label6);
+            this.groupBox6.Controls.Add(this.TB_TotalHours);
+            this.groupBox6.Location = new System.Drawing.Point(320, 75);
+            this.groupBox6.Name = "groupBox6";
+            this.groupBox6.Size = new System.Drawing.Size(234, 164);
+            this.groupBox6.TabIndex = 7;
+            this.groupBox6.TabStop = false;
+            this.groupBox6.Text = "Hours";
+            // 
+            // CB_TotalHoursEnabled
+            // 
+            this.CB_TotalHoursEnabled.AutoSize = true;
+            this.CB_TotalHoursEnabled.Checked = true;
+            this.CB_TotalHoursEnabled.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.CB_TotalHoursEnabled.Location = new System.Drawing.Point(6, 40);
+            this.CB_TotalHoursEnabled.Name = "CB_TotalHoursEnabled";
+            this.CB_TotalHoursEnabled.Size = new System.Drawing.Size(15, 14);
+            this.CB_TotalHoursEnabled.TabIndex = 8;
+            this.CB_TotalHoursEnabled.UseVisualStyleBackColor = true;
+            this.CB_TotalHoursEnabled.CheckedChanged += new System.EventHandler(this.CB_TotalHoursEnabled_CheckedChanged);
+            // 
+            // label6
+            // 
+            this.label6.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(6, 19);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(116, 15);
+            this.label6.TabIndex = 7;
+            this.label6.Text = "Total Hours Keyword";
+            // 
+            // TB_TotalHours
+            // 
+            this.TB_TotalHours.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.TB_TotalHours.Location = new System.Drawing.Point(27, 37);
+            this.TB_TotalHours.Name = "TB_TotalHours";
+            this.TB_TotalHours.Size = new System.Drawing.Size(201, 23);
+            this.TB_TotalHours.TabIndex = 6;
+            this.TB_TotalHours.Text = "Totaal aantal uren";
             // 
             // groupBox5
             // 
@@ -659,6 +712,7 @@ namespace ProjectExtractor
             this.Name = "ExtractorForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "PDF Extractor";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ExtractorForm_FormClosing);
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
             this.TC_MainView.ResumeLayout(false);
@@ -671,6 +725,8 @@ namespace ProjectExtractor
             this.GB_ExportSettings.ResumeLayout(false);
             this.GB_ExportSettings.PerformLayout();
             this.tabPage2.ResumeLayout(false);
+            this.groupBox6.ResumeLayout(false);
+            this.groupBox6.PerformLayout();
             this.groupBox5.ResumeLayout(false);
             this.groupBox5.PerformLayout();
             this.groupBox4.ResumeLayout(false);
@@ -729,6 +785,10 @@ namespace ProjectExtractor
         private System.Windows.Forms.RadioButton RB_ExportPDF;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.GroupBox groupBox5;
+        private System.Windows.Forms.GroupBox groupBox6;
+        private System.Windows.Forms.CheckBox CB_TotalHoursEnabled;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.TextBox TB_TotalHours;
     }
 }
 
