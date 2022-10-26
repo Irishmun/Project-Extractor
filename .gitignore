@@ -400,3 +400,4 @@ FodyWeavers.xsd
 # test data
 /TestData/
 [Tt]estDocs/
+ProjectExtractor/Extractors/FullProject/example.txt

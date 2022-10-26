@@ -27,6 +27,7 @@ namespace ProjectExtractor
             InitializeComponent();
 #if !DEBUG
             BT_DebugExtract.Visible = false;
+            CB_DebugIncludeWhiteSpace.Visible = false;
 #endif
             Settings = new IniFile();
             InitSettings();
@@ -160,6 +161,7 @@ namespace ProjectExtractor
                 {
                     BT_Extract.Enabled = false;
                     extractor = new DetailExtractorALL();
+                    (extractor as DetailExtractorALL).IncludeWhiteSpace = CB_DebugIncludeWhiteSpace.Checked;
                     backgroundWorker.RunWorkerAsync("DEBUG");
                 }
             }
@@ -253,44 +255,10 @@ namespace ProjectExtractor
             {
                 string fileName = TB_PDFLocation.Text.Substring(TB_PDFLocation.Text.LastIndexOf('\\') + 1);//create filename from original file
 
-                ExportFile = $"{TB_ExtractLocation.Text}{ExtractionPrefix}{Path.GetFileNameWithoutExtension(fileName)}.{ extractor.ToString()}";//add path and file extension
-                                                                                                                                                //TODO: make it possible to extract to the other supported formats
+                ExportFile = $"{TB_ExtractLocation.Text}{ExtractionPrefix}{Path.GetFileNameWithoutExtension(fileName)}.{ extractor}";//add path and file extension
+                                                                                                                                     //TODO: make it possible to extract to the other supported formats
                 if (extractor != null)
                 {
-                    /* if (e.Argument != null)
-                     {
- #if DEBUG
-                         if (!string.IsNullOrEmpty(e.Argument.ToString()) && e.Argument.ToString() == "DEBUG")
-                         {
-                             extractor = new DetailExtractorALL();//forcibly instantiate debug extractor
-                             ExtractionResult = extractor.Extract(TB_PDFLocation.Text, ExportFile, Keywords, TB_Chapter.Text, TB_StopChapter.Text, CB_WriteKeywordsToFile.Checked, sender as System.ComponentModel.BackgroundWorker);
-                         }
- #endif
-                     }
-                     else
-                     {
-                         extractor.Extract(TB_PDFLocation.Text, ExportFile, Keywords, TB_Chapter.Text, TB_StopChapter.Text, CB_WriteKeywordsToFile.Checked, sender as System.ComponentModel.BackgroundWorker);
-                         *//*switch (GetExportSetting())//this one would not have to happen, as I could just call the extract method of whichever instance extractor would be
-                         {
-                             case ".txt":
-                                 ExtractionResult = extractor.ExtractToTXT(TB_PDFLocation.Text, ExportFile, Keywords, TB_Chapter.Text, TB_StopChapter.Text, CB_WriteKeywordsToFile.Checked, sender as System.ComponentModel.BackgroundWorker);
-                                 break;
-                             case ".pdf":
-                                 ExtractionResult = extractor.ExtractToPDF(TB_PDFLocation.Text, ExportFile, Keywords, TB_Chapter.Text, TB_StopChapter.Text, CB_WriteKeywordsToFile.Checked, sender as System.ComponentModel.BackgroundWorker);
-                                 break;
-                             case ".xlsx":
-                                 ExtractionResult = extractor.ExtractToXLS(TB_PDFLocation.Text, ExportFile, Keywords, TB_Chapter.Text, TB_StopChapter.Text, CB_WriteKeywordsToFile.Checked, sender as System.ComponentModel.BackgroundWorker);
-                                 break;
-                             case ".docx":
-                                 ExtractionResult = extractor.ExtractToDOCX(TB_PDFLocation.Text, ExportFile, Keywords, TB_Chapter.Text, TB_StopChapter.Text, CB_WriteKeywordsToFile.Checked, sender as System.ComponentModel.BackgroundWorker);
-                                 break;
-                             case ".rtf":
-                                 ExtractionResult = extractor.ExtractToRTF(TB_PDFLocation.Text, ExportFile, Keywords, TB_Chapter.Text, TB_StopChapter.Text, CB_WriteKeywordsToFile.Checked, sender as System.ComponentModel.BackgroundWorker);
-                                 break;
-                             default:
-                                 return;
-                         }*//*
-                     }*/
                     ExtractionResult = extractor.Extract(TB_PDFLocation.Text, ExportFile, Keywords, TB_Chapter.Text, TB_StopChapter.Text, TB_TotalHours.Text, CB_TotalHoursEnabled.Checked, CB_WriteKeywordsToFile.Checked, sender as System.ComponentModel.BackgroundWorker);
                 }
                 else

@@ -10,6 +10,9 @@ namespace ProjectExtractor.Extractors.Detail
     /// <summary>!DEBUG EXTRACTOR! intended to extract all contents of pdf file to plain text TXT file</summary>
     class DetailExtractorALL : DetailExtractorBase
     {
+        private bool _includeWhiteSpace;
+
+
         public override int Extract(string file, string extractPath, string[] Keywords, string chapters, string stopChapters, string totalHoursKeyword, bool WriteTotalHoursToFile, bool WriteKeywordsToFile, BackgroundWorker Worker)
         {
             ReturnCode returnCode = ReturnCode.NONE;
@@ -22,31 +25,26 @@ namespace ProjectExtractor.Extractors.Detail
             {
                 try
                 {
-                str.Append(PdfTextExtractor.GetTextFromPage(pdf.GetPage(i)));
+                    str.Append(PdfTextExtractor.GetTextFromPage(pdf.GetPage(i)));
                 }
                 catch (Exception)
                 {
                 }
             }
-            lines = str.ToString().Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
-            //str.Clear();
-            //for (int i = 0; i < lines.Length; i++)
-            //{
-            //    if (lines[i].StartsWith("Projecttitel"))
-            //    {
-            //        str.Append(lines[i] + Environment.NewLine);
-            //    }
-            //}
+            if (_includeWhiteSpace)
+            {
+                lines = str.ToString().Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+            }
+            else
+            {
+                lines = str.ToString().Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+            }
             string res = string.Join(Environment.NewLine, lines);
             File.WriteAllText(extractPath, res);
-            //using (StreamWriter sw = File.CreateText(extractPath))
-            //{
-            //    sw.Write(res);//Put this in backgroundworker and extract all contents from pdf file
-            //    sw.Close();
-            //}
             return (int)returnCode;
         }
 
         public override string ToString() => "txt";
+        public bool IncludeWhiteSpace { set => _includeWhiteSpace = value; }
     }
 }

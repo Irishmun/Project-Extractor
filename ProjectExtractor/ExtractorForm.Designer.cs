@@ -84,6 +84,7 @@ namespace ProjectExtractor
             this.BT_KeywordsNew = new System.Windows.Forms.Button();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.backgroundWorker = new System.ComponentModel.BackgroundWorker();
+            this.CB_DebugIncludeWhiteSpace = new System.Windows.Forms.CheckBox();
             this.statusStrip1.SuspendLayout();
             this.TC_MainView.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -161,6 +162,7 @@ namespace ProjectExtractor
             // tabPage1
             // 
             this.tabPage1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.tabPage1.Controls.Add(this.CB_DebugIncludeWhiteSpace);
             this.tabPage1.Controls.Add(this.button1);
             this.tabPage1.Controls.Add(this.label5);
             this.tabPage1.Controls.Add(this.TB_FullPath);
@@ -700,6 +702,16 @@ namespace ProjectExtractor
             this.backgroundWorker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorker_ProgressChanged);
             this.backgroundWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker_RunWorkerCompleted);
             // 
+            // CB_DebugIncludeWhiteSpace
+            // 
+            this.CB_DebugIncludeWhiteSpace.AutoSize = true;
+            this.CB_DebugIncludeWhiteSpace.Location = new System.Drawing.Point(173, 160);
+            this.CB_DebugIncludeWhiteSpace.Name = "CB_DebugIncludeWhiteSpace";
+            this.CB_DebugIncludeWhiteSpace.Size = new System.Drawing.Size(130, 19);
+            this.CB_DebugIncludeWhiteSpace.TabIndex = 100;
+            this.CB_DebugIncludeWhiteSpace.Text = "Include WhiteSpace";
+            this.CB_DebugIncludeWhiteSpace.UseVisualStyleBackColor = true;
+            // 
             // ExtractorForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -789,6 +801,7 @@ namespace ProjectExtractor
         private System.Windows.Forms.CheckBox CB_TotalHoursEnabled;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.TextBox TB_TotalHours;
+        private System.Windows.Forms.CheckBox CB_DebugIncludeWhiteSpace;
     }
 }
 
