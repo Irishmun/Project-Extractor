@@ -45,6 +45,7 @@ namespace ProjectExtractor
             this.TSPB_Extraction = new System.Windows.Forms.ToolStripProgressBar();
             this.TC_MainView = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.CB_DisableExtractionPath = new System.Windows.Forms.CheckBox();
             this.CB_DebugIncludeWhiteSpace = new System.Windows.Forms.CheckBox();
             this.BT_ExtractFullProject = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
@@ -178,6 +179,7 @@ namespace ProjectExtractor
             // tabPage1
             // 
             this.tabPage1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.tabPage1.Controls.Add(this.CB_DisableExtractionPath);
             this.tabPage1.Controls.Add(this.CB_DebugIncludeWhiteSpace);
             this.tabPage1.Controls.Add(this.BT_ExtractFullProject);
             this.tabPage1.Controls.Add(this.label5);
@@ -199,6 +201,19 @@ namespace ProjectExtractor
             this.tabPage1.Text = "Extractor";
             this.tabPage1.ToolTipText = "Main screen for extraction";
             this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // CB_DisableExtractionPath
+            // 
+            this.CB_DisableExtractionPath.AutoSize = true;
+            this.CB_DisableExtractionPath.Checked = true;
+            this.CB_DisableExtractionPath.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.CB_DisableExtractionPath.Location = new System.Drawing.Point(73, 50);
+            this.CB_DisableExtractionPath.Name = "CB_DisableExtractionPath";
+            this.CB_DisableExtractionPath.Size = new System.Drawing.Size(201, 19);
+            this.CB_DisableExtractionPath.TabIndex = 101;
+            this.CB_DisableExtractionPath.Text = "Set extraction folder to pdf folder";
+            this.CB_DisableExtractionPath.UseVisualStyleBackColor = true;
+            this.CB_DisableExtractionPath.CheckedChanged += new System.EventHandler(this.CB_DisableExtractionPath_CheckedChanged);
             // 
             // CB_DebugIncludeWhiteSpace
             // 
@@ -224,7 +239,7 @@ namespace ProjectExtractor
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(8, 104);
+            this.label5.Location = new System.Drawing.Point(8, 117);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(56, 15);
             this.label5.TabIndex = 99;
@@ -234,7 +249,7 @@ namespace ProjectExtractor
             // 
             this.TB_FullPath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.TB_FullPath.Location = new System.Drawing.Point(73, 101);
+            this.TB_FullPath.Location = new System.Drawing.Point(73, 114);
             this.TB_FullPath.Multiline = true;
             this.TB_FullPath.Name = "TB_FullPath";
             this.TB_FullPath.ReadOnly = true;
@@ -291,7 +306,7 @@ namespace ProjectExtractor
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(8, 64);
+            this.label2.Location = new System.Drawing.Point(8, 77);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(59, 15);
             this.label2.TabIndex = 99;
@@ -301,7 +316,8 @@ namespace ProjectExtractor
             // 
             this.TB_ExtractLocation.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.TB_ExtractLocation.Location = new System.Drawing.Point(73, 61);
+            this.TB_ExtractLocation.Enabled = false;
+            this.TB_ExtractLocation.Location = new System.Drawing.Point(73, 74);
             this.TB_ExtractLocation.Name = "TB_ExtractLocation";
             this.TB_ExtractLocation.Size = new System.Drawing.Size(446, 23);
             this.TB_ExtractLocation.TabIndex = 4;
@@ -310,7 +326,8 @@ namespace ProjectExtractor
             // BT_BrowseExtract
             // 
             this.BT_BrowseExtract.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.BT_BrowseExtract.Location = new System.Drawing.Point(517, 60);
+            this.BT_BrowseExtract.Enabled = false;
+            this.BT_BrowseExtract.Location = new System.Drawing.Point(517, 73);
             this.BT_BrowseExtract.Name = "BT_BrowseExtract";
             this.BT_BrowseExtract.Size = new System.Drawing.Size(25, 25);
             this.BT_BrowseExtract.TabIndex = 3;
@@ -938,6 +955,7 @@ namespace ProjectExtractor
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.TextBox TB_SectionsEndProject;
         private System.Windows.Forms.GroupBox groupBox8;
+        private System.Windows.Forms.CheckBox CB_DisableExtractionPath;
     }
 }
 

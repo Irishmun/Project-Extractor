@@ -127,7 +127,10 @@ namespace ProjectExtractor
             //check if it has changed, else leave it as what it is.
             res = string.IsNullOrWhiteSpace(res) ? TB_PDFLocation.Text : res;
             TB_PDFLocation.Text = res;
-            TB_ExtractLocation.Text = Path.GetDirectoryName(res);
+            if (CB_DisableExtractionPath.Checked == true)
+            {//only automatically set extraction path folder if disable is unchecked
+                TB_ExtractLocation.Text = Path.GetDirectoryName(res);
+            }
             if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(TB_PDFLocation.Text))
             {
                 UpdateFileStatus();
@@ -306,6 +309,11 @@ namespace ProjectExtractor
         private void CB_TotalHoursEnabled_CheckedChanged(object sender, EventArgs e)
         {
             TB_TotalHours.Enabled = CB_TotalHoursEnabled.Checked;
+        }
+        private void CB_DisableExtractionPath_CheckedChanged(object sender, EventArgs e)
+        {
+            TB_ExtractLocation.Enabled = !CB_DisableExtractionPath.Checked;
+            BT_BrowseExtract.Enabled = !CB_DisableExtractionPath.Checked;
         }
         #endregion
         #region TextBox events
@@ -689,7 +697,6 @@ namespace ProjectExtractor
             _settings.Write("Sections", ConvertListViewItemsToString(LV_Sections), "Export");
             _settings.Write("Sections_Project_End", TB_SectionsEndProject.Text, "Export");
         }
-
         /// <summary>Only Updates the settings if the program is not considered starting up</summary>
         private void UpdateSettingsIfNotStarting()
         {
