@@ -127,6 +127,7 @@ namespace ProjectExtractor
             //check if it has changed, else leave it as what it is.
             res = string.IsNullOrWhiteSpace(res) ? TB_PDFLocation.Text : res;
             TB_PDFLocation.Text = res;
+            TB_ExtractLocation.Text = Path.GetDirectoryName(res);
             if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(TB_PDFLocation.Text))
             {
                 UpdateFileStatus();
