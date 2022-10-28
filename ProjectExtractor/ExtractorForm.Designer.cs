@@ -33,6 +33,11 @@ namespace ProjectExtractor
             System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("Projecttitel");
             System.Windows.Forms.ListViewItem listViewItem3 = new System.Windows.Forms.ListViewItem("Aantal uren werknemers");
             System.Windows.Forms.ListViewItem listViewItem4 = new System.Windows.Forms.ListViewItem("Het project wordt/is gestart op");
+            System.Windows.Forms.ListViewItem listViewItem5 = new System.Windows.Forms.ListViewItem("Geef een algemene omschrijving van het");
+            System.Windows.Forms.ListViewItem listViewItem6 = new System.Windows.Forms.ListViewItem("project. Heeft u eerder WBSO");
+            System.Windows.Forms.ListViewItem listViewItem7 = new System.Windows.Forms.ListViewItem("aangevraagd voor dit project? Beschrijf");
+            System.Windows.Forms.ListViewItem listViewItem8 = new System.Windows.Forms.ListViewItem("dan de stand van zaken bij de vraag");
+            System.Windows.Forms.ListViewItem listViewItem9 = new System.Windows.Forms.ListViewItem("“Update project”.");
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ExtractorForm));
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
@@ -40,7 +45,8 @@ namespace ProjectExtractor
             this.TSPB_Extraction = new System.Windows.Forms.ToolStripProgressBar();
             this.TC_MainView = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.button1 = new System.Windows.Forms.Button();
+            this.CB_DebugIncludeWhiteSpace = new System.Windows.Forms.CheckBox();
+            this.BT_ExtractFullProject = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
             this.TB_FullPath = new System.Windows.Forms.TextBox();
             this.BT_DebugExtract = new System.Windows.Forms.Button();
@@ -83,8 +89,15 @@ namespace ProjectExtractor
             this.BT_KeywordsDelete = new System.Windows.Forms.Button();
             this.BT_KeywordsNew = new System.Windows.Forms.Button();
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.groupBox8 = new System.Windows.Forms.GroupBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.TB_SectionsEndProject = new System.Windows.Forms.TextBox();
+            this.groupBox7 = new System.Windows.Forms.GroupBox();
+            this.BT_SectionsEdit = new System.Windows.Forms.Button();
+            this.LV_Sections = new System.Windows.Forms.ListView();
+            this.BT_SectionsDelete = new System.Windows.Forms.Button();
+            this.BT_SectionsNew = new System.Windows.Forms.Button();
             this.backgroundWorker = new System.ComponentModel.BackgroundWorker();
-            this.CB_DebugIncludeWhiteSpace = new System.Windows.Forms.CheckBox();
             this.statusStrip1.SuspendLayout();
             this.TC_MainView.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -97,6 +110,9 @@ namespace ProjectExtractor
             this.groupBox5.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.groupBox2.SuspendLayout();
+            this.tabPage3.SuspendLayout();
+            this.groupBox8.SuspendLayout();
+            this.groupBox7.SuspendLayout();
             this.SuspendLayout();
             // 
             // statusStrip1
@@ -163,7 +179,7 @@ namespace ProjectExtractor
             // 
             this.tabPage1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.tabPage1.Controls.Add(this.CB_DebugIncludeWhiteSpace);
-            this.tabPage1.Controls.Add(this.button1);
+            this.tabPage1.Controls.Add(this.BT_ExtractFullProject);
             this.tabPage1.Controls.Add(this.label5);
             this.tabPage1.Controls.Add(this.TB_FullPath);
             this.tabPage1.Controls.Add(this.BT_DebugExtract);
@@ -184,16 +200,26 @@ namespace ProjectExtractor
             this.tabPage1.ToolTipText = "Main screen for extraction";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
-            // button1
+            // CB_DebugIncludeWhiteSpace
             // 
-            this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.button1.Location = new System.Drawing.Point(242, 257);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(147, 55);
-            this.button1.TabIndex = 6;
-            this.button1.Text = "&Extract Projects";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Visible = false;
+            this.CB_DebugIncludeWhiteSpace.AutoSize = true;
+            this.CB_DebugIncludeWhiteSpace.Location = new System.Drawing.Point(173, 160);
+            this.CB_DebugIncludeWhiteSpace.Name = "CB_DebugIncludeWhiteSpace";
+            this.CB_DebugIncludeWhiteSpace.Size = new System.Drawing.Size(130, 19);
+            this.CB_DebugIncludeWhiteSpace.TabIndex = 100;
+            this.CB_DebugIncludeWhiteSpace.Text = "Include WhiteSpace";
+            this.CB_DebugIncludeWhiteSpace.UseVisualStyleBackColor = true;
+            // 
+            // BT_ExtractFullProject
+            // 
+            this.BT_ExtractFullProject.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.BT_ExtractFullProject.Location = new System.Drawing.Point(242, 257);
+            this.BT_ExtractFullProject.Name = "BT_ExtractFullProject";
+            this.BT_ExtractFullProject.Size = new System.Drawing.Size(147, 55);
+            this.BT_ExtractFullProject.TabIndex = 6;
+            this.BT_ExtractFullProject.Text = "&Extract Projects";
+            this.BT_ExtractFullProject.UseVisualStyleBackColor = true;
+            this.BT_ExtractFullProject.Click += new System.EventHandler(this.BT_ExtractFullProject_Click);
             // 
             // label5
             // 
@@ -452,7 +478,7 @@ namespace ProjectExtractor
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage2.Size = new System.Drawing.Size(564, 322);
             this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "Detail Settings";
+            this.tabPage2.Text = "Detail Extraction Settings";
             this.tabPage2.ToolTipText = "Settings for project detail extraction";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
@@ -687,13 +713,121 @@ namespace ProjectExtractor
             // tabPage3
             // 
             this.tabPage3.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.tabPage3.Controls.Add(this.groupBox8);
+            this.tabPage3.Controls.Add(this.groupBox7);
             this.tabPage3.Location = new System.Drawing.Point(4, 24);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Size = new System.Drawing.Size(564, 322);
             this.tabPage3.TabIndex = 2;
-            this.tabPage3.Text = "Project Settings";
+            this.tabPage3.Text = "Project Extraction Settings";
             this.tabPage3.ToolTipText = "Settings for entire project extraction";
             this.tabPage3.UseVisualStyleBackColor = true;
+            // 
+            // groupBox8
+            // 
+            this.groupBox8.Controls.Add(this.label7);
+            this.groupBox8.Controls.Add(this.TB_SectionsEndProject);
+            this.groupBox8.Location = new System.Drawing.Point(6, 175);
+            this.groupBox8.Name = "groupBox8";
+            this.groupBox8.Size = new System.Drawing.Size(274, 61);
+            this.groupBox8.TabIndex = 2;
+            this.groupBox8.TabStop = false;
+            this.groupBox8.Text = "Keywords";
+            // 
+            // label7
+            // 
+            this.label7.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(6, 14);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(67, 15);
+            this.label7.TabIndex = 0;
+            this.label7.Text = "End Project";
+            // 
+            // TB_SectionsEndProject
+            // 
+            this.TB_SectionsEndProject.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.TB_SectionsEndProject.Location = new System.Drawing.Point(6, 32);
+            this.TB_SectionsEndProject.Name = "TB_SectionsEndProject";
+            this.TB_SectionsEndProject.Size = new System.Drawing.Size(262, 23);
+            this.TB_SectionsEndProject.TabIndex = 3;
+            this.TB_SectionsEndProject.Text = "Samenwerking";
+            // 
+            // groupBox7
+            // 
+            this.groupBox7.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox7.Controls.Add(this.BT_SectionsEdit);
+            this.groupBox7.Controls.Add(this.LV_Sections);
+            this.groupBox7.Controls.Add(this.BT_SectionsDelete);
+            this.groupBox7.Controls.Add(this.BT_SectionsNew);
+            this.groupBox7.Location = new System.Drawing.Point(6, 3);
+            this.groupBox7.Name = "groupBox7";
+            this.groupBox7.Size = new System.Drawing.Size(548, 166);
+            this.groupBox7.TabIndex = 1;
+            this.groupBox7.TabStop = false;
+            this.groupBox7.Text = "Sections";
+            // 
+            // BT_SectionsEdit
+            // 
+            this.BT_SectionsEdit.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.BT_SectionsEdit.Enabled = false;
+            this.BT_SectionsEdit.Location = new System.Drawing.Point(436, 51);
+            this.BT_SectionsEdit.Name = "BT_SectionsEdit";
+            this.BT_SectionsEdit.Size = new System.Drawing.Size(106, 23);
+            this.BT_SectionsEdit.TabIndex = 3;
+            this.BT_SectionsEdit.Text = "&Edit";
+            this.BT_SectionsEdit.UseVisualStyleBackColor = true;
+            this.BT_SectionsEdit.Click += new System.EventHandler(this.BT_SectionsEdit_Click);
+            // 
+            // LV_Sections
+            // 
+            this.LV_Sections.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.LV_Sections.HideSelection = false;
+            this.LV_Sections.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
+            listViewItem5,
+            listViewItem6,
+            listViewItem7,
+            listViewItem8,
+            listViewItem9});
+            this.LV_Sections.LabelEdit = true;
+            this.LV_Sections.Location = new System.Drawing.Point(6, 22);
+            this.LV_Sections.MultiSelect = false;
+            this.LV_Sections.Name = "LV_Sections";
+            this.LV_Sections.Size = new System.Drawing.Size(424, 138);
+            this.LV_Sections.TabIndex = 4;
+            this.LV_Sections.UseCompatibleStateImageBehavior = false;
+            this.LV_Sections.View = System.Windows.Forms.View.List;
+            this.LV_Sections.AfterLabelEdit += new System.Windows.Forms.LabelEditEventHandler(this.LV_Sections_AfterLabelEdit);
+            this.LV_Sections.ItemActivate += new System.EventHandler(this.LV_Sections_ItemActivate);
+            this.LV_Sections.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.LV_Sections_ItemSelectionChanged);
+            // 
+            // BT_SectionsDelete
+            // 
+            this.BT_SectionsDelete.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.BT_SectionsDelete.Enabled = false;
+            this.BT_SectionsDelete.Location = new System.Drawing.Point(436, 80);
+            this.BT_SectionsDelete.Name = "BT_SectionsDelete";
+            this.BT_SectionsDelete.Size = new System.Drawing.Size(106, 23);
+            this.BT_SectionsDelete.TabIndex = 2;
+            this.BT_SectionsDelete.Text = "&Delete";
+            this.BT_SectionsDelete.UseVisualStyleBackColor = true;
+            this.BT_SectionsDelete.Click += new System.EventHandler(this.BT_SectionsDelete_Click);
+            // 
+            // BT_SectionsNew
+            // 
+            this.BT_SectionsNew.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.BT_SectionsNew.Location = new System.Drawing.Point(436, 22);
+            this.BT_SectionsNew.Name = "BT_SectionsNew";
+            this.BT_SectionsNew.Size = new System.Drawing.Size(106, 23);
+            this.BT_SectionsNew.TabIndex = 1;
+            this.BT_SectionsNew.Text = "&New";
+            this.BT_SectionsNew.UseVisualStyleBackColor = true;
+            this.BT_SectionsNew.Click += new System.EventHandler(this.BT_SectionsNew_Click);
             // 
             // backgroundWorker
             // 
@@ -701,16 +835,6 @@ namespace ProjectExtractor
             this.backgroundWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker_DoWork);
             this.backgroundWorker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorker_ProgressChanged);
             this.backgroundWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker_RunWorkerCompleted);
-            // 
-            // CB_DebugIncludeWhiteSpace
-            // 
-            this.CB_DebugIncludeWhiteSpace.AutoSize = true;
-            this.CB_DebugIncludeWhiteSpace.Location = new System.Drawing.Point(173, 160);
-            this.CB_DebugIncludeWhiteSpace.Name = "CB_DebugIncludeWhiteSpace";
-            this.CB_DebugIncludeWhiteSpace.Size = new System.Drawing.Size(130, 19);
-            this.CB_DebugIncludeWhiteSpace.TabIndex = 100;
-            this.CB_DebugIncludeWhiteSpace.Text = "Include WhiteSpace";
-            this.CB_DebugIncludeWhiteSpace.UseVisualStyleBackColor = true;
             // 
             // ExtractorForm
             // 
@@ -744,6 +868,10 @@ namespace ProjectExtractor
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
             this.groupBox2.ResumeLayout(false);
+            this.tabPage3.ResumeLayout(false);
+            this.groupBox8.ResumeLayout(false);
+            this.groupBox8.PerformLayout();
+            this.groupBox7.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -795,13 +923,21 @@ namespace ProjectExtractor
         private System.Windows.Forms.RadioButton RB_ExportExcel;
         private System.Windows.Forms.RadioButton RB_ExportTXT;
         private System.Windows.Forms.RadioButton RB_ExportPDF;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button BT_ExtractFullProject;
         private System.Windows.Forms.GroupBox groupBox5;
         private System.Windows.Forms.GroupBox groupBox6;
         private System.Windows.Forms.CheckBox CB_TotalHoursEnabled;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.TextBox TB_TotalHours;
         private System.Windows.Forms.CheckBox CB_DebugIncludeWhiteSpace;
+        private System.Windows.Forms.GroupBox groupBox7;
+        private System.Windows.Forms.Button BT_SectionsEdit;
+        private System.Windows.Forms.ListView LV_Sections;
+        private System.Windows.Forms.Button BT_SectionsDelete;
+        private System.Windows.Forms.Button BT_SectionsNew;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.TextBox TB_SectionsEndProject;
+        private System.Windows.Forms.GroupBox groupBox8;
     }
 }
 

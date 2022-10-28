@@ -10,16 +10,16 @@ namespace ProjectExtractor.Extractors.Detail
     /// <summary>Used for extracting pdf details to CSV file format. intended for use in spreadsheet software such as excel</summary>
     class DetailExtractorXLS : DetailExtractorBase
     {
-        public override int Extract(string file, string extractPath, string[] Keywords, string chapters, string stopChapters, string totalHoursKeyword, bool WriteTotalHoursToFile, bool WriteKeywordsToFile, BackgroundWorker Worker)
+        public override int ExtractDetails(string file, string extractPath, string[] Keywords, string chapters, string stopChapters, string totalHoursKeyword, bool WriteTotalHoursToFile, bool WriteKeywordsToFile, BackgroundWorker Worker)
         {
-            ReturnCode returnCode = 0;
+            Util.ExitCode returnCode = 0;
 
             //TODO: implement
-            returnCode = ReturnCode.NOT_IMPLEMENTED;
+            returnCode = Util.ExitCode.NOT_IMPLEMENTED;
 
             return (int)returnCode;
         }
 
-        public override string ToString() => "csv";
+        public override string ToString() => "xls";
     }
 }

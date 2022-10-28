@@ -1,58 +1,44 @@
-﻿using iText.Kernel.Pdf;
-using iText.Kernel.Pdf.Canvas.Parser;
+﻿using ProjectExtractor.Util;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
-using System.Linq;
 using System.Text;
-using ProjectExtractor.Util;
 
 namespace ProjectExtractor.Extractors.Detail
 {
     /// <summary>Used for extracting pdf details to TXT file format. intended as ASCII plain text</summary>
     class DetailExtractorTXT : DetailExtractorBase
     {
-        public override int Extract(string file, string extractPath, string[] Keywords, string chapters, string stopChapters, string totalHoursKeyword, bool WriteTotalHoursToFile, bool WriteKeywordsToFile, BackgroundWorker Worker)
+        public override int ExtractDetails(string file, string extractPath, string[] Keywords, string chapters, string stopChapters, string totalHoursKeyword, bool WriteTotalHoursToFile, bool WriteKeywordsToFile, BackgroundWorker Worker)
         {
             //TODO: figure out way to handle different file structure versions
-            //open pdf file for reading
-            ReturnCode returnCode = ReturnCode.NONE;//to return at the end
-            PdfReader reader = new PdfReader(file);//to read from the pdf
-            PdfDocument pdf = new PdfDocument(reader);//to access read data
+            ExitCode returnCode = ExitCode.NONE;//to return at the end
+            ExtractTextFromPDF(file);
             StringBuilder str = new StringBuilder();//to create the text to write to the resulting file
             Dictionary<string, string> keywordValuePairs = new Dictionary<string, string>();//to store the found keywords and their values
-            ProjectLayoutRevision rev = ProjectLayoutRevision.UNKNOWN_REVISION;
-            int pageCount = pdf.GetNumberOfPages();
 
-            for (int i = 1; i < pageCount + 1; i++)
-            {
-                ///get the text from every page to search through
-                str.Append(PdfTextExtractor.GetTextFromPage(pdf.GetPage(i)));
-            }
-            //get only lines with text on them, reduces total worktime by ignoring empties
-            string[] lines = str.ToString().Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
-            str.Clear();
+            ProjectLayoutRevision rev = ProjectLayoutRevision.UNKNOWN_REVISION;
             string possibleKeyword = string.Empty;
 
-            rev = TryDetermineProjectLayout(lines[0]);
+            rev = ProjectRevisionUtil.TryDetermineProjectLayout(Lines[0]);
             //go through all content filled lines and search for the keywords and get their values
-            for (int lineIndex = 0; lineIndex < lines.Length; lineIndex++)
+            for (int lineIndex = 0; lineIndex < Lines.Length; lineIndex++)
             {
                 if (rev == ProjectLayoutRevision.REVISION_TWO)
                 {
-
-                    possibleKeyword = Array.Find(Keywords, lines[lineIndex].Contains);
+                    //look for possible keywormatch on line
+                    possibleKeyword = Array.Find(Keywords, Lines[lineIndex].Contains);
 
                     if (!string.IsNullOrWhiteSpace(possibleKeyword))
                     {//if any of the keywords are in the string, try add to dictionary
                         if (!keywordValuePairs.ContainsKey(possibleKeyword))
                         {//keyword not yet added to dictionary//add key and value to dictionary
-                            keywordValuePairs.Add(possibleKeyword, lines[lineIndex].Substring(lines[lineIndex].IndexOf(possibleKeyword) + possibleKeyword.Length));
+                            keywordValuePairs.Add(possibleKeyword, Lines[lineIndex].Substring(Lines[lineIndex].IndexOf(possibleKeyword) + possibleKeyword.Length));
                         }
 
                     }
-                    if (lines[lineIndex].Contains(chapters))
+                    if (Lines[lineIndex].Contains(chapters))
                     {
                         //assume that all keywords have been found, add them to "str"
                         foreach (string keyword in Keywords)
@@ -68,7 +54,7 @@ namespace ProjectExtractor.Extractors.Detail
                             }
                             catch (Exception)
                             {//missing keyword was searched, it's fine but will return special case
-                                returnCode = ReturnCode.FLAWED;
+                                returnCode = ExitCode.FLAWED;
                             }
 
                         }
@@ -76,17 +62,17 @@ namespace ProjectExtractor.Extractors.Detail
                         keywordValuePairs.Clear();
 
                         //get the latest date and put it's line in there, skip to past that point as the data on the preceded lines is not needed
-                        int skipTo = GetLatestDate(lines, lineIndex, stopChapters);
+                        int skipTo = GetLatestDate(Lines, lineIndex, stopChapters);
                         lineIndex = skipTo;
-                        str.Append(lines[lineIndex]);
+                        str.Append(Lines[lineIndex]);
                         str.Append(Environment.NewLine);
                     }
 
                     if (WriteTotalHoursToFile)
                     {
-                        if (lines[lineIndex].Contains(totalHoursKeyword))
+                        if (Lines[lineIndex].Contains(totalHoursKeyword))
                         {
-                            str.Append(totalHoursKeyword + ": " + lines[lineIndex].Substring(lines[lineIndex].IndexOf(totalHoursKeyword) + totalHoursKeyword.Length));
+                            str.Append(totalHoursKeyword + ": " + Lines[lineIndex].Substring(Lines[lineIndex].IndexOf(totalHoursKeyword) + totalHoursKeyword.Length));
                             //break out of loop here? it should be the last section of the document. 
                         }
                     }
@@ -94,11 +80,11 @@ namespace ProjectExtractor.Extractors.Detail
                 else if (rev == ProjectLayoutRevision.REVISION_ONE)
                 {
                     Worker.ReportProgress(100);
-                    return (int)ReturnCode.NOT_IMPLEMENTED;//not implemented yet
+                    return (int)ExitCode.NOT_IMPLEMENTED;//not implemented yet
                 }
 
                 //progress for the progress bar
-                double progress = (double)(((double)lineIndex + 1d) * 100d / (double)lines.Length);
+                double progress = (double)(((double)lineIndex + 1d) * 100d / (double)Lines.Length);
                 Worker.ReportProgress((int)progress);
             }
             using (StreamWriter sw = File.CreateText(extractPath))
@@ -113,9 +99,3 @@ namespace ProjectExtractor.Extractors.Detail
         public override string ToString() => "txt";
     }
 }
-
-/*
- * get all keywords found, until a duplicate keyword is found
- * store duplicate keyword in temporary spot OR set index to one line earlier
- * before restarting keyword search at new index, sort found keyword-detail pairs on desired order
- */

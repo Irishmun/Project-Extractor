@@ -10,12 +10,12 @@ namespace ProjectExtractor.Extractors.Detail
     /// <summary>Used for extracting pdf details to RTF file format. intended as an enriched version of the plain text <see cref="DetailExtractorTXT"/> extraction </summary>
     class DetailExtractorRTF : DetailExtractorBase
     {
-        public override int Extract(string file, string extractPath, string[] Keywords, string chapters, string stopChapters, string totalHoursKeyword, bool WriteTotalHoursToFile, bool WriteKeywordsToFile, BackgroundWorker Worker)
+        public override int ExtractDetails(string file, string extractPath, string[] Keywords, string chapters, string stopChapters, string totalHoursKeyword, bool WriteTotalHoursToFile, bool WriteKeywordsToFile, BackgroundWorker Worker)
         {
-            ReturnCode returnCode = 0;
+            Util.ExitCode returnCode = 0;
 
             //TODO: implement
-            returnCode = ReturnCode.NOT_IMPLEMENTED;
+            returnCode = Util.ExitCode.NOT_IMPLEMENTED;
 
             return (int)returnCode;
         }
