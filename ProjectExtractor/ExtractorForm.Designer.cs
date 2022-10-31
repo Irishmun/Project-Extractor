@@ -220,9 +220,9 @@ namespace ProjectExtractor
             this.CB_DebugIncludeWhiteSpace.AutoSize = true;
             this.CB_DebugIncludeWhiteSpace.Location = new System.Drawing.Point(173, 160);
             this.CB_DebugIncludeWhiteSpace.Name = "CB_DebugIncludeWhiteSpace";
-            this.CB_DebugIncludeWhiteSpace.Size = new System.Drawing.Size(130, 19);
+            this.CB_DebugIncludeWhiteSpace.Size = new System.Drawing.Size(129, 19);
             this.CB_DebugIncludeWhiteSpace.TabIndex = 100;
-            this.CB_DebugIncludeWhiteSpace.Text = "Include WhiteSpace";
+            this.CB_DebugIncludeWhiteSpace.Text = "Include Whitespace";
             this.CB_DebugIncludeWhiteSpace.UseVisualStyleBackColor = true;
             // 
             // BT_ExtractFullProject
@@ -495,7 +495,7 @@ namespace ProjectExtractor
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage2.Size = new System.Drawing.Size(564, 322);
             this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "Detail Extraction Settings";
+            this.tabPage2.Text = "Detail Settings";
             this.tabPage2.ToolTipText = "Settings for project detail extraction";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
@@ -736,7 +736,7 @@ namespace ProjectExtractor
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Size = new System.Drawing.Size(564, 322);
             this.tabPage3.TabIndex = 2;
-            this.tabPage3.Text = "Project Extraction Settings";
+            this.tabPage3.Text = "Project Settings";
             this.tabPage3.ToolTipText = "Settings for entire project extraction";
             this.tabPage3.UseVisualStyleBackColor = true;
             // 

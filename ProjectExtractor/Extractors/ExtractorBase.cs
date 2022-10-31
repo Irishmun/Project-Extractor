@@ -30,23 +30,64 @@ namespace ProjectExtractor.Extractors
         /// <param name="startIndex">index of line to start looking from</param>
         /// <param name="stopLine"> failsafe stopline, to prevent skipping entire projects</param>
         /// <returns></returns>
-        protected int TryGetProjecTitle(string[] lines, int startIndex, string stopLine)
+        protected string TryGetProjecTitle(string[] lines, int startIndex, string stopLine, out int index)
         {
-            int index = startIndex;
+            index = startIndex;
+            string res = string.Empty;
             for (int i = startIndex; i < lines.Length; i++)
             {
                 if (lines[i].Contains(stopLine))//to prevent skipping all projects
                 {
-                    return index;
+                    return res;
                 }
                 try
                 {
                     //try and find a project title, containing "Project" with a year , period and number; colon and a title
                     Match match = Regex.Match(lines[i], @"(Project )\d{4}\.\d*(: )[a-zA-Z0-9 ' ']*");
+                    //Match match = Regex.Match(lines[i], @"^([^:]+?)(\s*[:])[a-zA-Z0-9 ' ']*");
                     if (!string.IsNullOrEmpty(match.Value))
                     {//if a project title has been found, break out of loop
                         index = i;
+                        res = match.Value;
                         break;
+                    }
+                }
+                catch (Exception)
+                {
+                }
+            }
+            return res;
+        }
+
+        /// <summary>
+        /// Will try and get the latest date of the project, starting at the given line
+        /// </summary>
+        /// <param name="lines">text to search through</param>
+        /// <param name="startIndex">index of line to start looking from</param>
+        /// <param name="stopLine"> line to stop looking for dates, always returns after this line</param>
+        /// <returns></returns>
+        protected int GetLatestDate(string[] lines, int startIndex, string stopLine)
+        {
+            DateTime latestDate = new DateTime(0);
+            int index = startIndex;
+            for (int i = startIndex; i < lines.Length; i++)
+            {
+                if (lines[i].Contains(stopLine))
+                {
+                    return index;
+                }
+                try
+                {
+                    //try and find a datetime text matching the smallest to the largest structure
+                    Match match = Regex.Match(lines[i], @"\d{2}(?:\/|-|)(?:\d{2}|[a-z]{0,10})(?:\/|-|)\d{1,4}");
+                    if (!string.IsNullOrEmpty(match.Value))
+                    {
+                        DateTime current = DateTime.Parse(match.Value);//, new System.Globalization.CultureInfo("nl", false));
+                        if (current > latestDate)
+                        {
+                            latestDate = current;
+                            index = i;
+                        }
                     }
                 }
                 catch (Exception)
@@ -55,7 +96,6 @@ namespace ProjectExtractor.Extractors
             }
             return index;
         }
-
         public abstract override string ToString();//return file format of extractor, all lowercase, sans period (e.x: text extractor= "txt")
     }
 }

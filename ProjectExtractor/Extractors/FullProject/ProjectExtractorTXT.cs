@@ -23,20 +23,23 @@ namespace ProjectExtractor.Extractors.FullProject
             string[] sectionWords = Sections;//ConvertSectionsToArray(Sections);
             string possibleSection = string.Empty;
             bool startProject = false;
-            int firstProjecTitle = TryGetProjecTitle(Lines, 0, EndProject);
-            str.Append($"Omschrijving {Lines[firstProjecTitle]}");
+            string firstProjecTitle = TryGetProjecTitle(Lines, 0, EndProject, out int titleIndex);
+            str.Append($"Omschrijving {firstProjecTitle}");
             str.Append(Environment.NewLine);
-            for (int lineIndex = firstProjecTitle; lineIndex < Lines.Length; lineIndex++)
+            for (int lineIndex = titleIndex; lineIndex < Lines.Length; lineIndex++)
             {
                 if (startProject == true && Lines[lineIndex].Contains(EndProject))
                 {//guaranteed nothing left, go to next line
                     startProject = false;
-                    str.Append(Environment.NewLine);
-                    str.Append(Environment.NewLine);
-                    int nextProject = TryGetProjecTitle(Lines, lineIndex+1, EndProject);
-                    str.Append($"Omschrijving {Lines[nextProject]}");
-                    str.Append(Environment.NewLine);
-                    lineIndex = nextProject;
+                    string nextProject = TryGetProjecTitle(Lines, lineIndex + 1, EndProject, out int projIndex);
+                    if (!string.IsNullOrEmpty(nextProject))
+                    {
+                        str.Append(Environment.NewLine);
+                        str.Append(Environment.NewLine);
+                        str.Append($"Omschrijving {nextProject}");
+                        str.Append(Environment.NewLine);
+                    }
+                    //lineIndex = projIndex;
                     continue;
                 }
                 possibleSection = Array.Find(sectionWords, Lines[lineIndex].Contains);
