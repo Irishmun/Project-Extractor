@@ -9,7 +9,12 @@ namespace ProjectExtractor.Extractors
     abstract class ExtractorBase
     {
         protected string[] Lines;
-        protected void ExtractTextFromPDF(string file)
+        /// <summary>
+        /// Extracts all text from the given pdf file, putting it in <see cref="Lines"/> 
+        /// </summary>
+        /// <param name="file">the file to extract everything from</param>
+        /// <param name="StripEmtpies">whether to remove the empty entries before putting it in <see cref="Lines"/></param>
+        protected void ExtractTextFromPDF(string file, bool StripEmtpies = true)
         {   //open pdf file for reading
             PdfReader reader = new PdfReader(file);//to read from the pdf
             PdfDocument pdf = new PdfDocument(reader);//to access read data
@@ -22,7 +27,15 @@ namespace ProjectExtractor.Extractors
                 str.Append(PdfTextExtractor.GetTextFromPage(pdf.GetPage(i)));
             }
             //get only lines with text on them, reduces total worktime by ignoring empties
-            Lines = str.ToString().Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+
+            if (StripEmtpies)
+            {
+                Lines = str.ToString().Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+            }
+            else
+            {
+                Lines = str.ToString().Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+            }
         }
 
         /// <summary>Tries to find the title of the project, starting at the given line</summary>
@@ -36,16 +49,19 @@ namespace ProjectExtractor.Extractors
             string res = string.Empty;
             for (int i = startIndex; i < lines.Length; i++)
             {
-                if (lines[i].Contains(stopLine))//to prevent skipping all projects
+                if (!string.IsNullOrEmpty(stopLine))
                 {
-                    return res;
+                    if (lines[i].Contains(stopLine))//to prevent skipping all projects
+                    {
+                        return res;
+                    }
                 }
                 try
                 {
                     //try and find a project title, containing "Project" with a year , period and number; colon and a title
-                    Match match = Regex.Match(lines[i], @"(Project )\d{4}\.\d*(: )[a-zA-Z0-9 ' ']*");
-                    //Match match = Regex.Match(lines[i], @"^([^:]+?)(\s*[:])[a-zA-Z0-9 ' ']*");
-                    if (!string.IsNullOrEmpty(match.Value))
+                    //Match match = Regex.Match(lines[i], @"(Project )\d{4}\.\d*(: )[a-zA-Z0-9 ' ']*");
+                    Match match = Regex.Match(lines[i], @"^Project\s([^:]+?)(\s*[:]).*");
+                    if (!string.IsNullOrWhiteSpace(match.Value))
                     {//if a project title has been found, break out of loop
                         index = i;
                         res = match.Value;
@@ -96,6 +112,7 @@ namespace ProjectExtractor.Extractors
             }
             return index;
         }
+
         public abstract override string ToString();//return file format of extractor, all lowercase, sans period (e.x: text extractor= "txt")
     }
 }

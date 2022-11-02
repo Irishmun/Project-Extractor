@@ -202,7 +202,7 @@ namespace ProjectExtractor
                 {
                     BT_Extract.Enabled = false;
                     _extractor = new DetailExtractorALL();
-                    (_extractor as DetailExtractorALL).IncludeWhiteSpace = CB_DebugIncludeWhiteSpace.Checked;
+                    (_extractor as DetailExtractorALL).StripEmtpies = CB_DebugIncludeWhiteSpace.Checked;
                     SetButtonsEnabled(false);
                     backgroundWorker.RunWorkerAsync("DEBUG");
                 }
@@ -497,7 +497,7 @@ namespace ProjectExtractor
                     ListViewItem item = list.Items[i];
                     res[i] = item.Text;
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     throw;
                 }

@@ -1,5 +1,6 @@
 ﻿using ProjectExtractor.Util;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Text;
@@ -19,25 +20,40 @@ namespace ProjectExtractor.Extractors.FullProject
 
             int projectIndex = 0;
 
+            List<int> ProjectStartIndexes = new List<int>();
+
             //TODO: find way to check how many sequential words the current string has that are the same as any combination in the Sections array
             string[] sectionWords = Sections;//ConvertSectionsToArray(Sections);
             string possibleSection = string.Empty;
             bool startProject = false;
             string firstProjecTitle = TryGetProjecTitle(Lines, 0, EndProject, out int titleIndex);
-            str.Append($"Omschrijving {firstProjecTitle}");
-            str.Append(Environment.NewLine);
-            for (int lineIndex = titleIndex; lineIndex < Lines.Length; lineIndex++)
+            ProjectStartIndexes.Add(titleIndex);
+            titleIndex += 1;
+            for (int i = titleIndex; i < Lines.Length; i++)
+            {
+                string nextProject = TryGetProjecTitle(Lines, titleIndex, string.Empty, out projectIndex);
+                if (!string.IsNullOrEmpty(nextProject))
+                {
+                    ProjectStartIndexes.Add(projectIndex);
+                    titleIndex = projectIndex + 1;
+                    str.Append($"Omschrijving {nextProject}");
+                    str.Append(Environment.NewLine);
+                }
+
+            }
+            for (int i = 0; i < ProjectStartIndexes.Count; i++)
+            {
+
+            }
+            /*for (int lineIndex = titleIndex; lineIndex < Lines.Length; lineIndex++)
             {
                 if (startProject == true && Lines[lineIndex].Contains(EndProject))
                 {//guaranteed nothing left, go to next line
                     startProject = false;
-                    string nextProject = TryGetProjecTitle(Lines, lineIndex + 1, EndProject, out int projIndex);
+                    string nextProject = TryGetProjecTitle(Lines, lineIndex + 1, EndProject, out projectIndex);
                     if (!string.IsNullOrEmpty(nextProject))
                     {
-                        str.Append(Environment.NewLine);
-                        str.Append(Environment.NewLine);
-                        str.Append($"Omschrijving {nextProject}");
-                        str.Append(Environment.NewLine);
+                        addProjectToBuilder(nextProject);
                     }
                     //lineIndex = projIndex;
                     continue;
@@ -58,11 +74,18 @@ namespace ProjectExtractor.Extractors.FullProject
                     {
                         substring = Lines[lineIndex].IndexOf(possibleSection) + (int)possibleSection.Length;
                     }
-                    str.Append(Lines[lineIndex].Substring(substring));
+                    if (!Lines[lineIndex].StartsWithWhiteSpace() && !Lines[lineIndex - 1].EndsWithWhiteSpace())
+                    {
+                        str.Append(" " + Lines[lineIndex].Substring(substring));
+                    }
+                    else
+                    {
+                        str.Append(Lines[lineIndex].Substring(substring));
+                    }
                 }
                 double progress = (double)(((double)lineIndex + 1d) * 100d / (double)Lines.Length);
                 Worker.ReportProgress((int)progress);
-            }
+            }*/
             using (StreamWriter sw = File.CreateText(extractPath))
             {
                 //write the final result to a text document
@@ -70,6 +93,14 @@ namespace ProjectExtractor.Extractors.FullProject
                 sw.Close();
             }
             return (int)returnCode;
+
+            void addProjectToBuilder(string projectTitle)
+            {
+                str.Append(Environment.NewLine);
+                str.Append(Environment.NewLine);
+                str.Append($"Omschrijving {projectTitle}");
+                str.Append(Environment.NewLine);
+            }
         }
 
         public override string ToString() => "txt";
