@@ -75,6 +75,12 @@ namespace ProjectExtractor.Extractors
             return res;
         }
 
+        protected void RemovePageNumberFromString(ref string line)
+        {
+            //(Pagina \d* van \d*) Pagina (any length of numbers) van (any length of numbers)
+            Regex.Replace(line, @"Pagina \d* van \d*", string.Empty);
+        }
+
         /// <summary>
         /// Will try and get the latest date of the project, starting at the given line
         /// </summary>

@@ -218,7 +218,7 @@ namespace ProjectExtractor
             // CB_DebugIncludeWhiteSpace
             // 
             this.CB_DebugIncludeWhiteSpace.AutoSize = true;
-            this.CB_DebugIncludeWhiteSpace.Location = new System.Drawing.Point(173, 160);
+            this.CB_DebugIncludeWhiteSpace.Location = new System.Drawing.Point(409, 230);
             this.CB_DebugIncludeWhiteSpace.Name = "CB_DebugIncludeWhiteSpace";
             this.CB_DebugIncludeWhiteSpace.Size = new System.Drawing.Size(129, 19);
             this.CB_DebugIncludeWhiteSpace.TabIndex = 100;
@@ -262,7 +262,7 @@ namespace ProjectExtractor
             // BT_DebugExtract
             // 
             this.BT_DebugExtract.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.BT_DebugExtract.Location = new System.Drawing.Point(6, 156);
+            this.BT_DebugExtract.Location = new System.Drawing.Point(242, 226);
             this.BT_DebugExtract.Name = "BT_DebugExtract";
             this.BT_DebugExtract.Size = new System.Drawing.Size(161, 25);
             this.BT_DebugExtract.TabIndex = 80;
