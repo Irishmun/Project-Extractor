@@ -8,6 +8,7 @@ namespace ProjectExtractor.Extractors
 {
     abstract class ExtractorBase
     {
+        protected const string ContinuationString = "Dit project is een voortzetting van een vorig project";
         protected string[] Lines;
         /// <summary>
         /// Extracts all text from the given pdf file, putting it in <see cref="Lines"/> 
@@ -60,7 +61,9 @@ namespace ProjectExtractor.Extractors
                 {
                     //try and find a project title, containing "Project" with a year , period and number; colon and a title
                     //Match match = Regex.Match(lines[i], @"(Project )\d{4}\.\d*(: )[a-zA-Z0-9 ' ']*");
-                    Match match = Regex.Match(lines[i], @"^Project\s([^:]+?)(\s*[:]).*");
+                    string line = lines[i];
+                    RemovePageNumberFromString(ref line);
+                    Match match = Regex.Match(line, @"^Project\s([^:]+?)(\s*[:]).*");
                     if (!string.IsNullOrWhiteSpace(match.Value))
                     {//if a project title has been found, break out of loop
                         index = i;
@@ -72,13 +75,19 @@ namespace ProjectExtractor.Extractors
                 {
                 }
             }
+            RemovePageNumberFromString(ref res);
             return res;
         }
 
         protected void RemovePageNumberFromString(ref string line)
         {
             //(Pagina \d* van \d*) Pagina (any length of numbers) van (any length of numbers)
-            Regex.Replace(line, @"Pagina \d* van \d*", string.Empty);
+            //Regex.Replace(line, @"Pagina \d* van \d*", string.Empty);
+            Match match = Regex.Match(line, @"Pagina \d* van \d*");
+            if (!string.IsNullOrWhiteSpace(match.Value))
+            {//if a project title has been found, break out of loop
+                line = line.Substring(match.Value.Length);
+            }
         }
 
         /// <summary>

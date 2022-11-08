@@ -10,14 +10,21 @@ namespace ProjectExtractor.Extractors.FullProject
     internal class ProjectExtractorTXT : ProjectExtractorBase
     {
         //iterate over text, per project, remove all these bits of text, do this per array, then once an array is complete, add corresponding title header
-        private static readonly string[] _toRemoveDescription = { "Dit project is een voortzetting van een vorig project"
-                                ,"Geef een algemene omschrijving van het "
+        private static readonly string[] _toRemoveDetails = {"Dit project is een voortzetting van een vorig project"
+                                ,"Projectnummer"
+                                ,"Projecttitel"
+                                ,"Type project"
+                                ,"Zwaartepunt"
+                                ,"Het project wordt/is gestart op"
+                                ,"Aantal uren werknemers"};
+        private static readonly string[] _toRemoveDescription = {"Geef een algemene omschrijving van het "
                                 ,"project. Heeft u eerder WBSO"
                                 ,"aangevraagd voor dit project? Beschrijf"
                                 ,"dan de stand van zaken bij de vraag "
                                 ,"\"Update project\". "
                                 ,"Samenwerking"
-                                ,"Levert één of meer partijen (buiten uw"
+                                ,"Levert één of meer partijen (buiten uw Nee"
+                                ,"Levert één of meer partijen (buiten uw Ja"
                                 ,"fiscale eenheid) een bijdrage aan het"
                                 ,"project?"
         };
@@ -45,7 +52,7 @@ namespace ProjectExtractor.Extractors.FullProject
                                 ,"projectresultaat te bereiken. Vermeld"
                                 ,"geen aanleidingen, algemene"
                                 ,"randvoorwaarden of functionele eisen van"
-                                ,"het project. " };
+                                ,"het project." };
         private static readonly string[] _toRemoveQuestionsC = {"2. Technische oplossingsrichtingen. Geef"
                                 ,"voor ieder genoemd technisch knelpunt"
                                 ,"aan wat u specifiek zelf gaat ontwikkelen"
@@ -62,8 +69,8 @@ namespace ProjectExtractor.Extractors.FullProject
                                 ,"naar de stand van de technologie." };
         private static readonly string[] _toRemoveSoftware = {"Wordt er voor dit product of proces mede"
                                 ,"programmatuur ontwikkeld?"};
-        private readonly string[][] _toRemoveArrays = {_toRemoveDescription, 
-                                                       _toRemoveFases, 
+        private readonly string[][] _toRemoveArrays = {_toRemoveDescription,
+                                                       _toRemoveFases,
                                                        _toRemoveUpdate,
                                                        _toRemoveQuestionsA,
                                                        _toRemoveQuestionsB,
@@ -102,50 +109,55 @@ namespace ProjectExtractor.Extractors.FullProject
                 }
 
             }
-            try
+            for (int project = 0; project < ProjectStartIndexes.Count-1; project++)
             {
+                int startIndex = ProjectStartIndexes[project];
+                int nextIndex = project == ProjectStartIndexes.Count - 1 ? Lines.Length : ProjectStartIndexes[project + 1];
 
-                for (int project = 0; project < ProjectStartIndexes.Count; project++)
+                str.Append(TryGetProjecTitle(Lines, startIndex - 1, string.Empty, out projectIndex));
+                str.AppendLine();
+                if (IsContinuation(startIndex, nextIndex))
                 {
-                    int startIndex = ProjectStartIndexes[project];
-                    int projectLength = project == ProjectStartIndexes.Count - 1 ? Lines.Length : ProjectStartIndexes[project + 1];
+                    str.Append("Voortzetting van een vorig project\n");
+                }
+                //for (int i = 0; i < _toRemoveArrays.Length; i++)
+                //{
+                //    //figure out what to put in the nextSectionString for the last item
+                //    string nextSectionString = i == _toRemoveArrays.Length ? string.Empty : _toRemoveArrays[i + 1][0];
+                //    RemoveSectionsFromLines(startIndex, nextIndex, _toRemoveArrays[i], nextSectionString, out int nextSectionLine);
+                //}
+                RemoveLines(startIndex + 1, nextIndex, _toRemoveDetails, _toRemoveDescription[0], out int detailEnd);
+                try
+                {
+                    str.Append("Omschrijving\n");
+                    RemoveSectionsFromLines(detailEnd, nextIndex, _toRemoveDescription, _toRemoveFases[0], out int descriptionEnd);
+                    str.Append("\n\nFasering Werkzaamheden\n");
+                    RemoveSectionsFromLines(descriptionEnd, nextIndex, _toRemoveFases, _toRemoveUpdate[0], out int fasesEnd, true);
+                    str.Append("\n\nUpdate Project\n");
+                    RemoveSectionsFromLines(fasesEnd, nextIndex, _toRemoveUpdate, _toRemoveQuestionsA[0], out int updateEnd);
+                    RemoveSectionsFromLines(updateEnd, nextIndex, _toRemoveQuestionsA, _toRemoveQuestionsB[0], out int questionsAEnd);
+                    str.Append("\n\n1. Technische knelpunten.\n");
+                    RemoveSectionsFromLines(questionsAEnd, nextIndex, _toRemoveQuestionsB, _toRemoveQuestionsC[0], out int questionsBEnd);
+                    str.Append("\n2. Technische oplossingsrichtingen\n");
+                    RemoveSectionsFromLines(questionsBEnd, nextIndex, _toRemoveQuestionsC, _toRemoveQuestionsD[0], out int questionsCEnd);
+                    str.Append("\n3. Technische nieuwheid.\n");
+                    RemoveSectionsFromLines(questionsCEnd, nextIndex, _toRemoveQuestionsD, _toRemoveSoftware[0], out int questionsDEnd);
+                    str.Append("\n\nProgrammatuur\n");
+                    RemoveSectionsFromLines(questionsDEnd, nextIndex, _toRemoveSoftware, Lines[nextIndex], out int programmatuurEnd);
+                    str.AppendLine();
+                }
+                catch (Exception e)
+                {
 
-                    str.Append(TryGetProjecTitle(Lines, startIndex - 1, string.Empty, out projectIndex));
-                    str.AppendLine();
-                    for (int lineIndex = startIndex; lineIndex < projectLength; lineIndex++)
-                    {
-                        //possibleSection = Array.Find(_toRemove, Lines[lineIndex].Contains);
-                        //int substring = 0;
-                        //if (!string.IsNullOrEmpty(possibleSection))
-                        //{
-                        //    if (!string.IsNullOrEmpty(possibleSection))
-                        //    {
-                        //        substring = Lines[lineIndex].IndexOf(possibleSection) + (int)possibleSection.Length;
-                        //    }
-                        //    if (!Lines[lineIndex].StartsWithWhiteSpace() && !Lines[lineIndex - 1].EndsWithWhiteSpace())
-                        //    {
-                        //        str.Append(" " + Lines[lineIndex].Substring(substring));
-                        //    }
-                        //
-                        //}
-                        //else
-                        //{
-                        //    RemovePageNumberFromString(ref Lines[lineIndex]);
-                        //    str.Append(Lines[lineIndex]);
-                        //}
-                    }
-                    str.AppendLine();
-                    str.Append("===============================");
-                    str.AppendLine();
-                    double progress = (double)(((double)project + 1d) * 100d / (double)Lines.Length);
-                    Worker.ReportProgress((int)progress);
+                    Console.WriteLine(e);
+                    throw;
                 }
 
-            }
-            catch (Exception)
-            {
-
-                throw;
+                str.AppendLine();
+                str.Append("===============================");
+                str.AppendLine();
+                double progress = (double)(((double)project + 1d) * 100d / (double)Lines.Length);
+                Worker.ReportProgress((int)progress);
             }
             /*for (int lineIndex = titleIndex; lineIndex < Lines.Length; lineIndex++)
             {
@@ -203,6 +215,90 @@ namespace ProjectExtractor.Extractors.FullProject
                 str.Append($"Omschrijving {projectTitle}");
                 str.AppendLine();
             }
+
+            void RemoveLines(int startIndex, int nextProjectIndex, string[] toRemove, string FollowingSectionString, out int nextSectionLine)
+            {
+                nextSectionLine = nextProjectIndex;
+                for (int lineIndex = startIndex; lineIndex < nextProjectIndex; lineIndex++)
+                {
+                    if (Lines[lineIndex].Contains(FollowingSectionString))
+                    {
+                        nextSectionLine = lineIndex;
+                        break;
+                    }
+                    possibleSection = Array.Find(toRemove, Lines[lineIndex].Contains);
+                    if (string.IsNullOrEmpty(possibleSection))
+                    {
+                        RemovePageNumberFromString(ref Lines[lineIndex]);
+                        str.Append(Lines[lineIndex]);
+                    }
+                    else
+                    {
+                        nextSectionLine = lineIndex;
+                    }
+                }
+            }
+
+            void RemoveSectionsFromLines(int startIndex, int nextProjectIndex, string[] toRemove, string FollowingSectionString, out int nextSectionLine, bool appendNewlines = false)
+            {
+                nextSectionLine = nextProjectIndex;
+                for (int lineIndex = startIndex; lineIndex < nextProjectIndex; lineIndex++)
+                {
+                    //break out/return when reached end of section or end of project
+                    if (Lines[lineIndex].ToLower().Contains(FollowingSectionString.ToLower()))
+                    {
+                        nextSectionLine = lineIndex;
+                        break;
+                    }
+                    possibleSection = Array.Find(toRemove, Lines[lineIndex].Contains);
+                    int substring = 0;
+                    if (!string.IsNullOrEmpty(possibleSection))
+                    {
+                        if (!string.IsNullOrEmpty(possibleSection))
+                        {
+                            substring = Lines[lineIndex].IndexOf(possibleSection) + (int)possibleSection.Length;
+                        }
+                        if (!Lines[lineIndex].StartsWithWhiteSpace() && !Lines[lineIndex - 1].EndsWithWhiteSpace())
+                        {
+                            string line = " " + Lines[lineIndex].Substring(substring);
+                            if (!string.IsNullOrWhiteSpace(line))
+                            {
+                                str.Append(line);
+                                if (appendNewlines)
+                                {
+                                    str.AppendLine();
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        RemovePageNumberFromString(ref Lines[lineIndex]);
+                        if (!string.IsNullOrWhiteSpace(Lines[lineIndex]))
+                        {
+                            str.Append(Lines[lineIndex]);
+                            if (appendNewlines)
+                            {
+                                str.AppendLine();
+                            }
+                        }
+
+                    }
+                }
+            }
+
+            bool IsContinuation(int startIndex, int endIndex)
+            {
+                for (int i = startIndex; i < endIndex; i++)
+                {
+                    if (Lines[i].Contains(ContinuationString))
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            }
+
         }
 
         public override string ToString() => "txt";

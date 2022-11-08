@@ -129,7 +129,8 @@ namespace ProjectExtractor
             TB_PDFLocation.Text = res;
             if (CB_DisableExtractionPath.Checked == true)
             {//only automatically set extraction path folder if disable is unchecked
-                TB_ExtractLocation.Text = Path.GetDirectoryName(res);
+                TB_ExtractLocation.Text = Path.GetDirectoryName(res) + "\\";
+                DisplayFullExtractionFilePath();
             }
             if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(TB_PDFLocation.Text))
             {
@@ -161,6 +162,7 @@ namespace ProjectExtractor
             //check if it has changed, else leave it as what it is.
             res = string.IsNullOrWhiteSpace(res) ? TB_ExtractLocation.Text : res;
             TB_ExtractLocation.Text = res;
+            DisplayFullExtractionFilePath();
             if (result == CommonFileDialogResult.Ok && !string.IsNullOrWhiteSpace(TB_ExtractLocation.Text))
             {
                 UpdateFileStatus();
