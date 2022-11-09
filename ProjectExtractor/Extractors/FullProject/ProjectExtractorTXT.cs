@@ -17,11 +17,11 @@ namespace ProjectExtractor.Extractors.FullProject
                                 ,"Zwaartepunt"
                                 ,"Het project wordt/is gestart op"
                                 ,"Aantal uren werknemers"};
-        private static readonly string[] _toRemoveDescription = {"Geef een algemene omschrijving van het "
+        private static readonly string[] _toRemoveDescription = {"Geef een algemene omschrijving van het"
                                 ,"project. Heeft u eerder WBSO"
                                 ,"aangevraagd voor dit project? Beschrijf"
-                                ,"dan de stand van zaken bij de vraag "
-                                ,"\"Update project\". "
+                                ,"dan de stand van zaken bij de vraag"
+                                ,"\"Update project\"."
                                 ,"Samenwerking"
                                 ,"Levert één of meer partijen (buiten uw Nee"
                                 ,"Levert één of meer partijen (buiten uw Ja"
@@ -36,7 +36,7 @@ namespace ProjectExtractor.Extractors.FullProject
                                 ,"Naam Datum gereed"};
         private static readonly string[] _toRemoveUpdate = {"Update project"
                                 ,"Vermeld de voortgang van uw"
-                                ,"S&O-werkzaamheden. Zijn er wijzigingen "
+                                ,"S&O-werkzaamheden. Zijn er wijzigingen"
                                 ,"in de oorspronkelijke projectopzet of"
                                 ,"-planning? Geef dan aan waarom dit het"
                                 ,"geval is." };
