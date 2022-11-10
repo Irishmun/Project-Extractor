@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
-using System.Linq;
 using System.Text;
 
 namespace ProjectExtractor.Extractors.FullProject
@@ -113,13 +112,11 @@ namespace ProjectExtractor.Extractors.FullProject
         private static readonly string[] _toRemoveSoftware = {"Wordt er voor dit product of proces mede"
                                 ,"programmatuur ontwikkeld?"
                                 ,"Aanvraag"};
-        private static readonly string[] _toRemoveCosts ={"Kosten en/of uitgaven per project"
-                                ,"Voorbeelden en uitgebreide informatie over kosten en uitgaven kunt u in de"
-                                ,"vinden."
-                                ,"Omschrijving van de kosten Materialen testopstellingen en proefmodellen."};
+        private static readonly string[] _toRemoveButNotSkip = {"Voorbeelden en uitgebreide informatie over kosten en uitgaven kunt u in de"
+                                ,"vinden."};
+        private static readonly string[] _toRemoveCosts ={ "Kosten en/of uitgaven per project"
+                                ,"Omschrijving van de kosten Materialen testopstellingen en proefmodellen." };
         private static readonly string[] _toRemoveSpending = { "Opvoeren uitgaven"
-                                ,"Voorbeelden en uitgebreide informatie over kosten en uitgaven kunt u in de"
-                                ,"vinden."
                                 ,"Investeert u in een bedrijfsmiddel, waarvan het aan S&O dienstbare en toerekenbare deel van de"
                                 ,"aanschafwaarde van het bedrijfsmiddel groter of gelijk is aan 1 miljoen euro? Voer deze dan hieronder in."
                                 ,"Uitgaven kleiner dan 1 miljoen euro specificeert u per project." };
@@ -189,7 +186,7 @@ namespace ProjectExtractor.Extractors.FullProject
                     InsertAndRemoveSectionsFromLines("\n\n- Technische nieuwheid.\n", questionsDEnd, nextIndex, _toRemoveQuestionsE, _toRemoveSoftware, out int questionsEEnd);
                     string[] programmatuurArray;
                     if (project == ProjectStartIndexes.Count - 1)
-                    { programmatuurArray = new string[] { "Aanvraag" ,"Kosten en/of uitgaven per project" , "Kosten opvoeren bij dit project" }; }
+                    { programmatuurArray = new string[] { "Aanvraag", "Kosten en/of uitgaven per project", "Kosten opvoeren bij dit project" }; }
                     else
                     {
                         RemovePageNumberFromString(ref Lines[nextIndex]);
@@ -201,9 +198,9 @@ namespace ProjectExtractor.Extractors.FullProject
                         InsertAndRemoveSectionsFromLines("\n\n- Technische knelpunten.\n", programmatuurEnd, nextIndex, _toRemoveQuestionsB, _toRemoveQuestionsC, out int programmatuurquestionsBEnd);
                         InsertAndRemoveSectionsFromLines("\n\n- Technische oplossingsrichtingen.\n", programmatuurquestionsBEnd, nextIndex, _toRemoveQuestionsC, _toRemoveQuestionsD, out int programmatuurquestionsCEnd);
                         InsertAndRemoveSectionsFromLines("\n\n- Programmeertalen.\n", programmatuurquestionsCEnd, nextIndex, _toRemoveQuestionsD, _toRemoveQuestionsE, out int programmatuurquestionsDEnd);
-                        InsertAndRemoveSectionsFromLines("\n\n- Technische nieuwheid.\n", programmatuurquestionsDEnd, nextIndex, _toRemoveQuestionsE, _toRemoveSoftware, out int programmatuurquestionsEEnd);
-                        InsertAndRemoveSectionsFromLines(string.Empty, programmatuurquestionsEEnd, nextIndex, _toRemoveCosts, _toRemoveCosts, out int programmatuurCostsEnd);
-                        InsertAndRemoveSectionsFromLines(string.Empty, programmatuurCostsEnd, nextIndex, _toRemoveSpending, programmatuurArray, out int programmatuurSpendingEnd);
+                        InsertAndRemoveSectionsFromLines("\n\n- Technische nieuwheid.\n", programmatuurquestionsDEnd, nextIndex, _toRemoveQuestionsE, _toRemoveCosts, out int programmatuurquestionsEEnd);
+                        InsertAndRemoveSectionsFromLines("\n\n", programmatuurquestionsEEnd, nextIndex, ExtensionMethods.AddArrays(_toRemoveButNotSkip, _toRemoveCosts), _toRemoveSpending, out int programmatuurCostsEnd, true);
+                        InsertAndRemoveSectionsFromLines("\n", programmatuurCostsEnd, nextIndex, ExtensionMethods.AddArrays(_toRemoveButNotSkip, _toRemoveSpending), programmatuurArray, out int programmatuurSpendingEnd, true);
                     }
                     else
                     {
@@ -221,10 +218,18 @@ namespace ProjectExtractor.Extractors.FullProject
                     returnCode = ExitCode.ERROR;
                     throw;
                 }
-
-                str.AppendLine();
-                str.Append("===============================");
-                str.AppendLine();
+                if (project < ProjectStartIndexes.Count - 1)
+                {
+                    str.AppendLine();
+                    str.Append("========[NEXT PROJECT]=========");
+                    str.AppendLine();
+                }
+                else
+                {
+                    str.AppendLine();
+                    
+                    str.Append("========[END PROJECTS]=========");
+                }
                 double progress = (double)(((double)project + 1d) * 100d / (double)Lines.Length);
                 Worker.ReportProgress((int)progress);
             }

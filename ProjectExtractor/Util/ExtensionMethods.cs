@@ -19,7 +19,6 @@ namespace ProjectExtractor.Util
             }
             return false;
         }
-
         /// <summary>Returns whether the stirng starts with whitespace</summary>
         /// <param name="checkForPunctuation">Whether to check for punctuations (.?!,-)</param>
         public static bool StartsWithWhiteSpace(this string val, bool checkForPunctuation = true)
@@ -37,6 +36,20 @@ namespace ProjectExtractor.Util
                 }
             }
             return false;
+        }
+
+        public static string[] AddArrays(string[] a, string[] b)
+        {
+            string[] res = new string[a.Length + b.Length];
+            for (int i = 0; i < a.Length; i++)
+            {
+                res[i] = a[i];
+            }
+            for (int i = a.Length; i < res.Length; i++)
+            {
+                res[i] = b[i - a.Length];
+            }
+            return res;
         }
     }
 }
