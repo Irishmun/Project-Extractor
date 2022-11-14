@@ -159,11 +159,11 @@ namespace ProjectExtractor.Extractors.FullProject
             {
                 int startIndex = ProjectStartIndexes[project];
                 int nextIndex = project == (ProjectStartIndexes.Count - 1) ? Lines.Length - 1 : ProjectStartIndexes[project + 1];
-                //bool isContinuation = IsContinuation(startIndex, nextIndex);
+                bool isContinuation = IsContinuation(startIndex, nextIndex);
 
                 str.Append(TryGetProjecTitle(Lines, startIndex - 1, string.Empty, out projectIndex));
                 str.AppendLine();
-                if (IsContinuation(startIndex, nextIndex))
+                if (isContinuation)
                 {
                     str.Append("Voortzetting van een vorig project\n");
                 }
@@ -178,7 +178,15 @@ namespace ProjectExtractor.Extractors.FullProject
                 {
                     InsertAndRemoveSectionsFromLines("Omschrijving\n", detailEnd, nextIndex, _toRemoveDescription, _toRemoveFases, out int descriptionEnd);
                     InsertAndRemoveSectionsFromLines("\n\nFasering Werkzaamheden\n", descriptionEnd, nextIndex, _toRemoveFases, _toRemoveUpdate, out int fasesEnd, true);
-                    InsertAndRemoveSectionsFromLines("\n\nUpdate Project\n", fasesEnd, nextIndex, _toRemoveUpdate, _toRemoveQuestionsA, out int updateEnd);
+                    int updateEnd = fasesEnd;
+                    if (isContinuation)
+                    {
+                        InsertAndRemoveSectionsFromLines("\n\nUpdate Project\n", fasesEnd, nextIndex, _toRemoveUpdate, _toRemoveQuestionsA, out updateEnd);
+                    }
+                    else
+                    {
+                        InsertAndRemoveSectionsFromLines(string.Empty, fasesEnd, nextIndex, _toRemoveUpdate, _toRemoveQuestionsA, out updateEnd);
+                    }
                     InsertAndRemoveSectionsFromLines(string.Empty, updateEnd, nextIndex, _toRemoveQuestionsA, _toRemoveQuestionsB, out int questionsAEnd);
                     InsertAndRemoveSectionsFromLines("\n\n- Technische knelpunten.\n", questionsAEnd, nextIndex, _toRemoveQuestionsB, _toRemoveQuestionsC, out int questionsBEnd);
                     InsertAndRemoveSectionsFromLines("\n\n- Technische oplossingsrichtingen.\n", questionsBEnd, nextIndex, _toRemoveQuestionsC, _toRemoveQuestionsD, out int questionsCEnd);
@@ -205,6 +213,8 @@ namespace ProjectExtractor.Extractors.FullProject
                     else
                     {
                         InsertAndRemoveSectionsFromLines("\n\nProgrammatuur\n", questionsEEnd, nextIndex, _toRemoveSoftware, programmatuurArray, out int programmatuurEnd);
+                        InsertAndRemoveSectionsFromLines("\n\n", programmatuurEnd, nextIndex, ExtensionMethods.AddArrays(_toRemoveButNotSkip, _toRemoveCosts), _toRemoveSpending, out int programmatuurCostsEnd, true);
+                        InsertAndRemoveSectionsFromLines("\n", programmatuurCostsEnd, nextIndex, ExtensionMethods.AddArrays(_toRemoveButNotSkip, _toRemoveSpending), programmatuurArray, out int programmatuurSpendingEnd, true);
                     }
                     //if (isContinuation)
                     //{
@@ -218,20 +228,23 @@ namespace ProjectExtractor.Extractors.FullProject
                     returnCode = ExitCode.ERROR;
                     throw;
                 }
-                if (project < ProjectStartIndexes.Count - 1)
+                finally
                 {
-                    str.AppendLine();
-                    str.Append("========[NEXT PROJECT]=========");
-                    str.AppendLine();
+                    if (project < ProjectStartIndexes.Count - 1)
+                    {
+                        str.AppendLine();
+                        str.Append("========[NEXT PROJECT]=========");
+                        str.AppendLine();
+                    }
+                    else
+                    {
+                        str.AppendLine();
+
+                        str.Append("========[END PROJECTS]=========");
+                    }
+                    double progress = (double)(((double)project + 1d) * 100d / (double)Lines.Length);
+                    Worker.ReportProgress((int)progress);
                 }
-                else
-                {
-                    str.AppendLine();
-                    
-                    str.Append("========[END PROJECTS]=========");
-                }
-                double progress = (double)(((double)project + 1d) * 100d / (double)Lines.Length);
-                Worker.ReportProgress((int)progress);
             }
             using (StreamWriter sw = File.CreateText(extractPath))
             {
