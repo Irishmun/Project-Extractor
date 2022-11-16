@@ -76,14 +76,14 @@ namespace ProjectExtractor.Extractors.FullProject
                                 ,"ontwikkelen om het knelpunt op te lossen."
                                 ,". Oplossingsrichtingen programmatuur."
                                 ,". Technische oplossingsrichtingen. Geef"};
-        private static readonly string[] _toRemoveQuestionsD = {"3. Programmeertalen,"
+        private static readonly string[] _toRemoveQuestionsProgramming = {"3. Programmeertalen,"
                                 ,"ontwikkelomgevingen en tools. Geef aan"
                                 ,"welke programmeertalen,"
                                 ,"ontwikkelomgevingen en tools u gebruikt"
                                 ,"bij de ontwikkeling van technisch nieuwe"
                                 ,"programmatuur."
-                                //variant text
-                                ,"3. Technische nieuwheid. Geef aan"
+                                ,". Programmeertalen,"};
+        private static readonly string[] _toRemoveQuestionsTechnicNew = {"3. Technische nieuwheid. Geef aan"
                                 ,"waarom de hiervoor genoemde"
                                 ,"oplossingsrichtingen technisch nieuw voor"
                                 ,"u zijn. Oftewel beschrijf waarom het"
@@ -93,7 +93,6 @@ namespace ProjectExtractor.Extractors.FullProject
                                 ,"verwacht. Om technische risico’s en"
                                 ,"onzekerheden in te schatten kijkt RVO"
                                 ,"naar de stand van de technologie."
-                                ,". Programmeertalen,"
                                 ,". Technische nieuwheid. Geef aan"};
         private static readonly string[] _toRemoveQuestionsE = {"3. Technische nieuwheid. Geef aan"
                                 ,"waarom de hiervoor genoemde"
@@ -176,22 +175,41 @@ namespace ProjectExtractor.Extractors.FullProject
                 RemoveLines(startIndex + 1, nextIndex, _toRemoveDetails, _toRemoveDescription[0], out int detailEnd);
                 try
                 {
-                    InsertAndRemoveSectionsFromLines("Omschrijving\n", detailEnd, nextIndex, _toRemoveDescription, _toRemoveFases, out int descriptionEnd);
-                    InsertAndRemoveSectionsFromLines("\n\nFasering Werkzaamheden\n", descriptionEnd, nextIndex, _toRemoveFases, _toRemoveUpdate, out int fasesEnd, true);
+                    bool success;
+                    str.Append(InsertAndRemoveSectionsFromLines("Omschrijving\n", detailEnd, nextIndex, _toRemoveDescription, _toRemoveFases, out int descriptionEnd, out success));
+                    str.Append(InsertAndRemoveSectionsFromLines("\n\nFasering Werkzaamheden\n", descriptionEnd, nextIndex, _toRemoveFases, _toRemoveUpdate, out int fasesEnd, out success, true));
                     int updateEnd = fasesEnd;
                     if (isContinuation)
                     {
-                        InsertAndRemoveSectionsFromLines("\n\nUpdate Project\n", fasesEnd, nextIndex, _toRemoveUpdate, _toRemoveQuestionsA, out updateEnd);
+                        str.Append(InsertAndRemoveSectionsFromLines("\n\nUpdate Project\n", fasesEnd, nextIndex, _toRemoveUpdate, _toRemoveQuestionsA, out updateEnd, out success));
                     }
                     else
                     {
-                        InsertAndRemoveSectionsFromLines(string.Empty, fasesEnd, nextIndex, _toRemoveUpdate, _toRemoveQuestionsA, out updateEnd);
+                        str.Append(InsertAndRemoveSectionsFromLines(string.Empty, fasesEnd, nextIndex, _toRemoveUpdate, _toRemoveQuestionsA, out updateEnd, out success));
                     }
-                    InsertAndRemoveSectionsFromLines(string.Empty, updateEnd, nextIndex, _toRemoveQuestionsA, _toRemoveQuestionsB, out int questionsAEnd);
-                    InsertAndRemoveSectionsFromLines("\n\n- Technische knelpunten.\n", questionsAEnd, nextIndex, _toRemoveQuestionsB, _toRemoveQuestionsC, out int questionsBEnd);
-                    InsertAndRemoveSectionsFromLines("\n\n- Technische oplossingsrichtingen.\n", questionsBEnd, nextIndex, _toRemoveQuestionsC, _toRemoveQuestionsD, out int questionsCEnd);
-                    InsertAndRemoveSectionsFromLines("\n\n- Programmeertalen.\n", questionsCEnd, nextIndex, _toRemoveQuestionsD, _toRemoveQuestionsE, out int questionsDEnd);
-                    InsertAndRemoveSectionsFromLines("\n\n- Technische nieuwheid.\n", questionsDEnd, nextIndex, _toRemoveQuestionsE, _toRemoveSoftware, out int questionsEEnd);
+                    str.Append(InsertAndRemoveSectionsFromLines(string.Empty, updateEnd, nextIndex, _toRemoveQuestionsA, _toRemoveQuestionsB, out int questionsAEnd, out success));
+                    str.Append(InsertAndRemoveSectionsFromLines("\n\n- Technische knelpunten.\n", questionsAEnd, nextIndex, _toRemoveQuestionsB, _toRemoveQuestionsC, out int questionsBEnd, out success));
+                    string solution = InsertAndRemoveSectionsFromLines("\n\n- Technische oplossingsrichtingen.\n", questionsBEnd, nextIndex, _toRemoveQuestionsC, _toRemoveQuestionsProgramming, out int questionsCEnd, out success);
+                    int questionsEEnd = questionsCEnd;
+                    if (success)
+                    {
+                        str.Append(solution);
+                        string languages = InsertAndRemoveSectionsFromLines("\n\n- Programmeertalen.\n", questionsCEnd, nextIndex, _toRemoveQuestionsProgramming, _toRemoveQuestionsE, out int questionsDEnd, out success);
+                        if (success)
+                        {
+                            str.Append(languages);
+                            str.Append(InsertAndRemoveSectionsFromLines("\n\n- Technische nieuwheid.\n", questionsDEnd, nextIndex, _toRemoveQuestionsE, _toRemoveSoftware, out questionsEEnd, out success));
+                        }
+                        else
+                        {
+                            str.Append(InsertAndRemoveSectionsFromLines("\n\n- Technische nieuwheid.\n", questionsCEnd, nextIndex, _toRemoveQuestionsE, _toRemoveSoftware, out questionsEEnd, out success));
+                        }
+                    }
+                    else
+                    {
+                        str.Append(InsertAndRemoveSectionsFromLines("\n\n- Technische oplossingsrichtingen.\n", questionsBEnd, nextIndex, _toRemoveQuestionsC, _toRemoveQuestionsE, out int questionsCaltEnd, out success));
+                        str.Append(InsertAndRemoveSectionsFromLines("\n\n- Technische nieuwheid.\n", questionsCaltEnd, nextIndex, _toRemoveQuestionsE, _toRemoveSoftware, out questionsEEnd, out success));
+                    }
                     string[] programmatuurArray;
                     if (project == ProjectStartIndexes.Count - 1)
                     { programmatuurArray = new string[] { "Aanvraag", "Kosten en/of uitgaven per project", "Kosten opvoeren bij dit project" }; }
@@ -202,19 +220,19 @@ namespace ProjectExtractor.Extractors.FullProject
                     }
                     if (ProgrammatuurDeveloped(questionsEEnd, nextIndex, programmatuurArray))
                     {
-                        InsertAndRemoveSectionsFromLines("\n\nProgrammatuur\n", questionsEEnd, nextIndex, _toRemoveSoftware, _toRemoveQuestionsB, out int programmatuurEnd);
-                        InsertAndRemoveSectionsFromLines("\n\n- Technische knelpunten.\n", programmatuurEnd, nextIndex, _toRemoveQuestionsB, _toRemoveQuestionsC, out int programmatuurquestionsBEnd);
-                        InsertAndRemoveSectionsFromLines("\n\n- Technische oplossingsrichtingen.\n", programmatuurquestionsBEnd, nextIndex, _toRemoveQuestionsC, _toRemoveQuestionsD, out int programmatuurquestionsCEnd);
-                        InsertAndRemoveSectionsFromLines("\n\n- Programmeertalen.\n", programmatuurquestionsCEnd, nextIndex, _toRemoveQuestionsD, _toRemoveQuestionsE, out int programmatuurquestionsDEnd);
-                        InsertAndRemoveSectionsFromLines("\n\n- Technische nieuwheid.\n", programmatuurquestionsDEnd, nextIndex, _toRemoveQuestionsE, _toRemoveCosts, out int programmatuurquestionsEEnd);
-                        InsertAndRemoveSectionsFromLines("\n\n", programmatuurquestionsEEnd, nextIndex, ExtensionMethods.AddArrays(_toRemoveButNotSkip, _toRemoveCosts), _toRemoveSpending, out int programmatuurCostsEnd, true);
-                        InsertAndRemoveSectionsFromLines("\n", programmatuurCostsEnd, nextIndex, ExtensionMethods.AddArrays(_toRemoveButNotSkip, _toRemoveSpending), programmatuurArray, out int programmatuurSpendingEnd, true);
+                        str.Append(InsertAndRemoveSectionsFromLines("\n\nProgrammatuur\n", questionsEEnd, nextIndex, _toRemoveSoftware, _toRemoveQuestionsB, out int programmatuurEnd, out success));
+                        str.Append(InsertAndRemoveSectionsFromLines("\n\n- Technische knelpunten.\n", programmatuurEnd, nextIndex, _toRemoveQuestionsB, _toRemoveQuestionsC, out int programmatuurquestionsBEnd, out success));
+                        str.Append(InsertAndRemoveSectionsFromLines("\n\n- Technische oplossingsrichtingen.\n", programmatuurquestionsBEnd, nextIndex, _toRemoveQuestionsC, _toRemoveQuestionsProgramming, out int programmatuurquestionsCEnd, out success));
+                        str.Append(InsertAndRemoveSectionsFromLines("\n\n- Programmeertalen.\n", programmatuurquestionsCEnd, nextIndex, _toRemoveQuestionsProgramming, _toRemoveQuestionsE, out int programmatuurquestionsDEnd, out success));
+                        str.Append(InsertAndRemoveSectionsFromLines("\n\n- Technische nieuwheid.\n", programmatuurquestionsDEnd, nextIndex, _toRemoveQuestionsE, _toRemoveCosts, out int programmatuurquestionsEEnd, out success));
+                        str.Append(InsertAndRemoveSectionsFromLines("\n\n", programmatuurquestionsEEnd, nextIndex, ExtensionMethods.AddArrays(_toRemoveButNotSkip, _toRemoveCosts), _toRemoveSpending, out int programmatuurCostsEnd, out success, true));
+                        str.Append(InsertAndRemoveSectionsFromLines("\n", programmatuurCostsEnd, nextIndex, ExtensionMethods.AddArrays(_toRemoveButNotSkip, _toRemoveSpending), programmatuurArray, out int programmatuurSpendingEnd, out success, true));
                     }
                     else
                     {
-                        InsertAndRemoveSectionsFromLines("\n\nProgrammatuur\n", questionsEEnd, nextIndex, _toRemoveSoftware, programmatuurArray, out int programmatuurEnd);
-                        InsertAndRemoveSectionsFromLines("\n\n", programmatuurEnd, nextIndex, ExtensionMethods.AddArrays(_toRemoveButNotSkip, _toRemoveCosts), _toRemoveSpending, out int programmatuurCostsEnd, true);
-                        InsertAndRemoveSectionsFromLines("\n", programmatuurCostsEnd, nextIndex, ExtensionMethods.AddArrays(_toRemoveButNotSkip, _toRemoveSpending), programmatuurArray, out int programmatuurSpendingEnd, true);
+                        str.Append(InsertAndRemoveSectionsFromLines("\n\nProgrammatuur\n", questionsEEnd, nextIndex, _toRemoveSoftware, programmatuurArray, out int programmatuurEnd, out success));
+                        str.Append(InsertAndRemoveSectionsFromLines("\n\n", programmatuurEnd, nextIndex, ExtensionMethods.AddArrays(_toRemoveButNotSkip, _toRemoveCosts), _toRemoveSpending, out int programmatuurCostsEnd, out success, true));
+                        str.Append(InsertAndRemoveSectionsFromLines("\n", programmatuurCostsEnd, nextIndex, ExtensionMethods.AddArrays(_toRemoveButNotSkip, _toRemoveSpending), programmatuurArray, out int programmatuurSpendingEnd, out success, true));
                     }
                     //if (isContinuation)
                     //{
@@ -275,20 +293,23 @@ namespace ProjectExtractor.Extractors.FullProject
                     }
                 }
             }
-            void InsertAndRemoveSectionsFromLines(string heading, int startIndex, int nextProjectIndex, string[] toRemove, string[] FollowingSection, out int nextSectionLine, bool appendNewlines = false)
+            string InsertAndRemoveSectionsFromLines(string heading, int startIndex, int nextProjectIndex, string[] toRemove, string[] FollowingSection, out int nextSectionLine, out bool success, bool appendNewlines = false)
             {
                 StringBuilder tempBuilder = new StringBuilder();
                 string possibleExit = string.Empty;
                 nextSectionLine = nextProjectIndex;
-                bool SectionsRemoved = false;
-                for (int lineIndex = startIndex; lineIndex < nextProjectIndex; lineIndex++)
+                success = false;
+                int lineIndex;
+                //TODO: try preventing going too far by having a hard limit for how many lines after the last sentence has been found in toRemove (between 30 and 50 perhaps?)
+                //either nexproject or the value above plus toRemove length, whichever is first
+                for (lineIndex = startIndex; lineIndex < nextProjectIndex; lineIndex++)
                 {
                     //break out/return when reached end of section or end of project
                     RemovePageNumberFromString(ref Lines[lineIndex]);
                     possibleExit = Array.Find(FollowingSection, Lines[lineIndex].StartsWith);
                     if (!string.IsNullOrWhiteSpace(possibleExit))
                     {
-                        if (SectionsRemoved == true)
+                        if (success == true)
                         {
                             nextSectionLine = lineIndex;
                         }
@@ -306,10 +327,10 @@ namespace ProjectExtractor.Extractors.FullProject
 
                         if (!Lines[lineIndex - 1].EndsWithWhiteSpace())
                         {
-                            SectionsRemoved = true;
                             string line = Lines[lineIndex].Substring(substring) + " ";
                             if (!string.IsNullOrWhiteSpace(line))
                             {
+                                success = true;//text is found, success for now
                                 tempBuilder.Append(line);
                                 if (appendNewlines)
                                 {
@@ -320,7 +341,6 @@ namespace ProjectExtractor.Extractors.FullProject
                     }
                     else
                     {
-                        RemovePageNumberFromString(ref Lines[lineIndex]);
                         if (!string.IsNullOrWhiteSpace(Lines[lineIndex]))
                         {
                             tempBuilder.Append(Lines[lineIndex]);
@@ -337,13 +357,20 @@ namespace ProjectExtractor.Extractors.FullProject
                             }
                         }
                     }
+
                 }
-                string res = tempBuilder.ToString();
-                if (!string.IsNullOrWhiteSpace(res))
+                if (lineIndex == nextProjectIndex)
+                {//if reached next project, deem failure
+                    success = false;
+                }
+
+                string res = string.Empty;
+                if (!string.IsNullOrWhiteSpace(tempBuilder.ToString()))
                 {
-                    str.Append(heading);
-                    str.Append(res);
+                    tempBuilder.Insert(0, heading);
+                    res = tempBuilder.ToString();
                 }
+                return res;
             }
 
 

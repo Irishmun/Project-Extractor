@@ -63,7 +63,7 @@ namespace ProjectExtractor.Extractors
                     //Match match = Regex.Match(lines[i], @"(Project )\d{4}\.\d*(: )[a-zA-Z0-9 ' ']*");
                     string line = lines[i];
                     RemovePageNumberFromString(ref line);
-                    Match match = Regex.Match(line, @"^Project\s([^:]+?)(\s*[:]).*");
+                    Match match = Regex.Match(line, @"^(Project )([^:]{1,25})(\s*[:]).*");
                     if (!string.IsNullOrWhiteSpace(match.Value))
                     {//if a project title has been found, break out of loop
                         index = i;
