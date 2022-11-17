@@ -9,116 +9,9 @@ namespace ProjectExtractor.Extractors.FullProject
 {
     internal class ProjectExtractorTXT : ProjectExtractorBase
     {
+        private const int _maxBlankSearch = 40;//max lines to search after toRemove length
         //iterate over text, per project, remove all these bits of text, do this per array, then once an array is complete, add corresponding title header
-        private static readonly string[] _toRemoveDetails = {"Dit project is een voortzetting van een vorig project"
-                                ,"Projectnummer"
-                                ,"Projecttitel"
-                                ,"Type project"
-                                ,"Zwaartepunt"
-                                ,"Het project wordt/is gestart op"
-                                ,"Aantal uren werknemers"};
-        private static readonly string[] _toRemoveDescription = {"Geef een algemene omschrijving van het"
-                                ,"project. Heeft u eerder WBSO"
-                                ,"aangevraagd voor dit project? Beschrijf"
-                                ,"dan de stand van zaken bij de vraag"
-                                ,"\"Update project\"."
-                                ,"Samenwerking"
-                                ,"Levert één of meer partijen (buiten uw Nee"
-                                ,"Levert één of meer partijen (buiten uw Ja"
-                                ,"fiscale eenheid) een bijdrage aan het"
-                                ,"project?"
-        };
-        private static readonly string[] _toRemoveFases = {"Fasering werkzaamheden"
-                                ,"Geef de fasen en de (tussen)resultaten van het project aan. Bijvoorbeeld de afsluiting van een onderzoek,"
-                                ,"de afronding van een ontwerpfase, de start van de bouw van een prototype, het testen van een prototype"
-                                ,"(maximaal 25 karakters per veld). Vermeld alleen uw eigen werkzaamheden. U kunt een fase toevoegen"
-                                ,"door op de + te klikken en een fase verwijderen door op de - te klikken."
-                                ,"Naam Datum gereed"};
-        private static readonly string[] _toRemoveUpdate = {"Update project"
-                                ,"Vermeld de voortgang van uw"
-                                ,"S&O-werkzaamheden. Zijn er wijzigingen"
-                                ,"in de oorspronkelijke projectopzet of"
-                                ,"-planning? Geef dan aan waarom dit het"
-                                ,"geval is." };
-        private static readonly string[] _toRemoveQuestionsA = {"Specifieke vragen ontwikkeling"
-                                ,"Beantwoord de vragen vanuit een technische invalshoek. Geef hier geen algemene of functionele"
-                                ,"beschrijving van het project. Ontwikkelen heeft altijd te maken met zoeken en bewijzen. U wilt iets"
-                                ,"ontwikkelen en loopt hierbij tegen een technisch probleem aan. U zoekt hiervoor een nieuwe technische"
-                                ,"oplossing waarvan u het werkingsprincipe wilt aantonen." };
-        private static readonly string[] _toRemoveQuestionsB = {"Probleemstelling en oplossingsrichting"
-                                ,"1. Technische knelpunten. Geef aan welke"
-                                ,"concrete technische knelpunten u zelf"
-                                ,"tijdens het ontwikkelingsproces moet"
-                                ,"oplossen om het gewenste"
-                                ,"projectresultaat te bereiken. Vermeld"
-                                ,"geen aanleidingen, algemene"
-                                ,"randvoorwaarden of functionele eisen van"
-                                ,"het project."
-                                //variant text
-                                ,"1. Technische knelpunten programmatuur."
-                                ,"Geef aan welke concrete technische"
-                                ,"knelpunten u zelf tijdens het ontwikkelen"
-                                ,"van de programmatuur moet oplossen om"
-                                ,"het gewenste projectresultaat te bereiken."
-                                ,"Vermeld geen aanleidingen, algemene"
-                                ,"randvoorwaarden of functionele eisen van"
-                                ,"de programmatuur."
-                                ,". Technische knelpunten. Geef aan welke"
-                                ,"Kosten en/of uitgaven per project"};
-        private static readonly string[] _toRemoveQuestionsC = {"2. Technische oplossingsrichtingen. Geef"
-                                ,"voor ieder genoemd technisch knelpunt"
-                                ,"aan wat u specifiek zelf gaat ontwikkelen"
-                                ,"om het knelpunt op te lossen." 
-                                //variant text
-                                ,"2. Oplossingsrichtingen programmatuur."
-                                ,"Geef voor ieder genoemd technisch"
-                                ,"knelpunt aan wat u specifiek zelf gaat"
-                                ,"ontwikkelen om het knelpunt op te lossen."
-                                ,". Oplossingsrichtingen programmatuur."
-                                ,". Technische oplossingsrichtingen. Geef"};
-        private static readonly string[] _toRemoveQuestionsProgramming = {"3. Programmeertalen,"
-                                ,"ontwikkelomgevingen en tools. Geef aan"
-                                ,"welke programmeertalen,"
-                                ,"ontwikkelomgevingen en tools u gebruikt"
-                                ,"bij de ontwikkeling van technisch nieuwe"
-                                ,"programmatuur."
-                                ,". Programmeertalen,"};
-        private static readonly string[] _toRemoveQuestionsTechnicNew = {"3. Technische nieuwheid. Geef aan"
-                                ,"waarom de hiervoor genoemde"
-                                ,"oplossingsrichtingen technisch nieuw voor"
-                                ,"u zijn. Oftewel beschrijf waarom het"
-                                ,"project technisch vernieuwend en"
-                                ,"uitdagend is en geef aan welke technische"
-                                ,"risico’s en onzekerheden u hierbij"
-                                ,"verwacht. Om technische risico’s en"
-                                ,"onzekerheden in te schatten kijkt RVO"
-                                ,"naar de stand van de technologie."
-                                ,". Technische nieuwheid. Geef aan"};
-        private static readonly string[] _toRemoveQuestionsE = {"3. Technische nieuwheid. Geef aan"
-                                ,"waarom de hiervoor genoemde"
-                                ,"oplossingsrichtingen technisch nieuw voor"
-                                ,"u zijn. Oftewel beschrijf waarom het"
-                                ,"project technisch vernieuwend en"
-                                ,"uitdagend is en geef aan welke technische"
-                                ,"risico’s en onzekerheden u hierbij"
-                                ,"verwacht. Om technische risico’s en"
-                                ,"onzekerheden in te schatten kijkt RVO"
-                                ,"naar de stand van de technologie."
-                                //variant text
-                                ,"4.Technische nieuwheid. Geef aan"
-                                ,".Technische nieuwheid. Geef aan"
-                                ,". Technische nieuwheid. Geef aan"};
-        private static readonly string[] _toRemoveSoftware = {"Wordt er voor dit product of proces mede"
-                                ,"programmatuur ontwikkeld?"
-                                ,"Aanvraag"};
-        private static readonly string[] _toRemoveButNotSkip = {"Voorbeelden en uitgebreide informatie over kosten en uitgaven kunt u in de"
-                                ,"vinden."};
-        private static readonly string[] _toRemoveCosts ={ "Kosten en/of uitgaven per project"
-                                ,"Omschrijving van de kosten Materialen testopstellingen en proefmodellen." };
-        private static readonly string[] _toRemoveSpending = { "Opvoeren uitgaven"
-                                ,"Investeert u in een bedrijfsmiddel, waarvan het aan S&O dienstbare en toerekenbare deel van de"
-                                ,"aanschafwaarde van het bedrijfsmiddel groter of gelijk is aan 1 miljoen euro? Voer deze dan hieronder in."
-                                ,"Uitgaven kleiner dan 1 miljoen euro specificeert u per project." };
+
         public override int ExtractProjects(string file, string extractPath, string[] Sections, string EndProject, BackgroundWorker Worker)
         {
             //extract all sentences, starting at first (found) keysentence part, untill end keyword.
@@ -297,69 +190,78 @@ namespace ProjectExtractor.Extractors.FullProject
             {
                 StringBuilder tempBuilder = new StringBuilder();
                 string possibleExit = string.Empty;
+                int endSearchIndex = nextProjectIndex > (startIndex + (toRemove.Length + _maxBlankSearch)) ? startIndex + (toRemove.Length + _maxBlankSearch) : nextProjectIndex;
                 nextSectionLine = nextProjectIndex;
                 success = false;
                 int lineIndex;
-                //TODO: try preventing going too far by having a hard limit for how many lines after the last sentence has been found in toRemove (between 30 and 50 perhaps?)
+
+                //TODO: try iterating over every OTHER string[] that isn't toRemove to hopefully ALWAYS get the next section
+
+                //this(?) causes some headings to give the same content
+                //try preventing going too far by having a hard limit for how many lines after the last sentence has been found in toRemove (between 30 and 50 perhaps?)
                 //either nexproject or the value above plus toRemove length, whichever is first
-                for (lineIndex = startIndex; lineIndex < nextProjectIndex; lineIndex++)
+                for (lineIndex = startIndex; lineIndex < endSearchIndex; lineIndex++)
                 {
-                    //break out/return when reached end of section or end of project
-                    RemovePageNumberFromString(ref Lines[lineIndex]);
-                    possibleExit = Array.Find(FollowingSection, Lines[lineIndex].StartsWith);
-                    if (!string.IsNullOrWhiteSpace(possibleExit))
-                    {
-                        if (success == true)
+                    if (!string.IsNullOrWhiteSpace(Lines[lineIndex]))
+                    {//if it is empty, don't bother with anything in here
+                        RemovePageNumberFromString(ref Lines[lineIndex]);
+                        possibleExit = Array.Find(FollowingSection, Lines[lineIndex].StartsWith);
+                        if (!string.IsNullOrWhiteSpace(possibleExit))
+                        {//break out/return when reached end of section or end of project
+
+                            if (success == true)
+                            {
+                                nextSectionLine = lineIndex;
+                            }
+                            else
+                            {
+                                nextSectionLine = startIndex + 1;
+                            }
+                            break;
+                        }
+
+                        success = true;//text is found, success for now
+                        possibleSection = Array.Find(toRemove, Lines[lineIndex].StartsWith);
+                        if (!string.IsNullOrEmpty(possibleSection))
                         {
-                            nextSectionLine = lineIndex;
+                            int substring = 0;
+                            substring = Lines[lineIndex].IndexOf(possibleSection) + (int)possibleSection.Length;
+
+                            if (!Lines[lineIndex - 1].EndsWithWhiteSpace())
+                            {
+                                string line = Lines[lineIndex].Substring(substring) + " ";
+                                if (!string.IsNullOrWhiteSpace(line))
+                                {
+                                    tempBuilder.Append(line);
+                                    if (appendNewlines)
+                                    {
+                                        tempBuilder.AppendLine();
+                                    }
+                                }
+                            }
                         }
                         else
                         {
-                            nextSectionLine = startIndex + 1;
-                        }
-                        break;
-                    }
-                    possibleSection = Array.Find(toRemove, Lines[lineIndex].StartsWith);
-                    if (!string.IsNullOrEmpty(possibleSection))
-                    {
-                        int substring = 0;
-                        substring = Lines[lineIndex].IndexOf(possibleSection) + (int)possibleSection.Length;
-
-                        if (!Lines[lineIndex - 1].EndsWithWhiteSpace())
-                        {
-                            string line = Lines[lineIndex].Substring(substring) + " ";
-                            if (!string.IsNullOrWhiteSpace(line))
+                            if (!string.IsNullOrWhiteSpace(Lines[lineIndex]))
                             {
-                                success = true;//text is found, success for now
-                                tempBuilder.Append(line);
+                                tempBuilder.Append(Lines[lineIndex]);
                                 if (appendNewlines)
                                 {
                                     tempBuilder.AppendLine();
                                 }
-                            }
-                        }
-                    }
-                    else
-                    {
-                        if (!string.IsNullOrWhiteSpace(Lines[lineIndex]))
-                        {
-                            tempBuilder.Append(Lines[lineIndex]);
-                            if (appendNewlines)
-                            {
-                                tempBuilder.AppendLine();
-                            }
-                            else
-                            {
-                                if (!Lines[lineIndex - 1].EndsWithWhiteSpace())
+                                else
                                 {
-                                    tempBuilder.Append(" ");
+                                    if (!Lines[lineIndex - 1].EndsWithWhiteSpace())
+                                    {
+                                        tempBuilder.Append(" ");
+                                    }
                                 }
                             }
                         }
                     }
 
                 }
-                if (lineIndex == nextProjectIndex)
+                if (lineIndex == endSearchIndex)
                 {//if reached next project, deem failure
                     success = false;
                 }
@@ -404,8 +306,116 @@ namespace ProjectExtractor.Extractors.FullProject
                 return false;
             }
         }
-
-
         public override string ToString() => "txt";
+
+        private static readonly string[] _toRemoveDetails = {"Dit project is een voortzetting van een vorig project"
+                                ,"Projectnummer"
+                                ,"Projecttitel"
+                                ,"Type project"
+                                ,"Zwaartepunt"
+                                ,"Het project wordt/is gestart op"
+                                ,"Aantal uren werknemers"};
+        private static readonly string[] _toRemoveDescription = {"Geef een algemene omschrijving van het"
+                                ,"project. Heeft u eerder WBSO"
+                                ,"aangevraagd voor dit project? Beschrijf"
+                                ,"dan de stand van zaken bij de vraag"
+                                ,"\"Update project\"."
+                                ,"Samenwerking"
+                                ,"Levert één of meer partijen (buiten uw Nee"
+                                ,"Levert één of meer partijen (buiten uw Ja"
+                                ,"fiscale eenheid) een bijdrage aan het"
+                                ,"project?"
+        };
+        private static readonly string[] _toRemoveFases = {"Fasering werkzaamheden"
+                                ,"Geef de fasen en de (tussen)resultaten van het project aan. Bijvoorbeeld de afsluiting van een onderzoek,"
+                                ,"de afronding van een ontwerpfase, de start van de bouw van een prototype, het testen van een prototype"
+                                ,"(maximaal 25 karakters per veld). Vermeld alleen uw eigen werkzaamheden. U kunt een fase toevoegen"
+                                ,"door op de + te klikken en een fase verwijderen door op de - te klikken."
+                                ,"Naam Datum gereed"};
+        private static readonly string[] _toRemoveUpdate = {"Update project"
+                                ,"Vermeld de voortgang van uw"
+                                ,"S&O-werkzaamheden. Zijn er wijzigingen"
+                                ,"in de oorspronkelijke projectopzet of"
+                                ,"-planning? Geef dan aan waarom dit het"
+                                ,"geval is." };
+        private static readonly string[] _toRemoveQuestionsA = {"Specifieke vragen ontwikkeling"
+                                ,"Beantwoord de vragen vanuit een technische invalshoek. Geef hier geen algemene of functionele"
+                                ,"beschrijving van het project. Ontwikkelen heeft altijd te maken met zoeken en bewijzen. U wilt iets"
+                                ,"ontwikkelen en loopt hierbij tegen een technisch probleem aan. U zoekt hiervoor een nieuwe technische"
+                                ,"oplossing waarvan u het werkingsprincipe wilt aantonen." };
+        private static readonly string[] _toRemoveQuestionsB = {"Probleemstelling en oplossingsrichting"
+                                ,"1. Technische knelpunten. Geef aan welke"
+                                ,"concrete technische knelpunten u zelf"
+                                ,"tijdens het ontwikkelingsproces moet"
+                                ,"oplossen om het gewenste"
+                                ,"projectresultaat te bereiken. Vermeld"
+                                ,"geen aanleidingen, algemene"
+                                ,"randvoorwaarden of functionele eisen van"
+                                ,"het project."
+                                //variant text
+                                ,"1. Technische knelpunten programmatuur."
+                                ,"Geef aan welke concrete technische"
+                                ,"knelpunten u zelf tijdens het ontwikkelen"
+                                ,"van de programmatuur moet oplossen om"
+                                ,"het gewenste projectresultaat te bereiken."
+                                ,"Vermeld geen aanleidingen, algemene"
+                                ,"randvoorwaarden of functionele eisen van"
+                                ,"de programmatuur."
+                                ,". Technische knelpunten. Geef aan welke"
+                                ,"Kosten en/of uitgaven per project"};
+        private static readonly string[] _toRemoveQuestionsC = {"2. Technische oplossingsrichtingen. Geef"
+                                ,"voor ieder genoemd technisch knelpunt"
+                                ,"aan wat u specifiek zelf gaat ontwikkelen"
+                                ,"om het knelpunt op te lossen." 
+                                //variant text
+                                ,"2. Oplossingsrichtingen programmatuur."
+                                ,"Geef voor ieder genoemd technisch"
+                                ,"knelpunt aan wat u specifiek zelf gaat"
+                                ,"ontwikkelen om het knelpunt op te lossen."
+                                ,". Oplossingsrichtingen programmatuur."
+                                ,". Technische oplossingsrichtingen. Geef"};
+        private static readonly string[] _toRemoveQuestionsProgramming = {"3. Programmeertalen,"
+                                ,"ontwikkelomgevingen en tools. Geef aan"
+                                ,"welke programmeertalen,"
+                                ,"ontwikkelomgevingen en tools u gebruikt"
+                                ,"bij de ontwikkeling van technisch nieuwe"
+                                ,"programmatuur."
+                                ,". Programmeertalen,"};
+        private static readonly string[] _toRemoveQuestionsTechnicNew = {"3. Technische nieuwheid. Geef aan"
+                                ,"waarom de hiervoor genoemde"
+                                ,"oplossingsrichtingen technisch nieuw voor"
+                                ,"u zijn. Oftewel beschrijf waarom het"
+                                ,"project technisch vernieuwend en"
+                                ,"uitdagend is en geef aan welke technische"
+                                ,"risico’s en onzekerheden u hierbij"
+                                ,"verwacht. Om technische risico’s en"
+                                ,"onzekerheden in te schatten kijkt RVO"
+                                ,"naar de stand van de technologie."
+                                ,". Technische nieuwheid. Geef aan"};
+        private static readonly string[] _toRemoveQuestionsE = {"3. Technische nieuwheid. Geef aan"
+                                ,"waarom de hiervoor genoemde"
+                                ,"oplossingsrichtingen technisch nieuw voor"
+                                ,"u zijn. Oftewel beschrijf waarom het"
+                                ,"project technisch vernieuwend en"
+                                ,"uitdagend is en geef aan welke technische"
+                                ,"risico’s en onzekerheden u hierbij"
+                                ,"verwacht. Om technische risico’s en"
+                                ,"onzekerheden in te schatten kijkt RVO"
+                                ,"naar de stand van de technologie."
+                                //variant text
+                                ,"4.Technische nieuwheid. Geef aan"
+                                ,".Technische nieuwheid. Geef aan"
+                                ,". Technische nieuwheid. Geef aan"};
+        private static readonly string[] _toRemoveSoftware = {"Wordt er voor dit product of proces mede"
+                                ,"programmatuur ontwikkeld?"
+                                ,"Aanvraag"};
+        private static readonly string[] _toRemoveButNotSkip = {"Voorbeelden en uitgebreide informatie over kosten en uitgaven kunt u in de"
+                                ,"vinden."};
+        private static readonly string[] _toRemoveCosts ={ "Kosten en/of uitgaven per project"
+                                ,"Omschrijving van de kosten Materialen testopstellingen en proefmodellen." };
+        private static readonly string[] _toRemoveSpending = { "Opvoeren uitgaven"
+                                ,"Investeert u in een bedrijfsmiddel, waarvan het aan S&O dienstbare en toerekenbare deel van de"
+                                ,"aanschafwaarde van het bedrijfsmiddel groter of gelijk is aan 1 miljoen euro? Voer deze dan hieronder in."
+                                ,"Uitgaven kleiner dan 1 miljoen euro specificeert u per project." };
     }
 }
