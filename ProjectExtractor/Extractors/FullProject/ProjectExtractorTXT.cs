@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace ProjectExtractor.Extractors.FullProject
@@ -16,6 +17,9 @@ namespace ProjectExtractor.Extractors.FullProject
         {
             //extract all sentences, starting at first (found) keysentence part, untill end keyword.
             //remove key sentences from found sentences, then combine remaining contents into one sentence (period separated)
+
+            removeMatching("Geef een algemene omschrijving van Ontwikkeling van een nieuwe apparaat voor het kunnen zagen");
+            removeMatching("het project. Heeft u eerder WBSO van bot. Er moet een soort van kettingzaag worden ontwikkeld");
 
             ExitCode returnCode = ExitCode.NONE;
             ExtractTextFromPDF(file);
@@ -186,6 +190,47 @@ namespace ProjectExtractor.Extractors.FullProject
                     }
                 }
             }
+
+            string removeMatching(string check)
+            {
+                string str1 = "Geef een algemene omschrijving van het project. Heeft u eerder WBSO aangevraagd voor dit project? Beschrijf dan de stand van zaken bij de vraag \"Update project\".";
+                string res = check;
+                string compare = check.ToLower();
+                string[] str1Words = str1.ToLower().Split(' ');
+                bool firstMatchFound = false;
+                int foundIndex = 0;
+                for (int i = 0; i < str1Words.Length; i++)
+                {//iterate to find first match
+                    if (compare.StartsWith(str1Words[i]))
+                    {
+                        firstMatchFound = true;
+                        foundIndex = i;
+                        break;
+                    }
+                }
+                if (firstMatchFound == true)
+                {
+                    string testSentence = string.Empty;
+                    string lastCorrect = testSentence;
+                    for (int i = foundIndex; i < str1Words.Length - foundIndex; i++)
+                    {
+                        testSentence += str1Words[i] + " ";
+                        if (!string.IsNullOrEmpty(testSentence))
+                        {
+                            if (!compare.StartsWith(testSentence))
+                            {//cut found stuff
+                                int substring = compare.IndexOf(lastCorrect) + (int)lastCorrect.Length;
+                                res = check.Substring(substring);
+                                break;
+                            }
+                        }
+                        lastCorrect = testSentence;
+
+                    }
+                }
+                return res;
+            }
+
             string InsertAndRemoveSectionsFromLines(string heading, int startIndex, int nextProjectIndex, string[] toRemove, string[] FollowingSection, out int nextSectionLine, out bool success, bool appendNewlines = false)
             {
                 StringBuilder tempBuilder = new StringBuilder();
@@ -308,14 +353,14 @@ namespace ProjectExtractor.Extractors.FullProject
         }
         public override string ToString() => "txt";
 
-        private static readonly string[] _toRemoveDetails = {"Dit project is een voortzetting van een vorig project"
+ private static readonly string[] _toRemoveDetails = {"Dit project is een voortzetting van een vorig project"
                                 ,"Projectnummer"
                                 ,"Projecttitel"
                                 ,"Type project"
                                 ,"Zwaartepunt"
                                 ,"Het project wordt/is gestart op"
                                 ,"Aantal uren werknemers"};
-        private static readonly string[] _toRemoveDescription = {"Geef een algemene omschrijving van het"
+        private static readonly string[] _toRemoveDescription = {"Geef een algemene omschrijving van"
                                 ,"project. Heeft u eerder WBSO"
                                 ,"aangevraagd voor dit project? Beschrijf"
                                 ,"dan de stand van zaken bij de vraag"
@@ -325,6 +370,11 @@ namespace ProjectExtractor.Extractors.FullProject
                                 ,"Levert één of meer partijen (buiten uw Ja"
                                 ,"fiscale eenheid) een bijdrage aan het"
                                 ,"project?"
+                                ,"Geef een algemene omschrijving van het"
+                                ,"het project. Heeft u eerder WBSO"
+                                ,"aangevraagd voor dit project? Beschrijf"
+                                ,"dan de stand van zaken bij de vraag"
+                                ,"\"Update project\"."
         };
         private static readonly string[] _toRemoveFases = {"Fasering werkzaamheden"
                                 ,"Geef de fasen en de (tussen)resultaten van het project aan. Bijvoorbeeld de afsluiting van een onderzoek,"
@@ -337,7 +387,13 @@ namespace ProjectExtractor.Extractors.FullProject
                                 ,"S&O-werkzaamheden. Zijn er wijzigingen"
                                 ,"in de oorspronkelijke projectopzet of"
                                 ,"-planning? Geef dan aan waarom dit het"
-                                ,"geval is." };
+                                ,"geval is."
+                                ,"Vermeld de voortgang van uw"
+                                ,"S&O-werkzaamheden. Zijn er"
+                                ,"wijzigingen in de oorspronkelijke"
+                                ,"projectopzet of -planning? Geef dan"
+                                ,"aan waarom dit het geval is."
+        };
         private static readonly string[] _toRemoveQuestionsA = {"Specifieke vragen ontwikkeling"
                                 ,"Beantwoord de vragen vanuit een technische invalshoek. Geef hier geen algemene of functionele"
                                 ,"beschrijving van het project. Ontwikkelen heeft altijd te maken met zoeken en bewijzen. U wilt iets"
@@ -362,18 +418,33 @@ namespace ProjectExtractor.Extractors.FullProject
                                 ,"randvoorwaarden of functionele eisen van"
                                 ,"de programmatuur."
                                 ,". Technische knelpunten. Geef aan welke"
-                                ,"Kosten en/of uitgaven per project"};
-        private static readonly string[] _toRemoveQuestionsC = {"2. Technische oplossingsrichtingen. Geef"
+                                ,"Kosten en/of uitgaven per project"
+                                ,"1. Technische knelpunten. Geef aan"
+                                ,"welke concrete technische knelpunten u"
+                                ,"zelf tijdens het ontwikkelingsproces"
+                                ,"moet oplossen om het gewenste"
+                                ,"projectresultaat te bereiken. Vermeld"
+                                ,"geen aanleidingen, algemene"
+                                ,"randvoorwaarden of functionele eisen"
+                                ,"van het project."
+        };
+        private static readonly string[] _toRemoveQuestionsC = {"2. Technische oplossingsrichtingen."
                                 ,"voor ieder genoemd technisch knelpunt"
                                 ,"aan wat u specifiek zelf gaat ontwikkelen"
-                                ,"om het knelpunt op te lossen." 
+                                ,"om het knelpunt op te lossen."
                                 //variant text
                                 ,"2. Oplossingsrichtingen programmatuur."
                                 ,"Geef voor ieder genoemd technisch"
                                 ,"knelpunt aan wat u specifiek zelf gaat"
                                 ,"ontwikkelen om het knelpunt op te lossen."
                                 ,". Oplossingsrichtingen programmatuur."
-                                ,". Technische oplossingsrichtingen. Geef"};
+                                ,". Technische oplossingsrichtingen. Geef"
+                                ,"2. Technische oplossingsrichtingen. Geef"
+                                ,"Geef voor ieder genoemd technisch"
+                                ,"knelpunt aan wat u specifiek zelf gaat"
+                                ,"ontwikkelen om het knelpunt op te"
+                                ,"lossen."
+        };
         private static readonly string[] _toRemoveQuestionsProgramming = {"3. Programmeertalen,"
                                 ,"ontwikkelomgevingen en tools. Geef aan"
                                 ,"welke programmeertalen,"
@@ -405,10 +476,24 @@ namespace ProjectExtractor.Extractors.FullProject
                                 //variant text
                                 ,"4.Technische nieuwheid. Geef aan"
                                 ,".Technische nieuwheid. Geef aan"
-                                ,". Technische nieuwheid. Geef aan"};
-        private static readonly string[] _toRemoveSoftware = {"Wordt er voor dit product of proces mede"
+                                ,". Technische nieuwheid. Geef aan"
+                                ,"3. Technische nieuwheid. Geef aan"
+                                ,"waarom de hiervoor genoemde"
+                                ,"oplossingsrichtingen technisch nieuw"
+                                ,"voor u zijn. Oftewel beschrijf waarom"
+                                ,"het project technisch vernieuwend en"
+                                ,"uitdagend is en geef aan welke"
+                                ,"technische risico’s en onzekerheden u"
+                                ,"hierbij verwacht. Om technische risico’s"
+                                ,"en onzekerheden in te schatten kijkt"
+                                ,"RVO naar de stand van de technologie."
+        };
+        private static readonly string[] _toRemoveSoftware = {"Wordt er voor dit product of proces"
                                 ,"programmatuur ontwikkeld?"
-                                ,"Aanvraag"};
+                                ,"Aanvraag"
+                                ,"Wordt er voor dit product of proces mede"
+                                ,"mede programmatuur ontwikkeld?"
+        };
         private static readonly string[] _toRemoveButNotSkip = {"Voorbeelden en uitgebreide informatie over kosten en uitgaven kunt u in de"
                                 ,"vinden."};
         private static readonly string[] _toRemoveCosts ={ "Kosten en/of uitgaven per project"
