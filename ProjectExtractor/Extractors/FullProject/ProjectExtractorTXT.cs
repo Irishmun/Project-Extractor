@@ -18,8 +18,8 @@ namespace ProjectExtractor.Extractors.FullProject
             //extract all sentences, starting at first (found) keysentence part, untill end keyword.
             //remove key sentences from found sentences, then combine remaining contents into one sentence (period separated)
 
-            removeMatching("Geef een algemene omschrijving van Ontwikkeling van een nieuwe apparaat voor het kunnen zagen");
-            removeMatching("het project. Heeft u eerder WBSO van bot. Er moet een soort van kettingzaag worden ontwikkeld");
+            removeMatching("Geef een algemene omschrijving van Ontwikkeling van een nieuwe apparaat voor het kunnen zagen", "Geef een algemene omschrijving van het project. Heeft u eerder WBSO aangevraagd voor dit project? Beschrijf dan de stand van zaken bij de vraag \"Update project\".", out string remainder);
+            removeMatching("het project. Heeft u eerder WBSO van bot. Er moet een soort van kettingzaag worden ontwikkeld", remainder, out string remainder2);
 
             ExitCode returnCode = ExitCode.NONE;
             ExtractTextFromPDF(file);
@@ -167,7 +167,11 @@ namespace ProjectExtractor.Extractors.FullProject
                 sw.Write(str.ToString().Trim());
                 sw.Close();
             }
+
             return (int)returnCode;
+
+            //submethods
+
             void RemoveLines(int startIndex, int nextProjectIndex, string[] toRemove, string FollowingSectionString, out int nextSectionLine)
             {
                 nextSectionLine = nextProjectIndex;
@@ -191,17 +195,18 @@ namespace ProjectExtractor.Extractors.FullProject
                 }
             }
 
-            string removeMatching(string check)
+            string removeMatching(string check, string comparison, out string remaining)
             {
-                string str1 = "Geef een algemene omschrijving van het project. Heeft u eerder WBSO aangevraagd voor dit project? Beschrijf dan de stand van zaken bij de vraag \"Update project\".";
+                remaining = string.Empty;
+                //string str1 = "Geef een algemene omschrijving van het project. Heeft u eerder WBSO aangevraagd voor dit project? Beschrijf dan de stand van zaken bij de vraag \"Update project\".";
                 string res = check;
-                string compare = check.ToLower();
-                string[] str1Words = str1.ToLower().Split(' ');
+                string lowerCheck = check.ToLower();
+                string[] comparisonWords = comparison.Split(' ');
                 bool firstMatchFound = false;
                 int foundIndex = 0;
-                for (int i = 0; i < str1Words.Length; i++)
+                for (int i = 0; i < comparisonWords.Length; i++)
                 {//iterate to find first match
-                    if (compare.StartsWith(str1Words[i]))
+                    if (lowerCheck.StartsWith(comparisonWords[i].ToLower()))
                     {
                         firstMatchFound = true;
                         foundIndex = i;
@@ -212,14 +217,15 @@ namespace ProjectExtractor.Extractors.FullProject
                 {
                     string testSentence = string.Empty;
                     string lastCorrect = testSentence;
-                    for (int i = foundIndex; i < str1Words.Length - foundIndex; i++)
+                    int index;
+                    for (index = foundIndex; index < comparisonWords.Length - foundIndex; index++)
                     {
-                        testSentence += str1Words[i] + " ";
+                        testSentence += comparisonWords[index].ToLower() + " ";
                         if (!string.IsNullOrEmpty(testSentence))
                         {
-                            if (!compare.StartsWith(testSentence))
+                            if (!lowerCheck.StartsWith(testSentence))
                             {//cut found stuff
-                                int substring = compare.IndexOf(lastCorrect) + (int)lastCorrect.Length;
+                                int substring = lowerCheck.IndexOf(lastCorrect) + (int)lastCorrect.Length;
                                 res = check.Substring(substring);
                                 break;
                             }
@@ -227,8 +233,34 @@ namespace ProjectExtractor.Extractors.FullProject
                         lastCorrect = testSentence;
 
                     }
+                    for (int i = index; i < comparisonWords.Length; i++)
+                    {//set remainging words to use in next itteration
+                        remaining += comparisonWords[i] + " ";
+                    }
                 }
                 return res;
+            }
+            string removeEitherOrMatching(string check, string comparisonA, string comparisonB, out string remaining, out bool Acorrect)
+            {//should perform removeMatching on both comparison strings to see which one is correct
+                remaining = string.Empty;
+                Acorrect = true;
+                string resA = removeMatching(check, comparisonA, out string remainingA);
+                string resB = removeMatching(check, comparisonB, out string remainingB);
+                if (!string.IsNullOrEmpty(resA))
+                {
+                    Acorrect = true;
+                    return resA;
+                }
+                else if (!string.IsNullOrEmpty(resB))
+                {
+                    Acorrect = false;
+                    return resB;
+                }
+                else
+                {
+                    return string.Empty;
+                }
+
             }
 
             string InsertAndRemoveSectionsFromLines(string heading, int startIndex, int nextProjectIndex, string[] toRemove, string[] FollowingSection, out int nextSectionLine, out bool success, bool appendNewlines = false)
@@ -353,7 +385,7 @@ namespace ProjectExtractor.Extractors.FullProject
         }
         public override string ToString() => "txt";
 
- private static readonly string[] _toRemoveDetails = {"Dit project is een voortzetting van een vorig project"
+        private static readonly string[] _toRemoveDetails = {"Dit project is een voortzetting van een vorig project"
                                 ,"Projectnummer"
                                 ,"Projecttitel"
                                 ,"Type project"
@@ -502,5 +534,17 @@ namespace ProjectExtractor.Extractors.FullProject
                                 ,"Investeert u in een bedrijfsmiddel, waarvan het aan S&O dienstbare en toerekenbare deel van de"
                                 ,"aanschafwaarde van het bedrijfsmiddel groter of gelijk is aan 1 miljoen euro? Voer deze dan hieronder in."
                                 ,"Uitgaven kleiner dan 1 miljoen euro specificeert u per project." };
+
+        
+        private const string _continuationProject= "Dit project is een voortzetting van een vorig project";
+        private const string _description = "Geef een algemene omschrijving van het project. Heeft u eerder WBSO aangevraagd voor dit project? eschrijf dan de stand van zaken bij de vraag “Update project”.";
+        private const string _teamwork = "Samenwerking Levert één of meer partijen (buiten uw fiscale eenheid) een bijdrage aan het project?";
+        private const string _Fases = "Fasering werkzaamheden Geef de fasen en de (tussen)resultaten van het project aan. Bijvoorbeeld de afsluiting van een onderzoek, de afronding van een ontwerpfase, de start van de bouw van een prototype, het testen van  en prototype (maximaal 25 karakters per veld). Vermeld alleen uw eigen werkzaamheden. U kunt een fase toevoegen door op de + te klikken en een fase verwijderen door op de - te klikken.";
+        private const string _Update = "Update project Vermeld de voortgang van uw S&O-werkzaamheden. Zijn er wijzigingen in de oorspronkelijke projectopzet of -planning? Geef dan aan waarom dit het geval is.";
+        private const string _QuestionsA ="Specifieke vragen ontwikkeling Beantwoord de vragen vanuit een technische invalshoek. Geef hier geen algemene of functionele beschrijving van het project. Ontwikkelen heeft altijd te maken met zoeken en bewijzen. U wilt iets ontwikkelen en loopt hierbij tegen een technisch probleem aan. U zoekt hiervoor een nieuwe technische oplossing waarvan u het werkingsprincipe wilt aantonen.";
+        private const string _QuestionsB = "1. Technische knelpunten. Geef aan welke concrete technische knelpunten u zelf tijdens het ontwikkelingsproces moet oplossen om het gewenste projectresultaat te bereiken. Vermeld geen aanleidingen, algemene randvoorwaarden of functionele eisen van het project.";
+        private const string _QuestionsC = "2. Technische oplossingsrichtingen. Geef voor ieder genoemd technisch knelpunt aan wat u specifiek zelf gaat ontwikkelen om het knelpunt op te lossen.";
+        private const string _QuestionsD = "3. Technische nieuwheid. Geef aan waarom de hiervoor genoemde oplossingsrichtingen technisch nieuw voor u zijn. Oftewel beschrijf waarom het project technisch vernieuwend en uitdagend is en geef aan welke technische risico’s en onzekerheden u hierbij verwacht. Om technische risico’s en onzekerheden in te schatten kijkt RVO naar de stand van de technologie.";
+        private const string _QuestionsSoftware = "Wordt er voor dit product of proces mede programmatuur ontwikkeld?";
     }
 }
