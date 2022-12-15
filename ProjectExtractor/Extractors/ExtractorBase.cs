@@ -90,6 +90,15 @@ namespace ProjectExtractor.Extractors
             }
         }
 
+        protected void RemoveNumbersFromStringStart(ref string line)
+        {
+            Match match = Regex.Match(line, @"^(\d+)");
+            if (!string.IsNullOrWhiteSpace(match.Value))
+            {
+                line = line.Substring(match.Value.Length);
+            }
+        }
+
         /// <summary>
         /// Will try and get the latest date of the project, starting at the given line
         /// </summary>
