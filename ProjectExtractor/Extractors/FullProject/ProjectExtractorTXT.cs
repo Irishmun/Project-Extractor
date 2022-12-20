@@ -54,7 +54,7 @@ namespace ProjectExtractor.Extractors.FullProject
 
             bool continuationDone = false;
             int sectionIndex = 0;
-            string checkstring = _sentences[sectionIndex];
+            string checkstring = _sentencesEither[sectionIndex];
             string remaining = checkstring;
             for (int i = ProjectStartIndexes[0]; i < ProjectStartIndexes[1]; i++)
             {
@@ -81,9 +81,16 @@ namespace ProjectExtractor.Extractors.FullProject
                 checkstring = remaining;
                 if (string.IsNullOrWhiteSpace(remaining))
                 {
-                    sectionIndex += 1;
-                    checkstring = _sentences[sectionIndex];
-                    remaining = checkstring;
+                    try
+                    {
+                        sectionIndex += 1;
+                        checkstring = _sentencesEither[sectionIndex];
+                        remaining = checkstring;
+                    }
+                    catch (Exception)
+                    {
+                        break;
+                    }
                 }
 
             }
@@ -241,16 +248,16 @@ namespace ProjectExtractor.Extractors.FullProject
                 string[] comparisonWords = comparison.Trim().Split(' ');
                 bool firstMatchFound = false;
                 int foundIndex = 0;
-                for (int i = 0; i < comparisonWords.Length; i++)
-                {//iterate to find first match
-                    if (lowerCheck.StartsWith(comparisonWords[i].ToLower()))
-                    {
-                        firstMatchFound = true;
-                        foundIndex = i;
-                        break;
-                    }
-                }
-                if (firstMatchFound == true)
+                //for (int i = 0; i < comparisonWords.Length; i++)
+                //{//iterate to find first match
+                //    if (lowerCheck.StartsWith(comparisonWords[i].ToLower()))
+                //    {
+                //        firstMatchFound = true;
+                //        foundIndex = i;
+                //        break;
+                //    }
+                //}
+                if (lowerCheck.StartsWith(comparisonWords[0].ToLower()))
                 {
                     string testSentence = string.Empty;
                     string lastCorrect = testSentence;
@@ -442,7 +449,7 @@ namespace ProjectExtractor.Extractors.FullProject
         }
         public override string ToString() => "txt";
         //can keep
-        private static readonly string[] _sentences = {_description,
+        private static readonly string[] _sentencesEither = {_description,
                                 _teamwork,
                                 _Fases,
                                 _Update,
@@ -450,10 +457,21 @@ namespace ProjectExtractor.Extractors.FullProject
                                 _QuestionsB,
                                 _QuestionsC,
                                 _QuestionsDOne,
+                                _QuestionsSoftware,
+                                _Costs,
+                                _Spending};
+        private static readonly string[] _sentencesOr = {_description,
+                                _teamwork,
+                                _Fases,
+                                _Update,
+                                _QuestionsA,
+                                _QuestionsB,
+                                _QuestionsC,
                                 _QuestionsDTwo,
                                 _QuestionsSoftware,
                                 _Costs,
                                 _Spending};
+
         private static readonly string[] _toRemoveDetails = {"Dit project is een voortzetting van een vorig project"
                                 ,"Projectnummer"
                                 ,"Projecttitel"
@@ -464,7 +482,7 @@ namespace ProjectExtractor.Extractors.FullProject
         private const string _continuationProject = "Dit project is een voortzetting van een vorig project";
         private const string _description = "Geef een algemene omschrijving van het project. Heeft u eerder WBSO aangevraagd voor dit project? Beschrijf dan de stand van zaken bij de vraag “Update project”.";
         private const string _teamwork = "Samenwerking Levert één of meer partijen (buiten uw fiscale eenheid) een bijdrage aan het project?";
-        private const string _Fases = "Fasering werkzaamheden Geef de fasen en de (tussen)resultaten van het project aan. Bijvoorbeeld de afsluiting van een onderzoek, de afronding van een ontwerpfase, de start van de bouw van een prototype, het testen van  en prototype (maximaal 25 karakters per veld). Vermeld alleen uw eigen werkzaamheden. U kunt een fase toevoegen door op de + te klikken en een fase verwijderen door op de - te klikken. Naam Datum gereed";
+        private const string _Fases = "Fasering werkzaamheden Geef de fasen en de (tussen)resultaten van het project aan. Bijvoorbeeld de afsluiting van een onderzoek, de afronding van een ontwerpfase, de start van de bouw van een prototype, het testen van een prototype (maximaal 25 karakters per veld). Vermeld alleen uw eigen werkzaamheden. U kunt een fase toevoegen door op de + te klikken en een fase verwijderen door op de - te klikken. Naam Datum gereed";
         private const string _Update = "Update project Vermeld de voortgang van uw S&O-werkzaamheden. Zijn er wijzigingen in de oorspronkelijke projectopzet of -planning? Geef dan aan waarom dit het geval is.";
         private const string _QuestionsA = "Specifieke vragen ontwikkeling Beantwoord de vragen vanuit een technische invalshoek. Geef hier geen algemene of functionele beschrijving van het project. Ontwikkelen heeft altijd te maken met zoeken en bewijzen. U wilt iets ontwikkelen en loopt hierbij tegen een technisch probleem aan. U zoekt hiervoor een nieuwe technische oplossing waarvan u het werkingsprincipe wilt aantonen.";
         private const string _QuestionsB = ". Technische knelpunten. Geef aan welke concrete technische knelpunten u zelf tijdens het ontwikkelingsproces moet oplossen om het gewenste projectresultaat te bereiken. Vermeld geen aanleidingen, algemene randvoorwaarden of functionele eisen van het project.";
