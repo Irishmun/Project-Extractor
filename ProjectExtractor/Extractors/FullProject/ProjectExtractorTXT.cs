@@ -50,7 +50,7 @@ namespace ProjectExtractor.Extractors.FullProject
                     }
                 }
             }
-
+            //TODO: iterate per project (in try catch maybe?)
             bool continuationDone = false;
             bool searchNextSection = true;
             int sectionIndex = 0;
@@ -82,7 +82,6 @@ namespace ProjectExtractor.Extractors.FullProject
                 checkstring = remaining;
                 if (string.IsNullOrWhiteSpace(remaining))
                 {
-                    //TODO: circular iteration, when reaching end of array start new project
                     try
                     {
                         sectionIndex += 1;
