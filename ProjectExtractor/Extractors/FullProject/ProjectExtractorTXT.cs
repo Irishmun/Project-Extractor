@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
-using System.Linq;
 using System.Text;
 
 namespace ProjectExtractor.Extractors.FullProject
@@ -53,8 +52,10 @@ namespace ProjectExtractor.Extractors.FullProject
             }
 
             bool continuationDone = false;
+            bool searchNextSection = true;
             int sectionIndex = 0;
-            string checkstring = _sentencesEither[sectionIndex];
+            bool appendNewLines = _sentencesEither[sectionIndex].AppendAllNewLines;
+            string checkstring = _sentencesEither[sectionIndex].CheckString;
             string remaining = checkstring;
             for (int i = ProjectStartIndexes[0]; i < ProjectStartIndexes[1]; i++)
             {
@@ -73,7 +74,7 @@ namespace ProjectExtractor.Extractors.FullProject
                 }
                 RemovePageNumberFromString(ref Lines[i]);
                 RemoveNumbersFromStringStart(ref Lines[i]);
-                string unique = RemoveMatching(Lines[i], checkstring, out remaining);
+                string unique = RemoveMatching(Lines[i], checkstring, _sentencesEither[sectionIndex].SectionTitle, searchNextSection, out remaining, out searchNextSection, _sentencesEither[sectionIndex].AppendAllNewLines);
                 if (!string.IsNullOrWhiteSpace(unique))
                 {
                     str.Append(unique + " ");
@@ -81,11 +82,13 @@ namespace ProjectExtractor.Extractors.FullProject
                 checkstring = remaining;
                 if (string.IsNullOrWhiteSpace(remaining))
                 {
+                    //TODO: circular iteration, when reaching end of array start new project
                     try
                     {
                         sectionIndex += 1;
-                        checkstring = _sentencesEither[sectionIndex];
+                        checkstring = _sentencesEither[sectionIndex].CheckString;
                         remaining = checkstring;
+                        searchNextSection = true;
                     }
                     catch (Exception)
                     {
@@ -103,6 +106,105 @@ namespace ProjectExtractor.Extractors.FullProject
             }
 
             return (int)returnCode;
+
+
+            string RemoveMatching(string check, string comparison, string sectionTitle, bool searchStart, out string remaining, out bool isSearchStart, bool appendNewLine = false)
+            {
+                isSearchStart = searchStart;
+                remaining = string.Empty;
+                //string str1 = "Geef een algemene omschrijving van het project. Heeft u eerder WBSO aangevraagd voor dit project? Beschrijf dan de stand van zaken bij de vraag \"Update project\".";
+                string res = check;
+                string lowerCheck = check.ToLower();
+                string[] comparisonWords = comparison.Trim().Split(' ');
+                int foundIndex = 0;
+                if (lowerCheck.StartsWith(comparisonWords[0].ToLower()))
+                {
+                    if (searchStart == true)
+                    {
+                        isSearchStart = false;
+
+                        //set project section title
+                    }
+                    string testSentence = string.Empty;
+                    string lastCorrect = testSentence;
+                    int index = 0;
+                    for (index = foundIndex; index < comparisonWords.Length - foundIndex; index++)
+                    {
+                        testSentence += comparisonWords[index].ToLower() + " ";
+                        if (!string.IsNullOrEmpty(testSentence))
+                        {
+                            if (!lowerCheck.Trim().StartsWith(testSentence.Trim()))
+                            {//cut found stuff
+                                int substring = lowerCheck.IndexOf(lastCorrect) + (int)lastCorrect.Length;
+                                res = check.Substring(substring);
+                                lastCorrect = string.Empty;
+                                break;
+                            }
+                        }
+                        lastCorrect = testSentence;
+                    }
+                    if (!string.IsNullOrEmpty(lastCorrect) || comparisonWords.Length == 1)
+                    {
+                        if (!string.IsNullOrEmpty(testSentence))
+                        {
+                            if (lowerCheck.Trim().StartsWith(testSentence.Trim()))
+                            {//cut found stuff
+                                int substring = lowerCheck.IndexOf(testSentence) + (int)testSentence.Length;
+                                res = check.Substring(substring);
+                                index = comparisonWords.Length;
+                            }
+                        }
+                    }
+                    for (int i = index; i < comparisonWords.Length; i++)
+                    {//set remainging words to use in next itteration
+                        string addition = comparisonWords[i].Trim() + " ";
+                        if (!string.IsNullOrWhiteSpace(addition))
+                        {
+                            remaining += addition;
+                        }
+                    }
+                }
+                else
+                {
+                    remaining = comparison.Trim();
+                }
+                if (isSearchStart == false && searchStart == true)
+                {
+                    //do the same here for appending newlines
+                    res = $"\n\n{sectionTitle}\n {res}";
+                    if (appendNewLine == true)
+                    {
+                        res += Environment.NewLine;
+                    }
+                }
+                return res;
+            }
+
+            string RemoveEitherOrMatching(string check, string comparisonA, string sectionTitleA, string comparisonB, string sectionTitleB, out string remaining, out bool searchStart, out bool Acorrect)
+            {//should perform removeMatching on both comparison strings to see which one is correct
+                remaining = string.Empty;
+                Acorrect = true;
+                string resA = RemoveMatching(check, comparisonA, sectionTitleA, searchNextSection, out string remainingA, out searchStart, _sentencesEither[sectionIndex].AppendAllNewLines);
+                string resB = RemoveMatching(check, comparisonB, sectionTitleA, searchNextSection, out string remainingB, out searchStart, _sentencesEither[sectionIndex].AppendAllNewLines);
+                if (!string.IsNullOrEmpty(resA))
+                {
+                    Acorrect = true;
+                    return resA;
+                }
+                else if (!string.IsNullOrEmpty(resB))
+                {
+                    Acorrect = false;
+                    return resB;
+                }
+                else
+                {
+                    return string.Empty;
+                }
+
+            }
+
+
+
             for (int project = 0; project < ProjectStartIndexes.Count; ++project)
             {
                 int startIndex = ProjectStartIndexes[project];
@@ -238,95 +340,6 @@ namespace ProjectExtractor.Extractors.FullProject
                     }
                 }
             }
-
-            string RemoveMatching(string check, string comparison, out string remaining)
-            {
-                remaining = string.Empty;
-                //string str1 = "Geef een algemene omschrijving van het project. Heeft u eerder WBSO aangevraagd voor dit project? Beschrijf dan de stand van zaken bij de vraag \"Update project\".";
-                string res = check;
-                string lowerCheck = check.ToLower();
-                string[] comparisonWords = comparison.Trim().Split(' ');
-                bool firstMatchFound = false;
-                int foundIndex = 0;
-                //for (int i = 0; i < comparisonWords.Length; i++)
-                //{//iterate to find first match
-                //    if (lowerCheck.StartsWith(comparisonWords[i].ToLower()))
-                //    {
-                //        firstMatchFound = true;
-                //        foundIndex = i;
-                //        break;
-                //    }
-                //}
-                if (lowerCheck.StartsWith(comparisonWords[0].ToLower()))
-                {
-                    string testSentence = string.Empty;
-                    string lastCorrect = testSentence;
-                    int index = 0;
-                    for (index = foundIndex; index < comparisonWords.Length - foundIndex; index++)
-                    {
-                        testSentence += comparisonWords[index].ToLower() + " ";
-                        if (!string.IsNullOrEmpty(testSentence))
-                        {
-                            if (!lowerCheck.Trim().StartsWith(testSentence.Trim()))
-                            {//cut found stuff
-                                int substring = lowerCheck.IndexOf(lastCorrect) + (int)lastCorrect.Length;
-                                res = check.Substring(substring);
-                                lastCorrect = string.Empty;
-                                break;
-                            }
-                        }
-                        lastCorrect = testSentence;
-                    }
-                    if (!string.IsNullOrEmpty(lastCorrect) || comparisonWords.Length == 1)
-                    {
-                        if (!string.IsNullOrEmpty(testSentence))
-                        {
-                            if (lowerCheck.Trim().StartsWith(testSentence.Trim()))
-                            {//cut found stuff
-                                int substring = lowerCheck.IndexOf(testSentence) + (int)testSentence.Length;
-                                res = check.Substring(substring);
-                                index = comparisonWords.Length;
-                            }
-                        }
-                    }
-                    for (int i = index; i < comparisonWords.Length; i++)
-                    {//set remainging words to use in next itteration
-                        string addition = comparisonWords[i].Trim() + " ";
-                        if (!string.IsNullOrWhiteSpace(addition))
-                        {
-                            remaining += addition;
-                        }
-                    }
-                }
-                else
-                {
-                    remaining = comparison.Trim();
-                }
-                return res;
-            }
-            string RemoveEitherOrMatching(string check, string comparisonA, string comparisonB, out string remaining, out bool Acorrect)
-            {//should perform removeMatching on both comparison strings to see which one is correct
-                remaining = string.Empty;
-                Acorrect = true;
-                string resA = RemoveMatching(check, comparisonA, out string remainingA);
-                string resB = RemoveMatching(check, comparisonB, out string remainingB);
-                if (!string.IsNullOrEmpty(resA))
-                {
-                    Acorrect = true;
-                    return resA;
-                }
-                else if (!string.IsNullOrEmpty(resB))
-                {
-                    Acorrect = false;
-                    return resB;
-                }
-                else
-                {
-                    return string.Empty;
-                }
-
-            }
-
             string InsertAndRemoveSectionsFromLines(string heading, int startIndex, int nextProjectIndex, string[] toRemove, string[] FollowingSection, out int nextSectionLine, out bool success, bool appendNewlines = false)
             {
                 StringBuilder tempBuilder = new StringBuilder();
@@ -449,7 +462,7 @@ namespace ProjectExtractor.Extractors.FullProject
         }
         public override string ToString() => "txt";
         //can keep
-        private static readonly string[] _sentencesEither = {_description,
+        private readonly ProjectSection[] _sentencesEither = {_description,
                                 _teamwork,
                                 _Fases,
                                 _Update,
@@ -460,7 +473,7 @@ namespace ProjectExtractor.Extractors.FullProject
                                 _QuestionsSoftware,
                                 _Costs,
                                 _Spending};
-        private static readonly string[] _sentencesOr = {_description,
+        private static readonly ProjectSection[] _sentencesOr = {_description,
                                 _teamwork,
                                 _Fases,
                                 _Update,
@@ -479,19 +492,20 @@ namespace ProjectExtractor.Extractors.FullProject
                                 ,"Zwaartepunt"
                                 ,"Het project wordt/is gestart op"
                                 ,"Aantal uren werknemers"};
-        private const string _continuationProject = "Dit project is een voortzetting van een vorig project";
-        private const string _description = "Geef een algemene omschrijving van het project. Heeft u eerder WBSO aangevraagd voor dit project? Beschrijf dan de stand van zaken bij de vraag “Update project”.";
-        private const string _teamwork = "Samenwerking Levert één of meer partijen (buiten uw fiscale eenheid) een bijdrage aan het project?";
-        private const string _Fases = "Fasering werkzaamheden Geef de fasen en de (tussen)resultaten van het project aan. Bijvoorbeeld de afsluiting van een onderzoek, de afronding van een ontwerpfase, de start van de bouw van een prototype, het testen van een prototype (maximaal 25 karakters per veld). Vermeld alleen uw eigen werkzaamheden. U kunt een fase toevoegen door op de + te klikken en een fase verwijderen door op de - te klikken. Naam Datum gereed";
-        private const string _Update = "Update project Vermeld de voortgang van uw S&O-werkzaamheden. Zijn er wijzigingen in de oorspronkelijke projectopzet of -planning? Geef dan aan waarom dit het geval is.";
-        private const string _QuestionsA = "Specifieke vragen ontwikkeling Beantwoord de vragen vanuit een technische invalshoek. Geef hier geen algemene of functionele beschrijving van het project. Ontwikkelen heeft altijd te maken met zoeken en bewijzen. U wilt iets ontwikkelen en loopt hierbij tegen een technisch probleem aan. U zoekt hiervoor een nieuwe technische oplossing waarvan u het werkingsprincipe wilt aantonen.";
-        private const string _QuestionsB = ". Technische knelpunten. Geef aan welke concrete technische knelpunten u zelf tijdens het ontwikkelingsproces moet oplossen om het gewenste projectresultaat te bereiken. Vermeld geen aanleidingen, algemene randvoorwaarden of functionele eisen van het project.";
-        private const string _QuestionsC = ". Technische oplossingsrichtingen. Geef voor ieder genoemd technisch knelpunt aan wat u specifiek zelf gaat ontwikkelen om het knelpunt op te lossen.";
-        private const string _QuestionsDOne = ". Technische nieuwheid. Geef aan waarom de hiervoor genoemde oplossingsrichtingen technisch nieuw voor u zijn. Oftewel beschrijf waarom het project technisch vernieuwend en uitdagend is en geef aan welke technische risico’s en onzekerheden u hierbij verwacht. Om technische risico’s en onzekerheden in te schatten kijkt RVO naar de stand van de technologie.";
-        private const string _QuestionsDTwo = ". Programmeertalen, ontwikkelomgevingen en tools. Geef aan welke programmeertalen, ontwikkelomgevingen en tools u gebruikt bij de ontwikkeling van technisch nieuwe programmatuur.";
-        private const string _QuestionsSoftware = "Wordt er voor dit product of proces mede programmatuur ontwikkeld?";
-        private const string _Costs = "Kosten en/of uitgaven per project Voorbeelden en uitgebreide informatie over kosten en uitgaven kunt u in de vinden.";
-        private const string _Spending = "Opvoeren uitgaven Voorbeelden en uitgebreide informatie over kosten en uitgaven kunt u in de vinden.";
+
+        private static readonly ProjectSection _continuationProject = new ProjectSection("Is voortzetting", "Dit project is een voortzetting van een vorig project");
+        private static readonly ProjectSection _description = new ProjectSection("Omschrijving", "Geef een algemene omschrijving van het project. Heeft u eerder WBSO aangevraagd voor dit project? Beschrijf dan de stand van zaken bij de vraag “Update project”.");
+        private static readonly ProjectSection _teamwork = new ProjectSection("Samenwerking Levert één of meer partijen (buiten uw fiscale eenheid) een bijdrage aan het project?");
+        private static readonly ProjectSection _Fases = new ProjectSection("Fasering Werkzaamheden", "Fasering werkzaamheden Geef de fasen en de (tussen)resultaten van het project aan. Bijvoorbeeld de afsluiting van een onderzoek, de afronding van een ontwerpfase, de start van de bouw van een prototype, het testen van een prototype (maximaal 25 karakters per veld). Vermeld alleen uw eigen werkzaamheden. U kunt een fase toevoegen door op de + te klikken en een fase verwijderen door op de - te klikken. Naam Datum gereed", true);
+        private static readonly ProjectSection _Update = new ProjectSection("Update Project", "Update project Vermeld de voortgang van uw S & O - werkzaamheden.Zijn er wijzigingen in de oorspronkelijke projectopzet of - planning ? Geef dan aan waarom dit het geval is.");
+        private static readonly ProjectSection _QuestionsA = new ProjectSection("Specifieke vragen ontwikkeling Beantwoord de vragen vanuit een technische invalshoek. Geef hier geen algemene of functionele beschrijving van het project. Ontwikkelen heeft altijd te maken met zoeken en bewijzen. U wilt iets ontwikkelen en loopt hierbij tegen een technisch probleem aan. U zoekt hiervoor een nieuwe technische oplossing waarvan u het werkingsprincipe wilt aantonen.");
+        private static readonly ProjectSection _QuestionsB = new ProjectSection("- Technische knelpunten.", ". Technische knelpunten. Geef aan welke concrete technische knelpunten u zelf tijdens het ontwikkelingsproces moet oplossen om het gewenste projectresultaat te bereiken. Vermeld geen aanleidingen, algemene randvoorwaarden of functionele eisen van het project.");
+        private static readonly ProjectSection _QuestionsC = new ProjectSection("- Technische oplossingsrichtingen.", ". Technische oplossingsrichtingen. Geef voor ieder genoemd technisch knelpunt aan wat u specifiek zelf gaat ontwikkelen om het knelpunt op te lossen.");
+        private static readonly ProjectSection _QuestionsDOne = new ProjectSection("- Technische nieuwheid.", ". Technische nieuwheid. Geef aan waarom de hiervoor genoemde oplossingsrichtingen technisch nieuw voor u zijn. Oftewel beschrijf waarom het project technisch vernieuwend en uitdagend is en geef aan welke technische risico’s en onzekerheden u hierbij verwacht. Om technische risico’s en onzekerheden in te schatten kijkt RVO naar de stand van de technologie.");
+        private static readonly ProjectSection _QuestionsDTwo = new ProjectSection("Programmatuur", ". Programmeertalen, ontwikkelomgevingen en tools. Geef aan welke programmeertalen, ontwikkelomgevingen en tools u gebruikt bij de ontwikkeling van technisch nieuwe programmatuur.");
+        private static readonly ProjectSection _QuestionsSoftware = new ProjectSection("Wordt er voor dit product of proces mede programmatuur ontwikkeld?");
+        private static readonly ProjectSection _Costs = new ProjectSection("Kosten en/of uitgaven per project", "Kosten en/of uitgaven per project Voorbeelden en uitgebreide informatie over kosten en uitgaven kunt u in de vinden.");
+        private static readonly ProjectSection _Spending = new ProjectSection("Kosten opvoeren bij dit project", "Opvoeren uitgaven Voorbeelden en uitgebreide informatie over kosten en uitgaven kunt u in de vinden.");
 
         //don't need anymore
         private static readonly string[] _toRemoveDescription = {"Geef een algemene omschrijving van"
