@@ -15,8 +15,9 @@
     class ProjectRevisionUtil
     {
         /// <summary>Tries to determine which project layout revision the given document uses. done through the first line</summary>
-        public static ProjectLayoutRevision TryDetermineProjectLayout(string firstline)//TODO: Update this method to better determine project type and to determine new projects
-        {//it's all guesswork here, best to try and get a better way to check for the layout type (get the file's ACTUAL original creation date?)
+        public static ProjectLayoutRevision TryDetermineProjectLayout(string firstline)
+        {    //TODO: Update this method to better determine project type and to determine new projects
+             //it's all guesswork here, best to try and get a better way to check for the layout type (get the file's ACTUAL original creation date?)
             string firstWord = firstline.Split(" ")[0];
             bool firstLineIsInt = int.TryParse(firstWord, out int res);
             //if firstLineIsInt is true and it's the number 1, it would most likely be RevisionOne

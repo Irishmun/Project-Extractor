@@ -28,7 +28,6 @@ namespace ProjectExtractor.Extractors.FullProject
 
             List<int> ProjectStartIndexes = new List<int>();
 
-            //TODO: find way to check how many sequential words the current string has that are the same as any combination in the Sections array
             string[] sectionWords = Sections;//ConvertSectionsToArray(Sections);
             string possibleSection = string.Empty;
             bool startProject = false;
@@ -50,73 +49,119 @@ namespace ProjectExtractor.Extractors.FullProject
                     }
                 }
             }
+            bool continuationDone;
+            bool searchNextSection;
+            int sectionIndex;
+            string checkstringA;
+            string checkstringB;
+            bool appendNewLines;
+            string remaining;
             //TODO: iterate per project (in try catch maybe?)
-            bool continuationDone = false;
-            bool searchNextSection = true;
-            int sectionIndex = 0;
-            bool appendNewLines = _sentencesEither[sectionIndex].AppendAllNewLines;
-            string checkstring = _sentencesEither[sectionIndex].CheckString;
-            string remaining = checkstring;
-            for (int i = ProjectStartIndexes[0]; i < ProjectStartIndexes[1]; i++)
+            for (int project = 0; project < ProjectStartIndexes.Count; project++)
             {
-                if (continuationDone == false)
+                continuationDone = false;
+                searchNextSection = true;
+                sectionIndex = 0;
+                checkstringA = _sentencesEither[sectionIndex].CheckString;
+                checkstringB = _sentencesOr[sectionIndex].CheckString;
+                appendNewLines = _sentencesEither[sectionIndex].AppendNewLines;
+                remaining = checkstringA;
+
+                int nextIndex = project == (ProjectStartIndexes.Count - 1) ? Lines.Length - 1 : ProjectStartIndexes[project + 1];
+                for (int lineIndex = ProjectStartIndexes[project]; lineIndex < nextIndex; lineIndex++)
                 {
-                    bool isContinuation = IsContinuation(ProjectStartIndexes[0], ProjectStartIndexes[1]);
-                    str.Append(TryGetProjecTitle(Lines, ProjectStartIndexes[0] - 1, string.Empty, out projectIndex));
+                    if (continuationDone == false)
+                    {
+                        bool isContinuation = IsContinuation(ProjectStartIndexes[project], nextIndex);
+                        str.Append(TryGetProjecTitle(Lines, ProjectStartIndexes[project] - 1, string.Empty, out projectIndex));
+                        str.AppendLine();
+                        if (isContinuation)
+                        {
+                            str.Append("Voortzetting van een vorig project\n");
+                        }
+                        RemoveLines(projectIndex + 1, nextIndex, _toRemoveDetails, _toRemoveDescription[0], out int detailEnd);
+                        lineIndex = detailEnd;
+                        continuationDone = true;
+                    }
+                    RemovePageNumberFromString(ref Lines[lineIndex]);
+                    RemoveNumbersFromStringStart(ref Lines[lineIndex]);
+                    /*
+                    * 22/12/2022
+                    * whenever searchNextSection is true:
+                    * search each line with ALL sentences array ellements untill one is found or the array has been searched over
+                    * if one is found return the index of that one allongside the now cleaned string & remaining
+                    * keep searching witht that remaing as normal
+                    * untill searchNextSection is true again.
+                    * 
+                    * This should:
+                    * -eliminate the need for either/or arrays
+                    * -eliminate accidental skipping
+                    * -include ALL itterations of any of the contents (some were used again in the project as a subsection)
+                    * -prevent any sittuation where the new section is missed (or whatever happens in those situations)
+                    */
+                    string unique = RemoveMatching(Lines[lineIndex], checkstringA, _sentencesEither[sectionIndex].SectionTitle, searchNextSection, out bool a, out remaining, out searchNextSection);
+                    if (!string.IsNullOrWhiteSpace(unique))
+                    {
+                        str.Append(unique + " ");
+                    }
+                    //I don't get why this doesn't work
+                    string aunique = RemoveEitherOrMatching(Lines[lineIndex], checkstringA, _sentencesEither[sectionIndex].SectionTitle, checkstringB, _sentencesOr[sectionIndex].SectionTitle, out string remainingA, out string remainingB, out searchNextSection, out bool ACorrect);
+                    checkstringA = remainingA;
+                    checkstringB = remainingB;
+                    if (string.IsNullOrWhiteSpace(remaining))
+                    {
+                        try
+                        {
+                            sectionIndex += 1;
+                            checkstringA = _sentencesEither[sectionIndex].CheckString;
+                            checkstringB = _sentencesOr[sectionIndex].CheckString;
+                            appendNewLines = _sentencesEither[sectionIndex].AppendNewLines;
+                            remaining = checkstringA;
+                            searchNextSection = true;
+
+                        }
+                        catch (Exception)
+                        {
+                            throw;
+                        }
+                    }
+                    double progress = (double)(((double)lineIndex + 1d) * 100d / (double)Lines.Length);
+                    Worker.ReportProgress((int)progress);
+                }
+                if (project < ProjectStartIndexes.Count - 1)
+                {
                     str.AppendLine();
-                    if (isContinuation)
-                    {
-                        str.Append("Voortzetting van een vorig project\n");
-                    }
-                    RemoveLines(projectIndex + 1, ProjectStartIndexes[1], _toRemoveDetails, _toRemoveDescription[0], out int detailEnd);
-                    i = detailEnd;
-                    continuationDone = true;
+                    str.AppendLine();
+                    str.Append("========[NEXT PROJECT]=========");
+                    str.AppendLine();
                 }
-                RemovePageNumberFromString(ref Lines[i]);
-                RemoveNumbersFromStringStart(ref Lines[i]);
-                string unique = RemoveMatching(Lines[i], checkstring, _sentencesEither[sectionIndex].SectionTitle, searchNextSection, out remaining, out searchNextSection, _sentencesEither[sectionIndex].AppendAllNewLines);
-                if (!string.IsNullOrWhiteSpace(unique))
+                else
                 {
-                    str.Append(unique + " ");
+                    str.AppendLine();
+                    str.Append("========[END PROJECTS]=========");
                 }
-                checkstring = remaining;
-                if (string.IsNullOrWhiteSpace(remaining))
-                {
-                    try
-                    {
-                        sectionIndex += 1;
-                        checkstring = _sentencesEither[sectionIndex].CheckString;
-                        remaining = checkstring;
-                        searchNextSection = true;
-                    }
-                    catch (Exception)
-                    {
-                        break;
-                    }
-                }
-
             }
-
             using (StreamWriter sw = File.CreateText(extractPath))
             {
                 //write the final result to a text document
                 sw.Write(str.ToString().Trim());
                 sw.Close();
             }
-
+            Worker.ReportProgress(100);
             return (int)returnCode;
 
 
-            string RemoveMatching(string check, string comparison, string sectionTitle, bool searchStart, out string remaining, out bool isSearchStart, bool appendNewLine = false)
+            string RemoveMatching(string check, string comparison, string sectionTitle, bool searchStart, out bool isAppendNewLine, out string remaining, out bool isSearchStart, bool appendNewLine = false)
             {
                 isSearchStart = searchStart;
                 remaining = string.Empty;
+                isAppendNewLine = appendNewLine;
                 //string str1 = "Geef een algemene omschrijving van het project. Heeft u eerder WBSO aangevraagd voor dit project? Beschrijf dan de stand van zaken bij de vraag \"Update project\".";
                 string res = check;
-                string lowerCheck = check.ToLower();
+                string lowerCheck = check;
                 string[] comparisonWords = comparison.Trim().Split(' ');
                 int foundIndex = 0;
-                if (lowerCheck.StartsWith(comparisonWords[0].ToLower()))
+                if (lowerCheck.StartsWith(comparisonWords[0]))
                 {
                     if (searchStart == true)
                     {
@@ -129,12 +174,12 @@ namespace ProjectExtractor.Extractors.FullProject
                     int index = 0;
                     for (index = foundIndex; index < comparisonWords.Length - foundIndex; index++)
                     {
-                        testSentence += comparisonWords[index].ToLower() + " ";
+                        testSentence += comparisonWords[index] + " ";
                         if (!string.IsNullOrEmpty(testSentence))
                         {
                             if (!lowerCheck.Trim().StartsWith(testSentence.Trim()))
                             {//cut found stuff
-                                int substring = lowerCheck.IndexOf(lastCorrect) + (int)lastCorrect.Length;
+                                int substring = lowerCheck.LastCharIndexOf(lastCorrect);
                                 res = check.Substring(substring);
                                 lastCorrect = string.Empty;
                                 break;
@@ -148,7 +193,7 @@ namespace ProjectExtractor.Extractors.FullProject
                         {
                             if (lowerCheck.Trim().StartsWith(testSentence.Trim()))
                             {//cut found stuff
-                                int substring = lowerCheck.IndexOf(testSentence) + (int)testSentence.Length;
+                                int substring = lowerCheck.LastCharIndexOf(testSentence);
                                 res = check.Substring(substring);
                                 index = comparisonWords.Length;
                             }
@@ -169,22 +214,29 @@ namespace ProjectExtractor.Extractors.FullProject
                 }
                 if (isSearchStart == false && searchStart == true)
                 {
-                    //do the same here for appending newlines
-                    res = $"\n\n{sectionTitle}\n {res}";
-                    if (appendNewLine == true)
+                    if (!string.IsNullOrWhiteSpace(sectionTitle))
                     {
-                        res += Environment.NewLine;
+                        isAppendNewLine = appendNewLine;
+                        res = $"\n\n{sectionTitle}:\n{res}";
                     }
+                    //do the same here for appending newlines
+                }
+                if (isAppendNewLine == true)
+                {
+                    res += Environment.NewLine;
                 }
                 return res;
             }
 
-            string RemoveEitherOrMatching(string check, string comparisonA, string sectionTitleA, string comparisonB, string sectionTitleB, out string remaining, out bool searchStart, out bool Acorrect)
+            string RemoveEitherOrMatching(string check, string comparisonA, string sectionTitleA, string comparisonB, string sectionTitleB, out string remainingA, out string remainingB, out bool searchStart, out bool Acorrect)
             {//should perform removeMatching on both comparison strings to see which one is correct
-                remaining = string.Empty;
+                remainingA = string.Empty;
+                remainingB = string.Empty;
                 Acorrect = true;
-                string resA = RemoveMatching(check, comparisonA, sectionTitleA, searchNextSection, out string remainingA, out searchStart, _sentencesEither[sectionIndex].AppendAllNewLines);
-                string resB = RemoveMatching(check, comparisonB, sectionTitleA, searchNextSection, out string remainingB, out searchStart, _sentencesEither[sectionIndex].AppendAllNewLines);
+                string resA = RemoveMatching(check, comparisonA, sectionTitleA, searchNextSection, out bool a, out string resRemainingA, out searchStart);
+                string resB = RemoveMatching(check, comparisonB, sectionTitleA, searchNextSection, out a, out string resRemainingB, out searchStart);
+                remainingA = resRemainingA;
+                remainingB = resRemainingB;
                 if (!string.IsNullOrEmpty(resA))
                 {
                     Acorrect = true;
@@ -199,7 +251,6 @@ namespace ProjectExtractor.Extractors.FullProject
                 {
                     return string.Empty;
                 }
-
             }
 
 
@@ -216,11 +267,11 @@ namespace ProjectExtractor.Extractors.FullProject
                 {
                     str.Append("Voortzetting van een vorig project\n");
                 }
-                //for (int i = 0; i < _toRemoveArrays.Length; i++)
+                //for (int lineIndex = 0; lineIndex < _toRemoveArrays.Length; lineIndex++)
                 //{
                 //    //figure out what to put in the nextSectionString for the last item
-                //    string nextSectionString = i == _toRemoveArrays.Length ? string.Empty : _toRemoveArrays[i + 1][0];
-                //    RemoveSectionsFromLines(startIndex, nextIndex, _toRemoveArrays[i], nextSectionString, out int nextSectionLine);
+                //    string nextSectionString = lineIndex == _toRemoveArrays.Length ? string.Empty : _toRemoveArrays[lineIndex + 1][0];
+                //    RemoveSectionsFromLines(startIndex, nextIndex, _toRemoveArrays[lineIndex], nextSectionString, out int nextSectionLine);
                 //}
                 RemoveLines(startIndex + 1, nextIndex, _toRemoveDetails, _toRemoveDescription[0], out int detailEnd);
                 try
@@ -348,7 +399,7 @@ namespace ProjectExtractor.Extractors.FullProject
                 success = false;
                 int lineIndex;
 
-                //TODO: try iterating over every OTHER string[] that isn't toRemove to hopefully ALWAYS get the next section
+                //try iterating over every OTHER string[] that isn't toRemove to hopefully ALWAYS get the next section
 
                 //this(?) causes some headings to give the same content
                 //try preventing going too far by having a hard limit for how many lines after the last sentence has been found in toRemove (between 30 and 50 perhaps?)
@@ -466,19 +517,19 @@ namespace ProjectExtractor.Extractors.FullProject
                                 _Fases,
                                 _Update,
                                 _QuestionsA,
-                                _QuestionsB,
-                                _QuestionsC,
+                                _QuestionsBOne,
+                                _QuestionsCOne,
                                 _QuestionsDOne,
                                 _QuestionsSoftware,
                                 _Costs,
                                 _Spending};
-        private static readonly ProjectSection[] _sentencesOr = {_description,
+        private readonly ProjectSection[] _sentencesOr = {_description,
                                 _teamwork,
                                 _Fases,
                                 _Update,
                                 _QuestionsA,
-                                _QuestionsB,
-                                _QuestionsC,
+                                _QuestionsBOne,
+                                _QuestionsCTwo,
                                 _QuestionsDTwo,
                                 _QuestionsSoftware,
                                 _Costs,
@@ -495,13 +546,15 @@ namespace ProjectExtractor.Extractors.FullProject
         private static readonly ProjectSection _continuationProject = new ProjectSection("Is voortzetting", "Dit project is een voortzetting van een vorig project");
         private static readonly ProjectSection _description = new ProjectSection("Omschrijving", "Geef een algemene omschrijving van het project. Heeft u eerder WBSO aangevraagd voor dit project? Beschrijf dan de stand van zaken bij de vraag “Update project”.");
         private static readonly ProjectSection _teamwork = new ProjectSection("Samenwerking Levert één of meer partijen (buiten uw fiscale eenheid) een bijdrage aan het project?");
-        private static readonly ProjectSection _Fases = new ProjectSection("Fasering Werkzaamheden", "Fasering werkzaamheden Geef de fasen en de (tussen)resultaten van het project aan. Bijvoorbeeld de afsluiting van een onderzoek, de afronding van een ontwerpfase, de start van de bouw van een prototype, het testen van een prototype (maximaal 25 karakters per veld). Vermeld alleen uw eigen werkzaamheden. U kunt een fase toevoegen door op de + te klikken en een fase verwijderen door op de - te klikken. Naam Datum gereed", true);
-        private static readonly ProjectSection _Update = new ProjectSection("Update Project", "Update project Vermeld de voortgang van uw S & O - werkzaamheden.Zijn er wijzigingen in de oorspronkelijke projectopzet of - planning ? Geef dan aan waarom dit het geval is.");
+        private static readonly ProjectSection _Fases = new ProjectSection("Fasering Werkzaamheden", "Fasering werkzaamheden Geef de fasen en de (tussen)resultaten van het project aan. Bijvoorbeeld de afsluiting van een onderzoek, de afronding van een ontwerpfase, de start van de bouw van een prototype, het testen van een prototype (maximaal 25 karakters per veld). Vermeld alleen uw eigen werkzaamheden. U kunt een fase toevoegen door op de + te klikken en een fase verwijderen door op de - te klikken. Naam Datum gereed");
+        private static readonly ProjectSection _Update = new ProjectSection("Update Project", "Update project Vermeld de voortgang van uw S&O-werkzaamheden. Zijn er wijzigingen in de oorspronkelijke projectopzet of -planning? Geef dan aan waarom dit het geval is.");
         private static readonly ProjectSection _QuestionsA = new ProjectSection("Specifieke vragen ontwikkeling Beantwoord de vragen vanuit een technische invalshoek. Geef hier geen algemene of functionele beschrijving van het project. Ontwikkelen heeft altijd te maken met zoeken en bewijzen. U wilt iets ontwikkelen en loopt hierbij tegen een technisch probleem aan. U zoekt hiervoor een nieuwe technische oplossing waarvan u het werkingsprincipe wilt aantonen.");
-        private static readonly ProjectSection _QuestionsB = new ProjectSection("- Technische knelpunten.", ". Technische knelpunten. Geef aan welke concrete technische knelpunten u zelf tijdens het ontwikkelingsproces moet oplossen om het gewenste projectresultaat te bereiken. Vermeld geen aanleidingen, algemene randvoorwaarden of functionele eisen van het project.");
-        private static readonly ProjectSection _QuestionsC = new ProjectSection("- Technische oplossingsrichtingen.", ". Technische oplossingsrichtingen. Geef voor ieder genoemd technisch knelpunt aan wat u specifiek zelf gaat ontwikkelen om het knelpunt op te lossen.");
+        private static readonly ProjectSection _QuestionsBOne = new ProjectSection("- Technische knelpunten.", ". Technische knelpunten. Geef aan welke concrete technische knelpunten u zelf tijdens het ontwikkelingsproces moet oplossen om het gewenste projectresultaat te bereiken. Vermeld geen aanleidingen, algemene randvoorwaarden of functionele eisen van het project.");
+        private static readonly ProjectSection _QuestionsBTwo = new ProjectSection("- Technische knelpunten.", "Probleemstelling en oplossingsrichting . Technische knelpunten programmatuur. Geef aan welke concrete technische knelpunten u zelf tijdens het ontwikkelen van de programmatuur moet oplossen om het gewenste projectresultaat te bereiken. Vermeld geen aanleidingen, algemene randvoorwaarden of functionele eisen van de programmatuur.");
+        private static readonly ProjectSection _QuestionsCOne = new ProjectSection("- Technische oplossingsrichtingen.", ". Technische oplossingsrichtingen. Geef voor ieder genoemd technisch knelpunt aan wat u specifiek zelf gaat ontwikkelen om het knelpunt op te lossen.");
+        private static readonly ProjectSection _QuestionsCTwo = new ProjectSection("- Oplossingsrichtingen programmatuur", ". Oplossingsrichtingen programmatuur. Geef voor ieder genoemd technisch knelpunt aan wat u specifiek zelf gaat ontwikkelen om het knelpunt op te lossen.");
         private static readonly ProjectSection _QuestionsDOne = new ProjectSection("- Technische nieuwheid.", ". Technische nieuwheid. Geef aan waarom de hiervoor genoemde oplossingsrichtingen technisch nieuw voor u zijn. Oftewel beschrijf waarom het project technisch vernieuwend en uitdagend is en geef aan welke technische risico’s en onzekerheden u hierbij verwacht. Om technische risico’s en onzekerheden in te schatten kijkt RVO naar de stand van de technologie.");
-        private static readonly ProjectSection _QuestionsDTwo = new ProjectSection("Programmatuur", ". Programmeertalen, ontwikkelomgevingen en tools. Geef aan welke programmeertalen, ontwikkelomgevingen en tools u gebruikt bij de ontwikkeling van technisch nieuwe programmatuur.");
+        private static readonly ProjectSection _QuestionsDTwo = new ProjectSection("- Technische nieuwheid programmatuur", "Technische nieuwheid programmatuur . Programmeertalen, ontwikkelomgevingen en tools. Geef aan welke programmeertalen, ontwikkelomgevingen en tools u gebruikt bij de ontwikkeling van technisch nieuwe programmatuur.");
         private static readonly ProjectSection _QuestionsSoftware = new ProjectSection("Wordt er voor dit product of proces mede programmatuur ontwikkeld?");
         private static readonly ProjectSection _Costs = new ProjectSection("Kosten en/of uitgaven per project", "Kosten en/of uitgaven per project Voorbeelden en uitgebreide informatie over kosten en uitgaven kunt u in de vinden.");
         private static readonly ProjectSection _Spending = new ProjectSection("Kosten opvoeren bij dit project", "Opvoeren uitgaven Voorbeelden en uitgebreide informatie over kosten en uitgaven kunt u in de vinden.");
@@ -649,7 +702,5 @@ namespace ProjectExtractor.Extractors.FullProject
                                 ,"Investeert u in een bedrijfsmiddel, waarvan het aan S&O dienstbare en toerekenbare deel van de"
                                 ,"aanschafwaarde van het bedrijfsmiddel groter of gelijk is aan 1 miljoen euro? Voer deze dan hieronder in."
                                 ,"Uitgaven kleiner dan 1 miljoen euro specificeert u per project." };
-
-
     }
 }

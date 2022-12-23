@@ -344,7 +344,6 @@ namespace ProjectExtractor
                 string fileName = TB_PDFLocation.Text.Substring(TB_PDFLocation.Text.LastIndexOf('\\') + 1);//create filename from original file
 
 
-                //TODO: make it possible to extract to the other supported formats
                 string extractionType = e.Argument as string;
                 if (e != null)
                 {
@@ -475,7 +474,6 @@ namespace ProjectExtractor
         /// <summary>Converts the items from the given list view to a semicolon seperated string</summary>
         private string ConvertListViewItemsToString(ListView list)
         {
-            //TODO: fix issue where this doesn't store new keywords properly
             StringBuilder builder = new StringBuilder();
             //add all list items to the display rich text box
             for (int i = 0; i < list.Items.Count; i++)

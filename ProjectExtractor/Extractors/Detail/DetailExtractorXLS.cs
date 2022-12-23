@@ -14,7 +14,6 @@ namespace ProjectExtractor.Extractors.Detail
         {
             Util.ExitCode returnCode = 0;
 
-            //TODO: implement
             returnCode = Util.ExitCode.NOT_IMPLEMENTED;
 
             return (int)returnCode;

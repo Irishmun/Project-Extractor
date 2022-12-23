@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using iText.Kernel.XMP.Impl;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 namespace ProjectExtractor.Util
@@ -50,6 +51,17 @@ namespace ProjectExtractor.Util
                 res[i] = b[i - a.Length];
             }
             return res;
+        }
+
+        /// <summary>
+        ///  Reports the zero-based index of the last character of the first occurrence of the specified string in this instance.
+        /// </summary>
+        /// <param name="value">The string to seek.</param>
+        /// <returns>The zero-based index position of the last character of value if that string is found, or -1 if it is not. If value is System.String.Empty, the return value is 0.</returns>
+        /// <exception cref="System.ArgumentNullException">value is null</exception>
+        public static int LastCharIndexOf(this string original, string value)
+        {
+            return original.IndexOf(value) + (int)value.Length;
         }
     }
 }
