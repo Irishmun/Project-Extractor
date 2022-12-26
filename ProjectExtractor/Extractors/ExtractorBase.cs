@@ -3,6 +3,7 @@ using iText.Kernel.Pdf.Canvas.Parser;
 using System;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Windows.Forms.VisualStyles;
 
 namespace ProjectExtractor.Extractors
 {
@@ -10,6 +11,7 @@ namespace ProjectExtractor.Extractors
     {
         protected const string ContinuationString = "Dit project is een voortzetting van een vorig project";
         protected string[] Lines;
+        private char[] _removeCharacters = new char[] { ' ', '\r', '\n' };//whitespaces, carriage returns and linefeeds
         /// <summary>
         /// Extracts all text from the given pdf file, putting it in <see cref="Lines"/> 
         /// </summary>
@@ -137,6 +139,24 @@ namespace ProjectExtractor.Extractors
             return index;
         }
 
+        /// <summary>
+        /// Performs <see cref="string.Trim()"/>, removing all leading and trailing characters found in <see cref="_removeCharacters"/>
+        /// </summary>
+        /// <param name="str">stringbuilder to pass through</param>
+        /// <returns>trimmed stringbuilder as string</returns>
+        protected string TrimEmpties(StringBuilder str)
+        {
+            return str.ToString().Trim(_removeCharacters);
+        }
+        /// <summary>
+        /// Performs <see cref="string.Trim()"/>, removing all leading and trailing characters found in <see cref="_removeCharacters"/>
+        /// </summary>
+        /// <param name="str">stringbuilder to pass through</param>
+        /// <returns>trimmed stringbuilder as string</returns>
+        protected string TrimEmpties(string str)
+        {
+            return str.ToString().Trim(_removeCharacters);
+        }
         public abstract override string ToString();//return file format of extractor, all lowercase, sans period (e.x: text extractor= "txt")
     }
 }
