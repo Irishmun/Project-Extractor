@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Windows.Forms.VisualStyles;
 
@@ -10,7 +11,8 @@ namespace ProjectExtractor.Extractors.FullProject
 {
     internal class ProjectExtractorTXT : ProjectExtractorBase
     {
-        private const int _maxBlankSearch = 40;//max lines to search after toRemove length
+        private const int MAX_BLANK_SEARCH = 40;//max lines to search after toRemove length
+        private const int MIN_DIF = 2;
         //iterate over text, per project, remove all these bits of text, do this per array, then once an array is complete, add corresponding title header
 
         public override int ExtractProjects(string file, string extractPath, string[] Sections, string EndProject, BackgroundWorker Worker)
@@ -535,12 +537,16 @@ namespace ProjectExtractor.Extractors.FullProject
                     {
                         string[] foundRemainingWords = resultFoundRemaining.Trim().Split(' ');
                         string[] checkStringWords = comparisons[i].CheckString.Trim().Split(' ');
-                        if (checkStringWords.Length - foundRemainingWords.Length > highestRemainingDif)
-                        {//checkStringWords should in this case always be bigger
-                            res = foundRes;
-                            highestRemainingDif = checkStringWords.Length - foundRemainingWords.Length;
-                            foundSection = i;
-                            foundRemaining = resultFoundRemaining;
+                        int dif = checkStringWords.Length - foundRemainingWords.Length;
+                        if (dif >= MIN_DIF || comparisons[i].IsEndOfDocument == true)
+                        {
+                            if (dif > highestRemainingDif)
+                            {//checkStringWords should in this case always be bigger
+                                res = foundRes;
+                                highestRemainingDif = dif;
+                                foundSection = i;
+                                foundRemaining = resultFoundRemaining;
+                            }
                         }
                     }
                 }
@@ -564,6 +570,7 @@ namespace ProjectExtractor.Extractors.FullProject
                 }
                 return check;
             }
+
 
             string RemoveMatching(string check, string comparison, out string remaining, bool appendNewLine = false)
             {
@@ -686,7 +693,7 @@ namespace ProjectExtractor.Extractors.FullProject
             ,_Spending
             ,_DocumentEnd};
 
-        
+
         private static readonly string[] _toRemoveDetails = {"Dit project is een voortzetting van een vorig project"
                                 ,"Projectnummer"
                                 ,"Projecttitel"
@@ -698,7 +705,7 @@ namespace ProjectExtractor.Extractors.FullProject
 
         private static readonly ProjectSection _continuationProject = new ProjectSection("Is voortzetting", "Dit project is een voortzetting van een vorig project");
         private static readonly ProjectSection _description = new ProjectSection("Omschrijving", "Geef een algemene omschrijving van het project. Heeft u eerder WBSO aangevraagd voor dit project? Beschrijf dan de stand van zaken bij de vraag “Update project”.");
-        private static readonly ProjectSection _teamwork = new ProjectSection("Samenwerking Levert één of meer partijen (buiten uw fiscale eenheid) een bijdrage aan het project?");
+        private static readonly ProjectSection _teamwork = new ProjectSection("Samenwerking?","Samenwerking Levert één of meer partijen (buiten uw fiscale eenheid) een bijdrage aan het project?");
         private static readonly ProjectSection _Fases = new ProjectSection("Fasering Werkzaamheden", "Fasering werkzaamheden Geef de fasen en de (tussen)resultaten van het project aan. Bijvoorbeeld de afsluiting van een onderzoek, de afronding van een ontwerpfase, de start van de bouw van een prototype, het testen van een prototype (maximaal 25 karakters per veld). Vermeld alleen uw eigen werkzaamheden. U kunt een fase toevoegen door op de + te klikken en een fase verwijderen door op de - te klikken. Naam Datum gereed", true);
         private static readonly ProjectSection _Update = new ProjectSection("Update Project", "Update project Vermeld de voortgang van uw S&O-werkzaamheden. Zijn er wijzigingen in de oorspronkelijke projectopzet of -planning? Geef dan aan waarom dit het geval is.");
         private static readonly ProjectSection _QuestionsDevelopment = new ProjectSection("Specifieke vragen ontwikkeling Beantwoord de vragen vanuit een technische invalshoek. Geef hier geen algemene of functionele beschrijving van het project. Ontwikkelen heeft altijd te maken met zoeken en bewijzen. U wilt iets ontwikkelen en loopt hierbij tegen een technisch probleem aan. U zoekt hiervoor een nieuwe technische oplossing waarvan u het werkingsprincipe wilt aantonen.");
@@ -708,7 +715,7 @@ namespace ProjectExtractor.Extractors.FullProject
         private static readonly ProjectSection _QuestionsProgramSolutions = new ProjectSection("- Oplossingsrichtingen programmatuur", ". Oplossingsrichtingen programmatuur. Geef voor ieder genoemd technisch knelpunt aan wat u specifiek zelf gaat ontwikkelen om het knelpunt op te lossen.");
         private static readonly ProjectSection _QuestionsInovation = new ProjectSection("- Technische nieuwheid.", ". Technische nieuwheid. Geef aan waarom de hiervoor genoemde oplossingsrichtingen technisch nieuw voor u zijn. Oftewel beschrijf waarom het project technisch vernieuwend en uitdagend is en geef aan welke technische risico’s en onzekerheden u hierbij verwacht. Om technische risico’s en onzekerheden in te schatten kijkt RVO naar de stand van de technologie.");
         private static readonly ProjectSection _QuestionsProgramInovation = new ProjectSection("- Technische nieuwheid programmatuur", ". Programmeertalen, ontwikkelomgevingen en tools. Geef aan welke programmeertalen, ontwikkelomgevingen en tools u gebruikt bij de ontwikkeling van technisch nieuwe programmatuur.");
-        private static readonly ProjectSection _QuestionsSoftware = new ProjectSection("Wordt er voor dit product of proces mede programmatuur ontwikkeld?");
+        private static readonly ProjectSection _QuestionsSoftware = new ProjectSection("Wordt er mede programmatuur ontwikkeld?","Wordt er voor dit product of proces mede programmatuur ontwikkeld?");
         private static readonly ProjectSection _Costs = new ProjectSection("Kosten en/of uitgaven per project", "Kosten en/of uitgaven per project Voorbeelden en uitgebreide informatie over kosten en uitgaven kunt u in de vinden.");
         private static readonly ProjectSection _Spending = new ProjectSection("Kosten opvoeren bij dit project", "Opvoeren uitgaven Voorbeelden en uitgebreide informatie over kosten en uitgaven kunt u in de vinden.");
         private static readonly ProjectSection _DocumentEnd = new ProjectSection("Aanvraag Aantal doorlopende projecten", isEndOfDocument: true);
