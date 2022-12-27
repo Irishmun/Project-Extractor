@@ -1,6 +1,7 @@
 ﻿using iText.Kernel.Pdf;
 using iText.Kernel.Pdf.Canvas.Parser;
 using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms.VisualStyles;
@@ -11,6 +12,7 @@ namespace ProjectExtractor.Extractors
     {
         protected const string ContinuationString = "Dit project is een voortzetting van een vorig project";
         protected string[] Lines;
+        protected int[] BoldIndexes;
         private char[] _removeCharacters = new char[] { ' ', '\r', '\n' };//whitespaces, carriage returns and linefeeds
         /// <summary>
         /// Extracts all text from the given pdf file, putting it in <see cref="Lines"/> 
@@ -22,6 +24,7 @@ namespace ProjectExtractor.Extractors
             PdfReader reader = new PdfReader(file);//to read from the pdf
             PdfDocument pdf = new PdfDocument(reader);//to access read data
             StringBuilder str = new StringBuilder();
+            List<int> FoundBoldLines = new List<int>();
             int pageCount = pdf.GetNumberOfPages();
 
             for (int i = 1; i < pageCount + 1; i++)
