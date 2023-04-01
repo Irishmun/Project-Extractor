@@ -102,11 +102,34 @@ namespace ProjectExtractor.Util
         /// Writes the boolean value as "on"/"off" on key in section
         /// </summary>
         /// <param name="Key">key to write to</param>
-        /// <param name="value">boolean value</param>
+        /// <param name="value">boolean value to write</param>
         /// <param name="Section">section to write to</param>
         public void WriteBool(string Key, bool value, string Section = null)
         {
             Write(Key, value ? "on" : "off", Section);
+        }
+
+        /// <summary>Gets the value as an integer</summary>
+        /// <param name="Key">The key to look for</param>
+        /// <param name="Section">The section to look in</param>
+        /// <returns>a parsed integer value. If unable to parse, returns int.MinValue</returns>
+        public int ReadInt(string Key, string Section = null)
+        {
+            string val = Read(Key, Section);
+            if (int.TryParse(val, out int res))
+            {
+                return res;
+            }
+            return int.MinValue;
+        }
+
+        /// <summary>Writes the integer value to key in section</summary>
+        /// <param name="Key">key to write to</param>
+        /// <param name="value">integer value to write</param>
+        /// <param name="Section">section to write to</param>
+        public void WriteInt(string Key, int value, string Section = null)
+        {
+            Write(Key, value.ToString(), Section);
         }
     }
 }

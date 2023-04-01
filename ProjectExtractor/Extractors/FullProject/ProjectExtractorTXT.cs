@@ -13,7 +13,18 @@ namespace ProjectExtractor.Extractors.FullProject
     {
         //iterate over text, per project, remove all these bits of text, do this per array, then once an array is complete, add corresponding title header
 
-        public override int ExtractProjects(string file, string extractPath, string[] Sections, string EndProject, BackgroundWorker Worker)
+        protected override ExitCode ExtractRevisionOneProject(string file, string extractPath, string[] Sections, string EndProject, BackgroundWorker Worker)
+        {
+            System.Diagnostics.Debug.WriteLine("[ProjectExtractorTXT]\"ExtractRevisionOneProject\" not implemented.");
+            return ExitCode.NOT_IMPLEMENTED;
+        }
+
+        protected override ExitCode ExtractRevisionTwoProject(string file, string extractPath, string[] Sections, string EndProject, BackgroundWorker Worker)
+        {
+            System.Diagnostics.Debug.WriteLine("[ProjectExtractorTXT]\"ExtractRevisionTwoProject\" not implemented.");
+            return ExitCode.NOT_IMPLEMENTED;
+        }
+        protected override ExitCode ExtractRevisionThreeProject(string file, string extractPath, string[] Sections, string EndProject, BackgroundWorker Worker)
         {
             //extract all sentences, starting at first (found) keysentence part, untill end keyword.
             //remove key sentences from found sentences, then combine remaining contents into one sentence (period separated)
@@ -140,7 +151,7 @@ namespace ProjectExtractor.Extractors.FullProject
                 sw.Close();
             }
             Worker.ReportProgress(100);
-            return (int)returnCode;
+            return returnCode;
 
             string TryFindSection(string check, ProjectSection[] comparisons, out string foundRemaining, out int foundSection, out bool isEndOfDocument, bool appendNewLines = false, string safetyCheck = "")
             {
@@ -332,6 +343,7 @@ namespace ProjectExtractor.Extractors.FullProject
 
         }
         public override string ToString() => "txt";
+
 
         private static readonly string[] _toRemoveDetails = {"Dit project is een voortzetting van een vorig project"
                                 ,"Projectnummer"

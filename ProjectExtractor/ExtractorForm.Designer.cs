@@ -44,7 +44,9 @@ namespace ProjectExtractor
             this.TSSL_ExtractionProgress = new System.Windows.Forms.ToolStripStatusLabel();
             this.TSPB_Extraction = new System.Windows.Forms.ToolStripProgressBar();
             this.TC_MainView = new System.Windows.Forms.TabControl();
-            this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.TabPage_Extractor = new System.Windows.Forms.TabPage();
+            this.label8 = new System.Windows.Forms.Label();
+            this.CbB_FileVersion = new System.Windows.Forms.ComboBox();
             this.CB_DisableExtractionPath = new System.Windows.Forms.CheckBox();
             this.CB_DebugIncludeWhiteSpace = new System.Windows.Forms.CheckBox();
             this.BT_ExtractFullProject = new System.Windows.Forms.Button();
@@ -60,7 +62,7 @@ namespace ProjectExtractor
             this.label1 = new System.Windows.Forms.Label();
             this.TB_PDFLocation = new System.Windows.Forms.TextBox();
             this.BT_BrowsePDF = new System.Windows.Forms.Button();
-            this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.TabPage_Settings = new System.Windows.Forms.TabPage();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.CB_SaveExtractionPath = new System.Windows.Forms.CheckBox();
             this.CB_SavePDFPath = new System.Windows.Forms.CheckBox();
@@ -70,7 +72,7 @@ namespace ProjectExtractor
             this.RB_ExportExcel = new System.Windows.Forms.RadioButton();
             this.RB_ExportTXT = new System.Windows.Forms.RadioButton();
             this.RB_ExportPDF = new System.Windows.Forms.RadioButton();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.TabPage_DetailSettings = new System.Windows.Forms.TabPage();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
             this.CB_TotalHoursEnabled = new System.Windows.Forms.CheckBox();
             this.label6 = new System.Windows.Forms.Label();
@@ -89,7 +91,7 @@ namespace ProjectExtractor
             this.LV_Keywords = new System.Windows.Forms.ListView();
             this.BT_KeywordsDelete = new System.Windows.Forms.Button();
             this.BT_KeywordsNew = new System.Windows.Forms.Button();
-            this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.TabPage_ProjectSettings = new System.Windows.Forms.TabPage();
             this.groupBox8 = new System.Windows.Forms.GroupBox();
             this.label7 = new System.Windows.Forms.Label();
             this.TB_SectionsEndProject = new System.Windows.Forms.TextBox();
@@ -98,22 +100,33 @@ namespace ProjectExtractor
             this.LV_Sections = new System.Windows.Forms.ListView();
             this.BT_SectionsDelete = new System.Windows.Forms.Button();
             this.BT_SectionsNew = new System.Windows.Forms.Button();
+            this.TabPage_About = new System.Windows.Forms.TabPage();
+            this.tableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
+            this.logoPictureBox = new System.Windows.Forms.PictureBox();
+            this.labelProductName = new System.Windows.Forms.Label();
+            this.labelVersion = new System.Windows.Forms.Label();
+            this.labelCopyright = new System.Windows.Forms.Label();
+            this.labelCompanyName = new System.Windows.Forms.Label();
+            this.textBoxDescription = new System.Windows.Forms.TextBox();
             this.backgroundWorker = new System.ComponentModel.BackgroundWorker();
             this.statusStrip1.SuspendLayout();
             this.TC_MainView.SuspendLayout();
-            this.tabPage1.SuspendLayout();
+            this.TabPage_Extractor.SuspendLayout();
             this.groupBox1.SuspendLayout();
-            this.tabPage4.SuspendLayout();
+            this.TabPage_Settings.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.GB_ExportSettings.SuspendLayout();
-            this.tabPage2.SuspendLayout();
+            this.TabPage_DetailSettings.SuspendLayout();
             this.groupBox6.SuspendLayout();
             this.groupBox5.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.groupBox2.SuspendLayout();
-            this.tabPage3.SuspendLayout();
+            this.TabPage_ProjectSettings.SuspendLayout();
             this.groupBox8.SuspendLayout();
             this.groupBox7.SuspendLayout();
+            this.TabPage_About.SuspendLayout();
+            this.tableLayoutPanel.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.logoPictureBox)).BeginInit();
             this.SuspendLayout();
             // 
             // statusStrip1
@@ -165,10 +178,11 @@ namespace ProjectExtractor
             this.TC_MainView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.TC_MainView.Controls.Add(this.tabPage1);
-            this.TC_MainView.Controls.Add(this.tabPage4);
-            this.TC_MainView.Controls.Add(this.tabPage2);
-            this.TC_MainView.Controls.Add(this.tabPage3);
+            this.TC_MainView.Controls.Add(this.TabPage_Extractor);
+            this.TC_MainView.Controls.Add(this.TabPage_Settings);
+            this.TC_MainView.Controls.Add(this.TabPage_DetailSettings);
+            this.TC_MainView.Controls.Add(this.TabPage_ProjectSettings);
+            this.TC_MainView.Controls.Add(this.TabPage_About);
             this.TC_MainView.Location = new System.Drawing.Point(0, 0);
             this.TC_MainView.Name = "TC_MainView";
             this.TC_MainView.SelectedIndex = 0;
@@ -176,31 +190,58 @@ namespace ProjectExtractor
             this.TC_MainView.TabIndex = 1;
             this.TC_MainView.SelectedIndexChanged += new System.EventHandler(this.TC_MainView_SelectedIndexChanged);
             // 
-            // tabPage1
+            // TabPage_Extractor
             // 
-            this.tabPage1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.tabPage1.Controls.Add(this.CB_DisableExtractionPath);
-            this.tabPage1.Controls.Add(this.CB_DebugIncludeWhiteSpace);
-            this.tabPage1.Controls.Add(this.BT_ExtractFullProject);
-            this.tabPage1.Controls.Add(this.label5);
-            this.tabPage1.Controls.Add(this.TB_FullPath);
-            this.tabPage1.Controls.Add(this.BT_DebugExtract);
-            this.tabPage1.Controls.Add(this.BT_Extract);
-            this.tabPage1.Controls.Add(this.groupBox1);
-            this.tabPage1.Controls.Add(this.label2);
-            this.tabPage1.Controls.Add(this.TB_ExtractLocation);
-            this.tabPage1.Controls.Add(this.BT_BrowseExtract);
-            this.tabPage1.Controls.Add(this.label1);
-            this.tabPage1.Controls.Add(this.TB_PDFLocation);
-            this.tabPage1.Controls.Add(this.BT_BrowsePDF);
-            this.tabPage1.Location = new System.Drawing.Point(4, 24);
-            this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(564, 322);
-            this.tabPage1.TabIndex = 0;
-            this.tabPage1.Text = "Extractor";
-            this.tabPage1.ToolTipText = "Main screen for extraction";
-            this.tabPage1.UseVisualStyleBackColor = true;
+            this.TabPage_Extractor.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.TabPage_Extractor.Controls.Add(this.label8);
+            this.TabPage_Extractor.Controls.Add(this.CbB_FileVersion);
+            this.TabPage_Extractor.Controls.Add(this.CB_DisableExtractionPath);
+            this.TabPage_Extractor.Controls.Add(this.CB_DebugIncludeWhiteSpace);
+            this.TabPage_Extractor.Controls.Add(this.BT_ExtractFullProject);
+            this.TabPage_Extractor.Controls.Add(this.label5);
+            this.TabPage_Extractor.Controls.Add(this.TB_FullPath);
+            this.TabPage_Extractor.Controls.Add(this.BT_DebugExtract);
+            this.TabPage_Extractor.Controls.Add(this.BT_Extract);
+            this.TabPage_Extractor.Controls.Add(this.groupBox1);
+            this.TabPage_Extractor.Controls.Add(this.label2);
+            this.TabPage_Extractor.Controls.Add(this.TB_ExtractLocation);
+            this.TabPage_Extractor.Controls.Add(this.BT_BrowseExtract);
+            this.TabPage_Extractor.Controls.Add(this.label1);
+            this.TabPage_Extractor.Controls.Add(this.TB_PDFLocation);
+            this.TabPage_Extractor.Controls.Add(this.BT_BrowsePDF);
+            this.TabPage_Extractor.Location = new System.Drawing.Point(4, 24);
+            this.TabPage_Extractor.Name = "TabPage_Extractor";
+            this.TabPage_Extractor.Padding = new System.Windows.Forms.Padding(3);
+            this.TabPage_Extractor.Size = new System.Drawing.Size(564, 322);
+            this.TabPage_Extractor.TabIndex = 0;
+            this.TabPage_Extractor.Text = "Extractor";
+            this.TabPage_Extractor.ToolTipText = "Main screen for extraction";
+            this.TabPage_Extractor.UseVisualStyleBackColor = true;
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(8, 106);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(48, 15);
+            this.label8.TabIndex = 103;
+            this.label8.Text = "Version:";
+            // 
+            // CbB_FileVersion
+            // 
+            this.CbB_FileVersion.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.CbB_FileVersion.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.CbB_FileVersion.FormattingEnabled = true;
+            this.CbB_FileVersion.Items.AddRange(new object[] {
+            "Version 1 (V1.X)",
+            "Version 2 (V2.X)",
+            "Version 3 (V3.X)"});
+            this.CbB_FileVersion.Location = new System.Drawing.Point(73, 103);
+            this.CbB_FileVersion.Name = "CbB_FileVersion";
+            this.CbB_FileVersion.Size = new System.Drawing.Size(469, 23);
+            this.CbB_FileVersion.TabIndex = 102;
+            this.CbB_FileVersion.SelectedIndexChanged += new System.EventHandler(this.CbB_FileVersion_SelectedIndexChanged);
             // 
             // CB_DisableExtractionPath
             // 
@@ -239,7 +280,7 @@ namespace ProjectExtractor
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(8, 117);
+            this.label5.Location = new System.Drawing.Point(8, 135);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(56, 15);
             this.label5.TabIndex = 99;
@@ -249,7 +290,7 @@ namespace ProjectExtractor
             // 
             this.TB_FullPath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.TB_FullPath.Location = new System.Drawing.Point(73, 114);
+            this.TB_FullPath.Location = new System.Drawing.Point(73, 132);
             this.TB_FullPath.Multiline = true;
             this.TB_FullPath.Name = "TB_FullPath";
             this.TB_FullPath.ReadOnly = true;
@@ -365,18 +406,18 @@ namespace ProjectExtractor
             this.BT_BrowsePDF.UseVisualStyleBackColor = true;
             this.BT_BrowsePDF.Click += new System.EventHandler(this.BT_BrowsePDF_Click);
             // 
-            // tabPage4
+            // TabPage_Settings
             // 
-            this.tabPage4.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.tabPage4.Controls.Add(this.groupBox3);
-            this.tabPage4.Controls.Add(this.GB_ExportSettings);
-            this.tabPage4.Location = new System.Drawing.Point(4, 24);
-            this.tabPage4.Name = "tabPage4";
-            this.tabPage4.Size = new System.Drawing.Size(564, 322);
-            this.tabPage4.TabIndex = 3;
-            this.tabPage4.Text = "Settings";
-            this.tabPage4.ToolTipText = "General settings";
-            this.tabPage4.UseVisualStyleBackColor = true;
+            this.TabPage_Settings.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.TabPage_Settings.Controls.Add(this.groupBox3);
+            this.TabPage_Settings.Controls.Add(this.GB_ExportSettings);
+            this.TabPage_Settings.Location = new System.Drawing.Point(4, 24);
+            this.TabPage_Settings.Name = "TabPage_Settings";
+            this.TabPage_Settings.Size = new System.Drawing.Size(564, 322);
+            this.TabPage_Settings.TabIndex = 3;
+            this.TabPage_Settings.Text = "Settings";
+            this.TabPage_Settings.ToolTipText = "General settings";
+            this.TabPage_Settings.UseVisualStyleBackColor = true;
             // 
             // groupBox3
             // 
@@ -483,21 +524,21 @@ namespace ProjectExtractor
             this.RB_ExportPDF.Text = "PDF (*.pdf)";
             this.RB_ExportPDF.UseVisualStyleBackColor = true;
             // 
-            // tabPage2
+            // TabPage_DetailSettings
             // 
-            this.tabPage2.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.tabPage2.Controls.Add(this.groupBox6);
-            this.tabPage2.Controls.Add(this.groupBox5);
-            this.tabPage2.Controls.Add(this.groupBox4);
-            this.tabPage2.Controls.Add(this.groupBox2);
-            this.tabPage2.Location = new System.Drawing.Point(4, 24);
-            this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(564, 322);
-            this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "Detail Settings";
-            this.tabPage2.ToolTipText = "Settings for project detail extraction";
-            this.tabPage2.UseVisualStyleBackColor = true;
+            this.TabPage_DetailSettings.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.TabPage_DetailSettings.Controls.Add(this.groupBox6);
+            this.TabPage_DetailSettings.Controls.Add(this.groupBox5);
+            this.TabPage_DetailSettings.Controls.Add(this.groupBox4);
+            this.TabPage_DetailSettings.Controls.Add(this.groupBox2);
+            this.TabPage_DetailSettings.Location = new System.Drawing.Point(4, 24);
+            this.TabPage_DetailSettings.Name = "TabPage_DetailSettings";
+            this.TabPage_DetailSettings.Padding = new System.Windows.Forms.Padding(3);
+            this.TabPage_DetailSettings.Size = new System.Drawing.Size(564, 322);
+            this.TabPage_DetailSettings.TabIndex = 1;
+            this.TabPage_DetailSettings.Text = "Detail Settings";
+            this.TabPage_DetailSettings.ToolTipText = "Settings for project detail extraction";
+            this.TabPage_DetailSettings.UseVisualStyleBackColor = true;
             // 
             // groupBox6
             // 
@@ -727,18 +768,18 @@ namespace ProjectExtractor
             this.BT_KeywordsNew.UseVisualStyleBackColor = true;
             this.BT_KeywordsNew.Click += new System.EventHandler(this.BT_KeywordsNew_Click);
             // 
-            // tabPage3
+            // TabPage_ProjectSettings
             // 
-            this.tabPage3.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.tabPage3.Controls.Add(this.groupBox8);
-            this.tabPage3.Controls.Add(this.groupBox7);
-            this.tabPage3.Location = new System.Drawing.Point(4, 24);
-            this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Size = new System.Drawing.Size(564, 322);
-            this.tabPage3.TabIndex = 2;
-            this.tabPage3.Text = "Project Settings";
-            this.tabPage3.ToolTipText = "Settings for entire project extraction";
-            this.tabPage3.UseVisualStyleBackColor = true;
+            this.TabPage_ProjectSettings.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.TabPage_ProjectSettings.Controls.Add(this.groupBox8);
+            this.TabPage_ProjectSettings.Controls.Add(this.groupBox7);
+            this.TabPage_ProjectSettings.Location = new System.Drawing.Point(4, 24);
+            this.TabPage_ProjectSettings.Name = "TabPage_ProjectSettings";
+            this.TabPage_ProjectSettings.Size = new System.Drawing.Size(564, 322);
+            this.TabPage_ProjectSettings.TabIndex = 2;
+            this.TabPage_ProjectSettings.Text = "Project Settings";
+            this.TabPage_ProjectSettings.ToolTipText = "Settings for entire project extraction";
+            this.TabPage_ProjectSettings.UseVisualStyleBackColor = true;
             // 
             // groupBox8
             // 
@@ -846,6 +887,117 @@ namespace ProjectExtractor
             this.BT_SectionsNew.UseVisualStyleBackColor = true;
             this.BT_SectionsNew.Click += new System.EventHandler(this.BT_SectionsNew_Click);
             // 
+            // TabPage_About
+            // 
+            this.TabPage_About.Controls.Add(this.tableLayoutPanel);
+            this.TabPage_About.Location = new System.Drawing.Point(4, 24);
+            this.TabPage_About.Name = "TabPage_About";
+            this.TabPage_About.Size = new System.Drawing.Size(564, 322);
+            this.TabPage_About.TabIndex = 4;
+            this.TabPage_About.Text = "About";
+            this.TabPage_About.UseVisualStyleBackColor = true;
+            // 
+            // tableLayoutPanel
+            // 
+            this.tableLayoutPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tableLayoutPanel.ColumnCount = 2;
+            this.tableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 185F));
+            this.tableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel.Controls.Add(this.logoPictureBox, 0, 0);
+            this.tableLayoutPanel.Controls.Add(this.labelProductName, 1, 0);
+            this.tableLayoutPanel.Controls.Add(this.labelVersion, 1, 1);
+            this.tableLayoutPanel.Controls.Add(this.labelCopyright, 1, 2);
+            this.tableLayoutPanel.Controls.Add(this.labelCompanyName, 1, 3);
+            this.tableLayoutPanel.Controls.Add(this.textBoxDescription, 1, 4);
+            this.tableLayoutPanel.Location = new System.Drawing.Point(0, 0);
+            this.tableLayoutPanel.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.tableLayoutPanel.Name = "tableLayoutPanel";
+            this.tableLayoutPanel.RowCount = 5;
+            this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 11.11111F));
+            this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 11.11111F));
+            this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 11.11111F));
+            this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 11.11111F));
+            this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 55.55556F));
+            this.tableLayoutPanel.Size = new System.Drawing.Size(564, 322);
+            this.tableLayoutPanel.TabIndex = 1;
+            // 
+            // logoPictureBox
+            // 
+            this.logoPictureBox.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.logoPictureBox.Image = ((System.Drawing.Image)(resources.GetObject("logoPictureBox.Image")));
+            this.logoPictureBox.Location = new System.Drawing.Point(4, 3);
+            this.logoPictureBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.logoPictureBox.Name = "logoPictureBox";
+            this.tableLayoutPanel.SetRowSpan(this.logoPictureBox, 5);
+            this.logoPictureBox.Size = new System.Drawing.Size(177, 316);
+            this.logoPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.logoPictureBox.TabIndex = 12;
+            this.logoPictureBox.TabStop = false;
+            // 
+            // labelProductName
+            // 
+            this.labelProductName.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.labelProductName.Location = new System.Drawing.Point(192, 0);
+            this.labelProductName.Margin = new System.Windows.Forms.Padding(7, 0, 4, 0);
+            this.labelProductName.MaximumSize = new System.Drawing.Size(0, 20);
+            this.labelProductName.Name = "labelProductName";
+            this.labelProductName.Size = new System.Drawing.Size(368, 20);
+            this.labelProductName.TabIndex = 19;
+            this.labelProductName.Text = "Product Name";
+            this.labelProductName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // labelVersion
+            // 
+            this.labelVersion.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.labelVersion.Location = new System.Drawing.Point(192, 35);
+            this.labelVersion.Margin = new System.Windows.Forms.Padding(7, 0, 4, 0);
+            this.labelVersion.MaximumSize = new System.Drawing.Size(0, 20);
+            this.labelVersion.Name = "labelVersion";
+            this.labelVersion.Size = new System.Drawing.Size(368, 20);
+            this.labelVersion.TabIndex = 0;
+            this.labelVersion.Text = "Version";
+            this.labelVersion.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // labelCopyright
+            // 
+            this.labelCopyright.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.labelCopyright.Location = new System.Drawing.Point(192, 70);
+            this.labelCopyright.Margin = new System.Windows.Forms.Padding(7, 0, 4, 0);
+            this.labelCopyright.MaximumSize = new System.Drawing.Size(0, 20);
+            this.labelCopyright.Name = "labelCopyright";
+            this.labelCopyright.Size = new System.Drawing.Size(368, 20);
+            this.labelCopyright.TabIndex = 21;
+            this.labelCopyright.Text = "Copyright";
+            this.labelCopyright.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // labelCompanyName
+            // 
+            this.labelCompanyName.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.labelCompanyName.Location = new System.Drawing.Point(192, 105);
+            this.labelCompanyName.Margin = new System.Windows.Forms.Padding(7, 0, 4, 0);
+            this.labelCompanyName.MaximumSize = new System.Drawing.Size(0, 20);
+            this.labelCompanyName.Name = "labelCompanyName";
+            this.labelCompanyName.Size = new System.Drawing.Size(368, 20);
+            this.labelCompanyName.TabIndex = 22;
+            this.labelCompanyName.Text = "Company Name";
+            this.labelCompanyName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // textBoxDescription
+            // 
+            this.textBoxDescription.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textBoxDescription.Location = new System.Drawing.Point(192, 143);
+            this.textBoxDescription.Margin = new System.Windows.Forms.Padding(7, 3, 4, 3);
+            this.textBoxDescription.Multiline = true;
+            this.textBoxDescription.Name = "textBoxDescription";
+            this.textBoxDescription.ReadOnly = true;
+            this.textBoxDescription.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.textBoxDescription.Size = new System.Drawing.Size(368, 176);
+            this.textBoxDescription.TabIndex = 23;
+            this.textBoxDescription.TabStop = false;
+            this.textBoxDescription.Text = "Description";
+            // 
             // backgroundWorker
             // 
             this.backgroundWorker.WorkerReportsProgress = true;
@@ -869,15 +1021,15 @@ namespace ProjectExtractor
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
             this.TC_MainView.ResumeLayout(false);
-            this.tabPage1.ResumeLayout(false);
-            this.tabPage1.PerformLayout();
+            this.TabPage_Extractor.ResumeLayout(false);
+            this.TabPage_Extractor.PerformLayout();
             this.groupBox1.ResumeLayout(false);
-            this.tabPage4.ResumeLayout(false);
+            this.TabPage_Settings.ResumeLayout(false);
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
             this.GB_ExportSettings.ResumeLayout(false);
             this.GB_ExportSettings.PerformLayout();
-            this.tabPage2.ResumeLayout(false);
+            this.TabPage_DetailSettings.ResumeLayout(false);
             this.groupBox6.ResumeLayout(false);
             this.groupBox6.PerformLayout();
             this.groupBox5.ResumeLayout(false);
@@ -885,10 +1037,14 @@ namespace ProjectExtractor
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
             this.groupBox2.ResumeLayout(false);
-            this.tabPage3.ResumeLayout(false);
+            this.TabPage_ProjectSettings.ResumeLayout(false);
             this.groupBox8.ResumeLayout(false);
             this.groupBox8.PerformLayout();
             this.groupBox7.ResumeLayout(false);
+            this.TabPage_About.ResumeLayout(false);
+            this.tableLayoutPanel.ResumeLayout(false);
+            this.tableLayoutPanel.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.logoPictureBox)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -898,8 +1054,8 @@ namespace ProjectExtractor
 
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.TabControl TC_MainView;
-        private System.Windows.Forms.TabPage tabPage1;
-        private System.Windows.Forms.TabPage tabPage2;
+        private System.Windows.Forms.TabPage TabPage_Extractor;
+        private System.Windows.Forms.TabPage TabPage_DetailSettings;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
         private System.Windows.Forms.ToolStripStatusLabel TSSL_ExtractionProgress;
         private System.Windows.Forms.ToolStripProgressBar TSPB_Extraction;
@@ -929,8 +1085,8 @@ namespace ProjectExtractor
         private System.Windows.Forms.TextBox TB_FullPath;
         private System.Windows.Forms.Button BT_KeywordsDown;
         private System.Windows.Forms.Button BT_KeywordsUp;
-        private System.Windows.Forms.TabPage tabPage3;
-        private System.Windows.Forms.TabPage tabPage4;
+        private System.Windows.Forms.TabPage TabPage_ProjectSettings;
+        private System.Windows.Forms.TabPage TabPage_Settings;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.CheckBox CB_SaveExtractionPath;
         private System.Windows.Forms.CheckBox CB_SavePDFPath;
@@ -956,6 +1112,16 @@ namespace ProjectExtractor
         private System.Windows.Forms.TextBox TB_SectionsEndProject;
         private System.Windows.Forms.GroupBox groupBox8;
         private System.Windows.Forms.CheckBox CB_DisableExtractionPath;
+        private System.Windows.Forms.TabPage TabPage_About;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel;
+        private System.Windows.Forms.PictureBox logoPictureBox;
+        private System.Windows.Forms.Label labelProductName;
+        private System.Windows.Forms.Label labelVersion;
+        private System.Windows.Forms.Label labelCopyright;
+        private System.Windows.Forms.Label labelCompanyName;
+        private System.Windows.Forms.TextBox textBoxDescription;
+        private System.Windows.Forms.ComboBox CbB_FileVersion;
+        private System.Windows.Forms.Label label8;
     }
 }
 
