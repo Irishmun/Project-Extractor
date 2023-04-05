@@ -35,6 +35,10 @@ namespace ProjectExtractor.Extractors.Detail
                Product
                Het project wordt/is gestart op *
                01-01-20167 / 10
+
+                Ontwikkelings- / onderzoeksactiviteit * Datum gereed * (hierna zoeken voor laatste aanpassing [datum])
+                
+                onderaan document totaal aantal uren doen
              */
             ExitCode returnCode = ExitCode.NONE;
             ExtractTextFromPDF(file);
