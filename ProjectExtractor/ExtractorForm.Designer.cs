@@ -29,15 +29,15 @@ namespace ProjectExtractor
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.ListViewItem listViewItem10 = new System.Windows.Forms.ListViewItem("Projectnummer");
-            System.Windows.Forms.ListViewItem listViewItem11 = new System.Windows.Forms.ListViewItem("Projecttitel");
-            System.Windows.Forms.ListViewItem listViewItem12 = new System.Windows.Forms.ListViewItem("Aantal uren werknemers");
-            System.Windows.Forms.ListViewItem listViewItem13 = new System.Windows.Forms.ListViewItem("Het project wordt/is gestart op");
-            System.Windows.Forms.ListViewItem listViewItem14 = new System.Windows.Forms.ListViewItem("Geef een algemene omschrijving van het");
-            System.Windows.Forms.ListViewItem listViewItem15 = new System.Windows.Forms.ListViewItem("project. Heeft u eerder WBSO");
-            System.Windows.Forms.ListViewItem listViewItem16 = new System.Windows.Forms.ListViewItem("aangevraagd voor dit project? Beschrijf");
-            System.Windows.Forms.ListViewItem listViewItem17 = new System.Windows.Forms.ListViewItem("dan de stand van zaken bij de vraag");
-            System.Windows.Forms.ListViewItem listViewItem18 = new System.Windows.Forms.ListViewItem("“Update project”.");
+            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("Projectnummer");
+            System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("Projecttitel");
+            System.Windows.Forms.ListViewItem listViewItem3 = new System.Windows.Forms.ListViewItem("Aantal uren werknemers");
+            System.Windows.Forms.ListViewItem listViewItem4 = new System.Windows.Forms.ListViewItem("Het project wordt/is gestart op");
+            System.Windows.Forms.ListViewItem listViewItem5 = new System.Windows.Forms.ListViewItem("Geef een algemene omschrijving van het");
+            System.Windows.Forms.ListViewItem listViewItem6 = new System.Windows.Forms.ListViewItem("project. Heeft u eerder WBSO");
+            System.Windows.Forms.ListViewItem listViewItem7 = new System.Windows.Forms.ListViewItem("aangevraagd voor dit project? Beschrijf");
+            System.Windows.Forms.ListViewItem listViewItem8 = new System.Windows.Forms.ListViewItem("dan de stand van zaken bij de vraag");
+            System.Windows.Forms.ListViewItem listViewItem9 = new System.Windows.Forms.ListViewItem("“Update project”.");
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ExtractorForm));
             statusStrip1 = new System.Windows.Forms.StatusStrip();
             toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
@@ -185,7 +185,6 @@ namespace ProjectExtractor
             // 
             // TabPage_Extractor
             // 
-            TabPage_Extractor.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             TabPage_Extractor.Controls.Add(label8);
             TabPage_Extractor.Controls.Add(CbB_FileVersion);
             TabPage_Extractor.Controls.Add(CB_DisableExtractionPath);
@@ -228,7 +227,7 @@ namespace ProjectExtractor
             CbB_FileVersion.Items.AddRange(new object[] { "Version 1 (V1.X)", "Version 2 (V2.X)", "Version 3 (V3.X)" });
             CbB_FileVersion.Location = new System.Drawing.Point(73, 103);
             CbB_FileVersion.Name = "CbB_FileVersion";
-            CbB_FileVersion.Size = new System.Drawing.Size(469, 23);
+            CbB_FileVersion.Size = new System.Drawing.Size(473, 23);
             CbB_FileVersion.TabIndex = 102;
             CbB_FileVersion.SelectedIndexChanged += CbB_FileVersion_SelectedIndexChanged;
             // 
@@ -258,7 +257,7 @@ namespace ProjectExtractor
             // BT_ExtractFullProject
             // 
             BT_ExtractFullProject.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
-            BT_ExtractFullProject.Location = new System.Drawing.Point(242, 257);
+            BT_ExtractFullProject.Location = new System.Drawing.Point(246, 261);
             BT_ExtractFullProject.Name = "BT_ExtractFullProject";
             BT_ExtractFullProject.Size = new System.Drawing.Size(147, 55);
             BT_ExtractFullProject.TabIndex = 6;
@@ -283,7 +282,7 @@ namespace ProjectExtractor
             TB_FullPath.Name = "TB_FullPath";
             TB_FullPath.ReadOnly = true;
             TB_FullPath.ScrollBars = System.Windows.Forms.ScrollBars.Horizontal;
-            TB_FullPath.Size = new System.Drawing.Size(469, 36);
+            TB_FullPath.Size = new System.Drawing.Size(473, 36);
             TB_FullPath.TabIndex = 99;
             TB_FullPath.TabStop = false;
             TB_FullPath.WordWrap = false;
@@ -291,7 +290,7 @@ namespace ProjectExtractor
             // BT_DebugExtract
             // 
             BT_DebugExtract.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
-            BT_DebugExtract.Location = new System.Drawing.Point(242, 226);
+            BT_DebugExtract.Location = new System.Drawing.Point(246, 230);
             BT_DebugExtract.Name = "BT_DebugExtract";
             BT_DebugExtract.Size = new System.Drawing.Size(161, 25);
             BT_DebugExtract.TabIndex = 80;
@@ -302,7 +301,7 @@ namespace ProjectExtractor
             // BT_Extract
             // 
             BT_Extract.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
-            BT_Extract.Location = new System.Drawing.Point(395, 257);
+            BT_Extract.Location = new System.Drawing.Point(399, 261);
             BT_Extract.Name = "BT_Extract";
             BT_Extract.Size = new System.Drawing.Size(147, 55);
             BT_Extract.TabIndex = 5;
@@ -314,7 +313,7 @@ namespace ProjectExtractor
             // 
             groupBox1.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
             groupBox1.Controls.Add(RTB_SearchWords);
-            groupBox1.Location = new System.Drawing.Point(8, 196);
+            groupBox1.Location = new System.Drawing.Point(8, 200);
             groupBox1.Name = "groupBox1";
             groupBox1.Size = new System.Drawing.Size(200, 116);
             groupBox1.TabIndex = 99;
@@ -347,7 +346,7 @@ namespace ProjectExtractor
             TB_ExtractLocation.Enabled = false;
             TB_ExtractLocation.Location = new System.Drawing.Point(73, 74);
             TB_ExtractLocation.Name = "TB_ExtractLocation";
-            TB_ExtractLocation.Size = new System.Drawing.Size(446, 23);
+            TB_ExtractLocation.Size = new System.Drawing.Size(450, 23);
             TB_ExtractLocation.TabIndex = 4;
             TB_ExtractLocation.TextChanged += TB_ExtractLocation_TextChanged;
             // 
@@ -355,7 +354,7 @@ namespace ProjectExtractor
             // 
             BT_BrowseExtract.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
             BT_BrowseExtract.Enabled = false;
-            BT_BrowseExtract.Location = new System.Drawing.Point(517, 73);
+            BT_BrowseExtract.Location = new System.Drawing.Point(521, 73);
             BT_BrowseExtract.Name = "BT_BrowseExtract";
             BT_BrowseExtract.Size = new System.Drawing.Size(25, 25);
             BT_BrowseExtract.TabIndex = 3;
@@ -377,14 +376,14 @@ namespace ProjectExtractor
             TB_PDFLocation.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
             TB_PDFLocation.Location = new System.Drawing.Point(73, 21);
             TB_PDFLocation.Name = "TB_PDFLocation";
-            TB_PDFLocation.Size = new System.Drawing.Size(446, 23);
+            TB_PDFLocation.Size = new System.Drawing.Size(450, 23);
             TB_PDFLocation.TabIndex = 1;
             TB_PDFLocation.TextChanged += TB_PDFLocation_TextChanged;
             // 
             // BT_BrowsePDF
             // 
             BT_BrowsePDF.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
-            BT_BrowsePDF.Location = new System.Drawing.Point(517, 20);
+            BT_BrowsePDF.Location = new System.Drawing.Point(521, 20);
             BT_BrowsePDF.Name = "BT_BrowsePDF";
             BT_BrowsePDF.Size = new System.Drawing.Size(25, 25);
             BT_BrowsePDF.TabIndex = 0;
@@ -394,7 +393,6 @@ namespace ProjectExtractor
             // 
             // TabPage_Settings
             // 
-            TabPage_Settings.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             TabPage_Settings.Controls.Add(groupBox3);
             TabPage_Settings.Controls.Add(GB_ExportSettings);
             TabPage_Settings.Location = new System.Drawing.Point(4, 24);
@@ -410,7 +408,7 @@ namespace ProjectExtractor
             groupBox3.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
             groupBox3.Controls.Add(CB_SaveExtractionPath);
             groupBox3.Controls.Add(CB_SavePDFPath);
-            groupBox3.Location = new System.Drawing.Point(4, 118);
+            groupBox3.Location = new System.Drawing.Point(8, 118);
             groupBox3.Name = "groupBox3";
             groupBox3.Size = new System.Drawing.Size(234, 77);
             groupBox3.TabIndex = 7;
@@ -447,7 +445,7 @@ namespace ProjectExtractor
             GB_ExportSettings.Controls.Add(RB_ExportExcel);
             GB_ExportSettings.Controls.Add(RB_ExportTXT);
             GB_ExportSettings.Controls.Add(RB_ExportPDF);
-            GB_ExportSettings.Location = new System.Drawing.Point(4, 9);
+            GB_ExportSettings.Location = new System.Drawing.Point(8, 9);
             GB_ExportSettings.Name = "GB_ExportSettings";
             GB_ExportSettings.Size = new System.Drawing.Size(234, 103);
             GB_ExportSettings.TabIndex = 6;
@@ -512,7 +510,6 @@ namespace ProjectExtractor
             // 
             // TabPage_DetailSettings
             // 
-            TabPage_DetailSettings.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             TabPage_DetailSettings.Controls.Add(groupBox6);
             TabPage_DetailSettings.Controls.Add(groupBox5);
             TabPage_DetailSettings.Controls.Add(groupBox4);
@@ -534,7 +531,7 @@ namespace ProjectExtractor
             groupBox6.Controls.Add(TB_TotalHours);
             groupBox6.Location = new System.Drawing.Point(320, 75);
             groupBox6.Name = "groupBox6";
-            groupBox6.Size = new System.Drawing.Size(234, 164);
+            groupBox6.Size = new System.Drawing.Size(238, 170);
             groupBox6.TabIndex = 7;
             groupBox6.TabStop = false;
             groupBox6.Text = "Hours";
@@ -555,7 +552,7 @@ namespace ProjectExtractor
             // 
             label6.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
             label6.AutoSize = true;
-            label6.Location = new System.Drawing.Point(6, 19);
+            label6.Location = new System.Drawing.Point(6, 25);
             label6.Name = "label6";
             label6.Size = new System.Drawing.Size(116, 15);
             label6.TabIndex = 7;
@@ -564,7 +561,7 @@ namespace ProjectExtractor
             // TB_TotalHours
             // 
             TB_TotalHours.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
-            TB_TotalHours.Location = new System.Drawing.Point(27, 37);
+            TB_TotalHours.Location = new System.Drawing.Point(27, 43);
             TB_TotalHours.Name = "TB_TotalHours";
             TB_TotalHours.Size = new System.Drawing.Size(201, 23);
             TB_TotalHours.TabIndex = 6;
@@ -576,7 +573,7 @@ namespace ProjectExtractor
             groupBox5.Controls.Add(CB_WriteKeywordsToFile);
             groupBox5.Location = new System.Drawing.Point(320, 6);
             groupBox5.Name = "groupBox5";
-            groupBox5.Size = new System.Drawing.Size(234, 63);
+            groupBox5.Size = new System.Drawing.Size(238, 63);
             groupBox5.TabIndex = 6;
             groupBox5.TabStop = false;
             groupBox5.Text = "File Details";
@@ -601,9 +598,9 @@ namespace ProjectExtractor
             groupBox4.Controls.Add(TB_StopChapter);
             groupBox4.Controls.Add(label3);
             groupBox4.Controls.Add(TB_Chapter);
-            groupBox4.Location = new System.Drawing.Point(6, 251);
+            groupBox4.Location = new System.Drawing.Point(6, 255);
             groupBox4.Name = "groupBox4";
-            groupBox4.Size = new System.Drawing.Size(548, 61);
+            groupBox4.Size = new System.Drawing.Size(552, 61);
             groupBox4.TabIndex = 5;
             groupBox4.TabStop = false;
             groupBox4.Text = "Chapters";
@@ -659,7 +656,7 @@ namespace ProjectExtractor
             groupBox2.Controls.Add(BT_KeywordsNew);
             groupBox2.Location = new System.Drawing.Point(6, 6);
             groupBox2.Name = "groupBox2";
-            groupBox2.Size = new System.Drawing.Size(308, 239);
+            groupBox2.Size = new System.Drawing.Size(312, 243);
             groupBox2.TabIndex = 0;
             groupBox2.TabStop = false;
             groupBox2.Text = "Keywords";
@@ -668,7 +665,7 @@ namespace ProjectExtractor
             // 
             BT_KeywordsDown.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
             BT_KeywordsDown.Enabled = false;
-            BT_KeywordsDown.Location = new System.Drawing.Point(196, 138);
+            BT_KeywordsDown.Location = new System.Drawing.Point(200, 138);
             BT_KeywordsDown.Name = "BT_KeywordsDown";
             BT_KeywordsDown.Size = new System.Drawing.Size(106, 23);
             BT_KeywordsDown.TabIndex = 7;
@@ -680,7 +677,7 @@ namespace ProjectExtractor
             // 
             BT_KeywordsUp.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
             BT_KeywordsUp.Enabled = false;
-            BT_KeywordsUp.Location = new System.Drawing.Point(196, 109);
+            BT_KeywordsUp.Location = new System.Drawing.Point(200, 109);
             BT_KeywordsUp.Name = "BT_KeywordsUp";
             BT_KeywordsUp.Size = new System.Drawing.Size(106, 23);
             BT_KeywordsUp.TabIndex = 6;
@@ -692,7 +689,7 @@ namespace ProjectExtractor
             // 
             BT_KeywordsEdit.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
             BT_KeywordsEdit.Enabled = false;
-            BT_KeywordsEdit.Location = new System.Drawing.Point(196, 51);
+            BT_KeywordsEdit.Location = new System.Drawing.Point(200, 51);
             BT_KeywordsEdit.Name = "BT_KeywordsEdit";
             BT_KeywordsEdit.Size = new System.Drawing.Size(106, 23);
             BT_KeywordsEdit.TabIndex = 3;
@@ -704,12 +701,12 @@ namespace ProjectExtractor
             // 
             LV_Keywords.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
             LV_Keywords.HideSelection = false;
-            LV_Keywords.Items.AddRange(new System.Windows.Forms.ListViewItem[] { listViewItem10, listViewItem11, listViewItem12, listViewItem13 });
+            LV_Keywords.Items.AddRange(new System.Windows.Forms.ListViewItem[] { listViewItem1, listViewItem2, listViewItem3, listViewItem4 });
             LV_Keywords.LabelEdit = true;
             LV_Keywords.Location = new System.Drawing.Point(6, 22);
             LV_Keywords.MultiSelect = false;
             LV_Keywords.Name = "LV_Keywords";
-            LV_Keywords.Size = new System.Drawing.Size(184, 211);
+            LV_Keywords.Size = new System.Drawing.Size(188, 215);
             LV_Keywords.TabIndex = 4;
             LV_Keywords.UseCompatibleStateImageBehavior = false;
             LV_Keywords.View = System.Windows.Forms.View.List;
@@ -721,7 +718,7 @@ namespace ProjectExtractor
             // 
             BT_KeywordsDelete.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
             BT_KeywordsDelete.Enabled = false;
-            BT_KeywordsDelete.Location = new System.Drawing.Point(196, 80);
+            BT_KeywordsDelete.Location = new System.Drawing.Point(200, 80);
             BT_KeywordsDelete.Name = "BT_KeywordsDelete";
             BT_KeywordsDelete.Size = new System.Drawing.Size(106, 23);
             BT_KeywordsDelete.TabIndex = 2;
@@ -732,7 +729,7 @@ namespace ProjectExtractor
             // BT_KeywordsNew
             // 
             BT_KeywordsNew.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
-            BT_KeywordsNew.Location = new System.Drawing.Point(196, 22);
+            BT_KeywordsNew.Location = new System.Drawing.Point(200, 22);
             BT_KeywordsNew.Name = "BT_KeywordsNew";
             BT_KeywordsNew.Size = new System.Drawing.Size(106, 23);
             BT_KeywordsNew.TabIndex = 1;
@@ -742,7 +739,6 @@ namespace ProjectExtractor
             // 
             // TabPage_ProjectSettings
             // 
-            TabPage_ProjectSettings.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             TabPage_ProjectSettings.Controls.Add(groupBox8);
             TabPage_ProjectSettings.Controls.Add(groupBox7);
             TabPage_ProjectSettings.Location = new System.Drawing.Point(4, 24);
@@ -792,7 +788,7 @@ namespace ProjectExtractor
             groupBox7.Controls.Add(BT_SectionsNew);
             groupBox7.Location = new System.Drawing.Point(6, 3);
             groupBox7.Name = "groupBox7";
-            groupBox7.Size = new System.Drawing.Size(548, 166);
+            groupBox7.Size = new System.Drawing.Size(552, 170);
             groupBox7.TabIndex = 1;
             groupBox7.TabStop = false;
             groupBox7.Text = "Sections";
@@ -801,7 +797,7 @@ namespace ProjectExtractor
             // 
             BT_SectionsEdit.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
             BT_SectionsEdit.Enabled = false;
-            BT_SectionsEdit.Location = new System.Drawing.Point(436, 51);
+            BT_SectionsEdit.Location = new System.Drawing.Point(440, 51);
             BT_SectionsEdit.Name = "BT_SectionsEdit";
             BT_SectionsEdit.Size = new System.Drawing.Size(106, 23);
             BT_SectionsEdit.TabIndex = 3;
@@ -813,12 +809,12 @@ namespace ProjectExtractor
             // 
             LV_Sections.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
             LV_Sections.HideSelection = false;
-            LV_Sections.Items.AddRange(new System.Windows.Forms.ListViewItem[] { listViewItem14, listViewItem15, listViewItem16, listViewItem17, listViewItem18 });
+            LV_Sections.Items.AddRange(new System.Windows.Forms.ListViewItem[] { listViewItem5, listViewItem6, listViewItem7, listViewItem8, listViewItem9 });
             LV_Sections.LabelEdit = true;
             LV_Sections.Location = new System.Drawing.Point(6, 22);
             LV_Sections.MultiSelect = false;
             LV_Sections.Name = "LV_Sections";
-            LV_Sections.Size = new System.Drawing.Size(424, 138);
+            LV_Sections.Size = new System.Drawing.Size(428, 142);
             LV_Sections.TabIndex = 4;
             LV_Sections.UseCompatibleStateImageBehavior = false;
             LV_Sections.View = System.Windows.Forms.View.List;
@@ -830,7 +826,7 @@ namespace ProjectExtractor
             // 
             BT_SectionsDelete.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
             BT_SectionsDelete.Enabled = false;
-            BT_SectionsDelete.Location = new System.Drawing.Point(436, 80);
+            BT_SectionsDelete.Location = new System.Drawing.Point(440, 80);
             BT_SectionsDelete.Name = "BT_SectionsDelete";
             BT_SectionsDelete.Size = new System.Drawing.Size(106, 23);
             BT_SectionsDelete.TabIndex = 2;
@@ -841,7 +837,7 @@ namespace ProjectExtractor
             // BT_SectionsNew
             // 
             BT_SectionsNew.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
-            BT_SectionsNew.Location = new System.Drawing.Point(436, 22);
+            BT_SectionsNew.Location = new System.Drawing.Point(440, 22);
             BT_SectionsNew.Name = "BT_SectionsNew";
             BT_SectionsNew.Size = new System.Drawing.Size(106, 23);
             BT_SectionsNew.TabIndex = 1;
