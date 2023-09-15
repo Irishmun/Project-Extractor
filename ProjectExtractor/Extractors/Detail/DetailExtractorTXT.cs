@@ -59,7 +59,7 @@ namespace ProjectExtractor.Extractors.Detail
             }
             if (startSearch == -1)
             {
-                Debug.WriteLine($"The following text was searched for but was not found in the file:\n\"{R2_DETAILSTRING}\"");
+                Debug.WriteLine($"not found:\n\"{R2_DETAILSTRING}\"");
                 return ExitCode.ERROR;
             }
 

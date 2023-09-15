@@ -174,7 +174,7 @@ namespace ProjectExtractor
                 UpdateSettingsIfNotStarting(); ;
             }
         }
-        private void BT_Extract_Click(object sender, EventArgs e)
+        private void BT_ExtractDetails_Click(object sender, EventArgs e)
         {//extract details from pdf file based on preferences
             if (!backgroundWorker.IsBusy)
             {
@@ -705,6 +705,7 @@ namespace ProjectExtractor
 
             _settings.WriteBool("Save_Extract_Path", CB_SaveExtractionPath.Checked, "Paths");//save if the extracting path is to be stored
             SaveOrDeletePathFromIni("Extract_Path", TB_ExtractLocation.Text, CB_SaveExtractionPath.Checked, "Paths");
+          
 
             _settings.Write("ChapterStart", TB_Chapter.Text, "Chapters");//save the start of the dates section in the projects
             _settings.Write("ChapterEnd", TB_StopChapter.Text, "Chapters");//save the end of the dates section in the projects

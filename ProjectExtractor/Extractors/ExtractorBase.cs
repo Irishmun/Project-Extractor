@@ -1,4 +1,5 @@
-﻿using iText.Kernel.Pdf;
+﻿using iText.Kernel.Geom;
+using iText.Kernel.Pdf;
 using iText.Kernel.Pdf.Canvas.Parser;
 using System;
 using System.Collections.Generic;
@@ -49,9 +50,10 @@ namespace ProjectExtractor.Extractors
         /// <param name="startIndex">currentProgress of line to start looking from</param>
         /// <param name="stopLine"> failsafe stopline, to prevent skipping entire projects</param>
         /// <returns></returns>
-        protected string TryGetProjecTitle(string[] lines, int startIndex, string stopLine, out int index)
+        protected string RevThreeTryGetProjecTitle(string[] lines, int startIndex, string stopLine, out int index)
         {
             index = startIndex;
+            string pageRegex = @"Pagina \d* van \d*";
             string res = string.Empty;
             for (int i = startIndex; i < lines.Length; i++)
             {
@@ -67,7 +69,7 @@ namespace ProjectExtractor.Extractors
                     //try and find a project title, containing "Project" with a year , period and number; colon and a title
                     //Match match = Regex.Match(lines[i], @"(Project )\d{4}\.\d*(: )[a-zA-Z0-9 ' ']*");
                     string line = lines[i];
-                    RemovePageNumberFromString(ref line);
+                    RemovePageNumberFromString(ref line, pageRegex);
                     Match match = Regex.Match(line, @"^(Project )([^:]{1,25})(\s*[:]).*");
                     if (!string.IsNullOrWhiteSpace(match.Value))
                     {//if a project title has been found, break out of loop
@@ -76,33 +78,65 @@ namespace ProjectExtractor.Extractors
                         break;
                     }
                 }
-                catch (Exception)
-                {
-                }
+                catch (Exception) { }
             }
-            RemovePageNumberFromString(ref res);
+            RemovePageNumberFromString(ref res, pageRegex);
             return res;
         }
-
+        protected string RevTwoTryGetProjectTitle(string[] lines, int startIndex, string stopLine, out int index)
+        {
+            index = startIndex;
+            string pageRegex = @"[0-9]+\s+/\s+[0-9]+";
+            string pageRegexTitle = @"WBSO\s+[0-9]+";
+            string res = string.Empty;
+            for (int i = startIndex; i < lines.Length; i++)
+            {
+                if (!string.IsNullOrEmpty(stopLine))
+                {
+                    if (lines[i].Contains(stopLine))
+                    {
+                        return res;
+                    }
+                }
+                try
+                {
+                    string line = lines[i];
+                    RemovePageNumberFromString(ref line, pageRegex);
+                    RemovePageNumberFromString(ref line, pageRegexTitle);
+                    if (line.StartsWith("Project") && lines[i + 1].StartsWith("Projectnummer") && lines[i + 2].StartsWith("Projecttitel"))
+                    {
+                        index = i;//project number is on the line after "projecttitel", the title is on the line after that
+                        res = $"{lines[index + 3]} - {lines[index + 4]}";
+                        break;
+                    }
+                }
+                catch (Exception) { }
+            }
+            RemovePageNumberFromString(ref res, pageRegex);
+            RemovePageNumberFromString(ref res, pageRegexTitle);
+            return res;
+        }
         /// <summary>Removes the page number from string, if present. ("Pagina x van x")</summary>
         /// <param name="line">Line to remove the pagenumber from</param>
-        protected void RemovePageNumberFromString(ref string line)
+        protected void RemovePageNumberFromString(ref string line, string pageRegex)
         {
             //(Pagina \d* van \d*) Pagina (any length of numbers) van (any length of numbers)
             //Regex.Replace(line, @"Pagina \d* van \d*", string.Empty);
-            Match match = Regex.Match(line, @"Pagina \d* van \d*");
+            Match match = Regex.Match(line, pageRegex);
             if (!string.IsNullOrWhiteSpace(match.Value))
-            {//if a project title has been found, break out of loop
-                line = line.Substring(match.Value.Length);
+            {               
+                int index = line.IndexOf(match.Value);
+                line = (index < 0) ? line : line.Remove(index, match.Value.Length);
             }
         }
 
         protected void RemoveNumbersFromStringStart(ref string line)
         {
-            Match match = Regex.Match(line, @"^(\d+)");
+            Match match = Regex.Match(line, @"^\b\d\b");//@"^([0-9][ .])"  might work better //^(\d+)
             if (!string.IsNullOrWhiteSpace(match.Value))
             {
-                line = line.Substring(match.Value.Length);
+                int index = line.IndexOf(match.Value);
+                line = (index < 0) ? line : line.Remove(index, match.Value.Length);
             }
         }
 
