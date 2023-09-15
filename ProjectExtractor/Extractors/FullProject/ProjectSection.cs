@@ -7,31 +7,36 @@
         private int _minDifference;
         private bool _appendNewLines;
         private bool _isEndOfDocument;
+        private bool _isEndOfProject;
 
 
         /// <param name="title">Text that is put on top of the first found text in the section.</param>
         /// <param name="textToRemove">Sstring to look for (and remove) from the text?</param>
         /// <param name="appendNewLines">Should linebreaks be added to the end of each line in this section?</param>
         /// <param name="isEndOfDocument">Is this section the last section in the ENTIRE document?</param>
+        /// <param name="isEndOfProject">Is this section the last section with needed information for this PROJECT?</param>
         /// <param name="minimumDifference">Minimum difference for this section to be deemed "found"</param>
-        public ProjectSection(string title, string textToRemove, bool appendNewLines = false, bool isEndOfDocument = false, int minimumDifference = 2)
+        public ProjectSection(string title, string textToRemove, bool appendNewLines = false, bool isEndOfDocument = false, bool isEndOfProject = false, int minimumDifference = 2)
         {
             _sectionTitle = title;
             _checkString = textToRemove;
             _appendNewLines = appendNewLines;
             _isEndOfDocument = isEndOfDocument;
+            _isEndOfProject = isEndOfProject;
             _minDifference = minimumDifference;
         }
         /// <param name="textToRemove">Sstring to look for (and remove) from the text?</param>
         /// <param name="appendNewLines">Should linebreaks be added to the end of each line in this section?</param>
         /// <param name="isEndOfDocument">Is this section the last section in the ENTIRE document?</param>
+        /// <param name="isEndOfProject">Is this section the last section with needed information for this PROJECT?</param>
         /// <param name="minimumDifference">Minimum difference for this section to be deemed "found"</param>
-        public ProjectSection(string textToRemove, bool appendNewLines = false, bool isEndOfDocument = false, int minimumDifference = 2)
+        public ProjectSection(string textToRemove, bool appendNewLines = false, bool isEndOfDocument = false, bool isEndOfProject = false, int minimumDifference = 2)
         {
             _sectionTitle = string.Empty;
             _checkString = textToRemove;
             _appendNewLines = appendNewLines;
             _isEndOfDocument = isEndOfDocument;
+            _isEndOfProject = isEndOfProject;
             _minDifference = minimumDifference;
         }
 
@@ -43,7 +48,10 @@
         public bool AppendNewLines => _appendNewLines;
         /// <summary>Is this section the last section in the ENTIRE document?</summary>
         public bool IsEndOfDocument => _isEndOfDocument;
+        /// <summary>Is this section the last section with needed information for this PROJECT?</summary>
+        public bool IsEndOfProject => _isEndOfProject;
         /// <summary>Minimum difference for this section to be deemed "found"</summary>
         public int MinimumDifference => _minDifference;
+
     }
 }

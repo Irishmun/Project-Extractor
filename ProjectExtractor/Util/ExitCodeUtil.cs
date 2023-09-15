@@ -30,5 +30,10 @@
                     return "Unknown error.";
             }
         }
+
+        public static string GetReturnCode(ExitCode code)
+        {
+            return GetReturnCode((int)code);
+        }
     }
 }

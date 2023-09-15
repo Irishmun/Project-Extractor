@@ -398,6 +398,6 @@ FodyWeavers.xsd
 *.sln.iml
 
 # test data
-/TestData/
+[Tt]estData/
 [Tt]estDocs/
 ProjectExtractor/Extractors/FullProject/example.txt

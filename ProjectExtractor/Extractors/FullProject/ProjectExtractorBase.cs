@@ -1,5 +1,7 @@
-﻿using System;
+﻿using ProjectExtractor.Util;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,7 +15,27 @@ namespace ProjectExtractor.Extractors.FullProject
         //see text file for example
 
         //string[] Keywords, string chapters, string stopChapters, string totalHoursKeyword, bool WriteTotalHoursToFile, bool WriteKeywordsToFile,
-        public abstract int ExtractProjects(string file, string extractPath, string[] Sections, string EndProject, System.ComponentModel.BackgroundWorker Worker);
+        public ExitCode ExtractProjects(ProjectLayoutRevision revision, string file, string extractPath, string[] Sections, string EndProject, System.ComponentModel.BackgroundWorker Worker)
+        {
+            switch (revision)
+            {
+                case ProjectLayoutRevision.REVISION_ONE:
+                    return ExtractRevisionOneProject(file, extractPath, Sections, EndProject, Worker);
+                case ProjectLayoutRevision.REVISION_TWO:
+                    return ExtractRevisionTwoProject(file, extractPath, Sections, EndProject, Worker);
+                case ProjectLayoutRevision.REVISION_THREE:
+                    return ExtractRevisionThreeProject(file, extractPath, Sections, EndProject, Worker);
+                case ProjectLayoutRevision.UNKNOWN_REVISION:
+                default:
+                    System.Diagnostics.Debug.WriteLine("[ProjectExtractorBase]Unknown revision given...");
+                    return ExitCode.NOT_IMPLEMENTED;
+            }
+        }
+
+        protected abstract ExitCode ExtractRevisionOneProject(string file, string extractPath, string[] Sections, string EndProject, BackgroundWorker Worker);
+        protected abstract ExitCode ExtractRevisionTwoProject(string file, string extractPath, string[] Sections, string EndProject, BackgroundWorker Worker);
+        protected abstract ExitCode ExtractRevisionThreeProject(string file, string extractPath, string[] Sections, string EndProject, BackgroundWorker Worker);
+
 
         /// <summary>
         /// Converts contents of the sections array to a single, space separated, array
@@ -24,7 +46,7 @@ namespace ProjectExtractor.Extractors.FullProject
             for (int i = 0; i < sections.Length; i++)
             {
                 if (i > 0)
-                {str.Append(" ");}
+                { str.Append(" "); }
                 str.Append(sections[i]);
             }
             return str.ToString().Split(' ');

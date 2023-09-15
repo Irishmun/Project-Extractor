@@ -1,15 +1,15 @@
 ﻿using Microsoft.WindowsAPICodePack.Dialogs;
+using ProjectExtractor.Extractors;
+using ProjectExtractor.Extractors.Detail;
+using ProjectExtractor.Extractors.FullProject;
+using ProjectExtractor.Util;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
-using ProjectExtractor.Extractors;
-using ProjectExtractor.Util;
-using ProjectExtractor.Extractors.Detail;
-using ProjectExtractor.Extractors.FullProject;
 
 namespace ProjectExtractor
 {
@@ -21,23 +21,28 @@ namespace ProjectExtractor
         private IniFile _settings;
         private ExtractorBase _extractor;
         private bool _startingUp = false;
-        private int _extractionResult = (int)ExitCode.NONE;
+        private ExitCode _extractionResult = ExitCode.NONE;
         private string[] _keywords, _sections;
+        private int _currentRevision;
 
         public ExtractorForm()
         {
             _startingUp = true;
             InitializeComponent();
+            InitializeAbout();
 #if !DEBUG
             BT_DebugExtract.Visible = false;
             CB_DebugIncludeWhiteSpace.Visible = false;
 #endif
             _settings = new IniFile();
-            InitSettings();
+            InitializeSettings();
             UpdateExtractorKeywords();
             _startingUp = false;
+            if (CbB_FileVersion.SelectedIndex < 0)
+            {
+                CbB_FileVersion.SelectedIndex = 2;
+            }
         }
-
         #region TabControl events
         private void TC_MainView_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -169,7 +174,7 @@ namespace ProjectExtractor
                 UpdateSettingsIfNotStarting(); ;
             }
         }
-        private void BT_Extract_Click(object sender, EventArgs e)
+        private void BT_ExtractDetails_Click(object sender, EventArgs e)
         {//extract details from pdf file based on preferences
             if (!backgroundWorker.IsBusy)
             {
@@ -336,6 +341,13 @@ namespace ProjectExtractor
             DisplayFullExtractionFilePath();
         }
         #endregion
+        #region ComboBox Events
+        private void CbB_FileVersion_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            _currentRevision = CbB_FileVersion.SelectedIndex;
+            UpdateSettingsIfNotStarting();
+        }
+        #endregion
         #region BackgroundWorker events
         private void backgroundWorker_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
@@ -352,16 +364,16 @@ namespace ProjectExtractor
                         switch (extractionType)
                         {
                             case "DETAIL":
-                                ExportFile = $"{TB_ExtractLocation.Text}{_detailExtractionPrefix}{Path.GetFileNameWithoutExtension(fileName)}.{ _extractor}";//add path and file extension
-                                _extractionResult = (_extractor as DetailExtractorBase).ExtractDetails(TB_PDFLocation.Text, ExportFile, _keywords, TB_Chapter.Text, TB_StopChapter.Text, TB_TotalHours.Text, CB_TotalHoursEnabled.Checked, CB_WriteKeywordsToFile.Checked, sender as System.ComponentModel.BackgroundWorker);
+                                ExportFile = $"{TB_ExtractLocation.Text}{_detailExtractionPrefix}{Path.GetFileNameWithoutExtension(fileName)}.{_extractor}";//add path and file extension
+                                _extractionResult = (_extractor as DetailExtractorBase).ExtractDetails(ProjectRevisionUtil.GetProjectRevision(_currentRevision), TB_PDFLocation.Text, ExportFile, _keywords, TB_Chapter.Text, TB_StopChapter.Text, TB_TotalHours.Text, CB_TotalHoursEnabled.Checked, CB_WriteKeywordsToFile.Checked, sender as System.ComponentModel.BackgroundWorker);
                                 break;
                             case "PROJECT":
-                                ExportFile = $"{TB_ExtractLocation.Text}{_projectExtractionPrefix}{Path.GetFileNameWithoutExtension(fileName)}.{ _extractor}";//add path and file extension
-                                _extractionResult = (_extractor as ProjectExtractorBase).ExtractProjects(TB_PDFLocation.Text, ExportFile, _sections, TB_SectionsEndProject.Text, sender as System.ComponentModel.BackgroundWorker);
+                                ExportFile = $"{TB_ExtractLocation.Text}{_projectExtractionPrefix}{Path.GetFileNameWithoutExtension(fileName)}.{_extractor}";//add path and file extension
+                                _extractionResult = (_extractor as ProjectExtractorBase).ExtractProjects(ProjectRevisionUtil.GetProjectRevision(_currentRevision), TB_PDFLocation.Text, ExportFile, _sections, TB_SectionsEndProject.Text, sender as System.ComponentModel.BackgroundWorker);
                                 break;
                             case "DEBUG":
-                                ExportFile = $"{TB_ExtractLocation.Text}\\DEBUG {_detailExtractionPrefix}{Path.GetFileNameWithoutExtension(fileName)}.{ _extractor}";//add path and file extension
-                                _extractionResult = (_extractor as DetailExtractorBase).ExtractDetails(TB_PDFLocation.Text, ExportFile, _keywords, TB_Chapter.Text, TB_StopChapter.Text, TB_TotalHours.Text, CB_TotalHoursEnabled.Checked, CB_WriteKeywordsToFile.Checked, sender as System.ComponentModel.BackgroundWorker);
+                                ExportFile = $"{TB_ExtractLocation.Text}\\DEBUG {_detailExtractionPrefix}{Path.GetFileNameWithoutExtension(fileName)}.{_extractor}";//add path and file extension
+                                _extractionResult = (_extractor as DetailExtractorBase).ExtractDetails(ProjectRevisionUtil.GetProjectRevision(_currentRevision), TB_PDFLocation.Text, ExportFile, _keywords, TB_Chapter.Text, TB_StopChapter.Text, TB_TotalHours.Text, CB_TotalHoursEnabled.Checked, CB_WriteKeywordsToFile.Checked, sender as System.ComponentModel.BackgroundWorker);
                                 break;
                             default:
                                 UpdateStatus("ERROR extracting: unknown extractor given.");
@@ -374,7 +386,7 @@ namespace ProjectExtractor
                     }
                 }
 
-                if (_extractionResult != (int)ExitCode.NONE && _extractionResult != (int)ExitCode.FLAWED)//something went wrong
+                if (_extractionResult != ExitCode.NONE && _extractionResult != ExitCode.FLAWED)//something went wrong
                 {
                     string code = ExitCodeUtil.GetReturnCode(_extractionResult);
                     UpdateStatus("ERROR extracting: " + code);
@@ -397,7 +409,7 @@ namespace ProjectExtractor
         private void backgroundWorker_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
         {
             //open the created file in its default application
-            if (_extractionResult == (int)ExitCode.NONE || _extractionResult == (int)ExitCode.FLAWED)//none error or flawed error
+            if (_extractionResult == ExitCode.NONE || _extractionResult == ExitCode.FLAWED)//none error or flawed error
             {
                 if (File.Exists(ExportFile))
                 {
@@ -410,7 +422,7 @@ namespace ProjectExtractor
                     process.Start();
                 }
             }
-            if (_extractionResult == (int)ExitCode.FLAWED)
+            if (_extractionResult == ExitCode.FLAWED)
             {
                 UpdateStatus("Non fatal error occured, check for missing items.");
             }
@@ -571,7 +583,7 @@ namespace ProjectExtractor
         //Settings file alterations
 
         /// <summary>Initialize the settings and update the correct fields</summary>
-        private void InitSettings()
+        private void InitializeSettings()
         {
             //get and update the export settings radiobutton
             if (_settings.KeyExists("ExportExtension", "Export"))
@@ -629,6 +641,12 @@ namespace ProjectExtractor
                 TB_SectionsEndProject.Text = _settings.Read("Sections_Project_End", "Export");
             }
 
+            //get and update project file version combobos
+            if (_settings.KeyExists("Project_Version", "Export"))
+            {
+                CbB_FileVersion.SelectedIndex = _settings.ReadInt("Project_Version", "Export");
+            }
+
             //get and update pdf file path setting
             if (_settings.KeyExists("Save_PDF_Path", "Paths"))
             {
@@ -663,7 +681,7 @@ namespace ProjectExtractor
                 CB_WriteKeywordsToFile.Checked = _settings.ReadBool("Write_Keywords_To_File", "Export");
             }
 
-            if (_settings.KeyExists("WriteTotalHours"))
+            if (_settings.KeyExists("WriteTotalHours", "Hours"))
             {
                 CB_TotalHoursEnabled.Checked = _settings.ReadBool("WriteTotalHours", "Hours");
             }
@@ -687,6 +705,7 @@ namespace ProjectExtractor
 
             _settings.WriteBool("Save_Extract_Path", CB_SaveExtractionPath.Checked, "Paths");//save if the extracting path is to be stored
             SaveOrDeletePathFromIni("Extract_Path", TB_ExtractLocation.Text, CB_SaveExtractionPath.Checked, "Paths");
+          
 
             _settings.Write("ChapterStart", TB_Chapter.Text, "Chapters");//save the start of the dates section in the projects
             _settings.Write("ChapterEnd", TB_StopChapter.Text, "Chapters");//save the end of the dates section in the projects
@@ -696,6 +715,8 @@ namespace ProjectExtractor
 
             _settings.Write("Sections", ConvertListViewItemsToString(LV_Sections), "Export");
             _settings.Write("Sections_Project_End", TB_SectionsEndProject.Text, "Export");
+
+            _settings.WriteInt("Project_Version", CbB_FileVersion.SelectedIndex, "Export");
         }
         /// <summary>Only Updates the settings if the program is not considered starting up</summary>
         private void UpdateSettingsIfNotStarting()
@@ -709,6 +730,8 @@ namespace ProjectExtractor
                 UpdateSettings();
             }
         }
+
+
         /// <summary>Saves or deletes the key (if it exists) for the given string, depending on the bool value</summary>
         /// <param name="Key">Key to save/delete</param>
         /// <param name="Value">Value of Key to save/delete</param>
@@ -726,6 +749,56 @@ namespace ProjectExtractor
             }
         }
         #endregion
+        #region AboutPage
+        private void InitializeAbout()
+        {
+            labelProductName.Text = AssemblyProduct();
+            labelVersion.Text = String.Format("Version {0}", AssemblyVersion());
+            labelCopyright.Text = AssemblyCopyright();
+            labelCompanyName.Text = AssemblyCompany();
+            textBoxDescription.Text = AssemblyDescription();
 
+            string AssemblyProduct()
+            {
+                object[] attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyProductAttribute), false);
+                if (attributes.Length == 0)
+                {
+                    return "";
+                }
+                return ((AssemblyProductAttribute)attributes[0]).Product;
+            }
+            string AssemblyVersion()
+            {
+                return Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            }
+            string AssemblyCopyright()
+            {
+                object[] attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyCopyrightAttribute), false);
+                if (attributes.Length == 0)
+                {
+                    return "";
+                }
+                return ((AssemblyCopyrightAttribute)attributes[0]).Copyright;
+            }
+            string AssemblyCompany()
+            {
+                object[] attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyCompanyAttribute), false);
+                if (attributes.Length == 0)
+                {
+                    return "";
+                }
+                return ((AssemblyCompanyAttribute)attributes[0]).Company;
+            }
+            string AssemblyDescription()
+            {
+                object[] attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyDescriptionAttribute), false);
+                if (attributes.Length == 0)
+                {
+                    return "";
+                }
+                return ((AssemblyDescriptionAttribute)attributes[0]).Description;
+            }
+        }
+        #endregion
     }
 }
