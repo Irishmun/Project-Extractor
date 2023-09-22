@@ -15,15 +15,19 @@ namespace ProjectExtractor
 {
     public partial class ExtractorForm : Form
     {
+        private const string _detailExtractionPrefix = "Extracted Details -";
+        private const string _projectExtractionPrefix = "Extracted Projects -";
+
         private string _programPath = AppContext.BaseDirectory, ExportFile;
-        private string _detailExtractionPrefix = "Extracted Details -";
-        private string _projectExtractionPrefix = "Extracted Projects -";
-        private IniFile _settings;
-        private ExtractorBase _extractor;
+        private string _latestTag;
+        private bool _updateAvailable;
         private bool _startingUp = false;
-        private ExitCode _extractionResult = ExitCode.NONE;
         private string[] _keywords, _sections;
         private int _currentRevision;
+        private UpdateHandler _updateHandler = new UpdateHandler();
+        private IniFile _settings;
+        private ExtractorBase _extractor;
+        private ExitCode _extractionResult = ExitCode.NONE;
 
         public ExtractorForm()
         {
@@ -42,6 +46,7 @@ namespace ProjectExtractor
             {
                 CbB_FileVersion.SelectedIndex = 2;
             }
+            CheckForUpdate();
         }
         #region TabControl events
         private void TC_MainView_SelectedIndexChanged(object sender, EventArgs e)
@@ -293,6 +298,12 @@ namespace ProjectExtractor
             }
             UpdateSettingsIfNotStarting(); ;
         }
+
+        //update program
+        private void BT_UpdateProgram_Click(object sender, EventArgs e)
+        {
+            TryUpdateProject();
+        }
         #endregion
         #region RadioButton events
         private void RB_CheckedChanged(object sender, EventArgs e)
@@ -538,6 +549,36 @@ namespace ProjectExtractor
             BT_ExtractFullProject.Enabled = enabled;
         }
 
+        private async void CheckForUpdate()
+        {
+            try
+            {
+                bool projectAccessible = await _updateHandler.CheckProjectAccessible();
+                if (projectAccessible == false)
+                { return; }
+                if (await _updateHandler.IsNewerVersionAvailable() == true)
+                {
+                    BT_UpdateProgram.Visible = true;
+                    _latestTag = await _updateHandler.GetLatestRelease();
+                    DialogResult dialogResult = MessageBox.Show("A new version is available, update?", "New Version", MessageBoxButtons.YesNo);//,MessageBoxIcon.Information,MessageBoxDefaultButton.Button2);
+                    if (dialogResult == DialogResult.Yes)
+                    {
+                        TryUpdateProject();
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                UpdateStatus("Failed checking new version");
+            }
+        }
+
+        private async void TryUpdateProject()
+        {
+            await _updateHandler.DownloadRelease(_latestTag);
+            System.Diagnostics.Process.Start("explorer", "https://github.com/Irishmun/Project-Extractor/releases/latest");
+        }
+
         #endregion
         #region Settings methods
         /// <summary>Gets the current export setting radiobutton and returns its associated detail extractor</summary>
@@ -705,7 +746,7 @@ namespace ProjectExtractor
 
             _settings.WriteBool("Save_Extract_Path", CB_SaveExtractionPath.Checked, "Paths");//save if the extracting path is to be stored
             SaveOrDeletePathFromIni("Extract_Path", TB_ExtractLocation.Text, CB_SaveExtractionPath.Checked, "Paths");
-          
+
 
             _settings.Write("ChapterStart", TB_Chapter.Text, "Chapters");//save the start of the dates section in the projects
             _settings.Write("ChapterEnd", TB_StopChapter.Text, "Chapters");//save the end of the dates section in the projects
@@ -731,7 +772,6 @@ namespace ProjectExtractor
             }
         }
 
-
         /// <summary>Saves or deletes the key (if it exists) for the given string, depending on the bool value</summary>
         /// <param name="Key">Key to save/delete</param>
         /// <param name="Value">Value of Key to save/delete</param>
@@ -752,11 +792,12 @@ namespace ProjectExtractor
         #region AboutPage
         private void InitializeAbout()
         {
-            labelProductName.Text = AssemblyProduct();
+            //labelProductName.Text = AssemblyProduct();
             labelVersion.Text = String.Format("Version {0}", AssemblyVersion());
             labelCopyright.Text = AssemblyCopyright();
             labelCompanyName.Text = AssemblyCompany();
-            textBoxDescription.Text = AssemblyDescription();
+            //textBoxDescription.Text = AssemblyDescription();
+            SetChangelogTextBox();
 
             string AssemblyProduct()
             {
@@ -769,7 +810,8 @@ namespace ProjectExtractor
             }
             string AssemblyVersion()
             {
-                return Assembly.GetExecutingAssembly().GetName().Version.ToString();
+                Version ver = Assembly.GetExecutingAssembly().GetName().Version;
+                return String.Format("{0}.{1}.{2}", ver.Major, ver.Minor, ver.Build);
             }
             string AssemblyCopyright()
             {
@@ -798,6 +840,11 @@ namespace ProjectExtractor
                 }
                 return ((AssemblyDescriptionAttribute)attributes[0]).Description;
             }
+        }
+        private async void SetChangelogTextBox()
+        {
+            string changelog = await _updateHandler.GetReleaseBodies();
+            textBoxDescription.Text = changelog;
         }
         #endregion
     }
