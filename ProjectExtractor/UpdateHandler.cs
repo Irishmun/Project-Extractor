@@ -8,15 +8,18 @@ using System.Threading.Tasks;
 
 namespace ProjectExtractor
 {
+    //Current Request making count: 2 (CheckProjectAccessible, SetRelease) GetDirectRateLimit as well but it isn't used
     internal class UpdateHandler
     {
         private const string PROJECT_OWNER = "Irishmun", THIS_PROJECT = "Project-Extractor";
         private const string LATEST_URL = "https://github.com/Irishmun/Project-Extractor/releases/latest";
+        private IReadOnlyList<Release> _releases;
 
         private GitHubClient _client;
         public UpdateHandler()
         {
             _client = new GitHubClient(new ProductHeaderValue("Getting-updates"));
+            SetRelease();
         }
         public async Task<bool> CheckProjectAccessible()
         {
@@ -35,13 +38,12 @@ namespace ProjectExtractor
             //System.Diagnostics.Debug.WriteLine("Repo: "+repo.Name);
             return repo != null;
         }
-
         public async Task<bool> IsNewerVersionAvailable()
         {
-            if (CanMakeRequests() == false)
+            if (ReleaseAvailable == false)
             { return false; }
             Version ver = Assembly.GetExecutingAssembly().GetName().Version;
-            string latestTag = await GetLatestRelease();
+            string latestTag = GetLatestRelease();
             try
             {
                 Match verNum = Regex.Match(latestTag, @"[\d|\.|\,]+");
@@ -52,9 +54,9 @@ namespace ProjectExtractor
                 }
             }
             catch (Exception) { }
+            System.Diagnostics.Debug.WriteLine($"Current version({ver}) is equal to, or newer than, latest version on Git({latestTag})");
             return false;
         }
-
         public async Task<IReadOnlyList<string>> GetAllReleases()
         {
             if (CanMakeRequests() == false)
@@ -70,30 +72,29 @@ namespace ProjectExtractor
             return versionTags.AsReadOnly();
         }
 
-        public async Task<string> GetLatestRelease()
+        public string GetLatestRelease()
         {
-            if (CanMakeRequests() == false)
+            if (ReleaseAvailable == false)
             { return string.Empty; }
-            Release release = await _client.Repository.Release.GetLatest(PROJECT_OWNER, THIS_PROJECT);
+            Release release = LatestRelease;
             System.Diagnostics.Debug.WriteLine(release.AssetsUrl);
             return release.TagName;
         }
-
-        public async Task DownloadRelease(string TagName)
-        {
-            if (CanMakeRequests() == false)
+        public async Task DownloadAndInstallRelease(string TagName)
+        {//TODO: make this actually download and install
+            if (ReleaseAvailable == false)
             { return; }
-            Release release = await _client.Repository.Release.Get(PROJECT_OWNER, THIS_PROJECT, TagName);
+            //if (CanMakeRequests() == false)
+            //{ return; }
+            Release release = GetReleaseByTag(TagName);
             System.Diagnostics.Debug.WriteLine("Latest: " + release.Name);
         }
-
         public async Task<string> GetReleaseBodies()
         {
-            if (CanMakeRequests() == false)
+            if (ReleaseAvailable == false)
             { return string.Empty; }
-            IReadOnlyList<Release> releases = await _client.Repository.Release.GetAll(PROJECT_OWNER, THIS_PROJECT);
             StringBuilder str = new StringBuilder();
-            foreach (Release item in releases)
+            foreach (Release item in _releases)
             {
                 //System.Diagnostics.Debug.WriteLine($"====={item.TagName}====={Environment.NewLine}{item.Body}");
                 str.AppendLine($"====={item.TagName}====={Environment.NewLine}{item.Body}");
@@ -110,11 +111,21 @@ namespace ProjectExtractor
             return miscRate;
         }
 
+        /// <summary>Opens the URL specified in <see cref="LATEST_URL"/> in the default browser</summary>
+        public void OpenReleasePage()
+        {
+            System.Diagnostics.Process.Start("explorer", LATEST_URL);
+        }
+
         /// <summary>Returns a <see cref="RateLimit"/> from the last made call to the GitHub API. returns null if no previous request has been made</summary>
         /// <returns>null or <see cref="RateLimit"/></returns>
         private RateLimit GetRateLimit()
         {
             ApiInfo apiInfo = _client.GetLastApiInfo();
+            if (apiInfo == null)
+            {
+                System.Diagnostics.Debug.WriteLine("Rate Limit: null, no call made");
+            }
             System.Diagnostics.Debug.WriteLine($"Rate Limit: {apiInfo?.RateLimit.Limit}, Remaining: {apiInfo?.RateLimit.Remaining}, Reset: {apiInfo?.RateLimit.Reset}");
             return apiInfo?.RateLimit;
         }
@@ -127,5 +138,29 @@ namespace ProjectExtractor
             return true;
         }
 
+        private async void SetRelease()
+        {
+            if (CanMakeRequests() == false)
+            { return; }
+            _releases = await _client.Repository.Release.GetAll(PROJECT_OWNER, THIS_PROJECT);
+        }
+
+        private Release GetReleaseByTag(string TagName)
+        {
+            if (ReleaseAvailable == false)
+            { return null; }
+            foreach (Release release in _releases)
+            {
+                if (release.TagName.Equals(TagName) == true)
+                {
+                    return release;
+                }
+            }
+            return null;
+        }
+
+
+        private bool ReleaseAvailable => _releases != null && _releases.Count > 0;
+        private Release LatestRelease => _releases[0];//latest release SHOULD be 0th item in Release List
     }
 }

@@ -20,60 +20,45 @@ namespace ProjectExtractor.Extractors.Detail
 
         protected override ExitCode ExtractRevisionTwoDetails(string file, string extractPath, string[] keywords, string chapters, string stopChapters, string totalHoursKeyword, bool writeTotalHoursToFile, bool writeKeywordsToFile, BackgroundWorker worker)
         {
-            /*
-               Projectnummer (sla twee regels over, daar zit deze waarde)
-               Projecttitel
-               ATD/USPM (Projectnummer hoort hier bij)(deze moet onthouden worden voor het aantal uren aan het einde)
-               Universele sigaren productiemachine
-               Projectgegegevens
-               (alles met " *" erachter heeft zijn waarde op de volgende regel, zo staat het ook in het document)
-               Projecttitel *
-               Universele sigaren productiemachine
-               Type project *
-               Ontwikkelingsproject
-               Zwaartepunt *
-               Product
-               Het project wordt/is gestart op *
-               01-01-20167 / 10
-
-                Ontwikkelings- / onderzoeksactiviteit * Datum gereed * (hierna zoeken voor laatste aanpassing [datum])
-                
-                onderaan document totaal aantal uren doen
-             */
+            //TODO: get start date and last update date
             ExitCode returnCode = ExitCode.NONE;
             ExtractTextFromPDF(file);
             StringBuilder str = new StringBuilder();
-            Dictionary<string, string> keywordValuePairs = new Dictionary<string, string>();
 
-            string possibleKeyword = string.Empty;
-
-            int startSearch = -1;
-
-            for (int i = 0; i < Lines.Length; i++)
+            bool foundProjects = false;
+            List<string> ProjectStrings = new List<string>();
+            string totalHours = string.Empty;
+            for (int i = Lines.Length - 1; i >= 0; i--)//start at the bottom as that is faster
             {
-                if (Lines[i].Contains(R2_DETAILSTRING))
+                if (foundProjects == false)
                 {
-                    startSearch = i;
-                    break;
+                    if (Lines[i].StartsWith("Totaal"))
+                    {
+                        foundProjects = true;
+                        totalHours = $"{Lines[i]}: {Lines[i + 1]}";
+                        continue;
+                    }
+                }
+                else
+                {
+                    if (Lines[i].StartsWith("Projectnummer"))//"Projectnummer Projecttitel Uren *" could accidentally be skipped
+                    {//reached end of projects, exit out of loop
+                        break;
+                    }
+                    //str.AppendLine(Lines[i]);
+                    int lastSpace = Lines[i].LastIndexOf(' ');
+                    string proj = Lines[i].Substring(0, lastSpace);//don't need project duration
+                    ProjectStrings.Add(string.Join(" | ", proj.Split(' ', 3)) + " | " + Lines[i].Substring(lastSpace));
                 }
             }
-            if (startSearch == -1)
+            if (string.IsNullOrWhiteSpace(totalHours) == false)
             {
-                Debug.WriteLine($"not found:\n\"{R2_DETAILSTRING}\"");
-                return ExitCode.ERROR;
+                for (int i = ProjectStrings.Count - 1; i >= 0; i--)
+                {
+                    str.AppendLine(ProjectStrings[i]);
+                }
+                str.Append(totalHours);
             }
-
-            for (int lineIndex = startSearch; lineIndex < Lines.Length; lineIndex++)
-            {
-                if (Lines[lineIndex].StartsWith(R2_ENDDETAILSTRING))
-                { break; }//reached end of section
-
-                //get all the stuff
-
-                ReportProgessToWorker(lineIndex, worker);
-            }
-
-
             if (str.Length > 0)
             {
                 WriteToFile(str, extractPath);

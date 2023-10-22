@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace ProjectExtractor
@@ -28,6 +29,7 @@ namespace ProjectExtractor
         private IniFile _settings;
         private ExtractorBase _extractor;
         private ExitCode _extractionResult = ExitCode.NONE;
+        private bool _gitProjectAvailable = false;
 
         public ExtractorForm()
         {
@@ -46,7 +48,15 @@ namespace ProjectExtractor
             {
                 CbB_FileVersion.SelectedIndex = 2;
             }
-            CheckForUpdate();
+            CheckForUpdateThenSetAbout();
+
+        }
+
+        private async void CheckForUpdateThenSetAbout()
+        {
+            _gitProjectAvailable = await _updateHandler.CheckProjectAccessible();
+            await CheckForUpdate();
+            await SetChangelogTextBox();
         }
         #region TabControl events
         private void TC_MainView_SelectedIndexChanged(object sender, EventArgs e)
@@ -549,22 +559,29 @@ namespace ProjectExtractor
             BT_ExtractFullProject.Enabled = enabled;
         }
 
-        private async void CheckForUpdate()
+        private async Task CheckForUpdate()
         {
             try
             {
-                bool projectAccessible = await _updateHandler.CheckProjectAccessible();
-                if (projectAccessible == false)
+                if (_gitProjectAvailable == false)
                 { return; }
                 if (await _updateHandler.IsNewerVersionAvailable() == true)
                 {
                     BT_UpdateProgram.Visible = true;
-                    _latestTag = await _updateHandler.GetLatestRelease();
+                    _latestTag = _updateHandler.GetLatestRelease();
+                    DialogResult dialogResult = MessageBox.Show("A new version is available, Go to releases page?", "New Version", MessageBoxButtons.YesNo);//,MessageBoxIcon.Information,MessageBoxDefaultButton.Button2);
+                    if (dialogResult == DialogResult.Yes)
+                    {
+                        _updateHandler.OpenReleasePage();
+                    }
+                    /*
+                    //No update functionality yet
                     DialogResult dialogResult = MessageBox.Show("A new version is available, update?", "New Version", MessageBoxButtons.YesNo);//,MessageBoxIcon.Information,MessageBoxDefaultButton.Button2);
                     if (dialogResult == DialogResult.Yes)
                     {
                         TryUpdateProject();
                     }
+                    */
                 }
             }
             catch (Exception)
@@ -575,8 +592,7 @@ namespace ProjectExtractor
 
         private async void TryUpdateProject()
         {
-            await _updateHandler.DownloadRelease(_latestTag);
-            System.Diagnostics.Process.Start("explorer", "https://github.com/Irishmun/Project-Extractor/releases/latest");
+            await _updateHandler.DownloadAndInstallRelease(_latestTag);
         }
 
         #endregion
@@ -797,7 +813,6 @@ namespace ProjectExtractor
             labelCopyright.Text = AssemblyCopyright();
             labelCompanyName.Text = AssemblyCompany();
             //textBoxDescription.Text = AssemblyDescription();
-            SetChangelogTextBox();
 
             string AssemblyProduct()
             {
@@ -841,8 +856,10 @@ namespace ProjectExtractor
                 return ((AssemblyDescriptionAttribute)attributes[0]).Description;
             }
         }
-        private async void SetChangelogTextBox()
+        private async Task SetChangelogTextBox()
         {
+            if (_gitProjectAvailable == false)
+            { return; }
             string changelog = await _updateHandler.GetReleaseBodies();
             textBoxDescription.Text = changelog;
         }
