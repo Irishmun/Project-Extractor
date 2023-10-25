@@ -1,10 +1,8 @@
-﻿using Org.BouncyCastle.Ocsp;
-using ProjectExtractor.Util;
+﻿using ProjectExtractor.Util;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.IO;
 using System.Text;
 
 namespace ProjectExtractor.Extractors.Detail
@@ -139,7 +137,7 @@ namespace ProjectExtractor.Extractors.Detail
             return returnCode;
         }
 
-        public override string ToString() => "txt";
+        public string FileExtension = "txt";
 
     }
 }

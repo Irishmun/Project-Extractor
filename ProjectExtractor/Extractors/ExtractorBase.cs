@@ -210,6 +210,7 @@ namespace ProjectExtractor.Extractors
             worker.ReportProgress((int)progress);
         }
 
-        public abstract override string ToString();//return file format of extractor, all lowercase, sans period (e.x: text extractor= "txt")
+        /// <summary>To which file extension will this extractor extract</summary>
+        public virtual string FileExtension { get; protected set; }//return file format of extractor, all lowercase, sans period (e.x: text extractor= "txt")
     }
 }

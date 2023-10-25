@@ -3,9 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Windows.Forms.VisualStyles;
 
 namespace ProjectExtractor.Extractors.FullProject
 {
@@ -552,6 +550,6 @@ namespace ProjectExtractor.Extractors.FullProject
         private readonly ProjectSection _revTwoSoftware = new ProjectSection("Wordt er voor dit product of proces mede programmatuur ontwikkeld? * Ja Nee", isEndOfProject: true);
         #endregion
 
-        public override string ToString() => "txt";
+        public string FileExtension = "txt";
     }
 }

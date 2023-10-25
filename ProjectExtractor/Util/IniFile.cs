@@ -24,9 +24,39 @@ namespace ProjectExtractor.Util
             Path = new FileInfo(IniPath ?? EXE + ".ini").FullName;
         }
 
-        /// <summary>
-        /// Return the value from the given key in section, if it exists.
-        /// </summary>
+        /// <summary>Writes value to key in section</summary>
+        /// <param name="Key">key to write to</param>
+        /// <param name="Value">value to write</param>
+        /// <param name="Section">section to write in</param>
+        public void Write(string Key, string Value, string Section = null)
+        {
+            WritePrivateProfileString(Section ?? EXE, Key, Value, Path);
+        }
+
+        /// <summary>deletes key in section</summary>
+        /// <param name="Key">Key to delete</param>
+        /// <param name="Section">section to delete the key in</param>
+        public void DeleteKey(string Key, string Section = null)
+        {
+            Write(Key, null, Section ?? EXE);
+        }
+        /// <summary>Deletes an entire section</summary>
+        /// <param name="Section">Section to delete</param>
+        public void DeleteSection(string Section = null)
+        {
+            Write(null, null, Section ?? EXE);
+        }
+
+        /// <summary>Returns if a key exists</summary>
+        /// <param name="Key">key to check for</param>
+        /// <param name="Section">section to check in</param>
+        /// <returns></returns>
+        public bool KeyExists(string Key, string Section = null)
+        {
+            return Read(Key, Section).Length > 0;
+        }
+
+        /// <summary>Return the value from the given key in section.</summary>
         /// <param name="Key">key to look for</param>
         /// <param name="Section">section to look in</param>
         /// <returns>value associated with the given key in section. if it doesn't exist, returns an empty string</returns>
@@ -36,51 +66,40 @@ namespace ProjectExtractor.Util
             GetPrivateProfileString(Section ?? EXE, Key, "", RetVal, 255, Path);
             return RetVal.ToString();
         }
-
-        /// <summary>
-        /// Writes value to key in section
-        /// </summary>
-        /// <param name="Key">key to write to</param>
-        /// <param name="Value">value to write</param>
-        /// <param name="Section">section to write in</param>
-        public void Write(string Key, string Value, string Section = null)
+        /// <summary>Return the value from the given key in section, if it exists.</summary>
+        /// <param name="Key">key to look for</param>
+        /// <param name="Section">section to look in</param>
+        /// <returns>value associated with the given key in section. if it doesn't exist, returns an empty string</returns>
+        public string ReadIfExists(string Key, string Section = null)
         {
-            WritePrivateProfileString(Section ?? EXE, Key, Value, Path);
+            if (KeyExists(Key, Section) == false)
+            { return string.Empty; }
+            return Read(Key, Section);
         }
 
-        /// <summary>
-        /// deletes key in section
-        /// </summary>
-        /// <param name="Key">Key to delete</param>
-        /// <param name="Section">section to delete the key in</param>
-        public void DeleteKey(string Key, string Section = null)
+        /// <summary>Return array, separated by separator value</summary>
+        /// <param name="Key">key to look for</param>
+        /// <param name="separator"> A string that delimits the substrings in this string</param>
+        /// <param name="Section">section to look in</param>
+        /// <returns>array of string separated by separator, empty array if not found</returns>
+        public string[] ReadArray(string Key, string? separator, string Section = null)
         {
-            Write(Key, null, Section ?? EXE);
+            return Read(Key, Section).Split(separator);
         }
 
-        /// <summary>
-        /// Deletes an entire section
-        /// </summary>
-        /// <param name="Section">Section to delete</param>
-        public void DeleteSection(string Section = null)
+        /// <summary>Return array, separated by separator value if key exists</summary>
+        /// <param name="Key">key to look for</param>
+        /// <param name="separator"> A string that delimits the substrings in this string</param>
+        /// <param name="Section">section to look in</param>
+        /// <returns>array of string separated by separator, empty array if not found</returns>
+        public string[] ReadArrayIfExists(string Key, string? separator, string Section = null)
         {
-            Write(null, null, Section ?? EXE);
+            if (KeyExists(Key, Section) == false)
+            { return new string[0]; }
+            return ReadArray(Key, separator, Section);
         }
 
-        /// <summary>
-        /// Returns if a key exists
-        /// </summary>
-        /// <param name="Key">key to check for</param>
-        /// <param name="Section">section to check in</param>
-        /// <returns></returns>
-        public bool KeyExists(string Key, string Section = null)
-        {
-            return Read(Key, Section).Length > 0;
-        }
-
-        /// <summary>
-        /// Gets the value as a boolean
-        /// </summary>
+        /// <summary>Gets the value as a boolean</summary>
         /// <param name="Key">The key to look for</param>
         /// <param name="Section">The section to look in</param>
         /// <returns>true on "1","yes","true" and "on". returns false on everything else</returns>
@@ -98,9 +117,17 @@ namespace ProjectExtractor.Util
                     return false;
             }
         }
-        /// <summary>
-        /// Writes the boolean value as "on"/"off" on key in section
-        /// </summary>
+        /// <summary>Gets the value as a boolean if the key exists</summary>
+        /// <param name="Key">The key to look for</param>
+        /// <param name="Section">The section to look in</param>
+        /// <returns>true on "1","yes","true" and "on". returns false on everything else or if unable to find key</returns>
+        public bool ReadBoolIfExists(string Key, string Section = null)
+        {
+            if (KeyExists(Key, Section) == false)
+            { return false; }
+            return ReadBool(Key, Section);
+        }
+        /// <summary>Writes the boolean value as "on"/"off" on key in section</summary>
         /// <param name="Key">key to write to</param>
         /// <param name="value">boolean value to write</param>
         /// <param name="Section">section to write to</param>
@@ -122,7 +149,16 @@ namespace ProjectExtractor.Util
             }
             return int.MinValue;
         }
-
+        /// <summary>Gets the value as an integer if the key exists</summary>
+        /// <param name="Key">The key to look for</param>
+        /// <param name="Section">The section to look in</param>
+        /// <returns>a parsed integer value. If unable to find or parse, returns int.MinValue</returns>
+        public int ReadIntIfExists(string Key, string Section = null)
+        {
+            if (KeyExists(Key, Section) == false)
+            { return int.MinValue; }
+            return ReadInt(Key, Section);
+        }
         /// <summary>Writes the integer value to key in section</summary>
         /// <param name="Key">key to write to</param>
         /// <param name="value">integer value to write</param>
@@ -131,5 +167,7 @@ namespace ProjectExtractor.Util
         {
             Write(Key, value.ToString(), Section);
         }
+
+
     }
 }

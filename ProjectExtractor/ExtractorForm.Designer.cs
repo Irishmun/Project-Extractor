@@ -630,7 +630,7 @@ namespace ProjectExtractor
             TB_StopChapter.Size = new System.Drawing.Size(233, 23);
             TB_StopChapter.TabIndex = 2;
             TB_StopChapter.Text = "Update project";
-            TB_StopChapter.TextChanged += TB_StopChapter_TextChanged;
+            TB_StopChapter.Leave += TB_StopChapter_Leave;
             // 
             // label3
             // 
@@ -650,7 +650,7 @@ namespace ProjectExtractor
             TB_Chapter.Size = new System.Drawing.Size(233, 23);
             TB_Chapter.TabIndex = 0;
             TB_Chapter.Text = "Fasering werkzaamheden";
-            TB_Chapter.TextChanged += TB_Chapter_TextChanged;
+            TB_Chapter.Leave += TB_Chapter_Leave;
             // 
             // groupBox2
             // 
@@ -969,7 +969,6 @@ namespace ProjectExtractor
             Name = "ExtractorForm";
             StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             Text = "PDF Extractor";
-            FormClosing += ExtractorForm_FormClosing;
             statusStrip1.ResumeLayout(false);
             statusStrip1.PerformLayout();
             TC_MainView.ResumeLayout(false);

@@ -32,6 +32,6 @@ namespace ProjectExtractor.Extractors.Detail
             return returnCode;
         }
 
-        public override string ToString() => "pdf";
+        public  string FileExtension = "pdf";
     }
 }

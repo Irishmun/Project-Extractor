@@ -21,35 +21,95 @@ namespace ProjectExtractor
 
         private string _programPath = AppContext.BaseDirectory, ExportFile;
         private string _latestTag;
-        private bool _updateAvailable;
-        private bool _startingUp = false;
+        //private bool _startingUp = false;
         private string[] _keywords, _sections;
         private int _currentRevision;
         private UpdateHandler _updateHandler = new UpdateHandler();
-        private IniFile _settings;
+        private Settings _settings;
         private ExtractorBase _extractor;
         private ExitCode _extractionResult = ExitCode.NONE;
         private bool _gitProjectAvailable = false;
 
         public ExtractorForm()
         {
-            _startingUp = true;
+            _settings = new Settings();
+            _settings.IsStarting = true;
             InitializeComponent();
             InitializeAbout();
 #if !DEBUG
             BT_DebugExtract.Visible = false;
             CB_DebugIncludeWhiteSpace.Visible = false;
 #endif
-            _settings = new IniFile();
-            InitializeSettings();
-            UpdateExtractorKeywords();
-            _startingUp = false;
+            CheckForUpdateThenSetAbout();
+            UpdateFromSettings();//do this before changing back from isStarting to prevent a change loop
+            _settings.IsStarting = false;
+        }
+
+        private void UpdateFromSettings()
+        {//update everything from the settings file
+            //set version combobox index
+            CbB_FileVersion.SelectedIndex = _settings.SelectedFileVersionIndex;
             if (CbB_FileVersion.SelectedIndex < 0)
             {
                 CbB_FileVersion.SelectedIndex = 2;
             }
-            CheckForUpdateThenSetAbout();
+            //set extractor file version
+            switch (_settings.ExportFileExtension)
+            {
+                case "pdf":
+                    RB_ExportPDF.Checked = true;
+                    break;
+                case "xlsx":
+                    RB_ExportExcel.Checked = true;
+                    break;
+                case "docx":
+                    RB_ExportWord.Checked = true;
+                    break;
+                case "rtf":
+                    RB_ExportRichText.Checked = true;
+                    break;
+                case "txt":
+                default:
+                    RB_ExportTXT.Checked = true;
+                    break;
+            }
+            //set keywords listview
+            LV_Keywords.Clear();
+            foreach (string item in _settings.KeywordsList)
+            {
+                LV_Keywords.Items.Add(new ListViewItem(item));
+            }
+            //set sections listview
+            LV_Sections.Clear();
+            foreach (string item in _settings.SectionsList)
+            {
+                LV_Sections.Items.Add(new ListViewItem(item));
+            }
+            //set sections end project textbox
+            TB_SectionsEndProject.Text = _settings.SectionsEndProject;
+            //set path for extracting pdf
+            TB_PDFLocation.Text = _settings.PDFPath;
+            //set path to save extracted to
+            TB_ExtractLocation.Text = _settings.ExtractionPath;
+            //set save pdf path checkbox
+            CB_SavePDFPath.Checked = _settings.SavePDFPath;
+            //set save extract path checkbox
+            CB_SaveExtractionPath.Checked = _settings.SaveExtractPath;
+            //set automatic extraction path checkbox
+            CB_DisableExtractionPath.Checked = _settings.DisableExtractionPath;
+            //set Chapter Start textbox
+            TB_Chapter.Text = _settings.ChapterStart;
+            //set Chapter End textbox
+            TB_StopChapter.Text = _settings.ChapterEnd;
+            //set write keywords checkbox
+            CB_WriteKeywordsToFile.Checked = _settings.WriteKeywordsToFile;
+            //set write total hours checkbox
+            CB_TotalHoursEnabled.Checked = _settings.WriteTotalHours;
+            //set Total hours keyword
+            TB_TotalHours.Text = _settings.TotalHoursKeyword;
 
+            //update extractor keywords on main page
+            UpdateExtractorKeywords();
         }
 
         private async void CheckForUpdateThenSetAbout()
@@ -62,7 +122,7 @@ namespace ProjectExtractor
         private void TC_MainView_SelectedIndexChanged(object sender, EventArgs e)
         {
             //update the keywords display if the tab has been swapped back to the main tab
-            UpdateSettingsIfNotStarting();
+            //UpdateSettingIfNotStarting();//Update all settings in the ini file
             if (TC_MainView.SelectedIndex == 0) UpdateExtractorKeywords();
         }
         #endregion
@@ -100,7 +160,7 @@ namespace ProjectExtractor
         }
         private void LV_Keywords_AfterLabelEdit(object sender, LabelEditEventArgs e)
         {
-            UpdateSettingsIfNotStarting();
+            _settings.KeywordsList = ConvertListViewItemsToList(LV_Keywords);
         }
 
         //full project extraction
@@ -120,7 +180,7 @@ namespace ProjectExtractor
         }
         private void LV_Sections_AfterLabelEdit(object sender, LabelEditEventArgs e)
         {
-            UpdateSettingsIfNotStarting();
+            _settings.SectionsList = ConvertListViewItemsToList(LV_Sections);
         }
         #endregion
         #region Button events
@@ -155,7 +215,7 @@ namespace ProjectExtractor
             if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(TB_PDFLocation.Text))
             {
                 UpdateFileStatus();
-                UpdateSettingsIfNotStarting();
+                _settings.PDFPath = TB_PDFLocation.Text;
             }
 
         }
@@ -186,7 +246,7 @@ namespace ProjectExtractor
             if (result == CommonFileDialogResult.Ok && !string.IsNullOrWhiteSpace(TB_ExtractLocation.Text))
             {
                 UpdateFileStatus();
-                UpdateSettingsIfNotStarting(); ;
+                _settings.ExtractionPath = TB_ExtractLocation.Text;
             }
         }
         private void BT_ExtractDetails_Click(object sender, EventArgs e)
@@ -246,7 +306,7 @@ namespace ProjectExtractor
         private void BT_KeywordsDelete_Click(object sender, EventArgs e)
         {
             LV_Keywords.Items.RemoveAt(LV_Keywords.SelectedIndices[0]);
-            UpdateSettingsIfNotStarting();
+            _settings.KeywordsList = ConvertListViewItemsToList(LV_Keywords);
         }
         private void BT_KeywordsUp_Click(object sender, EventArgs e)
         {
@@ -257,7 +317,7 @@ namespace ProjectExtractor
                 LV_Keywords.Items.RemoveAt(LV_Keywords.SelectedIndices[0]);
                 LV_Keywords.Items.Insert(index - 1, selected);
             }
-            UpdateSettingsIfNotStarting(); ;
+            _settings.KeywordsList = ConvertListViewItemsToList(LV_Keywords);
         }
         private void BT_KeywordsDown_Click(object sender, EventArgs e)
         {
@@ -268,7 +328,7 @@ namespace ProjectExtractor
                 LV_Keywords.Items.RemoveAt(LV_Keywords.SelectedIndices[0]);
                 LV_Keywords.Items.Insert(index + 1, selected);
             }
-            UpdateSettingsIfNotStarting(); ;
+            _settings.KeywordsList = ConvertListViewItemsToList(LV_Keywords);
         }
 
         //full project extraction setting events
@@ -284,7 +344,7 @@ namespace ProjectExtractor
         private void BT_SectionsDelete_Click(object sender, EventArgs e)
         {
             LV_Sections.Items.RemoveAt(LV_Sections.SelectedIndices[0]);
-            UpdateSettingsIfNotStarting();
+            _settings.KeywordsList = ConvertListViewItemsToList(LV_Sections);
         }
         private void BT_SectionsUp_Click(object sender, EventArgs e)
         {
@@ -295,7 +355,7 @@ namespace ProjectExtractor
                 LV_Sections.Items.RemoveAt(LV_Sections.SelectedIndices[0]);
                 LV_Sections.Items.Insert(index - 1, selected);
             }
-            UpdateSettingsIfNotStarting(); ;
+            _settings.KeywordsList = ConvertListViewItemsToList(LV_Sections);
         }
         private void BT_SectionsDown_Click(object sender, EventArgs e)
         {
@@ -306,7 +366,7 @@ namespace ProjectExtractor
                 LV_Sections.Items.RemoveAt(LV_Sections.SelectedIndices[0]);
                 LV_Sections.Items.Insert(index + 1, selected);
             }
-            UpdateSettingsIfNotStarting(); ;
+            _settings.KeywordsList = ConvertListViewItemsToList(LV_Sections);
         }
 
         //update program
@@ -318,40 +378,44 @@ namespace ProjectExtractor
         #region RadioButton events
         private void RB_CheckedChanged(object sender, EventArgs e)
         {
-            UpdateSettingsIfNotStarting();
+            //UpdateSettingsIfNotStarting();
+            _extractor = GetDetailExportSetting();
+            _settings.ExportFileExtension = _extractor.FileExtension;
         }
         #endregion
         #region CheckBox events
         private void CB_SavePDFPath_CheckedChanged(object sender, EventArgs e)
         {
-            UpdateSettingsIfNotStarting();
+            _settings.SavePDFPath = CB_SavePDFPath.Checked;
         }
         private void CB_SaveExtractionPath_CheckedChanged(object sender, EventArgs e)
         {
-            UpdateSettingsIfNotStarting();
+            _settings.SaveExtractPath = CB_SavePDFPath.Checked;
         }
         private void CB_WriteKeywordsToFile_CheckedChanged(object sender, EventArgs e)
         {
-            UpdateSettingsIfNotStarting();
+            _settings.WriteKeywordsToFile = CB_WriteKeywordsToFile.Checked;
         }
         private void CB_TotalHoursEnabled_CheckedChanged(object sender, EventArgs e)
         {
+            _settings.WriteTotalHours = CB_TotalHoursEnabled.Checked;
             TB_TotalHours.Enabled = CB_TotalHoursEnabled.Checked;
         }
         private void CB_DisableExtractionPath_CheckedChanged(object sender, EventArgs e)
         {
+            _settings.DisableExtractionPath = CB_DisableExtractionPath.Checked;
             TB_ExtractLocation.Enabled = !CB_DisableExtractionPath.Checked;
             BT_BrowseExtract.Enabled = !CB_DisableExtractionPath.Checked;
         }
         #endregion
         #region TextBox events
-        private void TB_Chapter_TextChanged(object sender, EventArgs e)
+        private void TB_Chapter_Leave(object sender, EventArgs e)
         {
-            UpdateSettingsIfNotStarting();
+            _settings.ChapterStart = TB_Chapter.Text;
         }
-        private void TB_StopChapter_TextChanged(object sender, EventArgs e)
+        private void TB_StopChapter_Leave(object sender, EventArgs e)
         {
-            UpdateSettingsIfNotStarting();
+            _settings.ChapterEnd = TB_StopChapter.Text;
         }
         private void TB_PDFLocation_TextChanged(object sender, EventArgs e)
         {
@@ -366,7 +430,7 @@ namespace ProjectExtractor
         private void CbB_FileVersion_SelectedIndexChanged(object sender, EventArgs e)
         {
             _currentRevision = CbB_FileVersion.SelectedIndex;
-            UpdateSettingsIfNotStarting();
+            _settings.SelectedFileVersionIndex = _currentRevision;
         }
         #endregion
         #region BackgroundWorker events
@@ -451,12 +515,6 @@ namespace ProjectExtractor
         }
 
         #endregion
-        #region Form Events
-        private void ExtractorForm_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            UpdateSettingsIfNotStarting();
-        }
-        #endregion
 
         #region methods
         /// <summary>Generates and displays the to be extracted file path</summary>
@@ -465,7 +523,7 @@ namespace ProjectExtractor
             if (!string.IsNullOrWhiteSpace(TB_ExtractLocation.Text) && !string.IsNullOrWhiteSpace(TB_PDFLocation.Text))
             {
                 string file = Path.GetFileNameWithoutExtension(TB_PDFLocation.Text);
-                string extension = $".{_settings.Read("ExportExtension", "Export")}";
+                string extension = $".{_settings.ExportFileExtension}";// Read("ExportExtension", "Export")}";
                 if (TB_ExtractLocation.Text.EndsWith("\\"))
                 {
                     TB_FullPath.Text = TB_ExtractLocation.Text + _detailExtractionPrefix + file + extension;
@@ -536,6 +594,11 @@ namespace ProjectExtractor
                 }
             }
             return res;
+        }
+
+        private System.Collections.Generic.List<string> ConvertListViewItemsToList(ListView list)
+        {
+            return ConvertListViewItemsToArray(list).ToList();
         }
         /// <summary>Returns whether both the file and the extraction path exists</summary>
         private bool BothPathsExists()
@@ -637,173 +700,6 @@ namespace ProjectExtractor
             }
         }
 
-        //Settings file alterations
-
-        /// <summary>Initialize the settings and update the correct fields</summary>
-        private void InitializeSettings()
-        {
-            //get and update the export settings radiobutton
-            if (_settings.KeyExists("ExportExtension", "Export"))
-            {
-                switch (_settings.Read("ExportExtension", "Export"))
-                {
-                    case "pdf":
-                        RB_ExportPDF.Checked = true;
-                        break;
-                    case "xlsx":
-                        RB_ExportExcel.Checked = true;
-                        break;
-                    case "docx":
-                        RB_ExportWord.Checked = true;
-                        break;
-                    case "rtf":
-                        RB_ExportRichText.Checked = true;
-                        break;
-                    case "txt":
-                    default:
-                        RB_ExportTXT.Checked = true;
-                        break;
-                }
-            }
-
-            //get and update keywords list 
-            if (_settings.KeyExists("Keywords", "Export"))
-            {
-                LV_Keywords.Clear();
-                string[] items = _settings.Read("Keywords", "Export").Split("; ");
-                if (items.Length == 1)
-                {//legacy update
-                    items = _settings.Read("Keywords", "Export").Split(", ");
-                }
-                for (int i = 0; i < items.Length; i++)
-                {
-                    LV_Keywords.Items.Add(new ListViewItem(items[i]));
-                }
-            }
-
-            //get and update sections list
-            if (_settings.KeyExists("Sections", "Export"))
-            {
-                LV_Sections.Clear();
-                string[] items = _settings.Read("Sections", "Export").Split("; ");
-                for (int i = 0; i < items.Length; i++)
-                {
-                    LV_Sections.Items.Add(new ListViewItem(items[i]));
-                }
-            }
-
-            //get and update sections project end keyword
-            if (_settings.KeyExists("Sections_Project_End", "Export"))
-            {
-                TB_SectionsEndProject.Text = _settings.Read("Sections_Project_End", "Export");
-            }
-
-            //get and update project file version combobos
-            if (_settings.KeyExists("Project_Version", "Export"))
-            {
-                CbB_FileVersion.SelectedIndex = _settings.ReadInt("Project_Version", "Export");
-            }
-
-            //get and update pdf file path setting
-            if (_settings.KeyExists("Save_PDF_Path", "Paths"))
-            {
-                bool savepdf = _settings.ReadBool("Save_PDF_Path", "Paths");
-                if (savepdf && _settings.KeyExists("PDF_Path", "Paths"))
-                {
-                    TB_PDFLocation.Text = _settings.Read("PDF_Path", "Paths");
-                }
-                CB_SavePDFPath.Checked = savepdf;
-            }
-
-            //get and update extraction path setting
-            if (_settings.KeyExists("Save_Extract_Path", "Paths"))
-            {
-                bool saveExtract = _settings.ReadBool("Save_Extract_Path", "Paths");
-                TB_ExtractLocation.Text = _settings.Read("Extract_Path", "Paths");
-                CB_SaveExtractionPath.Checked = saveExtract;
-            }
-
-            if (_settings.KeyExists("ChapterStart", "Chapters"))
-            {
-                TB_Chapter.Text = _settings.Read("ChapterStart", "Chapters");
-            }
-
-            if (_settings.KeyExists("ChapterEnd", "Chapters"))
-            {
-                TB_StopChapter.Text = _settings.Read("ChapterEnd", "Chapters");
-            }
-
-            if (_settings.KeyExists("Write_Keywords_To_File", "Export"))
-            {
-                CB_WriteKeywordsToFile.Checked = _settings.ReadBool("Write_Keywords_To_File", "Export");
-            }
-
-            if (_settings.KeyExists("WriteTotalHours", "Hours"))
-            {
-                CB_TotalHoursEnabled.Checked = _settings.ReadBool("WriteTotalHours", "Hours");
-            }
-
-            if (_settings.KeyExists("TotalHoursKeyword", "Hours"))
-            {
-                TB_TotalHours.Text = _settings.Read("TotalHoursKeyword", "Hours");
-            }
-
-            UpdateSettings();
-        }
-
-        /// <summary>Update the settings ini file with the new values</summary>
-        private void UpdateSettings()
-        {
-            _settings.Write("Keywords", ConvertListViewItemsToString(LV_Keywords), "Export");//save current keywords 
-            _settings.WriteBool("Write_Keywords_To_File", CB_WriteKeywordsToFile.Checked, "Export");//save if the keywords are to be written to the exported file
-
-            _settings.WriteBool("Save_PDF_Path", CB_SavePDFPath.Checked, "Paths");//save if the pdf path is to be stored
-            SaveOrDeletePathFromIni("PDF_Path", TB_PDFLocation.Text, CB_SavePDFPath.Checked, "Paths");
-
-            _settings.WriteBool("Save_Extract_Path", CB_SaveExtractionPath.Checked, "Paths");//save if the extracting path is to be stored
-            SaveOrDeletePathFromIni("Extract_Path", TB_ExtractLocation.Text, CB_SaveExtractionPath.Checked, "Paths");
-
-
-            _settings.Write("ChapterStart", TB_Chapter.Text, "Chapters");//save the start of the dates section in the projects
-            _settings.Write("ChapterEnd", TB_StopChapter.Text, "Chapters");//save the end of the dates section in the projects
-
-            _settings.WriteBool("WriteTotalHours", CB_TotalHoursEnabled.Checked, "Hours");
-            _settings.Write("TotalHoursKeyword", TB_TotalHours.Text, "Hours");
-
-            _settings.Write("Sections", ConvertListViewItemsToString(LV_Sections), "Export");
-            _settings.Write("Sections_Project_End", TB_SectionsEndProject.Text, "Export");
-
-            _settings.WriteInt("Project_Version", CbB_FileVersion.SelectedIndex, "Export");
-        }
-        /// <summary>Only Updates the settings if the program is not considered starting up</summary>
-        private void UpdateSettingsIfNotStarting()
-        {
-            if (!_startingUp)
-            {
-                //extractor ??= new DetailExtractorTXT();//fall back to txt extraction if extractor doesn't exist yet
-                _extractor = GetDetailExportSetting();
-                string exportVal = _extractor.ToString();
-                _settings.Write("ExportExtension", exportVal, "Export");//save current export filetype
-                UpdateSettings();
-            }
-        }
-
-        /// <summary>Saves or deletes the key (if it exists) for the given string, depending on the bool value</summary>
-        /// <param name="Key">Key to save/delete</param>
-        /// <param name="Value">Value of Key to save/delete</param>
-        /// <param name="Save">If the key-value pair should be saved or deleted</param>
-        /// <param name="section">Section that the key-value pair is in</param>
-        private void SaveOrDeletePathFromIni(string Key, string Value, bool Save, string section = "Paths")
-        {
-            if (Save)
-            {
-                _settings.Write(Key, Value, section);//save the value
-            }
-            else
-            {
-                _settings.DeleteKey(Key, section);//delete the value
-            }
-        }
         #endregion
         #region AboutPage
         private void InitializeAbout()
