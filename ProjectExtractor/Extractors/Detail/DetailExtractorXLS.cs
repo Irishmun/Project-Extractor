@@ -27,6 +27,6 @@ namespace ProjectExtractor.Extractors.Detail
             return returnCode;
         }
 
-        public  string FileExtension = "xls";
+        public override string FileExtension => "xls";
     }
 }

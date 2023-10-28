@@ -32,6 +32,6 @@ namespace ProjectExtractor.Extractors.Detail
             return returnCode;
         }
 
-        public  string FileExtension = "rtf";
+        public override string FileExtension => "rtf";
     }
 }

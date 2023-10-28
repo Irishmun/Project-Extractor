@@ -32,6 +32,6 @@ namespace ProjectExtractor.Extractors.Detail
             return returnCode;
         }
 
-        public  string FileExtension = "docx";
+        public override string FileExtension => "docx";
     }
 }

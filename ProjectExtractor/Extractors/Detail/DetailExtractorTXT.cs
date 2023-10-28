@@ -137,7 +137,7 @@ namespace ProjectExtractor.Extractors.Detail
             return returnCode;
         }
 
-        public string FileExtension = "txt";
+        public override string FileExtension => "txt";
 
     }
 }

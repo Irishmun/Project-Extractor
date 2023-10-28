@@ -103,6 +103,7 @@ namespace ProjectExtractor.Extractors.FullProject
                 int nextIndex = project == (ProjectStartIndexes.Count - 1) ? Lines.Length - 1 : ProjectStartIndexes[project + 1];
                 for (int lineIndex = ProjectStartIndexes[project]; lineIndex < nextIndex; lineIndex++)
                 {
+                    /*
                     if (continuationDone == false)
                     {
                         bool isContinuation = IsContinuation(ProjectStartIndexes[project], nextIndex);
@@ -115,7 +116,7 @@ namespace ProjectExtractor.Extractors.FullProject
                         RemoveLines(projectIndex + 1, nextIndex, ref str, _revTwoPageRegex, ref possibleSection, _toRemoveDetails, _toRemoveDescription[0], out int detailEnd);
                         lineIndex = detailEnd;
                         continuationDone = true;
-                    }
+                    }*/
                     RemovePageNumberFromString(ref Lines[lineIndex], _revTwoPageRegex);
                     RemovePageNumberFromString(ref Lines[lineIndex], @"WBSO\s+[0-9]+");
                     //TODO: fix issue where numbers are removed and returned with said number removed when they shouldn't
@@ -549,7 +550,6 @@ namespace ProjectExtractor.Extractors.FullProject
         //private readonly ProjectSection _revTwoSoftware = new ProjectSection("Wordt er mede programmatuur ontwikkeld?", "Wordt er voor dit product of proces mede programmatuur ontwikkeld? * Ja Nee")
         private readonly ProjectSection _revTwoSoftware = new ProjectSection("Wordt er voor dit product of proces mede programmatuur ontwikkeld? * Ja Nee", isEndOfProject: true);
         #endregion
-
-        public string FileExtension = "txt";
+        public override string FileExtension => "txt";
     }
 }
