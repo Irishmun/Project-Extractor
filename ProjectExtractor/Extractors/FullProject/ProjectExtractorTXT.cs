@@ -102,7 +102,7 @@ namespace ProjectExtractor.Extractors.FullProject
 
                 int nextIndex = project == (ProjectStartIndexes.Count - 1) ? Lines.Length - 1 : ProjectStartIndexes[project + 1];
                 for (int lineIndex = ProjectStartIndexes[project]; lineIndex < nextIndex; lineIndex++)
-                {
+                {//TODO: remove [before description]
                     /*
                     if (continuationDone == false)
                     {
