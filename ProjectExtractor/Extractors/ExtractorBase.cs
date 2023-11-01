@@ -124,7 +124,7 @@ namespace ProjectExtractor.Extractors
             //Regex.Replace(line, @"Pagina \d* van \d*", string.Empty);
             Match match = Regex.Match(line, pageRegex);
             if (!string.IsNullOrWhiteSpace(match.Value))
-            {               
+            {
                 int index = line.IndexOf(match.Value);
                 line = (index < 0) ? line : line.Remove(index, match.Value.Length);
             }
@@ -210,6 +210,7 @@ namespace ProjectExtractor.Extractors
             worker.ReportProgress((int)progress);
         }
 
-        public abstract override string ToString();//return file format of extractor, all lowercase, sans period (e.x: text extractor= "txt")
+        /// <summary>To which file extension will this extractor extract</summary>
+        public abstract string FileExtension { get; }//return file format of extractor, all lowercase, sans period (e.x: text extractor= "txt")
     }
 }

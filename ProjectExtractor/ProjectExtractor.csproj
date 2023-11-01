@@ -13,7 +13,7 @@
     <PackageProjectUrl></PackageProjectUrl>
     <RepositoryUrl>https://github.com/Irishmun/Project-Extractor</RepositoryUrl>
     <NeutralLanguage>en-US</NeutralLanguage>
-    <AssemblyVersion>2.8.0</AssemblyVersion>
+    <AssemblyVersion>2.8.5</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -35,6 +35,7 @@
   <ItemGroup>
     <PackageReference Include="itext7" Version="7.2.2" />
     <PackageReference Include="Microsoft.WindowsAPICodePack-Shell" Version="1.1.0" />
+    <PackageReference Include="Octokit" Version="7.1.0" />
     <PackageReference Include="WindowsAPICodePack-Core" Version="1.1.2" />
   </ItemGroup>
 
