@@ -457,7 +457,7 @@ namespace ProjectExtractor
                                 _extractionResult = (_extractor as ProjectExtractorBase).ExtractProjects(ProjectRevisionUtil.GetProjectRevision(_currentRevision), TB_PDFLocation.Text, ExportFile, _sections, TB_SectionsEndProject.Text, sender as System.ComponentModel.BackgroundWorker);
                                 break;
                             case "DEBUG":
-                                ExportFile = $"{TB_ExtractLocation.Text}\\DEBUG {_detailExtractionPrefix}{Path.GetFileNameWithoutExtension(fileName)}.{_extractor}";//add path and file extension
+                                ExportFile = $"{TB_ExtractLocation.Text}\\DEBUG {_detailExtractionPrefix}{Path.GetFileNameWithoutExtension(fileName)}.{_extractor.FileExtension}";//add path and file extension
                                 _extractionResult = (_extractor as DetailExtractorBase).ExtractDetails(ProjectRevisionUtil.GetProjectRevision(_currentRevision), TB_PDFLocation.Text, ExportFile, _keywords, TB_Chapter.Text, TB_StopChapter.Text, TB_TotalHours.Text, CB_TotalHoursEnabled.Checked, CB_WriteKeywordsToFile.Checked, sender as System.ComponentModel.BackgroundWorker);
                                 break;
                             default:

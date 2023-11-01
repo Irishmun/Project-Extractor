@@ -25,6 +25,7 @@ namespace ProjectExtractor.Extractors.Detail
 
             bool foundProjects = false;
             List<string> ProjectStrings = new List<string>();
+            List<string> projectCodes = new List<string>();
             string totalHours = string.Empty;
             for (int i = Lines.Length - 1; i >= 0; i--)//start at the bottom as that is faster
             {
@@ -46,14 +47,56 @@ namespace ProjectExtractor.Extractors.Detail
                     //str.AppendLine(Lines[i]);
                     int lastSpace = Lines[i].LastIndexOf(' ');
                     string proj = Lines[i].Substring(0, lastSpace);//don't need project duration
-                    ProjectStrings.Add(string.Join(" | ", proj.Split(' ', 3)) + " | " + Lines[i].Substring(lastSpace));
+                    string[] splitProj = proj.Split(' ', 2);
+                    //add current project content to list
+                    ProjectStrings.Add(string.Join(" | ", splitProj) + " | " + Lines[i].Substring(lastSpace));
+                    projectCodes.Add(splitProj[0]);// get just the code for the later parts
                 }
             }
             if (string.IsNullOrWhiteSpace(totalHours) == false)
             {
+                int lastIndex = 0;
+                bool foundProjectCode = false;
+                string lastUpdate = string.Empty;
+                string startedDate = string.Empty;
+                string result = string.Empty;
                 for (int i = ProjectStrings.Count - 1; i >= 0; i--)
-                {
-                    str.AppendLine(ProjectStrings[i]);
+                {//go through the projects IN REVERSE (as we went from bottom to top in the prior section)
+
+                    for (int line = lastIndex; line < Lines.Length; line++)
+                    {
+                        //search start date
+                        if (Lines[line].Contains("Het project wordt/is gestart op *"))
+                        {//next line will be the starting date
+                            line += 1;
+                            startedDate = GetWithRegex(Lines[line], "^([0-9]{1,2}-[0-9]{1,2}-[0-9]{2,4})");
+                            continue;//both these lines guaranteed no dates OR CODES
+                        }
+                        //search latest update
+                        if (foundProjectCode == false && Lines[line].StartsWith(projectCodes[i]))
+                        {
+                            foundProjectCode = true;
+                            continue;//can skip this line as it is guaranteed not to have any dates on it
+                        }
+                        if (foundProjectCode == true && Lines[line].Contains(chapters))
+                        {//BUG: date that is ended by page will be parsed correctly, but WILL show page number if it is the latest
+                            int skipTo = GetLatestDate(Lines, line, stopChapters, out lastUpdate);
+                            line = skipTo;
+                            lastIndex = line + 1;
+                            foundProjectCode = false;
+                            break;
+                        }
+                    }
+                    result = ProjectStrings[i];
+                    if (string.IsNullOrWhiteSpace(startedDate) == false)
+                    {
+                        result += " | " + startedDate;
+                    }
+                    if (string.IsNullOrWhiteSpace(lastUpdate) == false)
+                    {
+                        result += " | " + lastUpdate;
+                    }
+                    str.AppendLine(result);
                 }
                 str.Append(totalHours);
             }
@@ -116,7 +159,7 @@ namespace ProjectExtractor.Extractors.Detail
                     keywordValuePairs.Clear();
 
                     //get the latest date and put it's line in there, skip to past that point as the data on the preceded lines is not needed
-                    int skipTo = GetLatestDate(Lines, lineIndex, stopChapters);
+                    int skipTo = GetLatestDate(Lines, lineIndex, stopChapters, out _);
                     lineIndex = skipTo;
                     str.Append(Lines[lineIndex]);
                     str.Append(Environment.NewLine);
