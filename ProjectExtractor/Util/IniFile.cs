@@ -7,7 +7,7 @@ namespace ProjectExtractor.Util
 {
     class IniFile
     {
-        string Path;
+        private string _path;
         string EXE = Assembly.GetExecutingAssembly().GetName().Name;
 
         //NOTE: Kernel32 is Windows only! if cross platform support is needed, consider using non Kernel32 dependant ini implementation
@@ -21,7 +21,7 @@ namespace ProjectExtractor.Util
         public IniFile(string IniPath = null)
         {
             //get path from passed inipath, otherwise use EXE variable as path
-            Path = new FileInfo(IniPath ?? EXE + ".ini").FullName;
+            _path = new FileInfo(IniPath ?? EXE + ".ini").FullName;
         }
 
         /// <summary>Writes value to key in section</summary>
@@ -30,7 +30,7 @@ namespace ProjectExtractor.Util
         /// <param name="Section">section to write in</param>
         public void Write(string Key, string Value, string Section = null)
         {
-            WritePrivateProfileString(Section ?? EXE, Key, Value, Path);
+            WritePrivateProfileString(Section ?? EXE, Key, Value, _path);
         }
 
         /// <summary>deletes key in section</summary>
@@ -63,7 +63,7 @@ namespace ProjectExtractor.Util
         public string Read(string Key, string Section = null)
         {
             StringBuilder RetVal = new StringBuilder(255);
-            GetPrivateProfileString(Section ?? EXE, Key, "", RetVal, 255, Path);
+            GetPrivateProfileString(Section ?? EXE, Key, "", RetVal, 255, _path);
             return RetVal.ToString();
         }
         /// <summary>Return the value from the given key in section, if it exists.</summary>
@@ -168,6 +168,6 @@ namespace ProjectExtractor.Util
             Write(Key, value.ToString(), Section);
         }
 
-
+        public string Path => _path;
     }
 }

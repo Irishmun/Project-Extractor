@@ -43,16 +43,24 @@ namespace ProjectExtractor
             CheckForUpdateThenSetAbout();
             UpdateFromSettings();//do this before changing back from isStarting to prevent a change loop
             _settings.IsStarting = false;
+            //MessageBox.Show(_settings.DoesIniExist() + " " + _settings._iniPath);
+            //update extractor keywords on main page
+            UpdateExtractorKeywords();
         }
 
         private void UpdateFromSettings()
-        {//update everything from the settings file
+        {//update everything from the settings file            
             //set version combobox index
-            CbB_FileVersion.SelectedIndex = _settings.SelectedFileVersionIndex;
-            if (CbB_FileVersion.SelectedIndex < 0)
+            if (_settings.SelectedFileVersionIndex < 0)
             {
                 CbB_FileVersion.SelectedIndex = 2;
             }
+            else
+            {
+                CbB_FileVersion.SelectedIndex = _settings.SelectedFileVersionIndex;
+            }
+            if (_settings.DoesIniExist() == false)
+            { return; }
             //set extractor file version
             switch (_settings.ExportFileExtension)
             {
@@ -107,9 +115,6 @@ namespace ProjectExtractor
             CB_TotalHoursEnabled.Checked = _settings.WriteTotalHours;
             //set Total hours keyword
             TB_TotalHours.Text = _settings.TotalHoursKeyword;
-
-            //update extractor keywords on main page
-            UpdateExtractorKeywords();
         }
 
         private async void CheckForUpdateThenSetAbout()
@@ -543,7 +548,7 @@ namespace ProjectExtractor
         /// <summary>Update the text in the toolstrip status label</summary>
         private void UpdateStatus(string newStatus)
         {
-            TSSL_ExtractionProgress.Text = newStatus;
+            TSSL_ExtractionProgress.Text = newStatus.ToString();
         }
         /// <summary>Updates the text in the toolstrip status label if the file extraction can start or not</summary>
         private void UpdateFileStatus()
