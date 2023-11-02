@@ -147,9 +147,10 @@ namespace ProjectExtractor.Extractors
         /// <param name="startIndex">currentProgress of line to start looking from</param>
         /// <param name="stopLine"> line to stop looking for dates, always returns after this line</param>
         /// <returns></returns>
-        protected int GetLatestDate(string[] lines, int startIndex, string stopLine)
+        protected int GetLatestDate(string[] lines, int startIndex, string stopLine, out string latestDateString)
         {
             DateTime latestDate = new DateTime(0);
+            latestDateString = string.Empty;
             int index = startIndex;
             for (int i = startIndex; i < lines.Length; i++)
             {
@@ -160,14 +161,16 @@ namespace ProjectExtractor.Extractors
                 try
                 {
                     //try and find a datetime text matching the smallest to the largest structure
-                    Match match = Regex.Match(lines[i], @"\d{2}(?:\/|-|)(?:\d{2}|[a-z]{0,10})(?:\/|-|)\d{1,4}");
+                    //^([0-9]{2}-[0-9]{2}-[0-9]{4})
+                    Match match = Regex.Match(lines[i], @"[0-9]{1,2}-[0-9]{1,2}-[0-9]{2,4}");
                     if (!string.IsNullOrEmpty(match.Value))
                     {
                         DateTime current = DateTime.Parse(match.Value);//, new System.Globalization.CultureInfo("nl", false));
-                        if (current > latestDate)
+                        if (current >= latestDate)
                         {
                             latestDate = current;
                             index = i;
+                            latestDateString = lines[i].Remove(match.Index) + match;
                         }
                     }
                 }
@@ -176,6 +179,17 @@ namespace ProjectExtractor.Extractors
                 }
             }
             return index;
+        }
+
+        /// <summary>Gets and returns the value that matches the regex expression. returns original if no match</summary>
+        /// <param name="input">string to regex against</param>
+        /// <param name="regex">regex expression to match</param>
+        protected string GetWithRegex(string input, string regex)
+        {
+            Match match = Regex.Match(input, regex);
+            if (!string.IsNullOrEmpty(match.Value))
+            { return match.Value; }
+            return input;
         }
 
         /// <summary>

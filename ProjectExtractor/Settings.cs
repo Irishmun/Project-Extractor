@@ -11,6 +11,7 @@ namespace ProjectExtractor
 
         private IniFile _ini;
 
+        private string _iniPath;
         private bool _isStarting;
         private bool _savePDFPath, _saveExtractPath, _disableExtractionPath;
         private bool _writeKeywordsToFile, _WriteTotalHours;
@@ -25,9 +26,16 @@ namespace ProjectExtractor
         public Settings()
         {
             _ini = new IniFile();
+            _iniPath = _ini.Path;
             _sections = new List<string>();
             _keywords = new List<string>();
             InitializeSettings();
+        }
+
+        public bool DoesIniExist()
+        {
+            Debug.WriteLine(_iniPath);
+            return System.IO.File.Exists(_iniPath);
         }
 
         /// <summary>Update the setting value and the setting by key in the ini file, but only if NOT starting</summary>
