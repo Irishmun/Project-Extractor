@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace ProjectExtractor.Extractors.Detail
 {
@@ -19,6 +20,7 @@ namespace ProjectExtractor.Extractors.Detail
         protected override ExitCode ExtractRevisionTwoDetails(string file, string extractPath, string[] keywords, string chapters, string stopChapters, string totalHoursKeyword, bool writeTotalHoursToFile, bool writeKeywordsToFile, BackgroundWorker worker)
         {
             //TODO: get start date and last update date
+            string titleRegex = @"WBSO[ ][0-9]{1,4}";
             ExitCode returnCode = ExitCode.NONE;
             ExtractTextFromPDF(file);
             StringBuilder str = new StringBuilder();
@@ -29,6 +31,10 @@ namespace ProjectExtractor.Extractors.Detail
             string totalHours = string.Empty;
             for (int i = Lines.Length - 1; i >= 0; i--)//start at the bottom as that is faster
             {
+                if (Regex.Match(Lines[i], titleRegex).Success == true)
+                {
+                    continue;
+                }
                 if (foundProjects == false)
                 {
                     if (Lines[i].StartsWith("Totaal"))
@@ -46,11 +52,24 @@ namespace ProjectExtractor.Extractors.Detail
                     }
                     //str.AppendLine(Lines[i]);
                     int lastSpace = Lines[i].LastIndexOf(' ');
-                    string proj = Lines[i].Substring(0, lastSpace);//don't need project duration
-                    string[] splitProj = proj.Split(' ', 2);
-                    //add current project content to list
-                    ProjectStrings.Add(string.Join(" | ", splitProj) + " | " + Lines[i].Substring(lastSpace));
-                    projectCodes.Add(splitProj[0]);// get just the code for the later parts
+                    if (lastSpace < 0)//there are no spaces
+                    {//if for whatever reason, the contents are on the next line
+                        projectCodes.Add(Lines[i]);//is just the code
+                        lastSpace = Lines[i + 1].LastIndexOf(' ');
+                        string proj = Lines[i + 1].Substring(0, lastSpace);
+                        ProjectStrings.RemoveAt(ProjectStrings.Count - 1);//remove previous line because it has values for THIS line
+                        ProjectStrings.Add(Lines[i] + " | " + proj + " | " + Lines[i + 1].Substring(lastSpace));
+
+                    }
+                    else
+                    {
+
+                        string proj = Lines[i].Substring(0, lastSpace);//don't need project duration
+                        string[] splitProj = proj.Split(' ', 2);
+                        //add current project content to list
+                        ProjectStrings.Add(string.Join(" | ", splitProj) + " | " + Lines[i].Substring(lastSpace));
+                        projectCodes.Add(splitProj[0]);// get just the code for the later parts
+                    }
                 }
             }
             if (string.IsNullOrWhiteSpace(totalHours) == false)

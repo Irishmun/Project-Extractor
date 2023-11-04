@@ -211,7 +211,6 @@ namespace ProjectExtractor
             }
             //check if it has changed, else leave it as what it is.
             res = string.IsNullOrWhiteSpace(res) ? TB_PDFLocation.Text : res;
-            TB_PDFLocation.Text = res;
             if (CB_DisableExtractionPath.Checked == true)
             {//only automatically set extraction path folder if disable is unchecked
                 TB_ExtractLocation.Text = Path.GetDirectoryName(res) + "\\";
@@ -220,7 +219,7 @@ namespace ProjectExtractor
             if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(TB_PDFLocation.Text))
             {
                 UpdateFileStatus();
-                _settings.PDFPath = TB_PDFLocation.Text;
+                TB_PDFLocation.Text = res;
             }
 
         }
@@ -246,12 +245,11 @@ namespace ProjectExtractor
             }
             //check if it has changed, else leave it as what it is.
             res = string.IsNullOrWhiteSpace(res) ? TB_ExtractLocation.Text : res;
-            TB_ExtractLocation.Text = res;
-            DisplayFullExtractionFilePath();
             if (result == CommonFileDialogResult.Ok && !string.IsNullOrWhiteSpace(TB_ExtractLocation.Text))
             {
                 UpdateFileStatus();
-                _settings.ExtractionPath = TB_ExtractLocation.Text;
+                TB_ExtractLocation.Text = res;
+                DisplayFullExtractionFilePath();
             }
         }
         private void BT_ExtractDetails_Click(object sender, EventArgs e)
@@ -424,10 +422,12 @@ namespace ProjectExtractor
         }
         private void TB_PDFLocation_TextChanged(object sender, EventArgs e)
         {
+            _settings.PDFPath = TB_PDFLocation.Text;
             DisplayFullExtractionFilePath();
         }
         private void TB_ExtractLocation_TextChanged(object sender, EventArgs e)
         {
+            _settings.ExtractionPath = TB_ExtractLocation.Text;
             DisplayFullExtractionFilePath();
         }
         #endregion

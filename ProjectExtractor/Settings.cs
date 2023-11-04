@@ -122,7 +122,7 @@ namespace ProjectExtractor
         /// <param name="Save">If the key-value pair should be saved or deleted</param>
         /// <param name="section">Section that the key-value pair is in</param>
         /// <remarks>will always set the internal setting</remarks>
-        private void WriteToOrDeleteFromIni(ref string setting, string Key, string Value, bool Save, string section = "Paths")
+        private void WriteToOrDeleteFromIni(ref string setting, string Value, string Key, bool Save, string section = "Paths")
         {
             setting = Value;
             if (Save)
