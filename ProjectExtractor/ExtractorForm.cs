@@ -16,8 +16,8 @@ namespace ProjectExtractor
 {
     public partial class ExtractorForm : Form
     {
-        private const string _detailExtractionPrefix = "Extracted Details -";
-        private const string _projectExtractionPrefix = "Extracted Projects -";
+        private const string _detailExtractionSuffix = " - Details";
+        private const string _projectExtractionSuffix = " - Projecten";
 
         private string _programPath = AppContext.BaseDirectory, ExportFile;
         private string _latestTag;
@@ -211,15 +211,17 @@ namespace ProjectExtractor
             }
             //check if it has changed, else leave it as what it is.
             res = string.IsNullOrWhiteSpace(res) ? TB_PDFLocation.Text : res;
+
             if (CB_DisableExtractionPath.Checked == true)
             {//only automatically set extraction path folder if disable is unchecked
                 TB_ExtractLocation.Text = Path.GetDirectoryName(res) + "\\";
                 DisplayFullExtractionFilePath();
             }
-            if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(TB_PDFLocation.Text))
+            if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(res))
             {
-                UpdateFileStatus();
                 TB_PDFLocation.Text = res;
+                UpdateFileStatus();
+                _settings.PDFPath = res;
             }
 
         }
@@ -245,11 +247,12 @@ namespace ProjectExtractor
             }
             //check if it has changed, else leave it as what it is.
             res = string.IsNullOrWhiteSpace(res) ? TB_ExtractLocation.Text : res;
-            if (result == CommonFileDialogResult.Ok && !string.IsNullOrWhiteSpace(TB_ExtractLocation.Text))
+            DisplayFullExtractionFilePath();
+            if (result == CommonFileDialogResult.Ok && !string.IsNullOrWhiteSpace(res))
             {
-                UpdateFileStatus();
                 TB_ExtractLocation.Text = res;
-                DisplayFullExtractionFilePath();
+                UpdateFileStatus();
+                _settings.ExtractionPath = res;
             }
         }
         private void BT_ExtractDetails_Click(object sender, EventArgs e)
@@ -454,15 +457,15 @@ namespace ProjectExtractor
                         switch (extractionType)
                         {
                             case "DETAIL":
-                                ExportFile = $"{TB_ExtractLocation.Text}{_detailExtractionPrefix}{Path.GetFileNameWithoutExtension(fileName)}.{_extractor.FileExtension}";//add path and file extension
+                                ExportFile = $"{TB_ExtractLocation.Text}{Path.GetFileNameWithoutExtension(fileName)}.{_extractor.FileExtension}{_detailExtractionSuffix}";//add path and file extension
                                 _extractionResult = (_extractor as DetailExtractorBase).ExtractDetails(ProjectRevisionUtil.GetProjectRevision(_currentRevision), TB_PDFLocation.Text, ExportFile, _keywords, TB_Chapter.Text, TB_StopChapter.Text, TB_TotalHours.Text, CB_TotalHoursEnabled.Checked, CB_WriteKeywordsToFile.Checked, sender as System.ComponentModel.BackgroundWorker);
                                 break;
                             case "PROJECT":
-                                ExportFile = $"{TB_ExtractLocation.Text}{_projectExtractionPrefix}{Path.GetFileNameWithoutExtension(fileName)}.{_extractor.FileExtension}";//add path and file extension
+                                ExportFile = $"{TB_ExtractLocation.Text}{Path.GetFileNameWithoutExtension(fileName)}.{_extractor.FileExtension}{_projectExtractionSuffix}";//add path and file extension
                                 _extractionResult = (_extractor as ProjectExtractorBase).ExtractProjects(ProjectRevisionUtil.GetProjectRevision(_currentRevision), TB_PDFLocation.Text, ExportFile, _sections, TB_SectionsEndProject.Text, sender as System.ComponentModel.BackgroundWorker);
                                 break;
                             case "DEBUG":
-                                ExportFile = $"{TB_ExtractLocation.Text}\\DEBUG {_detailExtractionPrefix}{Path.GetFileNameWithoutExtension(fileName)}.{_extractor.FileExtension}";//add path and file extension
+                                ExportFile = $"{TB_ExtractLocation.Text}\\DEBUG {Path.GetFileNameWithoutExtension(fileName)}.{_extractor.FileExtension}{_detailExtractionSuffix}";//add path and file extension
                                 _extractionResult = (_extractor as DetailExtractorBase).ExtractDetails(ProjectRevisionUtil.GetProjectRevision(_currentRevision), TB_PDFLocation.Text, ExportFile, _keywords, TB_Chapter.Text, TB_StopChapter.Text, TB_TotalHours.Text, CB_TotalHoursEnabled.Checked, CB_WriteKeywordsToFile.Checked, sender as System.ComponentModel.BackgroundWorker);
                                 break;
                             default:
@@ -531,11 +534,11 @@ namespace ProjectExtractor
                 string extension = $".{_settings.ExportFileExtension}";// Read("ExportExtension", "Export")}";
                 if (TB_ExtractLocation.Text.EndsWith("\\"))
                 {
-                    TB_FullPath.Text = TB_ExtractLocation.Text + _detailExtractionPrefix + file + extension;
+                    TB_FullPath.Text = TB_ExtractLocation.Text + _detailExtractionSuffix + file + extension;
                 }
                 else
                 {
-                    TB_FullPath.Text = TB_ExtractLocation.Text + "\\" + _detailExtractionPrefix + file + extension;
+                    TB_FullPath.Text = TB_ExtractLocation.Text + "\\" + _detailExtractionSuffix + file + extension;
                 }
             }
         }

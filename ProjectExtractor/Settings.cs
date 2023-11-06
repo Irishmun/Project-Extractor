@@ -23,6 +23,7 @@ namespace ProjectExtractor
         private List<string> _keywords;
         private List<string> _sections;
 
+        /// <summary>The Settings for the program</summary>
         public Settings()
         {
             _ini = new IniFile();
@@ -32,9 +33,9 @@ namespace ProjectExtractor
             InitializeSettings();
         }
 
+        /// <summary>Returns if an INI file exists in the program folder</summary>
         public bool DoesIniExist()
         {
-            Debug.WriteLine(_iniPath);
             return System.IO.File.Exists(_iniPath);
         }
 
@@ -166,6 +167,7 @@ namespace ProjectExtractor
             setting = newValue;
             _ini.WriteInt(Key, setting, Section);
         }
+
         public bool SavePDFPath { get => _savePDFPath; set => UpdateSettingIfNotStarting(ref _savePDFPath, value, "Save_PDF_Path", "Paths", _isStarting); }
         public bool SaveExtractPath { get => _saveExtractPath; set => UpdateSettingIfNotStarting(ref _saveExtractPath, value, "Save_Extract_Path", "Paths", _isStarting); }
         public bool DisableExtractionPath { get => _disableExtractionPath; set => UpdateSettingIfNotStarting(ref _disableExtractionPath, value, "DisableExtractionPath", "Paths", _isStarting); }
