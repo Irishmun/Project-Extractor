@@ -106,8 +106,10 @@ namespace ProjectExtractor
             labelCopyright = new System.Windows.Forms.Label();
             labelVersion = new System.Windows.Forms.Label();
             labelCompanyName = new System.Windows.Forms.Label();
-            BT_UpdateProgram = new System.Windows.Forms.Button();
             textBoxDescription = new System.Windows.Forms.RichTextBox();
+            panel1 = new System.Windows.Forms.Panel();
+            LL_GitHubLink = new System.Windows.Forms.LinkLabel();
+            BT_UpdateProgram = new System.Windows.Forms.Button();
             backgroundWorker = new System.ComponentModel.BackgroundWorker();
             statusStrip1.SuspendLayout();
             TC_MainView.SuspendLayout();
@@ -127,6 +129,7 @@ namespace ProjectExtractor
             TabPage_About.SuspendLayout();
             tableLayoutPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)logoPictureBox).BeginInit();
+            panel1.SuspendLayout();
             SuspendLayout();
             // 
             // statusStrip1
@@ -707,7 +710,6 @@ namespace ProjectExtractor
             // LV_Keywords
             // 
             LV_Keywords.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-            LV_Keywords.HideSelection = false;
             LV_Keywords.Items.AddRange(new System.Windows.Forms.ListViewItem[] { listViewItem1, listViewItem2, listViewItem3, listViewItem4 });
             LV_Keywords.LabelEdit = true;
             LV_Keywords.Location = new System.Drawing.Point(6, 22);
@@ -812,7 +814,6 @@ namespace ProjectExtractor
             // LV_Sections
             // 
             LV_Sections.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-            LV_Sections.HideSelection = false;
             LV_Sections.Items.AddRange(new System.Windows.Forms.ListViewItem[] { listViewItem5, listViewItem6, listViewItem7, listViewItem8, listViewItem9 });
             LV_Sections.LabelEdit = true;
             LV_Sections.Location = new System.Drawing.Point(6, 22);
@@ -866,8 +867,8 @@ namespace ProjectExtractor
             tableLayoutPanel.Controls.Add(labelCopyright, 1, 2);
             tableLayoutPanel.Controls.Add(labelVersion, 1, 0);
             tableLayoutPanel.Controls.Add(labelCompanyName, 1, 1);
-            tableLayoutPanel.Controls.Add(BT_UpdateProgram, 1, 3);
             tableLayoutPanel.Controls.Add(textBoxDescription, 1, 4);
+            tableLayoutPanel.Controls.Add(panel1, 1, 3);
             tableLayoutPanel.Location = new System.Drawing.Point(0, 0);
             tableLayoutPanel.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             tableLayoutPanel.Name = "tableLayoutPanel";
@@ -929,17 +930,6 @@ namespace ProjectExtractor
             labelCompanyName.Text = "Company Name";
             labelCompanyName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // BT_UpdateProgram
-            // 
-            BT_UpdateProgram.Location = new System.Drawing.Point(188, 108);
-            BT_UpdateProgram.Name = "BT_UpdateProgram";
-            BT_UpdateProgram.Size = new System.Drawing.Size(373, 23);
-            BT_UpdateProgram.TabIndex = 25;
-            BT_UpdateProgram.Text = "Update Available!";
-            BT_UpdateProgram.UseVisualStyleBackColor = true;
-            BT_UpdateProgram.Visible = false;
-            BT_UpdateProgram.Click += BT_UpdateProgram_Click;
-            // 
             // textBoxDescription
             // 
             textBoxDescription.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -949,6 +939,41 @@ namespace ProjectExtractor
             textBoxDescription.Size = new System.Drawing.Size(373, 179);
             textBoxDescription.TabIndex = 26;
             textBoxDescription.Text = "Changelog";
+            // 
+            // panel1
+            // 
+            panel1.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            panel1.Controls.Add(LL_GitHubLink);
+            panel1.Controls.Add(BT_UpdateProgram);
+            panel1.Location = new System.Drawing.Point(185, 105);
+            panel1.Margin = new System.Windows.Forms.Padding(0);
+            panel1.Name = "panel1";
+            panel1.Size = new System.Drawing.Size(379, 32);
+            panel1.TabIndex = 27;
+            // 
+            // LL_GitHubLink
+            // 
+            LL_GitHubLink.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
+            LL_GitHubLink.AutoSize = true;
+            LL_GitHubLink.Location = new System.Drawing.Point(223, 7);
+            LL_GitHubLink.Name = "LL_GitHubLink";
+            LL_GitHubLink.Size = new System.Drawing.Size(148, 15);
+            LL_GitHubLink.TabIndex = 27;
+            LL_GitHubLink.TabStop = true;
+            LL_GitHubLink.Text = "GitHub status: Rate limited";
+            LL_GitHubLink.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            LL_GitHubLink.LinkClicked += LL_GitHubLink_LinkClicked;
+            // 
+            // BT_UpdateProgram
+            // 
+            BT_UpdateProgram.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
+            BT_UpdateProgram.Location = new System.Drawing.Point(3, 3);
+            BT_UpdateProgram.Name = "BT_UpdateProgram";
+            BT_UpdateProgram.Size = new System.Drawing.Size(214, 23);
+            BT_UpdateProgram.TabIndex = 26;
+            BT_UpdateProgram.Text = "Update Available!";
+            BT_UpdateProgram.UseVisualStyleBackColor = true;
+            BT_UpdateProgram.Click += BT_UpdateProgram_Click;
             // 
             // backgroundWorker
             // 
@@ -965,7 +990,7 @@ namespace ProjectExtractor
             Controls.Add(TC_MainView);
             Controls.Add(statusStrip1);
             Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
-            MinimumSize = new System.Drawing.Size(525, 357);
+            MinimumSize = new System.Drawing.Size(588, 410);
             Name = "ExtractorForm";
             StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             Text = "PDF Extractor";
@@ -995,6 +1020,8 @@ namespace ProjectExtractor
             TabPage_About.ResumeLayout(false);
             tableLayoutPanel.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)logoPictureBox).EndInit();
+            panel1.ResumeLayout(false);
+            panel1.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -1069,8 +1096,10 @@ namespace ProjectExtractor
         private System.Windows.Forms.ComboBox CbB_FileVersion;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.PictureBox logoPictureBox;
-        private System.Windows.Forms.Button BT_UpdateProgram;
         private System.Windows.Forms.RichTextBox textBoxDescription;
+        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Button BT_UpdateProgram;
+        private System.Windows.Forms.LinkLabel LL_GitHubLink;
     }
 }
 

@@ -84,10 +84,11 @@ namespace ProjectExtractor
         {//TODO: make this actually download and install
             if (ReleaseAvailable == false)
             { return; }
+            OpenReleasePage();//for now just open release page
             //if (CanMakeRequests() == false)
             //{ return; }
-            Release release = GetReleaseByTag(TagName);
-            System.Diagnostics.Debug.WriteLine("Latest: " + release.Name);
+            //Release release = GetReleaseByTag(TagName);
+            //System.Diagnostics.Debug.WriteLine("Latest: " + release?.Name);
         }
         public async Task<string> GetReleaseBodies()
         {
@@ -159,8 +160,9 @@ namespace ProjectExtractor
             return null;
         }
 
-
         private bool ReleaseAvailable => _releases != null && _releases.Count > 0;
         private Release LatestRelease => _releases[0];//latest release SHOULD be 0th item in Release List
+
+        public string ReleaseUrl => LATEST_URL;
     }
 }
