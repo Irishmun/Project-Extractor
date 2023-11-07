@@ -1,0 +1,33 @@
+name: Publish
+on:
+ release:
+  types: [published]
+jobs:
+  release:
+    runs-on: windows-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v3
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 5.0.x
+
+    - name: Build
+      shell: bash
+      run: |
+          tag=$(git describe --tags --abbrev=0)
+          release_name="ProjectExtractor-$tag"
+          #build everything
+          dotnet publish ProjectExtractor/ProjectExtractor.csproj --framework net6.0-windows --runtime win-x64 -c Release -o "$release_name"
+          #pack files
+          7z a -tzip "${release_name}.zip" "./${release_name}/*"
+          #delte output directoty
+          rm -r "$release_name"
+    - name: Publish
+      uses: softprops/action-gh-release@v1
+      with:
+       files: "ProjectExtractor*"
+      env:
+       GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
