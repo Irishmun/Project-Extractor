@@ -24,7 +24,7 @@ namespace ProjectExtractor
         //private bool _startingUp = false;
         private string[] _keywords, _sections;
         private int _currentRevision;
-        private UpdateHandler _updateHandler = new UpdateHandler();
+        private UpdateHandler _updateHandler;
         private Settings _settings;
         private ExtractorBase _extractor;
         private ExitCode _extractionResult = ExitCode.NONE;
@@ -34,6 +34,7 @@ namespace ProjectExtractor
         {
             _settings = new Settings();
             _settings.IsStarting = true;
+            _updateHandler = new UpdateHandler();
             InitializeComponent();
             InitializeAbout();
 #if !DEBUG
@@ -49,7 +50,7 @@ namespace ProjectExtractor
         }
 
         private void UpdateFromSettings()
-        {//update everything from the settings file            
+        {//update everything from the settings file
             //set version combobox index
             if (_settings.SelectedFileVersionIndex < 0)
             {
@@ -60,61 +61,68 @@ namespace ProjectExtractor
                 CbB_FileVersion.SelectedIndex = _settings.SelectedFileVersionIndex;
             }
             if (_settings.DoesIniExist() == false)
-            { return; }
-            //set extractor file version
-            switch (_settings.ExportFileExtension)
-            {
-                case "pdf":
-                    RB_ExportPDF.Checked = true;
-                    break;
-                case "xlsx":
-                    RB_ExportExcel.Checked = true;
-                    break;
-                case "docx":
-                    RB_ExportWord.Checked = true;
-                    break;
-                case "rtf":
-                    RB_ExportRichText.Checked = true;
-                    break;
-                case "txt":
-                default:
-                    RB_ExportTXT.Checked = true;
-                    break;
+            {//no ini file yet, so we set with all the defaults
+                _settings.CreateDefaultIni(CB_SavePDFPath.Checked, CB_SaveExtractionPath.Checked, CB_DisableExtractionPath.Checked, CB_WriteKeywordsToFile.Checked, CB_TotalHoursEnabled.Checked, CbB_FileVersion.SelectedIndex, "txt", TB_SectionsEndProject.Text, TB_Chapter.Text, TB_StopChapter.Text, TB_TotalHours.Text);
+                return;
             }
-            //set keywords listview
-            LV_Keywords.Clear();
-            foreach (string item in _settings.KeywordsList)
+            else
             {
-                LV_Keywords.Items.Add(new ListViewItem(item));
+
+                //set extractor file version
+                switch (_settings.ExportFileExtension)
+                {
+                    case "pdf":
+                        RB_ExportPDF.Checked = true;
+                        break;
+                    case "xlsx":
+                        RB_ExportExcel.Checked = true;
+                        break;
+                    case "docx":
+                        RB_ExportWord.Checked = true;
+                        break;
+                    case "rtf":
+                        RB_ExportRichText.Checked = true;
+                        break;
+                    case "txt":
+                    default:
+                        RB_ExportTXT.Checked = true;
+                        break;
+                }
+                //set keywords listview
+                LV_Keywords.Clear();
+                foreach (string item in _settings.KeywordsList)
+                {
+                    LV_Keywords.Items.Add(new ListViewItem(item));
+                }
+                //set sections listview
+                LV_Sections.Clear();
+                foreach (string item in _settings.SectionsList)
+                {
+                    LV_Sections.Items.Add(new ListViewItem(item));
+                }
+                //set sections end project textbox
+                TB_SectionsEndProject.Text = _settings.SectionsEndProject;
+                //set path for extracting pdf
+                TB_PDFLocation.Text = _settings.PDFPath;
+                //set path to save extracted to
+                TB_ExtractLocation.Text = _settings.ExtractionPath;
+                //set save pdf path checkbox
+                CB_SavePDFPath.Checked = _settings.SavePDFPath;
+                //set save extract path checkbox
+                CB_SaveExtractionPath.Checked = _settings.SaveExtractPath;
+                //set automatic extraction path checkbox
+                CB_DisableExtractionPath.Checked = _settings.DisableExtractionPath;
+                //set Chapter Start textbox
+                TB_Chapter.Text = _settings.ChapterStart;
+                //set Chapter End textbox
+                TB_StopChapter.Text = _settings.ChapterEnd;
+                //set write keywords checkbox
+                CB_WriteKeywordsToFile.Checked = _settings.WriteKeywordsToFile;
+                //set write total hours checkbox
+                CB_TotalHoursEnabled.Checked = _settings.WriteTotalHours;
+                //set Total hours keyword
+                TB_TotalHours.Text = _settings.TotalHoursKeyword;
             }
-            //set sections listview
-            LV_Sections.Clear();
-            foreach (string item in _settings.SectionsList)
-            {
-                LV_Sections.Items.Add(new ListViewItem(item));
-            }
-            //set sections end project textbox
-            TB_SectionsEndProject.Text = _settings.SectionsEndProject;
-            //set path for extracting pdf
-            TB_PDFLocation.Text = _settings.PDFPath;
-            //set path to save extracted to
-            TB_ExtractLocation.Text = _settings.ExtractionPath;
-            //set save pdf path checkbox
-            CB_SavePDFPath.Checked = _settings.SavePDFPath;
-            //set save extract path checkbox
-            CB_SaveExtractionPath.Checked = _settings.SaveExtractPath;
-            //set automatic extraction path checkbox
-            CB_DisableExtractionPath.Checked = _settings.DisableExtractionPath;
-            //set Chapter Start textbox
-            TB_Chapter.Text = _settings.ChapterStart;
-            //set Chapter End textbox
-            TB_StopChapter.Text = _settings.ChapterEnd;
-            //set write keywords checkbox
-            CB_WriteKeywordsToFile.Checked = _settings.WriteKeywordsToFile;
-            //set write total hours checkbox
-            CB_TotalHoursEnabled.Checked = _settings.WriteTotalHours;
-            //set Total hours keyword
-            TB_TotalHours.Text = _settings.TotalHoursKeyword;
         }
 
         private async void CheckForUpdateThenSetAbout()
@@ -122,6 +130,9 @@ namespace ProjectExtractor
             _gitProjectAvailable = await _updateHandler.CheckProjectAccessible();
             await CheckForUpdate();
             await SetChangelogTextBox();
+            LL_GitHubLink.Text = _gitProjectAvailable == true ? "GitHub status: Accessible" : "GitHub status: Rate limited";
+            //LL_GitHubLink.Links.Clear();
+            //LL_GitHubLink.Links.Add(0, LL_GitHubLink.Text.Length, _updateHandler.ReleaseUrl);
         }
         #region TabControl events
         private void TC_MainView_SelectedIndexChanged(object sender, EventArgs e)
@@ -445,7 +456,7 @@ namespace ProjectExtractor
         private void backgroundWorker_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
             if (!string.IsNullOrWhiteSpace(TB_PDFLocation.Text) && !string.IsNullOrWhiteSpace(TB_ExtractLocation.Text))
-            {//extract contents 
+            {//extract contents
                 string fileName = TB_PDFLocation.Text.Substring(TB_PDFLocation.Text.LastIndexOf('\\') + 1);//create filename from original file
 
 
@@ -457,15 +468,15 @@ namespace ProjectExtractor
                         switch (extractionType)
                         {
                             case "DETAIL":
-                                ExportFile = $"{TB_ExtractLocation.Text}{Path.GetFileNameWithoutExtension(fileName)}.{_extractor.FileExtension}{_detailExtractionSuffix}";//add path and file extension
+                                ExportFile = $"{TB_ExtractLocation.Text}{Path.GetFileNameWithoutExtension(fileName)}{_detailExtractionSuffix}.{_extractor.FileExtension}";//add path and file extension
                                 _extractionResult = (_extractor as DetailExtractorBase).ExtractDetails(ProjectRevisionUtil.GetProjectRevision(_currentRevision), TB_PDFLocation.Text, ExportFile, _keywords, TB_Chapter.Text, TB_StopChapter.Text, TB_TotalHours.Text, CB_TotalHoursEnabled.Checked, CB_WriteKeywordsToFile.Checked, sender as System.ComponentModel.BackgroundWorker);
                                 break;
                             case "PROJECT":
-                                ExportFile = $"{TB_ExtractLocation.Text}{Path.GetFileNameWithoutExtension(fileName)}.{_extractor.FileExtension}{_projectExtractionSuffix}";//add path and file extension
+                                ExportFile = $"{TB_ExtractLocation.Text}{Path.GetFileNameWithoutExtension(fileName)}{_projectExtractionSuffix}.{_extractor.FileExtension}";//add path and file extension
                                 _extractionResult = (_extractor as ProjectExtractorBase).ExtractProjects(ProjectRevisionUtil.GetProjectRevision(_currentRevision), TB_PDFLocation.Text, ExportFile, _sections, TB_SectionsEndProject.Text, sender as System.ComponentModel.BackgroundWorker);
                                 break;
                             case "DEBUG":
-                                ExportFile = $"{TB_ExtractLocation.Text}\\DEBUG {Path.GetFileNameWithoutExtension(fileName)}.{_extractor.FileExtension}{_detailExtractionSuffix}";//add path and file extension
+                                ExportFile = $"{TB_ExtractLocation.Text}\\DEBUG {Path.GetFileNameWithoutExtension(fileName)}{_detailExtractionSuffix}.{_extractor.FileExtension}";//add path and file extension
                                 _extractionResult = (_extractor as DetailExtractorBase).ExtractDetails(ProjectRevisionUtil.GetProjectRevision(_currentRevision), TB_PDFLocation.Text, ExportFile, _keywords, TB_Chapter.Text, TB_StopChapter.Text, TB_TotalHours.Text, CB_TotalHoursEnabled.Checked, CB_WriteKeywordsToFile.Checked, sender as System.ComponentModel.BackgroundWorker);
                                 break;
                             default:
@@ -524,6 +535,11 @@ namespace ProjectExtractor
 
         #endregion
 
+        private void LL_GitHubLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            _updateHandler.OpenReleasePage();
+        }
+
         #region methods
         /// <summary>Generates and displays the to be extracted file path</summary>
         private void DisplayFullExtractionFilePath()
@@ -534,11 +550,11 @@ namespace ProjectExtractor
                 string extension = $".{_settings.ExportFileExtension}";// Read("ExportExtension", "Export")}";
                 if (TB_ExtractLocation.Text.EndsWith("\\"))
                 {
-                    TB_FullPath.Text = TB_ExtractLocation.Text + _detailExtractionSuffix + file + extension;
+                    TB_FullPath.Text = TB_ExtractLocation.Text + file + _detailExtractionSuffix + extension;
                 }
                 else
                 {
-                    TB_FullPath.Text = TB_ExtractLocation.Text + "\\" + _detailExtractionSuffix + file + extension;
+                    TB_FullPath.Text = TB_ExtractLocation.Text + "\\" + file + _detailExtractionSuffix + extension;
                 }
             }
         }
@@ -768,5 +784,7 @@ namespace ProjectExtractor
             textBoxDescription.Text = changelog;
         }
         #endregion
+
+
     }
 }
