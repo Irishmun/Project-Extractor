@@ -16,8 +16,8 @@ namespace ProjectExtractor
 {
     public partial class ExtractorForm : Form
     {
-        private const string _detailExtractionPrefix = "Extracted Details -";
-        private const string _projectExtractionPrefix = "Extracted Projects -";
+        private const string _detailExtractionSuffix = " - Details";
+        private const string _projectExtractionSuffix = " - Projecten";
 
         private string _programPath = AppContext.BaseDirectory, ExportFile;
         private string _latestTag;
@@ -222,15 +222,17 @@ namespace ProjectExtractor
             }
             //check if it has changed, else leave it as what it is.
             res = string.IsNullOrWhiteSpace(res) ? TB_PDFLocation.Text : res;
+
             if (CB_DisableExtractionPath.Checked == true)
             {//only automatically set extraction path folder if disable is unchecked
                 TB_ExtractLocation.Text = Path.GetDirectoryName(res) + "\\";
                 DisplayFullExtractionFilePath();
             }
-            if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(TB_PDFLocation.Text))
+            if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(res))
             {
-                UpdateFileStatus();
                 TB_PDFLocation.Text = res;
+                UpdateFileStatus();
+                _settings.PDFPath = res;
             }
 
         }
@@ -256,11 +258,12 @@ namespace ProjectExtractor
             }
             //check if it has changed, else leave it as what it is.
             res = string.IsNullOrWhiteSpace(res) ? TB_ExtractLocation.Text : res;
-            if (result == CommonFileDialogResult.Ok && !string.IsNullOrWhiteSpace(TB_ExtractLocation.Text))
+            DisplayFullExtractionFilePath();
+            if (result == CommonFileDialogResult.Ok && !string.IsNullOrWhiteSpace(res))
             {
-                UpdateFileStatus();
                 TB_ExtractLocation.Text = res;
-                DisplayFullExtractionFilePath();
+                UpdateFileStatus();
+                _settings.ExtractionPath = res;
             }
         }
         private void BT_ExtractDetails_Click(object sender, EventArgs e)

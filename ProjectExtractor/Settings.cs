@@ -32,6 +32,7 @@ namespace ProjectExtractor
         private List<string> _keywords;
         private List<string> _sections;
 
+        /// <summary>The Settings for the program</summary>
         public Settings()
         {
             _ini = new IniFile();
@@ -41,9 +42,9 @@ namespace ProjectExtractor
             InitializeSettings();
         }
 
+        /// <summary>Returns if an INI file exists in the program folder</summary>
         public bool DoesIniExist()
         {
-            Debug.WriteLine(_iniPath);
             return System.IO.File.Exists(_iniPath);
         }
 
