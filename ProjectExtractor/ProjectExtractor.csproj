@@ -1,8 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net5.0-windows</TargetFramework>
+    <TargetFramework>net6.0-windows</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
     <ApplicationIcon>Resources\ProjectExtractorIcon.ico</ApplicationIcon>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
@@ -10,35 +9,21 @@
     <Copyright>Copyright ©  2022 Steef van de Weijdeven</Copyright>
     <Company>TechNet B.V.</Company>
     <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
-    <PackageProjectUrl></PackageProjectUrl>
+    <PackageProjectUrl>
+    </PackageProjectUrl>
     <RepositoryUrl>https://github.com/Irishmun/Project-Extractor</RepositoryUrl>
     <NeutralLanguage>en-US</NeutralLanguage>
-    <AssemblyVersion>2.8.6</AssemblyVersion>
+    <AssemblyVersion>2.8.8</AssemblyVersion>
   </PropertyGroup>
-
   <ItemGroup>
     <None Remove="Resources\ProjectExtractorIcon.ico" />
   </ItemGroup>
-
-  <ItemGroup>
-    <COMReference Include="Microsoft.Office.Interop.Excel">
-      <WrapperTool>tlbimp</WrapperTool>
-      <VersionMinor>9</VersionMinor>
-      <VersionMajor>1</VersionMajor>
-      <Guid>00020813-0000-0000-c000-000000000046</Guid>
-      <Lcid>0</Lcid>
-      <Isolated>false</Isolated>
-      <EmbedInteropTypes>true</EmbedInteropTypes>
-    </COMReference>
-  </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="itext7" Version="7.2.2" />
     <PackageReference Include="Microsoft.WindowsAPICodePack-Shell" Version="1.1.0" />
     <PackageReference Include="Octokit" Version="7.1.0" />
     <PackageReference Include="WindowsAPICodePack-Core" Version="1.1.2" />
   </ItemGroup>
-
   <ItemGroup>
     <Resource Include="Resources\LICENSE">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -47,12 +32,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>
-
   <ItemGroup>
     <None Update="Resources\LICENSE">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
   </ItemGroup>
-
 </Project>
