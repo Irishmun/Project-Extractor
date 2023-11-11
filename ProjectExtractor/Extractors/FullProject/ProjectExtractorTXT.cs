@@ -4,50 +4,21 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace ProjectExtractor.Extractors.FullProject
 {
     internal class ProjectExtractorTXT : ProjectExtractorBase
     {
-        private readonly ProjectSection[] _RevTwoSectionDescriptions;
-        private readonly ProjectSection[] _RevThreeSectionDescriptions;
+
         public ProjectExtractorTXT()
         {//TODO: get project revision, only instantiate that one
-            _RevTwoSectionDescriptions = new ProjectSection[] {_revTwoDescription
-            ,_revTwoTeamwork
-            ,_revTwoUpdate
-            ,_revTwoFases
-            ,_revTwoTechnicalIssues
-            ,_revTwoTechnicalInovation
-            ,_revTwoTechnicalSolution
-            ,_revTwoQuestion
-            ,_revTwoDevCriteria
-            ,_revTwoSoftware
-            ,_revTwoIndex};
-            _RevThreeSectionDescriptions = new ProjectSection[]{_description
-            ,_teamwork
-            ,_Fases
-            ,_Update
-            ,_QuestionsDevelopment
-            ,_QuestionsTechnicalIssues
-            ,_QuestionsSollutions
-            ,_QuestionsTechnicalSollutions
-            ,_QuestionsProgramSolutions
-            ,_QuestionsInovation
-            ,_QuestionsProgramInovation
-            ,_QuestionsSoftware
-            ,_QuestionsScience
-            ,_QuestionsScienceCause
-            ,_QuestionsScienceResearchquestions
-            ,_QuestionsScienceSetup
-            ,_QuestionsScienceOutcomes
-            ,_QuestionsScienceTechnologicResearch
-            ,_Costs
-            ,_SpendingA
-            ,_SpendingB
-            ,_DocumentEnd
-            ,_ToRemoveProblemDefinition
-            ,_ToRemoveSpending};
+            if (SectionsFolder.IsHashDifferent())
+            {
+                SectionsFolder.SetFolderHash();
+                RevTwoSectionDescriptions = SectionsArrayFromJson(SectionsFolder.ReadSectionFile(RevTwoFileName));
+                RevThreeSectionDescriptions = SectionsArrayFromJson(SectionsFolder.ReadSectionFile(RevThreeFileName));
+            }
         }
 
         //iterate over text, per project, remove all these bits of text, do this per array, then once an array is complete, add corresponding title header
@@ -87,7 +58,7 @@ namespace ProjectExtractor.Extractors.FullProject
                     }
                 }
             }
-            bool continuationDone;
+            bool preFirstSection;
             bool searchNextSection;
             int sectionIndex;
             string checkString = string.Empty;
@@ -97,26 +68,21 @@ namespace ProjectExtractor.Extractors.FullProject
             //TODO: iterate per project (in try catch maybe?)
             for (int project = 0; project < ProjectStartIndexes.Count; project++)
             {
-                continuationDone = false;
+                preFirstSection = false;
                 searchNextSection = true;
 
                 int nextIndex = project == (ProjectStartIndexes.Count - 1) ? Lines.Length - 1 : ProjectStartIndexes[project + 1];
                 for (int lineIndex = ProjectStartIndexes[project]; lineIndex < nextIndex; lineIndex++)
                 {//TODO: remove [before description]
-                    /*
-                    if (continuationDone == false)
+
+                    if (preFirstSection == false)
                     {
-                        bool isContinuation = IsContinuation(ProjectStartIndexes[project], nextIndex);
                         str.Append(RevTwoTryGetProjectTitle(Lines, ProjectStartIndexes[project] - 1, string.Empty, out projectIndex));
                         str.AppendLine();
-                        if (isContinuation)
-                        {
-                            str.Append("Voortzetting van een vorig project\n");
-                        }
-                        RemoveLines(projectIndex + 1, nextIndex, ref str, _revTwoPageRegex, ref possibleSection, _toRemoveDetails, _toRemoveDescription[0], out int detailEnd);
+                        RemoveLines(projectIndex + 1, nextIndex, ref str, _revTwoPageRegex, ref possibleSection, _revTwoToRemoveDetails, _revTwoRemoveDescription, out int detailEnd, true);
                         lineIndex = detailEnd;
-                        continuationDone = true;
-                    }*/
+                        preFirstSection = true;
+                    }
                     RemovePageNumberFromString(ref Lines[lineIndex], _revTwoPageRegex);
                     RemovePageNumberFromString(ref Lines[lineIndex], @"WBSO\s+[0-9]+");
                     //TODO: fix issue where numbers are removed and returned with said number removed when they shouldn't
@@ -125,7 +91,7 @@ namespace ProjectExtractor.Extractors.FullProject
                     nextLine = lineIndex == Lines.Length - 1 ? string.Empty : Lines[lineIndex + 1];
                     if (searchNextSection == true)
                     {
-                        string res = TryFindSection(Lines[lineIndex], _RevTwoSectionDescriptions, out string foundRemaining, out int foundSection, out bool isEndOfDocument, out bool isEndOfProject, appendNewLines, nextLine);
+                        string res = TryFindSection(Lines[lineIndex], RevTwoSectionDescriptions, out string foundRemaining, out int foundSection, out bool isEndOfDocument, out bool isEndOfProject, appendNewLines, nextLine);
                         if (isEndOfProject == true)
                         {
                             break;
@@ -144,7 +110,7 @@ namespace ProjectExtractor.Extractors.FullProject
                             searchNextSection = false;
                             checkString = foundRemaining;
                             remaining = checkString;
-                            appendNewLines = _RevTwoSectionDescriptions[foundSection].AppendNewLines;
+                            appendNewLines = RevTwoSectionDescriptions[foundSection].AppendNewLines;
                         }
                     }
                     else
@@ -188,10 +154,15 @@ namespace ProjectExtractor.Extractors.FullProject
 
             void GetProjectIndexes()
             {
+                string titleRegex = @"WBSO[ ][0-9]{1,4}";
                 bool foundProjects = false;
                 List<string> ProjectStrings = new List<string>();
                 for (int i = Lines.Length - 1; i >= 0; i--)//start at the bottom as that is faster
                 {
+                    if (Regex.Match(Lines[i], titleRegex).Success == true)
+                    {
+                        continue;
+                    }
                     if (foundProjects == false)
                     {
                         if (Lines[i].StartsWith("Totaal"))
@@ -206,9 +177,19 @@ namespace ProjectExtractor.Extractors.FullProject
                         {//reached end of projects, exit out of loop
                             break;
                         }
-
-                        string proj = Lines[i].Substring(0, Lines[i].LastIndexOf(' '));//don't need project duration                       
-                        ProjectStrings.Add(string.Join(" - ", proj.Split(' ', 2))); //split at first space, then add a " - " in between
+                        int lastSpace = Lines[i].LastIndexOf(' ');
+                        if (lastSpace < 0)//there are no spaces
+                        {//if for whatever reason, the contents are on the next line
+                            lastSpace = Lines[i + 1].LastIndexOf(' ');
+                            string proj = Lines[i + 1].Substring(0, lastSpace);
+                            ProjectStrings.RemoveAt(ProjectStrings.Count - 1);//remove previous line because it has values for THIS line
+                            ProjectStrings.Add(Lines[i] + " - " + Lines[i + 1].Substring(0, lastSpace));
+                        }
+                        else
+                        {
+                            string proj = Lines[i].Substring(0, lastSpace);//don't need project duration                       
+                            ProjectStrings.Add(string.Join(" - ", proj.Split(' ', 2))); //split at first space, then add a " - " in between
+                        }
                     }
                 }
 
@@ -278,7 +259,7 @@ namespace ProjectExtractor.Extractors.FullProject
                         {
                             str.Append("Voortzetting van een vorig project\n");
                         }
-                        RemoveLines(projectIndex + 1, nextIndex, ref str, @"Pagina \d* van \d*", ref possibleSection, _toRemoveDetails, _toRemoveDescription[0], out int detailEnd);
+                        RemoveLines(projectIndex + 1, nextIndex, ref str, @"Pagina \d* van \d*", ref possibleSection, _revOneToRemoveDetails, _revOneToRemoveDescription[0], out int detailEnd);
                         lineIndex = detailEnd;
                         continuationDone = true;
                     }
@@ -287,7 +268,7 @@ namespace ProjectExtractor.Extractors.FullProject
                     nextLine = lineIndex == Lines.Length - 1 ? string.Empty : Lines[lineIndex + 1];
                     if (searchNextSection == true)
                     {
-                        string res = TryFindSection(Lines[lineIndex], _RevThreeSectionDescriptions, out string foundRemaining, out int foundSection, out bool isEndOfDocument, out bool isEndOfProject, appendNewLines, nextLine);
+                        string res = TryFindSection(Lines[lineIndex], RevThreeSectionDescriptions, out string foundRemaining, out int foundSection, out bool isEndOfDocument, out bool isEndOfProject, appendNewLines, nextLine);
                         if (isEndOfDocument == true)
                         {
                             project = ProjectStartIndexes.Count - 1;
@@ -302,7 +283,7 @@ namespace ProjectExtractor.Extractors.FullProject
                             searchNextSection = false;
                             checkString = foundRemaining;
                             remaining = checkString;
-                            appendNewLines = _RevThreeSectionDescriptions[foundSection].AppendNewLines;
+                            appendNewLines = RevThreeSectionDescriptions[foundSection].AppendNewLines;
                         }
                     }
                     else
@@ -429,7 +410,7 @@ namespace ProjectExtractor.Extractors.FullProject
                 }
                 if (lastCorrect > -1)
                 {
-                    if (safetyCheck.Length > 0 && safetyCheck.StartsWith(comparisonWords[lastCorrect]))
+                    if (safetyCheck.Length > 0 && safetyCheck.Equals(comparisonWords[lastCorrect]))
                     {//go back by one word if that word was added in error
                         lastCorrect -= 1;
                     }
@@ -462,7 +443,7 @@ namespace ProjectExtractor.Extractors.FullProject
             return res;
         }
 
-        private void RemoveLines(int startIndex, int nextProjectIndex, ref StringBuilder str, string pageRegex, ref string possibleSection, string[] toRemove, string FollowingSectionString, out int nextSectionLine)
+        private void RemoveLines(int startIndex, int nextProjectIndex, ref StringBuilder str, string pageRegex, ref string possibleSection, string[] toRemove, string FollowingSectionString, out int nextSectionLine, bool removeInbetween = false)
         {
             nextSectionLine = nextProjectIndex;
             for (int lineIndex = startIndex; lineIndex < nextProjectIndex; lineIndex++)
@@ -475,8 +456,11 @@ namespace ProjectExtractor.Extractors.FullProject
                 possibleSection = Array.Find(toRemove, Lines[lineIndex].Contains);
                 if (string.IsNullOrEmpty(possibleSection))
                 {
-                    RemovePageNumberFromString(ref Lines[lineIndex], pageRegex);
-                    str.Append(Lines[lineIndex]);
+                    if (removeInbetween == false)
+                    {
+                        RemovePageNumberFromString(ref Lines[lineIndex], pageRegex);
+                        str.Append(Lines[lineIndex]);
+                    }
                 }
                 else
                 {
@@ -496,60 +480,33 @@ namespace ProjectExtractor.Extractors.FullProject
             }
             return false;
         }
-        #region Revision three
-        private readonly string[] _toRemoveDetails = {"Dit project is een voortzetting van een vorig project"
+
+
+
+        private readonly string[] _revOneToRemoveDetails = {"Dit project is een voortzetting van een vorig project"
                                 ,"Projectnummer"
                                 ,"Projecttitel"
                                 ,"Type project"
                                 ,"Zwaartepunt"
                                 ,"Het project wordt/is gestart op"
                                 ,"Aantal uren werknemers"};
-        private readonly string[] _toRemoveDescription = { "Geef een algemene omschrijving van" };
+        private readonly string[] _revOneToRemoveDescription = { "Geef een algemene omschrijving van" };
 
-        private readonly ProjectSection _continuationProject = new ProjectSection("Is voortzetting", "Dit project is een voortzetting van een vorig project");
-        private readonly ProjectSection _description = new ProjectSection("Omschrijving", "Geef een algemene omschrijving van het project. Heeft u eerder WBSO aangevraagd voor dit project? Beschrijf dan de stand van zaken bij de vraag “Update project”.");
-        private readonly ProjectSection _teamwork = new ProjectSection("Samenwerking?", "Samenwerking Levert één of meer partijen (buiten uw fiscale eenheid) een bijdrage aan het project?", minimumDifference: 1);
-        private readonly ProjectSection _Fases = new ProjectSection("Fasering Werkzaamheden", "Fasering werkzaamheden Geef de fasen en de (tussen)resultaten van het project aan. Bijvoorbeeld de afsluiting van een onderzoek, de afronding van een ontwerpfase, de start van de bouw van een prototype, het testen van een prototype (maximaal 25 karakters per veld). Vermeld alleen uw eigen werkzaamheden. U kunt een fase toevoegen door op de + te klikken en een fase verwijderen door op de - te klikken. Naam Datum gereed", true);
-        private readonly ProjectSection _Update = new ProjectSection("Update Project", "Update project Vermeld de voortgang van uw S&O-werkzaamheden. Zijn er wijzigingen in de oorspronkelijke projectopzet of -planning? Geef dan aan waarom dit het geval is.");
-        private readonly ProjectSection _QuestionsDevelopment = new ProjectSection("Specifieke vragen ontwikkeling Beantwoord de vragen vanuit een technische invalshoek. Geef hier geen algemene of functionele beschrijving van het project. Ontwikkelen heeft altijd te maken met zoeken en bewijzen. U wilt iets ontwikkelen en loopt hierbij tegen een technisch probleem aan. U zoekt hiervoor een nieuwe technische oplossing waarvan u het werkingsprincipe wilt aantonen.");
-        private readonly ProjectSection _QuestionsTechnicalIssues = new ProjectSection("- Technische knelpunten", ". Technische knelpunten. Geef aan welke concrete technische knelpunten u zelf tijdens het ontwikkelingsproces moet oplossen om het gewenste projectresultaat te bereiken. Vermeld geen aanleidingen, algemene randvoorwaarden of functionele eisen van het project.");
-        private readonly ProjectSection _QuestionsSollutions = new ProjectSection("- Probleemstelling en oplossingsrichting", ". Technische knelpunten programmatuur. Geef aan welke concrete technische knelpunten u zelf tijdens het ontwikkelen van de programmatuur moet oplossen om het gewenste projectresultaat te bereiken. Vermeld geen aanleidingen, algemene randvoorwaarden of functionele eisen van de programmatuur.");
-        private readonly ProjectSection _QuestionsTechnicalSollutions = new ProjectSection("- Technische oplossingsrichtingen", ". Technische oplossingsrichtingen. Geef voor ieder genoemd technisch knelpunt aan wat u specifiek zelf gaat ontwikkelen om het knelpunt op te lossen.");
-        private readonly ProjectSection _QuestionsProgramSolutions = new ProjectSection("- Oplossingsrichtingen programmatuur", ". Oplossingsrichtingen programmatuur. Geef voor ieder genoemd technisch knelpunt aan wat u specifiek zelf gaat ontwikkelen om het knelpunt op te lossen.");
-        private readonly ProjectSection _QuestionsInovation = new ProjectSection("- Technische nieuwheid", ". Technische nieuwheid. Geef aan waarom de hiervoor genoemde oplossingsrichtingen technisch nieuw voor u zijn. Oftewel beschrijf waarom het project technisch vernieuwend en uitdagend is en geef aan welke technische risico’s en onzekerheden u hierbij verwacht. Om technische risico’s en onzekerheden in te schatten kijkt RVO naar de stand van de technologie.");
-        private readonly ProjectSection _QuestionsProgramInovation = new ProjectSection("- Technische nieuwheid programmatuur", ". Programmeertalen, ontwikkelomgevingen en tools. Geef aan welke programmeertalen, ontwikkelomgevingen en tools u gebruikt bij de ontwikkeling van technisch nieuwe programmatuur.");
-        private readonly ProjectSection _QuestionsSoftware = new ProjectSection("Wordt er mede programmatuur ontwikkeld?", "Wordt er voor dit product of proces mede programmatuur ontwikkeld?");
-        private readonly ProjectSection _QuestionsScience = new ProjectSection("Specifieke vragen Technische Wetenschappelijk Onderzoek Maak duidelijk dat het technisch-wetenschappelijk onderzoek (TWO) dat u wilt uitvoeren twee kernelementen bevat: technisch en wetenschappelijk. Technisch betreft gebieden zoals fysica, chemie, biotechnologie, productietechnologie, informatie- of communicatietechnologie. Wetenschappelijk heeft betrekking op het doel en de resultaten van het onderzoek en op de manier waarop het onderzoek wordt opgezet en uitgevoerd (systematisch en planmatig en niet routinematig). TWO heeft tot doel een verklaring te zoeken voor een verschijnsel die niet is te geven op basis van algemeen toegankelijke kennis.");
-        private readonly ProjectSection _QuestionsScienceCause = new ProjectSection("Aanleiding", ". Aanleiding. Geef concreet aan voor welk verschijnsel u een verklaring zoekt. Waarom kunt u geen verklaring vinden voor het verschijnsel op basis van algemeen toegankelijke kennis of de al intern aanwezige kennis?");
-        private readonly ProjectSection _QuestionsScienceResearchquestions = new ProjectSection("Onderzoeksvragen", ". Onderzoeksvragen. Wat zijn concreet de onderzoeksvragen waarop u een antwoord zoekt? Uit uw onderzoeksvragen moet duidelijk naar voren komen dat het onderzoek verder gaat dan het verzamelen, observeren, vastleggen of correleren van data");
-        private readonly ProjectSection _QuestionsScienceSetup = new ProjectSection("Opzet en uitvoering", ". Opzet en uitvoering. Wat is de praktische onderzoeksopzet? Hoe wilt u een antwoord vinden op de door u gestelde onderzoeksvragen? Omschrijf dit nauwkeurig in de door u zelf uit te voeren technische werkzaamheden.");
-        private readonly ProjectSection _QuestionsScienceOutcomes = new ProjectSection("Beoogde uitkomsten", ". Beoogde uitkomsten. Wat zijn de beoogde uitkomsten van het (deel)onderzoek? Waarom is het voor u nieuwe technische kennis?");
-        private readonly ProjectSection _QuestionsScienceTechnologicResearch = new ProjectSection("Technologiegebied onderzoek", ". Technologiegebied onderzoek. Geef aan op welk technologiegebied het technisch wetenschappelijk onderzoek betrekking heeft. Uit uw antwoord moet blijken dat het onderzoek technisch van aard is.");
-        private readonly ProjectSection _Costs = new ProjectSection("Kosten en/of uitgaven per project", "Kosten en/of uitgaven per project Voorbeelden en uitgebreide informatie over kosten en uitgaven kunt u in de vinden.", appendNewLines: true);
-        private readonly ProjectSection _SpendingA = new ProjectSection("Kosten opvoeren bij dit project", "Voorbeelden en uitgebreide informatie over kosten en uitgaven kunt u in de vinden.");
-        private readonly ProjectSection _SpendingB = new ProjectSection("Investeert u in een bedrijfsmiddel, waarvan het aan S&O dienstbare en toerekenbare deel van de aanschafwaarde van het bedrijfsmiddel groter of gelijk is aan 1 miljoen euro? Voer deze dan hieronder in. Uitgaven kleiner dan 1 miljoen euro specificeert u per project.", appendNewLines: true);
-        private readonly ProjectSection _DocumentEnd = new ProjectSection("Aanvraag Aantal doorlopende projecten", isEndOfDocument: true);
-        private readonly ProjectSection _ToRemoveProblemDefinition = new ProjectSection("Probleemstelling en oplossingsrichting ");
-        private readonly ProjectSection _ToRemoveSpending = new ProjectSection("Opvoeren uitgaven");
-        #endregion
 
-        #region Revision two  
-
+        private readonly string[] _revTwoToRemoveDetails = {"Project"
+                                ,"Projectnummer"
+                                ,"Projecttitel"
+                                ,"Type project"
+                                ,"Projectgegegevens"
+                                ,"Projecttitel *"
+                                ,"Low cost sigaren productiemachine"
+                                ,"Type project *"
+                                ,"Ontwikkelingsproject"
+                                ,"Zwaartepunt *"
+                                ,"Product"
+                                ,"Het project wordt/is gestart op *"};
+        private readonly string _revTwoRemoveDescription = "Geef een algemene omschrijving van het project.";
         private readonly string _revTwoPageRegex = @"[0-9]+\s+/\s+[0-9]+";
-
-        private readonly ProjectSection _revTwoDescription = new ProjectSection("Omschrijving", "Geef een algemene omschrijving van het project. Heeft u eerder WBSO aangevraagd voor dit project? Beschrijf dan de stand van zaken bij de vraag “Update project”.* (maximaal 1.500 tekens)");
-        private readonly ProjectSection _revTwoTeamwork = new ProjectSection("Samenwerking Levert een of meer partijen (buiten uw fiscale eenheid) een bijdrage Ja aan het project? * Nee", minimumDifference: 1);
-        private readonly ProjectSection _revTwoUpdate = new ProjectSection("Update Project", "Update project Vermeld de voortgang van uw S&O-werkzaamheden. Zijn er wijzigingen in de oorspronkelijke projectopzet of -planning? Geef dan aan waarom dit het geval is. (maximaal 1.500 tekens)");
-        private readonly ProjectSection _revTwoFases = new ProjectSection("Fasering Werkzaamheden", "Fasering werkzaamheden Omschrijf per fase uw eigen S&O-werkzaamheden (S&O-werkzaamheden van het bedrijf waarvoor u deze WBSO-aanvraag indient). Uit de fasering moet ook de vermoedelijke einddatum van het S&O- project blijken. Ontwikkelings- / onderzoeksactiviteit * Datum gereed *", true);
-        private readonly ProjectSection _revTwoIndex = new ProjectSection("Werknemers Geef aan hoeveel uur u in de aanvraagperiode van plan bent aan het project of de projecten te besteden. Projectnummer Projecttitel Uren *", isEndOfDocument: true);
-        private readonly ProjectSection _revTwoQuestion = new ProjectSection("Specifieke vragen ontwikkeling");
-        private readonly ProjectSection _revTwoDevCriteria = new ProjectSection("Geef bij het Ontwikkelingsproject aan:", isEndOfProject: true);
-        private readonly ProjectSection _revTwoTechnicalIssues = new ProjectSection("- Technische knelpunten", ". Technische knelpunten Geef aan welke concrete technische knelpunten u zelf tijdens het ontwikkelingsproces moet oplossen om het gewenste projectresultaat te bereiken. Vermeld geen aanleidingen, algemene randvoorwaarden of functionele eisen van het project. * (maximaal 1.500 tekens)");
-        private readonly ProjectSection _revTwoTechnicalSolution = new ProjectSection("- Technische oplossingsrichtingen", ". Technische oplossingsrichtingen Geef voor ieder genoemd technisch knelpunt aan wat u specifiek zelf gaat ontwikkelen om het knelpunt op te lossen. * (maximaal 1.500 tekens)");
-        private readonly ProjectSection _revTwoTechnicalInovation = new ProjectSection("- Technische nieuwheid", ". Technische nieuwheid  Geef aan waarom de hiervoor genoemde oplossingsrichtingen technisch nieuw voor u zijn. Oftewel beschrijf waarom het project technisch vernieuwend en uitdagend is en geef aan welke technische risico’s en onzekerheden u hierbij verwacht. Om technische risico’s en onzekerheden in te schatten kijkt RVO.nl naar de stand van de technologie. *  (maximaal 1.500 tekens)");
-        //private readonly ProjectSection _revTwoSoftware = new ProjectSection("Wordt er mede programmatuur ontwikkeld?", "Wordt er voor dit product of proces mede programmatuur ontwikkeld? * Ja Nee")
-        private readonly ProjectSection _revTwoSoftware = new ProjectSection("Wordt er voor dit product of proces mede programmatuur ontwikkeld? * Ja Nee", isEndOfProject: true);
-        #endregion
         public override string FileExtension => "txt";
     }
 }

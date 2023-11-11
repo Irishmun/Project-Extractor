@@ -45,6 +45,8 @@ namespace ProjectExtractor
             TSPB_Extraction = new System.Windows.Forms.ToolStripProgressBar();
             TC_MainView = new System.Windows.Forms.TabControl();
             TabPage_Extractor = new System.Windows.Forms.TabPage();
+            BT_DebugComputeHash = new System.Windows.Forms.Button();
+            BT_DebugJson = new System.Windows.Forms.Button();
             label8 = new System.Windows.Forms.Label();
             CbB_FileVersion = new System.Windows.Forms.ComboBox();
             CB_DisableExtractionPath = new System.Windows.Forms.CheckBox();
@@ -188,6 +190,8 @@ namespace ProjectExtractor
             // 
             // TabPage_Extractor
             // 
+            TabPage_Extractor.Controls.Add(BT_DebugComputeHash);
+            TabPage_Extractor.Controls.Add(BT_DebugJson);
             TabPage_Extractor.Controls.Add(label8);
             TabPage_Extractor.Controls.Add(CbB_FileVersion);
             TabPage_Extractor.Controls.Add(CB_DisableExtractionPath);
@@ -212,6 +216,28 @@ namespace ProjectExtractor
             TabPage_Extractor.Text = "Extractor";
             TabPage_Extractor.ToolTipText = "Main screen for extraction";
             TabPage_Extractor.UseVisualStyleBackColor = true;
+            // 
+            // BT_DebugProjectWithJson
+            // 
+            BT_DebugComputeHash.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
+            BT_DebugComputeHash.Location = new System.Drawing.Point(397, 199);
+            BT_DebugComputeHash.Name = "BT_DebugProjectWithJson";
+            BT_DebugComputeHash.Size = new System.Drawing.Size(161, 25);
+            BT_DebugComputeHash.TabIndex = 105;
+            BT_DebugComputeHash.Text = "[DEBUG] &Compute Hash";
+            BT_DebugComputeHash.UseVisualStyleBackColor = true;
+            BT_DebugComputeHash.Click += BT_DebugComputeHash_Click;
+            // 
+            // BT_DebugJson
+            // 
+            BT_DebugJson.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
+            BT_DebugJson.Location = new System.Drawing.Point(230, 199);
+            BT_DebugJson.Name = "BT_DebugJson";
+            BT_DebugJson.Size = new System.Drawing.Size(161, 25);
+            BT_DebugJson.TabIndex = 104;
+            BT_DebugJson.Text = "[DEBUG] &Export Json";
+            BT_DebugJson.UseVisualStyleBackColor = true;
+            BT_DebugJson.Click += BT_DebugJson_Click;
             // 
             // label8
             // 
@@ -1100,6 +1126,8 @@ namespace ProjectExtractor
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Button BT_UpdateProgram;
         private System.Windows.Forms.LinkLabel LL_GitHubLink;
+        private System.Windows.Forms.Button BT_DebugJson;
+        private System.Windows.Forms.Button BT_DebugComputeHash;
     }
 }
 

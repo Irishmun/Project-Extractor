@@ -1,0 +1,90 @@
+[
+  {
+    "SectionTitle": "Omschrijving",
+    "CheckString": "Geef een algemene omschrijving van het project. Heeft u eerder WBSO aangevraagd voor dit project? Beschrijf dan de stand van zaken bij de vraag \u201CUpdate project\u201D.* (maximaal 1.500 tekens)",
+    "AppendNewLines": false,
+    "IsEndOfDocument": false,
+    "IsEndOfProject": false,
+    "MinimumDifference": 2
+  },
+  {
+    "SectionTitle": "",
+    "CheckString": "Samenwerking Levert een of meer partijen (buiten uw fiscale eenheid) een bijdrage Ja aan het project? * Nee",
+    "AppendNewLines": false,
+    "IsEndOfDocument": false,
+    "IsEndOfProject": false,
+    "MinimumDifference": 1
+  },
+  {
+    "SectionTitle": "Update Project",
+    "CheckString": "Update project Vermeld de voortgang van uw S\u0026O-werkzaamheden. Zijn er wijzigingen in de oorspronkelijke projectopzet of -planning? Geef dan aan waarom dit het geval is. (maximaal 1.500 tekens)",
+    "AppendNewLines": false,
+    "IsEndOfDocument": false,
+    "IsEndOfProject": false,
+    "MinimumDifference": 2
+  },
+  {
+    "SectionTitle": "Fasering Werkzaamheden",
+    "CheckString": "Fasering werkzaamheden Omschrijf per fase uw eigen S\u0026O-werkzaamheden (S\u0026O-werkzaamheden van het bedrijf waarvoor u deze WBSO-aanvraag indient). Uit de fasering moet ook de vermoedelijke einddatum van het S\u0026O- project blijken. Ontwikkelings- / onderzoeksactiviteit * Datum gereed *",
+    "AppendNewLines": true,
+    "IsEndOfDocument": false,
+    "IsEndOfProject": false,
+    "MinimumDifference": 2
+  },
+  {
+    "SectionTitle": "- Technische knelpunten",
+    "CheckString": ". Technische knelpunten Geef aan welke concrete technische knelpunten u zelf tijdens het ontwikkelingsproces moet oplossen om het gewenste projectresultaat te bereiken. Vermeld geen aanleidingen, algemene randvoorwaarden of functionele eisen van het project. * (maximaal 1.500 tekens)",
+    "AppendNewLines": false,
+    "IsEndOfDocument": false,
+    "IsEndOfProject": false,
+    "MinimumDifference": 2
+  },
+  {
+    "SectionTitle": "- Technische nieuwheid",
+    "CheckString": ". Technische nieuwheid  Geef aan waarom de hiervoor genoemde oplossingsrichtingen technisch nieuw voor u zijn. Oftewel beschrijf waarom het project technisch vernieuwend en uitdagend is en geef aan welke technische risico\u2019s en onzekerheden u hierbij verwacht. Om technische risico\u2019s en onzekerheden in te schatten kijkt RVO.nl naar de stand van de technologie. *  (maximaal 1.500 tekens)",
+    "AppendNewLines": false,
+    "IsEndOfDocument": false,
+    "IsEndOfProject": false,
+    "MinimumDifference": 2
+  },
+  {
+    "SectionTitle": "- Technische oplossingsrichtingen",
+    "CheckString": ". Technische oplossingsrichtingen Geef voor ieder genoemd technisch knelpunt aan wat u specifiek zelf gaat ontwikkelen om het knelpunt op te lossen. * (maximaal 1.500 tekens)",
+    "AppendNewLines": false,
+    "IsEndOfDocument": false,
+    "IsEndOfProject": false,
+    "MinimumDifference": 2
+  },
+  {
+    "SectionTitle": "",
+    "CheckString": "Specifieke vragen ontwikkeling",
+    "AppendNewLines": false,
+    "IsEndOfDocument": false,
+    "IsEndOfProject": false,
+    "MinimumDifference": 2
+  },
+  {
+    "SectionTitle": "",
+    "CheckString": "Geef bij het Ontwikkelingsproject aan:",
+    "AppendNewLines": false,
+    "IsEndOfDocument": false,
+    "IsEndOfProject": true,
+    "MinimumDifference": 2
+  },
+  {
+    "SectionTitle": "",
+    "CheckString": "Wordt er voor dit product of proces mede programmatuur ontwikkeld? * Ja Nee",
+    "AppendNewLines": false,
+    "IsEndOfDocument": false,
+    "IsEndOfProject": true,
+    "MinimumDifference": 2
+  },
+  {
+    "SectionTitle": "",
+    "CheckString": "Werknemers Geef aan hoeveel uur u in de aanvraagperiode van plan bent aan het project of de projecten te besteden. Projectnummer Projecttitel Uren *",
+    "AppendNewLines": false,
+    "IsEndOfDocument": true,
+    "IsEndOfProject": false,
+    "MinimumDifference": 2
+  }
+]

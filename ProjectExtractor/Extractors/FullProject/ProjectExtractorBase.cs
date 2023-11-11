@@ -10,6 +10,10 @@ namespace ProjectExtractor.Extractors.FullProject
         //remove key sentences from found sentences, then combine remaining contents into one sentence (period separated)
         //see text file for example
 
+        protected const string RevOneFileName = "Rev_1.json", RevTwoFileName = "Rev_2.json", RevThreeFileName = "Rev_3.json";
+        protected static ProjectSection[] RevTwoSectionDescriptions;
+        protected static ProjectSection[] RevThreeSectionDescriptions;
+
         //string[] Keywords, string chapters, string stopChapters, string totalHoursKeyword, bool WriteTotalHoursToFile, bool WriteKeywordsToFile,
         public ExitCode ExtractProjects(ProjectLayoutRevision revision, string file, string extractPath, string[] Sections, string EndProject, System.ComponentModel.BackgroundWorker Worker)
         {
@@ -25,6 +29,30 @@ namespace ProjectExtractor.Extractors.FullProject
                 default:
                     System.Diagnostics.Debug.WriteLine("[ProjectExtractorBase]Unknown revision given...");
                     return ExitCode.NOT_IMPLEMENTED;
+            }
+        }
+
+        public void RevisionTwoSectionsToJson(string path)
+        {
+            string content = JsonUtil.ToJson(RevTwoSectionDescriptions);
+            System.IO.File.WriteAllText(path, content);
+        }
+
+        public void RevisionThreeSectionsToJson(string path)
+        {
+            string content = JsonUtil.ToJson(RevThreeSectionDescriptions);
+            System.IO.File.WriteAllText(path, content);
+        }
+
+        public ProjectSection[] SectionsArrayFromJson(string json)
+        {
+            try
+            {
+                return JsonUtil.FromJson<ProjectSection[]>(json);
+            }
+            catch (System.Exception)
+            {
+                throw;
             }
         }
 

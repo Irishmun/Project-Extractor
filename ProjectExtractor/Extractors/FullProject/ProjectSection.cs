@@ -25,6 +25,7 @@
             _isEndOfProject = isEndOfProject;
             _minDifference = minimumDifference;
         }
+
         /// <param name="textToRemove">Sstring to look for (and remove) from the text?</param>
         /// <param name="appendNewLines">Should linebreaks be added to the end of each line in this section?</param>
         /// <param name="isEndOfDocument">Is this section the last section in the ENTIRE document?</param>
@@ -40,18 +41,30 @@
             _minDifference = minimumDifference;
         }
 
+        /// <summary>Creates a <see cref="ProjectSection"/> from the given json string</summary>
+        /// <param name="json">json string to parse to this object</param>
+        public ProjectSection FromJson(string json)
+        {
+            return System.Text.Json.JsonSerializer.Deserialize<ProjectSection>(json);
+        }
+        /// <summary>Returns this object as a json string</summary>
+        public string Json()
+        {
+            return System.Text.Json.JsonSerializer.Serialize(this);
+        }
+
         /// <summary>[OPTIONAL]Text that is put on top of the first found text in the section.</summary>
-        public string SectionTitle => _sectionTitle;
+        public string SectionTitle { get => _sectionTitle; set => _sectionTitle = value; }
         /// <summary>What string to look for (and remove) from the text?</summary>
-        public string CheckString => _checkString;
+        public string CheckString { get => _checkString; set => _checkString = value; }
         /// <summary>Should linebreaks be added to the end of each line in this section?</summary>
-        public bool AppendNewLines => _appendNewLines;
+        public bool AppendNewLines { get => _appendNewLines; set => _appendNewLines = value; }
         /// <summary>Is this section the last section in the ENTIRE document?</summary>
-        public bool IsEndOfDocument => _isEndOfDocument;
+        public bool IsEndOfDocument { get => _isEndOfDocument; set => _isEndOfDocument = value; }
         /// <summary>Is this section the last section with needed information for this PROJECT?</summary>
-        public bool IsEndOfProject => _isEndOfProject;
+        public bool IsEndOfProject { get => _isEndOfProject; set => _isEndOfProject = value; }
         /// <summary>Minimum difference for this section to be deemed "found"</summary>
-        public int MinimumDifference => _minDifference;
+        public int MinimumDifference { get => _minDifference; set => _minDifference = value; }
 
     }
 }
