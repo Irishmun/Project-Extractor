@@ -61,8 +61,8 @@ namespace ProjectExtractor
             UpdateSetting(ref _selectedFileVersionIndex, fileIndex, INI_KEY_VERSION, INI_SECTION_EXPORT);
             //strings
             UpdateSetting(ref _exportFileExtension, fileExtension, INI_KEY_EXTENSION, INI_SECTION_EXPORT);
-            UpdateSetting(ref _sectionsEndProject, endProject, INI_KEY_END_PROJECT, INI_SECTION_EXPORT);
-            UpdateSetting(ref _chapterStart, chapterStart, INI_KEY_CHAPTER_START, INI_SECTION_EXPORT);
+            UpdateSetting(ref _sectionsEndProject, endProject, INI_KEY_END_PROJECT, INI_SECTION_CHAPTERS);
+            UpdateSetting(ref _chapterStart, chapterStart, INI_KEY_CHAPTER_START, INI_SECTION_CHAPTERS);
             UpdateSetting(ref _chapterEnd, chapterEnd, INI_KEY_CHAPTER_END, INI_SECTION_EXPORT);
             UpdateSetting(ref _totalHoursKeyword, totalHoursKey, INI_KEY_TOTAL_HOURS, INI_SECTION_HOURS);
         }

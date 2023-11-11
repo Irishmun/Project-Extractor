@@ -17,11 +17,22 @@
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Resources\ProjectExtractorIcon.ico" />
+    <None Remove="Resources\Sections\Rev_2.json" />
+    <None Remove="Resources\Sections\Rev_3.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\Sections\Rev_2.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Sections\Rev_3.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="itext7" Version="7.2.2" />
     <PackageReference Include="Microsoft.WindowsAPICodePack-Shell" Version="1.1.0" />
     <PackageReference Include="Octokit" Version="7.1.0" />
+    <PackageReference Include="System.IO.Hashing" Version="7.0.0" />
     <PackageReference Include="WindowsAPICodePack-Core" Version="1.1.2" />
   </ItemGroup>
   <ItemGroup>

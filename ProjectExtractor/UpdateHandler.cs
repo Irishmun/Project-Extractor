@@ -141,9 +141,15 @@ namespace ProjectExtractor
 
         private async void SetRelease()
         {
-            if (CanMakeRequests() == false)
-            { return; }
-            _releases = await _client.Repository.Release.GetAll(PROJECT_OWNER, THIS_PROJECT);
+            try
+            {
+                if (CanMakeRequests() == false)
+                { return; }
+                _releases = await _client.Repository.Release.GetAll(PROJECT_OWNER, THIS_PROJECT);
+            }
+            catch (Exception)
+            {
+            }
         }
 
         private Release GetReleaseByTag(string TagName)
