@@ -19,6 +19,7 @@ namespace ProjectExtractor
         private const string _detailExtractionSuffix = " - Details";
         private const string _projectExtractionSuffix = " - Projecten";
 
+
         private string _programPath = AppContext.BaseDirectory, ExportFile;
         private string _latestTag;
         //private bool _startingUp = false;
@@ -40,6 +41,8 @@ namespace ProjectExtractor
 #if !DEBUG
             BT_DebugExtract.Visible = false;
             CB_DebugIncludeWhiteSpace.Visible = false;
+            BT_DebugJson.Visible = false;
+            BT_DebugComputeHash.Visible = false;
 #endif
             CheckForUpdateThenSetAbout();
             UpdateFromSettings();//do this before changing back from isStarting to prevent a change loop
@@ -88,17 +91,21 @@ namespace ProjectExtractor
                         RB_ExportTXT.Checked = true;
                         break;
                 }
-                //set keywords listview
-                LV_Keywords.Clear();
-                foreach (string item in _settings.KeywordsList)
-                {
-                    LV_Keywords.Items.Add(new ListViewItem(item));
+                if (_settings.KeywordsList?.Count > 0)
+                {//set keywords listview
+                    LV_Keywords.Clear();
+                    foreach (string item in _settings.KeywordsList)
+                    {
+                        LV_Keywords.Items.Add(new ListViewItem(item));
+                    }
                 }
-                //set sections listview
-                LV_Sections.Clear();
-                foreach (string item in _settings.SectionsList)
-                {
-                    LV_Sections.Items.Add(new ListViewItem(item));
+                if (_settings.SectionsList?.Count > 0)
+                {//set sections listview                
+                    LV_Sections.Clear();
+                    foreach (string item in _settings.SectionsList)
+                    {
+                        LV_Sections.Items.Add(new ListViewItem(item));
+                    }
                 }
                 //set sections end project textbox
                 TB_SectionsEndProject.Text = _settings.SectionsEndProject;
@@ -124,7 +131,6 @@ namespace ProjectExtractor
                 TB_TotalHours.Text = _settings.TotalHoursKeyword;
             }
         }
-
         private async void CheckForUpdateThenSetAbout()
         {
             _gitProjectAvailable = await _updateHandler.CheckProjectAccessible();
@@ -134,12 +140,19 @@ namespace ProjectExtractor
             //LL_GitHubLink.Links.Clear();
             //LL_GitHubLink.Links.Add(0, LL_GitHubLink.Text.Length, _updateHandler.ReleaseUrl);
         }
+
         #region TabControl events
         private void TC_MainView_SelectedIndexChanged(object sender, EventArgs e)
         {
             //update the keywords display if the tab has been swapped back to the main tab
             //UpdateSettingIfNotStarting();//Update all settings in the ini file
             if (TC_MainView.SelectedIndex == 0) UpdateExtractorKeywords();
+        }
+        #endregion
+        #region Label Events
+        private void LL_GitHubLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            _updateHandler.OpenReleasePage();
         }
         #endregion
         #region ListView events
@@ -292,23 +305,6 @@ namespace ProjectExtractor
                 }
             }
         }
-        private void BT_DebugExtract_Click(object sender, EventArgs e)
-        {//extract ALL contents from pdf file
-#if DEBUG
-            if (!backgroundWorker.IsBusy)
-            {
-                if (BothPathsExists())
-                {
-                    BT_Extract.Enabled = false;
-                    _extractor = new DetailExtractorALL();
-                    (_extractor as DetailExtractorALL).StripEmtpies = CB_DebugIncludeWhiteSpace.Checked;
-                    SetButtonsEnabled(false);
-                    backgroundWorker.RunWorkerAsync("DEBUG");
-                }
-            }
-#endif
-        }
-
 
         //detail setting events
         private void BT_KeywordsNew_Click(object sender, EventArgs e)
@@ -515,16 +511,7 @@ namespace ProjectExtractor
             //open the created file in its default application
             if (_extractionResult == ExitCode.NONE || _extractionResult == ExitCode.FLAWED)//none error or flawed error
             {
-                if (File.Exists(ExportFile))
-                {
-                    Process process = new Process();
-                    process.StartInfo = new ProcessStartInfo()
-                    {
-                        UseShellExecute = true,
-                        FileName = ExportFile
-                    };
-                    process.Start();
-                }
+                OpenFile(ExportFile);
             }
             if (_extractionResult == ExitCode.FLAWED)
             {
@@ -535,12 +522,24 @@ namespace ProjectExtractor
 
         #endregion
 
-        private void LL_GitHubLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        #region methods
+
+        /// <summary>Opens file in default application, if the file exists</summary>
+        /// <param name="path">full path to the file to open</param>
+        private void OpenFile(string path)
         {
-            _updateHandler.OpenReleasePage();
+            if (File.Exists(path))
+            {
+                Process process = new Process();
+                process.StartInfo = new ProcessStartInfo()
+                {
+                    UseShellExecute = true,
+                    FileName = path
+                };
+                process.Start();
+            }
         }
 
-        #region methods
         /// <summary>Generates and displays the to be extracted file path</summary>
         private void DisplayFullExtractionFilePath()
         {
@@ -784,7 +783,61 @@ namespace ProjectExtractor
             textBoxDescription.Text = changelog;
         }
         #endregion
+        #region debug methods
+        private void BT_DebugExtract_Click(object sender, EventArgs e)
+        {//extract ALL contents from pdf file
+#if DEBUG
+            if (!backgroundWorker.IsBusy)
+            {
+                if (BothPathsExists())
+                {
+                    BT_Extract.Enabled = false;
+                    _extractor = new DetailExtractorALL();
+                    (_extractor as DetailExtractorALL).StripEmtpies = CB_DebugIncludeWhiteSpace.Checked;
+                    SetButtonsEnabled(false);
+                    backgroundWorker.RunWorkerAsync("DEBUG");
+                }
+            }
+#endif
+        }
 
+        private void BT_DebugJson_Click(object sender, EventArgs e)
+        {
+#if DEBUG
+            string fileName = TB_PDFLocation.Text.Substring(TB_PDFLocation.Text.LastIndexOf('\\') + 1);
+            string exportFile = _programPath;
+            _extractor = GetProjectExtractorSetting();
 
+            switch (CbB_FileVersion.SelectedIndex)
+            {
+                case 0://revision 1
+                    break;
+                case 1://revision 2
+                    exportFile += $"Sections\\Rev_2.json";
+                    (_extractor as ProjectExtractorBase).RevisionTwoSectionsToJson(exportFile);
+                    break;
+                case 2://revision 3
+                    exportFile += $"Sections\\Rev_3.json";
+                    (_extractor as ProjectExtractorBase).RevisionThreeSectionsToJson(exportFile);
+                    break;
+                default:
+                    break;
+            }
+            OpenFile(exportFile);
+#endif
+        }
+
+        private void BT_DebugComputeHash_Click(object sender, EventArgs e)
+        {
+#if DEBUG
+            _extractor = GetProjectExtractorSetting();
+            if (SectionsFolder.IsHashDifferent() == true)
+            {
+                MessageBox.Show("Hash has changed");
+            }
+            SectionsFolder.SetFolderHash();
+#endif
+        }
+        #endregion
     }
 }

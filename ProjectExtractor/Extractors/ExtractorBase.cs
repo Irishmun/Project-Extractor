@@ -1,12 +1,10 @@
-﻿using iText.Kernel.Geom;
-using iText.Kernel.Pdf;
+﻿using iText.Kernel.Pdf;
 using iText.Kernel.Pdf.Canvas.Parser;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Windows.Forms.VisualStyles;
 
 namespace ProjectExtractor.Extractors
 {
@@ -14,6 +12,7 @@ namespace ProjectExtractor.Extractors
     {
         protected const string ContinuationString = "Dit project is een voortzetting van een vorig project";
         protected string[] Lines;
+
         private char[] _removeCharacters = new char[] { ' ', '\r', '\n' };//whitespaces, carriage returns and linefeeds
         /// <summary>
         /// Extracts all text from the given pdf file, putting it in <see cref="Lines"/> 
@@ -223,7 +222,6 @@ namespace ProjectExtractor.Extractors
             double progress = (double)((currentProgress + 1d) * 100d / Lines.Length);
             worker.ReportProgress((int)progress);
         }
-
         /// <summary>To which file extension will this extractor extract</summary>
         public abstract string FileExtension { get; }//return file format of extractor, all lowercase, sans period (e.x: text extractor= "txt")
     }
