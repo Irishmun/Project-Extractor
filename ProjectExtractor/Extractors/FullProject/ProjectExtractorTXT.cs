@@ -340,7 +340,7 @@ namespace ProjectExtractor.Extractors.FullProject
                 string foundRes = RemoveMatching(check, comparisons[i].CheckString, out string resultFoundRemaining, safetyCheck: safetyCheck);//, comparisons[i].AppendNewLines);
                 if (!foundRes.Equals(check))//it removed something
                 {
-                    string[] foundRemainingWords = resultFoundRemaining.Trim().Split(' ');
+                    string[] foundRemainingWords = string.IsNullOrWhiteSpace(resultFoundRemaining) ? new string[0] : resultFoundRemaining.Trim().Split(' ');
                     string[] checkStringWords = comparisons[i].CheckString.Trim().Split(' ');
                     int dif = checkStringWords.Length - foundRemainingWords.Length;
                     if (dif >= comparisons[i].MinimumDifference || comparisons[i].IsEndOfDocument == true)
@@ -387,8 +387,8 @@ namespace ProjectExtractor.Extractors.FullProject
             //string str1 = "Geef een algemene omschrijving van het project. Heeft u eerder WBSO aangevraagd voor dit project? Beschrijf dan de stand van zaken bij de vraag \"Update project\".";
             string res = check;
             string lowerCheck = check;
-            string[] checkWords = check.Trim().Split(' ');
-            string[] comparisonWords = comparison.Trim().Split(' ');
+            string[] checkWords = check.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            string[] comparisonWords = comparison.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
             int foundIndex = 0;
             StringBuilder toRemove = new StringBuilder();
             if (lowerCheck.Trim().StartsWith(comparisonWords[0]))

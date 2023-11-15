@@ -41,7 +41,7 @@
   },
   {
     "SectionTitle": "- Technische nieuwheid",
-    "CheckString": ". Technische nieuwheid  Geef aan waarom de hiervoor genoemde oplossingsrichtingen technisch nieuw voor u zijn. Oftewel beschrijf waarom het project technisch vernieuwend en uitdagend is en geef aan welke technische risico\u2019s en onzekerheden u hierbij verwacht. Om technische risico\u2019s en onzekerheden in te schatten kijkt RVO.nl naar de stand van de technologie. *  (maximaal 1.500 tekens)",
+    "CheckString": ". Technische nieuwheid Geef aan waarom de hiervoor genoemde oplossingsrichtingen technisch nieuw voor u zijn. Oftewel beschrijf waarom het project technisch vernieuwend en uitdagend is en geef aan welke technische risico\u2019s en onzekerheden u hierbij verwacht. Om technische risico\u2019s en onzekerheden in te schatten kijkt RVO.nl naar de stand van de technologie. * (maximaal 1.500 tekens)",
     "AppendNewLines": false,
     "IsEndOfDocument": false,
     "IsEndOfProject": false,
@@ -65,10 +65,10 @@
   },
   {
     "SectionTitle": "",
-    "CheckString": "Geef bij het Ontwikkelingsproject aan:",
+    "CheckString": "Probleemstelling en oplossingsrichting",
     "AppendNewLines": false,
     "IsEndOfDocument": false,
-    "IsEndOfProject": true,
+    "IsEndOfProject": false,
     "MinimumDifference": 2
   },
   {
@@ -76,7 +76,7 @@
     "CheckString": "Wordt er voor dit product of proces mede programmatuur ontwikkeld? * Ja Nee",
     "AppendNewLines": false,
     "IsEndOfDocument": false,
-    "IsEndOfProject": true,
+    "IsEndOfProject": false,
     "MinimumDifference": 2
   },
   {
@@ -84,6 +84,86 @@
     "CheckString": "Werknemers Geef aan hoeveel uur u in de aanvraagperiode van plan bent aan het project of de projecten te besteden. Projectnummer Projecttitel Uren *",
     "AppendNewLines": false,
     "IsEndOfDocument": true,
+    "IsEndOfProject": false,
+    "MinimumDifference": 2
+  },
+  {
+    "SectionTitle": "Omschrijving kosten",
+    "CheckString": "Omschrijving van de kosten (maximaal 500 tekens)",
+    "AppendNewLines": false,
+    "IsEndOfDocument": false,
+    "IsEndOfProject": false,
+    "MinimumDifference": 4
+  },
+  {
+    "SectionTitle": "Totale kosten",
+    "CheckString": "Totale kosten",
+    "AppendNewLines": false,
+    "IsEndOfDocument": false,
+    "IsEndOfProject": false,
+    "MinimumDifference": 2
+  },
+  {
+    "SectionTitle": "Omschrijving uitgaven",
+    "CheckString": "Omschrijving van de uitgaven (maximaal 500 tekens)",
+    "AppendNewLines": false,
+    "IsEndOfDocument": false,
+    "IsEndOfProject": false,
+    "MinimumDifference": 4
+  },
+  {
+    "SectionTitle": "Totale uitgaven",
+    "CheckString": "Totale uitgaven",
+    "AppendNewLines": false,
+    "IsEndOfDocument": false,
+    "IsEndOfProject": false,
+    "MinimumDifference": 2
+  },
+  {
+    "SectionTitle": "Specifieke vragen ontwikkeling",
+    "CheckString": "Geef bij het Ontwikkelingsproject aan: . Wat de technische nieuwheid is van het project . Wat het technisch probleem / knelpunt is waaraan u wilt gaan werken . Wat de door u gekozen of te onderzoeken oplossingsrichting is . Wat het technisch nieuwe werkingsprincipe is",
+    "AppendNewLines": false,
+    "IsEndOfDocument": false,
+    "IsEndOfProject": false,
+    "MinimumDifference": 3
+  },
+  {
+    "SectionTitle": "- Technische knelpunten programmatuur",
+    "CheckString": ". Technische knelpunten programmatuur Geef aan welke concrete technische knelpunten u zelf tijdens het ontwikkelen van de programmatuur moet oplossen om het gewenste projectresultaat te bereiken. Vermeld geen aanleidingen, algemene randvoorwaarden of functionele eisen van de programmatuur.* (max 1.500 tekens)",
+    "AppendNewLines": false,
+    "IsEndOfDocument": false,
+    "IsEndOfProject": false,
+    "MinimumDifference": 3
+  },
+  {
+    "SectionTitle": "- Oplossingsrichtingen programmatuur",
+    "CheckString": ". Oplossingsrichtingen programmatuur Geef voor ieder genoemd technisch knelpunt aan wat u specifiek zelf gaat ontwikkelen om het knelpunt op te lossen. * (maximaal 1.500 tekens)",
+    "AppendNewLines": false,
+    "IsEndOfDocument": false,
+    "IsEndOfProject": false,
+    "MinimumDifference": 3
+  },
+  {
+    "SectionTitle": "Technische nieuwheid programmatuur",
+    "CheckString": "Technische nieuwheid programmatuur",
+    "AppendNewLines": false,
+    "IsEndOfDocument": false,
+    "IsEndOfProject": false,
+    "MinimumDifference": 3
+  },
+  {
+    "SectionTitle": "- Programmeertalen",
+    "CheckString": ". Programmeertalen, ontwikkelomgevingen en tools Geef aan welke programmeertalen, ontwikkelomgevingen en tools u gebruikt bij de ontwikkeling van technisch nieuwe programmatuur. * (maximaal 1.500 tekens)",
+    "AppendNewLines": false,
+    "IsEndOfDocument": false,
+    "IsEndOfProject": false,
+    "MinimumDifference": 2
+  },
+  {
+    "SectionTitle": "- Technische nieuwheid",
+    "CheckString": " Technische nieuwheid Geef aan waarom de hiervoor genoemde oplossingsrichtingen technisch nieuw voor u zijn. Oftewel beschrijf waarom het project technisch vernieuwend en uitdagend is en geef aan welke technische risico\u2019s en onzekerheden u hierbij verwacht. Om technische risico\u2019s en onzekerheden in te schatten kijkt RVO.nl naar de stand van de technologie. * (maximaal 1.500 tekens)",
+    "AppendNewLines": false,
+    "IsEndOfDocument": false,
     "IsEndOfProject": false,
     "MinimumDifference": 2
   }
