@@ -64,5 +64,7 @@ namespace ProjectExtractor.Util
             { return string.Empty; }
             return File.ReadAllText(fullPath);
         }
+
+        public static string CurrentFolderHash { get { return SECTION_FOLDER_HASH; } }
     }
 }

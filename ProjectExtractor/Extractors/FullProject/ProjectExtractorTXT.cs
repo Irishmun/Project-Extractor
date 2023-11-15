@@ -340,7 +340,7 @@ namespace ProjectExtractor.Extractors.FullProject
                 string foundRes = RemoveMatching(check, comparisons[i].CheckString, out string resultFoundRemaining, safetyCheck: safetyCheck);//, comparisons[i].AppendNewLines);
                 if (!foundRes.Equals(check))//it removed something
                 {
-                    string[] foundRemainingWords = resultFoundRemaining.Trim().Split(' ');
+                    string[] foundRemainingWords = string.IsNullOrWhiteSpace(resultFoundRemaining) ? new string[0] : resultFoundRemaining.Trim().Split(' ');
                     string[] checkStringWords = comparisons[i].CheckString.Trim().Split(' ');
                     int dif = checkStringWords.Length - foundRemainingWords.Length;
                     if (dif >= comparisons[i].MinimumDifference || comparisons[i].IsEndOfDocument == true)

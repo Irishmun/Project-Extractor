@@ -217,11 +217,11 @@ namespace ProjectExtractor
             TabPage_Extractor.ToolTipText = "Main screen for extraction";
             TabPage_Extractor.UseVisualStyleBackColor = true;
             // 
-            // BT_DebugProjectWithJson
+            // BT_DebugComputeHash
             // 
             BT_DebugComputeHash.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
             BT_DebugComputeHash.Location = new System.Drawing.Point(397, 199);
-            BT_DebugComputeHash.Name = "BT_DebugProjectWithJson";
+            BT_DebugComputeHash.Name = "BT_DebugComputeHash";
             BT_DebugComputeHash.Size = new System.Drawing.Size(161, 25);
             BT_DebugComputeHash.TabIndex = 105;
             BT_DebugComputeHash.Text = "[DEBUG] &Compute Hash";
@@ -275,6 +275,7 @@ namespace ProjectExtractor
             // 
             // CB_DebugIncludeWhiteSpace
             // 
+            CB_DebugIncludeWhiteSpace.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
             CB_DebugIncludeWhiteSpace.AutoSize = true;
             CB_DebugIncludeWhiteSpace.Location = new System.Drawing.Point(413, 234);
             CB_DebugIncludeWhiteSpace.Name = "CB_DebugIncludeWhiteSpace";
@@ -460,6 +461,8 @@ namespace ProjectExtractor
             // CB_SavePDFPath
             // 
             CB_SavePDFPath.AutoSize = true;
+            CB_SavePDFPath.Checked = true;
+            CB_SavePDFPath.CheckState = System.Windows.Forms.CheckState.Checked;
             CB_SavePDFPath.Location = new System.Drawing.Point(6, 22);
             CB_SavePDFPath.Name = "CB_SavePDFPath";
             CB_SavePDFPath.Size = new System.Drawing.Size(120, 19);

@@ -76,7 +76,7 @@
     "CheckString": "Wordt er voor dit product of proces mede programmatuur ontwikkeld? * Ja Nee",
     "AppendNewLines": false,
     "IsEndOfDocument": false,
-    "IsEndOfProject": true,
+    "IsEndOfProject": false,
     "MinimumDifference": 2
   },
   {
@@ -86,5 +86,29 @@
     "IsEndOfDocument": true,
     "IsEndOfProject": false,
     "MinimumDifference": 2
+  },
+  {
+    "SectionTitle": "Omschrijving kosten",
+    "CheckString": "Omschrijving van de kosten (maximaal 500 tekens)",
+    "AppendNewLines": false,
+    "IsEndOfDocument": false,
+    "IsEndOfProject": false,
+    "MinimumDifference": 4
+  },
+  {
+    "SectionTitle": "Totale kosten",
+    "CheckString": "Totale kosten",
+    "AppendNewLines": false,
+    "IsEndOfDocument": false,
+    "IsEndOfProject": false,
+    "MinimumDifference": 2
+  },
+  {
+    "SectionTitle": "Omschrijving uitgaven",
+    "CheckString": "Omschrijving van de kosten (maximaal 500 tekens)",
+    "AppendNewLines": false,
+    "IsEndOfDocument": false,
+    "IsEndOfProject": false,
+    "MinimumDifference": 4
   }
 ]

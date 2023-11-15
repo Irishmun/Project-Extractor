@@ -830,12 +830,12 @@ namespace ProjectExtractor
         private void BT_DebugComputeHash_Click(object sender, EventArgs e)
         {
 #if DEBUG
-            _extractor = GetProjectExtractorSetting();
             if (SectionsFolder.IsHashDifferent() == true)
             {
                 MessageBox.Show("Hash has changed");
             }
             SectionsFolder.SetFolderHash();
+            UpdateStatus("hash: " + SectionsFolder.CurrentFolderHash);
 #endif
         }
         #endregion
