@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Text;
 
 namespace ProjectExtractor
 {
@@ -16,7 +17,7 @@ namespace ProjectExtractor
         private const string INI_KEY_SAVE_PDF = "Save_PDF_Path", INI_KEY_SAVE_EXTRACT = "Save_Extract_Path", INI_KEY_DISABLE_EXTRACT = "DisableExtractionPath";
         private const string INI_KEY_PDF_PATH = "PDF_Path", INI_KEY_EXTRACT_PATH = "Extract_Path";
 
-        private const string INI_LIST_SEPARATOR = "; ";
+        private const string INI_LIST_SEPARATOR = "; ", INI_DICT_SEPARATOR = ": ";//dict separator is for the key: value pair (e.g. "listviewLabel: checked; ")
 
         private IniFile _ini;
 
@@ -29,16 +30,15 @@ namespace ProjectExtractor
         private string _sectionsEndProject;
         private string _chapterStart, _chapterEnd, _totalHoursKeyword;
         private string _PDFPath, _ExtractionPath;
-        private List<string> _keywords;
-        private List<string> _sections;
+        private Dictionary<string, bool> _keywords, _sections;
 
         /// <summary>The Settings for the program</summary>
         public Settings()
         {
             _ini = new IniFile();
             _iniPath = _ini.Path;
-            _sections = new List<string>();
-            _keywords = new List<string>();
+            _sections = new Dictionary<string, bool>();
+            _keywords = new Dictionary<string, bool>();
             InitializeSettings();
         }
 
@@ -75,6 +75,19 @@ namespace ProjectExtractor
         /// <param name="Section">section that the key is in</param>
         /// <param name="isStarting">is the this value set while starting up?</param>
         public void UpdateSettingIfNotStarting<T>(ref T setting, T newValue, string Key, string Section = null, bool isStarting = false)
+        {
+            if (isStarting == true)
+            { return; }
+            UpdateSetting(ref setting, newValue, Key, Section);
+        }
+        /// <summary>Update the setting value and the setting by key in the ini file, but only if NOT starting</summary>
+        /// <typeparam name="T">Type of the value</typeparam>
+        /// <param name="setting">setting value to update</param>
+        /// <param name="newValue">value to set to</param>
+        /// <param name="Key">key of the value to set in the ini file</param>
+        /// <param name="Section">section that the key is in</param>
+        /// <param name="isStarting">is the this value set while starting up?</param>
+        public void UpdateSettingIfNotStarting(ref Dictionary<string, bool> setting, Dictionary<string, bool> newValue, string Key, string Section = null, bool isStarting = false)
         {
             if (isStarting == true)
             { return; }
@@ -122,8 +135,8 @@ namespace ProjectExtractor
         private void InitializeSettings()
         {
             _exportFileExtension = _ini.ReadIfExists(INI_KEY_EXTENSION, INI_SECTION_EXPORT);//get export file extension
-            _keywords = _ini.ReadArrayIfExists(INI_KEY_KEYWORDS, INI_LIST_SEPARATOR, INI_SECTION_EXPORT).ToList();//get keywords list
-            _sections = _ini.ReadArrayIfExists(INI_KEY_SECTIONS, INI_LIST_SEPARATOR, INI_SECTION_EXPORT).ToList();//get sections list
+            _keywords = ParseIniDictionary(_ini.ReadIfExists(INI_KEY_KEYWORDS, INI_SECTION_EXPORT));//get keywords list
+            _sections = ParseIniDictionary(_ini.ReadIfExists(INI_KEY_SECTIONS, INI_SECTION_EXPORT));//get sections list
             _sectionsEndProject = _ini.ReadIfExists(INI_KEY_END_PROJECT, INI_SECTION_EXPORT);//getsections project end keyword
             _selectedFileVersionIndex = _ini.ReadIntIfExists(INI_KEY_VERSION, INI_SECTION_EXPORT);//get project file version combobox index
             _chapterStart = _ini.ReadIfExists(INI_KEY_CHAPTER_START, INI_SECTION_CHAPTERS);//get start chapter text
@@ -175,6 +188,22 @@ namespace ProjectExtractor
             setting = newValue;
             _ini.Write(Key, setting.ToString(), Section);
         }
+        /// <summary>Update the setting value and the setting by key in the ini file</summary>
+        /// <typeparam name="T">Type of the value</typeparam>
+        /// <param name="setting">setting value to update</param>
+        /// <param name="newValue">value to set to</param>
+        /// <param name="Key">key of the value to set in the ini file</param>
+        /// <param name="Section">section that the key is in</param>
+        private void UpdateSetting(ref Dictionary<string, bool> setting, Dictionary<string, bool> newValue, string Key, string Section = null)
+        {
+            setting = newValue;
+            List<string> str = new List<string>();
+            foreach (KeyValuePair<string, bool> item in setting)
+            {
+                str.Add($"{item.Key}{INI_DICT_SEPARATOR}{_ini.boolToIniString(item.Value)}");
+            }
+            _ini.Write(Key, string.Join(INI_LIST_SEPARATOR, str), Section);
+        }
         /// <summary>Update the setting boolean value and the setting by key in the ini file</summary>
         /// <param name="setting">setting value to update</param>
         /// <param name="newValue">value to set to</param>
@@ -196,6 +225,34 @@ namespace ProjectExtractor
             _ini.WriteInt(Key, setting, Section);
         }
 
+        /// <summary>Parse the given key as a dictionary</summary>
+        /// <param name="Key">key of the value to set in the ini file</param>
+        /// <param name="Section">section that the key is in</param>
+        /// <param name="defaultValue">default boolean value if no value can be found</param>
+        /// <returns></returns>
+        public Dictionary<string, bool> ParseIniDictionary(string value, bool defaultValue = true)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            { return null; }
+            Dictionary<string, bool> res = new Dictionary<string, bool>();
+
+            string[] keys = value.Split(INI_LIST_SEPARATOR);
+            foreach (string key in keys)
+            {
+                string[] keyValue = key.Split(INI_DICT_SEPARATOR);
+                if (keyValue.Length < 2)
+                {//no dictionary value in this list, fall back to default
+                    res.Add(keyValue[0], defaultValue);
+                }
+                else
+                {//on if checked
+                    res.Add(keyValue[0], _ini.parseIniBool(keyValue[1]));
+                }
+            }
+
+            return res;
+        }
+
         public bool SavePDFPath { get => _savePDFPath; set => UpdateSettingIfNotStarting(ref _savePDFPath, value, INI_KEY_SAVE_PDF, INI_SECTION_PATHS, _isStarting); }
         public bool SaveExtractPath { get => _saveExtractPath; set => UpdateSettingIfNotStarting(ref _saveExtractPath, value, INI_KEY_SAVE_EXTRACT, INI_SECTION_PATHS, _isStarting); }
         public bool DisableExtractionPath { get => _disableExtractionPath; set => UpdateSettingIfNotStarting(ref _disableExtractionPath, value, INI_KEY_DISABLE_EXTRACT, INI_SECTION_PATHS, _isStarting); }
@@ -209,10 +266,10 @@ namespace ProjectExtractor
         public string TotalHoursKeyword { get => _totalHoursKeyword; set => UpdateSettingIfNotStarting(ref _totalHoursKeyword, value, INI_KEY_TOTAL_HOURS, INI_SECTION_HOURS, _isStarting); }
         public string PDFPath { get => _PDFPath; set => WriteToOrDeleteFromIniIfNotStarting(ref _PDFPath, value, INI_KEY_PDF_PATH, _savePDFPath, INI_SECTION_PATHS, _isStarting); }
         public string ExtractionPath { get => _ExtractionPath; set => WriteToOrDeleteFromIniIfNotStarting(ref _ExtractionPath, value, INI_KEY_EXTRACT_PATH, _saveExtractPath, INI_SECTION_PATHS, _isStarting); }
-        public List<string> KeywordsList { get => _keywords; set => UpdateSettingIfNotStarting(ref _keywords, value, INI_KEY_KEYWORDS, INI_SECTION_EXPORT, _isStarting); }
-        public List<string> SectionsList { get => _sections; set => UpdateSettingIfNotStarting(ref _sections, value, INI_KEY_SECTIONS, INI_SECTION_EXPORT, _isStarting); }
-        public string KeywordsString { get => string.Join(INI_LIST_SEPARATOR, _keywords); set => KeywordsList = value.Split(INI_LIST_SEPARATOR).ToList(); }
-        public string SectionsString { get => string.Join(INI_LIST_SEPARATOR, _sections); set => SectionsList = value.Split(INI_LIST_SEPARATOR).ToList(); }
+        public Dictionary<string, bool> KeywordsList { get => _keywords; set => UpdateSettingIfNotStarting(ref _keywords, value, INI_KEY_KEYWORDS, INI_SECTION_EXPORT, _isStarting); }
+        public Dictionary<string, bool> SectionsList { get => _sections; set => UpdateSettingIfNotStarting(ref _sections, value, INI_KEY_SECTIONS, INI_SECTION_EXPORT, _isStarting); }
+        public string KeywordsString { get => string.Join(INI_LIST_SEPARATOR, _keywords); set => KeywordsList = ParseIniDictionary(value); }
+        public string SectionsString { get => string.Join(INI_LIST_SEPARATOR, _sections); set => SectionsList = ParseIniDictionary(value); }
 
         public bool IsStarting { get => _isStarting; set => _isStarting = value; }
     }

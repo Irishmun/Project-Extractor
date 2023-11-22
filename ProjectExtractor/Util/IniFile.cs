@@ -106,16 +106,7 @@ namespace ProjectExtractor.Util
         public bool ReadBool(string Key, string Section = null)
         {
             string val = Read(Key, Section);
-            switch (val.ToLower())
-            {
-                case "1":
-                case "yes":
-                case "true":
-                case "on":
-                    return true;
-                default:
-                    return false;
-            }
+            return parseIniBool(val);
         }
         /// <summary>Gets the value as a boolean if the key exists</summary>
         /// <param name="Key">The key to look for</param>
@@ -133,7 +124,38 @@ namespace ProjectExtractor.Util
         /// <param name="Section">section to write to</param>
         public void WriteBool(string Key, bool value, string Section = null)
         {
-            Write(Key, value ? "on" : "off", Section);
+            Write(Key, boolToIniString(value), Section);
+        }
+
+        /// <summary>converts the boolean value to a string compatible with the <see cref="parseIniBool(string)"/> method</summary>
+        /// <param name="val">value to convert</param>
+        public string boolToIniString(bool val)
+        {
+            if (val == true)
+            {
+                return "on";
+            }
+            else
+            {
+                return "off";
+            }
+        }
+
+        /// <summary>parses an ini file's bool string</summary>
+        /// <param name="val">value to parse</param>
+        /// <returns>true if it is any of the following, false if not. [1, yes, true, on]</returns>
+        public bool parseIniBool(string val)
+        {
+            switch (val.ToLower())
+            {
+                case "1":
+                case "yes":
+                case "true":
+                case "on":
+                    return true;
+                default:
+                    return false;
+            }
         }
 
         /// <summary>Gets the value as an integer</summary>
