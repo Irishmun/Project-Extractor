@@ -67,6 +67,16 @@ namespace ProjectExtractor
             if (_settings.DoesIniExist() == false)
             {//no ini file yet, so we set with all the defaults
                 _settings.CreateDefaultIni(CB_SavePDFPath.Checked, CB_SaveExtractionPath.Checked, CB_DisableExtractionPath.Checked, CB_WriteKeywordsToFile.Checked, CB_TotalHoursEnabled.Checked, CbB_FileVersion.SelectedIndex, "txt", TB_SectionsEndProject.Text, TB_Chapter.Text, TB_StopChapter.Text, TB_TotalHours.Text);
+                //check all keywords
+                foreach (ListViewItem item in LV_Keywords.Items)
+                {
+                    item.Checked = true;
+                }
+                //check all sections
+                foreach (ListViewItem item in LV_Sections.Items)
+                {
+                    item.Checked = true;
+                }
                 return;
             }
             else
@@ -307,6 +317,12 @@ namespace ProjectExtractor
             {
                 if (BothPathsExists())
                 {
+                    if (string.IsNullOrWhiteSpace(TB_StopChapter.Text) == true || string.IsNullOrWhiteSpace(TB_Chapter.Text) == true)
+                    {
+                        MessageBox.Show("One or more of the \"Chapters\" textboxes are empty! be sure to fill these in.\n"+
+                            "[default values: \"Fasering werkzaamheden\" & \"Update project\"]", "Empty Chapter box(es)", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                        return;
+                    }
                     _keywords = ConvertCheckedListViewItemsToArray(LV_Keywords);
                     _extractor = GetDetailExportSetting();
                     SetButtonsEnabled(false);
