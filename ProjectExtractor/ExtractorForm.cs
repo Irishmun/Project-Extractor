@@ -4,6 +4,7 @@ using ProjectExtractor.Extractors.Detail;
 using ProjectExtractor.Extractors.FullProject;
 using ProjectExtractor.Util;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -94,17 +95,35 @@ namespace ProjectExtractor
                 if (_settings.KeywordsList?.Count > 0)
                 {//set keywords listview
                     LV_Keywords.Clear();
-                    foreach (string item in _settings.KeywordsList)
+                    foreach (KeyValuePair<string, bool> item in _settings.KeywordsList)
                     {
-                        LV_Keywords.Items.Add(new ListViewItem(item));
+                        ListViewItem li = new ListViewItem(item.Key);
+                        li.Checked = item.Value;
+                        LV_Keywords.Items.Add(li);
+                    }
+                }
+                else
+                {
+                    foreach (ListViewItem item in LV_Keywords.Items)
+                    {
+                        item.Checked = true;
                     }
                 }
                 if (_settings.SectionsList?.Count > 0)
                 {//set sections listview                
                     LV_Sections.Clear();
-                    foreach (string item in _settings.SectionsList)
+                    foreach (KeyValuePair<string, bool> item in _settings.SectionsList)
                     {
-                        LV_Sections.Items.Add(new ListViewItem(item));
+                        ListViewItem li = new ListViewItem(item.Key);
+                        li.Checked = item.Value;
+                        LV_Sections.Items.Add(li);
+                    }
+                }
+                else
+                {
+                    foreach (ListViewItem item in LV_Sections.Items)
+                    {
+                        item.Checked = true;
                     }
                 }
                 //set sections end project textbox
@@ -189,9 +208,12 @@ namespace ProjectExtractor
         }
         private void LV_Keywords_AfterLabelEdit(object sender, LabelEditEventArgs e)
         {
-            _settings.KeywordsList = ConvertListViewItemsToList(LV_Keywords);
+            _settings.KeywordsList = ConvertListViewItemsToDictionary(LV_Keywords, e);
         }
-
+        private void LV_Keywords_Leave(object sender, EventArgs e)
+        {
+            _settings.KeywordsList = ConvertListViewItemsToDictionary(LV_Keywords);
+        }
         //full project extraction
         private void LV_Sections_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
         {
@@ -209,7 +231,7 @@ namespace ProjectExtractor
         }
         private void LV_Sections_AfterLabelEdit(object sender, LabelEditEventArgs e)
         {
-            _settings.SectionsList = ConvertListViewItemsToList(LV_Sections);
+            _settings.SectionsList = ConvertListViewItemsToDictionary(LV_Sections, e);
         }
         #endregion
         #region Button events
@@ -285,7 +307,7 @@ namespace ProjectExtractor
             {
                 if (BothPathsExists())
                 {
-                    _keywords = ConvertListViewItemsToArray(LV_Keywords);
+                    _keywords = ConvertCheckedListViewItemsToArray(LV_Keywords);
                     _extractor = GetDetailExportSetting();
                     SetButtonsEnabled(false);
                     backgroundWorker.RunWorkerAsync("DETAIL");
@@ -310,6 +332,7 @@ namespace ProjectExtractor
         private void BT_KeywordsNew_Click(object sender, EventArgs e)
         {
             ListViewItem newItem = LV_Keywords.Items.Add(new ListViewItem());
+            newItem.Checked = true;
             newItem.BeginEdit();
         }
         private void BT_KeywordsEdit_Click(object sender, EventArgs e)
@@ -319,7 +342,7 @@ namespace ProjectExtractor
         private void BT_KeywordsDelete_Click(object sender, EventArgs e)
         {
             LV_Keywords.Items.RemoveAt(LV_Keywords.SelectedIndices[0]);
-            _settings.KeywordsList = ConvertListViewItemsToList(LV_Keywords);
+            _settings.KeywordsList = ConvertListViewItemsToDictionary(LV_Keywords);
         }
         private void BT_KeywordsUp_Click(object sender, EventArgs e)
         {
@@ -330,7 +353,6 @@ namespace ProjectExtractor
                 LV_Keywords.Items.RemoveAt(LV_Keywords.SelectedIndices[0]);
                 LV_Keywords.Items.Insert(index - 1, selected);
             }
-            _settings.KeywordsList = ConvertListViewItemsToList(LV_Keywords);
         }
         private void BT_KeywordsDown_Click(object sender, EventArgs e)
         {
@@ -341,7 +363,7 @@ namespace ProjectExtractor
                 LV_Keywords.Items.RemoveAt(LV_Keywords.SelectedIndices[0]);
                 LV_Keywords.Items.Insert(index + 1, selected);
             }
-            _settings.KeywordsList = ConvertListViewItemsToList(LV_Keywords);
+            _settings.KeywordsList = ConvertListViewItemsToDictionary(LV_Keywords);
         }
 
         //full project extraction setting events
@@ -357,7 +379,7 @@ namespace ProjectExtractor
         private void BT_SectionsDelete_Click(object sender, EventArgs e)
         {
             LV_Sections.Items.RemoveAt(LV_Sections.SelectedIndices[0]);
-            _settings.KeywordsList = ConvertListViewItemsToList(LV_Sections);
+            _settings.KeywordsList = ConvertListViewItemsToDictionary(LV_Sections);
         }
         private void BT_SectionsUp_Click(object sender, EventArgs e)
         {
@@ -368,7 +390,7 @@ namespace ProjectExtractor
                 LV_Sections.Items.RemoveAt(LV_Sections.SelectedIndices[0]);
                 LV_Sections.Items.Insert(index - 1, selected);
             }
-            _settings.KeywordsList = ConvertListViewItemsToList(LV_Sections);
+            _settings.KeywordsList = ConvertListViewItemsToDictionary(LV_Sections);
         }
         private void BT_SectionsDown_Click(object sender, EventArgs e)
         {
@@ -379,7 +401,7 @@ namespace ProjectExtractor
                 LV_Sections.Items.RemoveAt(LV_Sections.SelectedIndices[0]);
                 LV_Sections.Items.Insert(index + 1, selected);
             }
-            _settings.KeywordsList = ConvertListViewItemsToList(LV_Sections);
+            _settings.KeywordsList = ConvertListViewItemsToDictionary(LV_Sections);
         }
 
         //update program
@@ -606,27 +628,61 @@ namespace ProjectExtractor
             return builder.ToString();
         }
         /// <summary>Converts the keyword arrray from the Keyword ListView to a string array</summary>
-        private string[] ConvertListViewItemsToArray(ListView list)
+        private string[] ConvertListViewItemsToArray(ListView list, LabelEditEventArgs e = null)
         {
-            string[] res = new string[list.Items.Count];
+            return ConvertCheckedListViewItemsToArray(list, e, true);
+        }
+
+        private string[] ConvertCheckedListViewItemsToArray(ListView list, LabelEditEventArgs e = null, bool allchecked = false)
+        {
+            List<string> res = new List<string>();
             for (int i = 0; i < list.Items.Count; i++)
             {
                 try
                 {
                     ListViewItem item = list.Items[i];
-                    res[i] = item.Text;
+                    if (item.Checked == true || allchecked == true)
+                    {
+                        if (e != null && i == e.Item)
+                        {
+                            res.Add(e.Label);
+                        }
+                        else
+                        {
+                            res.Add(item.Text);
+                        }
+                    }
                 }
                 catch (Exception)
                 {
                     throw;
                 }
             }
+            return res.ToArray();
+        }
+
+        private Dictionary<string, bool> ConvertListViewItemsToDictionary(ListView list, LabelEditEventArgs e = null)
+        {
+            Dictionary<string, bool> res = new Dictionary<string, bool>();
+            for (int i = 0; i < list.Items.Count; i++)
+            {
+                try
+                {
+                    ListViewItem item = list.Items[i];
+                    res.Add(item.Text, item.Checked);
+                }
+                catch (Exception)
+                {
+
+                    throw;
+                }
+            }
             return res;
         }
 
-        private System.Collections.Generic.List<string> ConvertListViewItemsToList(ListView list)
+        private System.Collections.Generic.List<string> ConvertListViewItemsToList(ListView list, LabelEditEventArgs e = null)
         {
-            return ConvertListViewItemsToArray(list).ToList();
+            return ConvertListViewItemsToArray(list, e).ToList();
         }
         /// <summary>Returns whether both the file and the extraction path exists</summary>
         private bool BothPathsExists()
@@ -847,6 +903,7 @@ namespace ProjectExtractor
             UpdateStatus("hash: " + SectionsFolder.CurrentFolderHash);
 #endif
         }
+
         #endregion
 
     }
