@@ -161,7 +161,7 @@ namespace ProjectExtractor.Extractors
                 {
                     //try and find a datetime text matching the smallest to the largest structure
                     //^([0-9]{2}-[0-9]{2}-[0-9]{4})
-                    Match match = Regex.Match(lines[i], @"[0-9]{1,2}-[0-9]{1,2}-[0-9]{2,4}");
+                    Match match = Regex.Match(lines[i], @"[0-9]{1,2}(-|/)[0-9]{1,2}(-|/)[0-9]{2,4}");
                     if (!string.IsNullOrEmpty(match.Value))
                     {
                         DateTime current = DateTime.Parse(match.Value);//, new System.Globalization.CultureInfo("nl", false));
