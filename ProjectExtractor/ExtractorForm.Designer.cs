@@ -620,8 +620,6 @@ namespace ProjectExtractor
             // CB_WriteKeywordsToFile
             // 
             CB_WriteKeywordsToFile.AutoSize = true;
-            CB_WriteKeywordsToFile.Checked = true;
-            CB_WriteKeywordsToFile.CheckState = System.Windows.Forms.CheckState.Checked;
             CB_WriteKeywordsToFile.Location = new System.Drawing.Point(6, 22);
             CB_WriteKeywordsToFile.Name = "CB_WriteKeywordsToFile";
             CB_WriteKeywordsToFile.Size = new System.Drawing.Size(144, 19);
@@ -662,7 +660,7 @@ namespace ProjectExtractor
             TB_StopChapter.Size = new System.Drawing.Size(233, 23);
             TB_StopChapter.TabIndex = 2;
             TB_StopChapter.Text = "Update project";
-            TB_StopChapter.Leave += TB_StopChapter_Leave;
+            TB_StopChapter.TextChanged += TB_StopChapter_TextChanged;
             // 
             // label3
             // 
@@ -682,7 +680,7 @@ namespace ProjectExtractor
             TB_Chapter.Size = new System.Drawing.Size(233, 23);
             TB_Chapter.TabIndex = 0;
             TB_Chapter.Text = "Fasering werkzaamheden";
-            TB_Chapter.Leave += TB_Chapter_Leave;
+            TB_Chapter.TextChanged += TB_Chapter_TextChanged;
             // 
             // groupBox2
             // 
@@ -739,6 +737,10 @@ namespace ProjectExtractor
             // LV_Keywords
             // 
             LV_Keywords.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            listViewItem1.StateImageIndex = 0;
+            listViewItem2.StateImageIndex = 0;
+            listViewItem3.StateImageIndex = 0;
+            listViewItem4.StateImageIndex = 0;
             LV_Keywords.Items.AddRange(new System.Windows.Forms.ListViewItem[] { listViewItem1, listViewItem2, listViewItem3, listViewItem4 });
             LV_Keywords.LabelEdit = true;
             LV_Keywords.Location = new System.Drawing.Point(6, 22);

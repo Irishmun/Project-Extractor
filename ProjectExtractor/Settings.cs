@@ -121,28 +121,28 @@ namespace ProjectExtractor
         /// <summary>Initialize the settings and update the correct fields</summary>
         private void InitializeSettings()
         {
-            _exportFileExtension = _ini.ReadIfExists("ExportExtension", "Export");//get export file extension
-            _keywords = _ini.ReadArrayIfExists("Keywords", INI_LIST_SEPARATOR, "Export").ToList();//get keywords list
-            _sections = _ini.ReadArrayIfExists("Sections", INI_LIST_SEPARATOR, "Export").ToList();//get sections list
-            _sectionsEndProject = _ini.ReadIfExists("Sections_Project_End", "Export");//getsections project end keyword
-            _selectedFileVersionIndex = _ini.ReadIntIfExists("Project_Version", "Export");//get project file version combobox index
-            _chapterStart = _ini.ReadIfExists("ChapterStart", "Chapters");//get start chapter text
-            _chapterEnd = _ini.ReadIfExists("ChapterEnd", "Chapters");//get end chapter text
-            _writeKeywordsToFile = _ini.ReadBoolIfExists("Write_Keywords_To_File", "Export");//get if keywords should be written
-            _WriteTotalHours = _ini.ReadBoolIfExists("WriteTotalHours", "Hours");//get if total hours should be written
-            _totalHoursKeyword = _ini.ReadIfExists("TotalHoursKeyword", "Hours");//get keyword for total hours
-            _disableExtractionPath = _ini.ReadBoolIfExists("DisableExtractionPath", "Paths");//get disable extraction path
+            _exportFileExtension = _ini.ReadIfExists(INI_KEY_EXTENSION, INI_SECTION_EXPORT);//get export file extension
+            _keywords = _ini.ReadArrayIfExists(INI_KEY_KEYWORDS, INI_LIST_SEPARATOR, INI_SECTION_EXPORT).ToList();//get keywords list
+            _sections = _ini.ReadArrayIfExists(INI_KEY_SECTIONS, INI_LIST_SEPARATOR, INI_SECTION_EXPORT).ToList();//get sections list
+            _sectionsEndProject = _ini.ReadIfExists(INI_KEY_END_PROJECT, INI_SECTION_EXPORT);//getsections project end keyword
+            _selectedFileVersionIndex = _ini.ReadIntIfExists(INI_KEY_VERSION, INI_SECTION_EXPORT);//get project file version combobox index
+            _chapterStart = _ini.ReadIfExists(INI_KEY_CHAPTER_START, INI_SECTION_CHAPTERS);//get start chapter text
+            _chapterEnd = _ini.ReadIfExists(INI_KEY_CHAPTER_END, INI_SECTION_CHAPTERS);//get end chapter text
+            _writeKeywordsToFile = _ini.ReadBoolIfExists(INI_KEY_WRITE_KEYWORDS, INI_SECTION_EXPORT);//get if keywords should be written
+            _WriteTotalHours = _ini.ReadBoolIfExists(INI_KEY_WRITE_HOURS, INI_SECTION_HOURS);//get if total hours should be written
+            _totalHoursKeyword = _ini.ReadIfExists(INI_KEY_TOTAL_HOURS, INI_SECTION_HOURS);//get keyword for total hours
+            _disableExtractionPath = _ini.ReadBoolIfExists(INI_KEY_DISABLE_EXTRACT, INI_SECTION_PATHS);//get disable extraction path
             //get extraction path setting if needed
-            _saveExtractPath = _ini.ReadBoolIfExists("Save_Extract_Path", "Paths");
+            _saveExtractPath = _ini.ReadBoolIfExists(INI_KEY_SAVE_EXTRACT, INI_SECTION_PATHS);
             if (_saveExtractPath == true)
             {
-                _ExtractionPath = _ini.ReadIfExists("Extract_Path", "Paths");
+                _ExtractionPath = _ini.ReadIfExists(INI_KEY_EXTRACT_PATH, INI_SECTION_PATHS);
             }
             //get pdf file path setting if needed
-            _savePDFPath = _ini.ReadBoolIfExists("Save_PDF_Path", "Paths");
-            if (_savePDFPath == true && _ini.KeyExists("PDF_Path", "Paths"))
+            _savePDFPath = _ini.ReadBoolIfExists(INI_KEY_SAVE_PDF, INI_SECTION_PATHS);
+            if (_savePDFPath == true && _ini.KeyExists(INI_KEY_PDF_PATH, INI_SECTION_PATHS))
             {
-                _PDFPath = _ini.Read("PDF_Path", "Paths");
+                _PDFPath = _ini.Read(INI_KEY_PDF_PATH, INI_SECTION_PATHS);
             }
         }
         /// <summary>Saves or deletes the key (if it exists) for the given string, depending on the bool value</summary>
@@ -204,8 +204,8 @@ namespace ProjectExtractor
         public int SelectedFileVersionIndex { get => _selectedFileVersionIndex; set => UpdateSettingIfNotStarting(ref _selectedFileVersionIndex, value, INI_KEY_VERSION, INI_SECTION_EXPORT, _isStarting); }
         public string ExportFileExtension { get => _exportFileExtension; set => UpdateSettingIfNotStarting(ref _exportFileExtension, value, INI_KEY_EXTENSION, INI_SECTION_EXPORT, _isStarting); }
         public string SectionsEndProject { get => _sectionsEndProject; set => UpdateSettingIfNotStarting(ref _sectionsEndProject, value, INI_KEY_END_PROJECT, INI_SECTION_EXPORT, _isStarting); }
-        public string ChapterStart { get => _chapterStart; set => UpdateSettingIfNotStarting(ref _chapterStart, value, INI_KEY_CHAPTER_START, INI_SECTION_EXPORT, _isStarting); }
-        public string ChapterEnd { get => _chapterEnd; set => UpdateSettingIfNotStarting(ref _chapterEnd, value, INI_KEY_CHAPTER_END, INI_SECTION_EXPORT, _isStarting); }
+        public string ChapterStart { get => _chapterStart; set => UpdateSettingIfNotStarting(ref _chapterStart, value, INI_KEY_CHAPTER_START, INI_SECTION_CHAPTERS, _isStarting); }
+        public string ChapterEnd { get => _chapterEnd; set => UpdateSettingIfNotStarting(ref _chapterEnd, value, INI_KEY_CHAPTER_END, INI_SECTION_CHAPTERS, _isStarting); }
         public string TotalHoursKeyword { get => _totalHoursKeyword; set => UpdateSettingIfNotStarting(ref _totalHoursKeyword, value, INI_KEY_TOTAL_HOURS, INI_SECTION_HOURS, _isStarting); }
         public string PDFPath { get => _PDFPath; set => WriteToOrDeleteFromIniIfNotStarting(ref _PDFPath, value, INI_KEY_PDF_PATH, _savePDFPath, INI_SECTION_PATHS, _isStarting); }
         public string ExtractionPath { get => _ExtractionPath; set => WriteToOrDeleteFromIniIfNotStarting(ref _ExtractionPath, value, INI_KEY_EXTRACT_PATH, _saveExtractPath, INI_SECTION_PATHS, _isStarting); }

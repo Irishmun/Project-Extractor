@@ -424,11 +424,16 @@ namespace ProjectExtractor
         #region TextBox events
         private void TB_Chapter_Leave(object sender, EventArgs e)
         {
-            _settings.ChapterStart = TB_Chapter.Text;
+
         }
-        private void TB_StopChapter_Leave(object sender, EventArgs e)
+        private void TB_StopChapter_TextChanged(object sender, EventArgs e)
         {
             _settings.ChapterEnd = TB_StopChapter.Text;
+        }
+
+        private void TB_Chapter_TextChanged(object sender, EventArgs e)
+        {
+            _settings.ChapterStart = TB_Chapter.Text;
         }
         private void TB_PDFLocation_TextChanged(object sender, EventArgs e)
         {
@@ -669,6 +674,10 @@ namespace ProjectExtractor
                     }
                     */
                 }
+                else
+                {
+                    BT_UpdateProgram.Visible = false;
+                }
             }
             catch (Exception)
             {
@@ -839,5 +848,6 @@ namespace ProjectExtractor
 #endif
         }
         #endregion
+
     }
 }
