@@ -41,7 +41,7 @@
     },
     {
         "SectionTitle": "- Technische knelpunten",
-        "CheckString": ". Technische knelpunten. Geef aan welke concrete technische knelpunten u zelf tijdens het ontwikkelingsproces moet oplossen om het gewenste projectresultaat te bereiken. Vermeld geen aanleidingen, algemene randvoorwaarden of functionele eisen van het project.",
+        "CheckString": "Technische knelpunten. Geef aan welke concrete technische knelpunten u zelf tijdens het ontwikkelingsproces moet oplossen om het gewenste projectresultaat te bereiken. Vermeld geen aanleidingen, algemene randvoorwaarden of functionele eisen van het project.",
         "AppendNewLines": false,
         "IsEndOfDocument": false,
         "IsEndOfProject": false,
@@ -49,7 +49,7 @@
     },
     {
         "SectionTitle": "- Probleemstelling en oplossingsrichting",
-        "CheckString": ". Technische knelpunten programmatuur. Geef aan welke concrete technische knelpunten u zelf tijdens het ontwikkelen van de programmatuur moet oplossen om het gewenste projectresultaat te bereiken. Vermeld geen aanleidingen, algemene randvoorwaarden of functionele eisen van de programmatuur.",
+        "CheckString": "Technische knelpunten programmatuur. Geef aan welke concrete technische knelpunten u zelf tijdens het ontwikkelen van de programmatuur moet oplossen om het gewenste projectresultaat te bereiken. Vermeld geen aanleidingen, algemene randvoorwaarden of functionele eisen van de programmatuur.",
         "AppendNewLines": false,
         "IsEndOfDocument": false,
         "IsEndOfProject": false,
@@ -57,7 +57,7 @@
     },
     {
         "SectionTitle": "- Technische oplossingsrichtingen",
-        "CheckString": ". Technische oplossingsrichtingen. Geef voor ieder genoemd technisch knelpunt aan wat u specifiek zelf gaat ontwikkelen om het knelpunt op te lossen.",
+        "CheckString": "Technische oplossingsrichtingen. Geef voor ieder genoemd technisch knelpunt aan wat u specifiek zelf gaat ontwikkelen om het knelpunt op te lossen.",
         "AppendNewLines": false,
         "IsEndOfDocument": false,
         "IsEndOfProject": false,
@@ -65,7 +65,7 @@
     },
     {
         "SectionTitle": "- Oplossingsrichtingen programmatuur",
-        "CheckString": ". Oplossingsrichtingen programmatuur. Geef voor ieder genoemd technisch knelpunt aan wat u specifiek zelf gaat ontwikkelen om het knelpunt op te lossen.",
+        "CheckString": "Oplossingsrichtingen programmatuur. Geef voor ieder genoemd technisch knelpunt aan wat u specifiek zelf gaat ontwikkelen om het knelpunt op te lossen.",
         "AppendNewLines": false,
         "IsEndOfDocument": false,
         "IsEndOfProject": false,
@@ -73,7 +73,7 @@
     },
     {
         "SectionTitle": "- Technische nieuwheid",
-        "CheckString": ". Technische nieuwheid. Geef aan waarom de hiervoor genoemde oplossingsrichtingen technisch nieuw voor u zijn. Oftewel beschrijf waarom het project technisch vernieuwend en uitdagend is en geef aan welke technische risico\u2019s en onzekerheden u hierbij verwacht. Om technische risico\u2019s en onzekerheden in te schatten kijkt RVO naar de stand van de technologie.",
+        "CheckString": "Technische nieuwheid. Geef aan waarom de hiervoor genoemde oplossingsrichtingen technisch nieuw voor u zijn. Oftewel beschrijf waarom het project technisch vernieuwend en uitdagend is en geef aan welke technische risico\u2019s en onzekerheden u hierbij verwacht. Om technische risico\u2019s en onzekerheden in te schatten kijkt RVO naar de stand van de technologie.",
         "AppendNewLines": false,
         "IsEndOfDocument": false,
         "IsEndOfProject": false,
@@ -81,7 +81,7 @@
     },
     {
         "SectionTitle": "- Technische nieuwheid programmatuur",
-        "CheckString": ". Programmeertalen, ontwikkelomgevingen en tools. Geef aan welke programmeertalen, ontwikkelomgevingen en tools u gebruikt bij de ontwikkeling van technisch nieuwe programmatuur.",
+        "CheckString": "Programmeertalen, ontwikkelomgevingen en tools. Geef aan welke programmeertalen, ontwikkelomgevingen en tools u gebruikt bij de ontwikkeling van technisch nieuwe programmatuur.",
         "AppendNewLines": false,
         "IsEndOfDocument": false,
         "IsEndOfProject": false,
@@ -105,7 +105,7 @@
     },
     {
         "SectionTitle": "Aanleiding",
-        "CheckString": ". Aanleiding. Geef concreet aan voor welk verschijnsel u een verklaring zoekt. Waarom kunt u geen verklaring vinden voor het verschijnsel op basis van algemeen toegankelijke kennis of de al intern aanwezige kennis?",
+        "CheckString": "Aanleiding. Geef concreet aan voor welk verschijnsel u een verklaring zoekt. Waarom kunt u geen verklaring vinden voor het verschijnsel op basis van algemeen toegankelijke kennis of de al intern aanwezige kennis?",
         "AppendNewLines": false,
         "IsEndOfDocument": false,
         "IsEndOfProject": false,
@@ -113,7 +113,7 @@
     },
     {
         "SectionTitle": "Onderzoeksvragen",
-        "CheckString": ". Onderzoeksvragen. Wat zijn concreet de onderzoeksvragen waarop u een antwoord zoekt? Uit uw onderzoeksvragen moet duidelijk naar voren komen dat het onderzoek verder gaat dan het verzamelen, observeren, vastleggen of correleren van data",
+        "CheckString": "Onderzoeksvragen. Wat zijn concreet de onderzoeksvragen waarop u een antwoord zoekt? Uit uw onderzoeksvragen moet duidelijk naar voren komen dat het onderzoek verder gaat dan het verzamelen, observeren, vastleggen of correleren van data",
         "AppendNewLines": false,
         "IsEndOfDocument": false,
         "IsEndOfProject": false,
@@ -121,7 +121,7 @@
     },
     {
         "SectionTitle": "Opzet en uitvoering",
-        "CheckString": ". Opzet en uitvoering. Wat is de praktische onderzoeksopzet? Hoe wilt u een antwoord vinden op de door u gestelde onderzoeksvragen? Omschrijf dit nauwkeurig in de door u zelf uit te voeren technische werkzaamheden.",
+        "CheckString": "Opzet en uitvoering. Wat is de praktische onderzoeksopzet? Hoe wilt u een antwoord vinden op de door u gestelde onderzoeksvragen? Omschrijf dit nauwkeurig in de door u zelf uit te voeren technische werkzaamheden.",
         "AppendNewLines": false,
         "IsEndOfDocument": false,
         "IsEndOfProject": false,
@@ -129,7 +129,7 @@
     },
     {
         "SectionTitle": "Beoogde uitkomsten",
-        "CheckString": ". Beoogde uitkomsten. Wat zijn de beoogde uitkomsten van het (deel)onderzoek? Waarom is het voor u nieuwe technische kennis?",
+        "CheckString": "Beoogde uitkomsten. Wat zijn de beoogde uitkomsten van het (deel)onderzoek? Waarom is het voor u nieuwe technische kennis?",
         "AppendNewLines": false,
         "IsEndOfDocument": false,
         "IsEndOfProject": false,
@@ -137,7 +137,7 @@
     },
     {
         "SectionTitle": "Technologiegebied onderzoek",
-        "CheckString": ". Technologiegebied onderzoek. Geef aan op welk technologiegebied het technisch wetenschappelijk onderzoek betrekking heeft. Uit uw antwoord moet blijken dat het onderzoek technisch van aard is.",
+        "CheckString": "Technologiegebied onderzoek. Geef aan op welk technologiegebied het technisch wetenschappelijk onderzoek betrekking heeft. Uit uw antwoord moet blijken dat het onderzoek technisch van aard is.",
         "AppendNewLines": false,
         "IsEndOfDocument": false,
         "IsEndOfProject": false,

@@ -265,6 +265,7 @@ namespace ProjectExtractor.Extractors.FullProject
                     }
                     RemovePageNumberFromString(ref Lines[lineIndex], @"Pagina \d* van \d*");
                     RemoveNumbersFromStringStart(ref Lines[lineIndex]);
+                    RemoveIndexFromStringStart(ref Lines[lineIndex]);
                     nextLine = lineIndex == Lines.Length - 1 ? string.Empty : Lines[lineIndex + 1];
                     if (searchNextSection == true)
                     {
@@ -326,7 +327,6 @@ namespace ProjectExtractor.Extractors.FullProject
             Worker.ReportProgress(100);
             return returnCode;
         }
-
         string TryFindSection(string check, ProjectSection[] comparisons, out string foundRemaining, out int foundSection, out bool isEndOfDocument, out bool isEndOfProject, bool appendNewLines = false, string safetyCheck = "")
         {
             foundSection = -1;

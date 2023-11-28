@@ -166,5 +166,53 @@
     "IsEndOfDocument": false,
     "IsEndOfProject": false,
     "MinimumDifference": 2
+  },
+  {
+    "SectionTitle": "",
+    "CheckString": "Specifieke vragen Technische Wetenschappelijk Onderzoek",
+    "AppendNewLines": false,
+    "IsEndOfDocument": false,
+    "IsEndOfProject": false,
+    "MinimumDifference": 3
+  },
+  {
+    "SectionTitle": "- Aanleiding",
+    "CheckString": ". Aanleiding Geef concreet aan voor welk verschijnsel u een verklaring zoekt. Waarom kunt u geen verklaring vinden voor het verschijnsel op basis van algemeen toegankelijke kennis of de al intern aanwezige kennis? * (maximaal 1.500 tekens)",
+    "AppendNewLines": false,
+    "IsEndOfDocument": false,
+    "IsEndOfProject": false,
+    "MinimumDifference": 2
+  },
+  {
+    "SectionTitle": "- Onderzoeksvragen",
+    "CheckString": ". Onderzoeksvragen Wat zijn concreet de onderzoeksvragen waarop u een antwoord zoekt? Uit uw onderzoeksvragen moet duidelijk naar voren komen dat het onderzoek verder gaat dan het verzamelen, observeren, vastleggen of correleren van data. * (maximaal 1.500 tekens)",
+    "AppendNewLines": false,
+    "IsEndOfDocument": false,
+    "IsEndOfProject": false,
+    "MinimumDifference": 2
+  },
+  {
+    "SectionTitle": "- Opzet en uitvoering",
+    "CheckString": ". Opzet en uitvoering Wat is de praktische onderzoeksopzet? Hoe wilt u een antwoord vinden op de door u gestelde onderzoeksvragen? Omschrijf dit nauwkeurig in de door u zelf uit te voeren technische werkzaamheden. * (maximaal 1.500 tekens)",
+    "AppendNewLines": false,
+    "IsEndOfDocument": false,
+    "IsEndOfProject": false,
+    "MinimumDifference": 2
+  },
+  {
+    "SectionTitle": "- Beoogde uitkomsten",
+    "CheckString": ". Beoogde uitkomsten Wat zijn de beoogde uitkomsten van het (deel)onderzoek? Waarom is het voor u nieuwe technische kennis? * (maximaal 1.500 tekens)",
+    "AppendNewLines": false,
+    "IsEndOfDocument": false,
+    "IsEndOfProject": false,
+    "MinimumDifference": 2
+  },
+  {
+    "SectionTitle": "- Technologiegebied onderzoek",
+    "CheckString": ". Technologiegebied onderzoek Geef aan op welk technologiegebied het technisch wetenschappelijk onderzoek betrekking heeft. Uit uw antwoord moet blijken dat het onderzoek technisch van aard is. * (maximaal 1.500 tekens)",
+    "AppendNewLines": false,
+    "IsEndOfDocument": false,
+    "IsEndOfProject": false,
+    "MinimumDifference": 2
   }
 ]

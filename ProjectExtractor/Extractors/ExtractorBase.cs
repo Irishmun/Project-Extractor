@@ -139,6 +139,16 @@ namespace ProjectExtractor.Extractors
             }
         }
 
+        protected void RemoveIndexFromStringStart(ref string line)
+        {
+            Match match = Regex.Match(line, @"^[.]");
+            if (!string.IsNullOrWhiteSpace(match.Value))
+            {
+                int index = line.IndexOf(match.Value);
+                line = (index < 0) ? line : line.Remove(index, match.Value.Length);
+            }
+        }
+
         /// <summary>
         /// Will try and get the latest date of the project, starting at the given line
         /// </summary>

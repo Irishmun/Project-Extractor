@@ -319,7 +319,7 @@ namespace ProjectExtractor
                 {
                     if (string.IsNullOrWhiteSpace(TB_StopChapter.Text) == true || string.IsNullOrWhiteSpace(TB_Chapter.Text) == true)
                     {
-                        MessageBox.Show("One or more of the \"Chapters\" textboxes are empty! be sure to fill these in.\n"+
+                        MessageBox.Show("One or more of the \"Chapters\" textboxes are empty! be sure to fill these in.\n" +
                             "[default values: \"Fasering werkzaamheden\" & \"Update project\"]", "Empty Chapter box(es)", MessageBoxButtons.OK, MessageBoxIcon.Stop);
                         return;
                     }
@@ -457,6 +457,14 @@ namespace ProjectExtractor
             _settings.DisableExtractionPath = CB_DisableExtractionPath.Checked;
             TB_ExtractLocation.Enabled = !CB_DisableExtractionPath.Checked;
             BT_BrowseExtract.Enabled = !CB_DisableExtractionPath.Checked;
+            if (_settings.DisableExtractionPath == true)
+            {
+                TB_ExtractLocation.Text = Path.GetDirectoryName(TB_PDFLocation.Text);
+                if (!TB_ExtractLocation.Text.EndsWith('\\'))
+                {
+                    TB_ExtractLocation.Text += "\\";
+                }
+            }
         }
         #endregion
         #region TextBox events
@@ -718,8 +726,10 @@ namespace ProjectExtractor
         private void SetButtonsEnabled(bool enabled)
         {
             BT_Extract.Enabled = enabled;
-            BT_DebugExtract.Enabled = enabled;
             BT_ExtractFullProject.Enabled = enabled;
+#if DEBUG
+            BT_DebugExtract.Enabled = enabled;
+#endif
         }
 
         private async Task CheckForUpdate()
