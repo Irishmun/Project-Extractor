@@ -30,7 +30,6 @@ namespace ProjectExtractor
         private Settings _settings;
         private ExtractorBase _extractor;
         private ExitCode _extractionResult = ExitCode.NONE;
-        private bool _gitProjectAvailable = false;
 
         public ExtractorForm()
         {
@@ -162,10 +161,17 @@ namespace ProjectExtractor
         }
         private async void CheckForUpdateThenSetAbout()
         {
-            _gitProjectAvailable = await _updateHandler.CheckProjectAccessible();
-            await CheckForUpdate();
-            await SetChangelogTextBox();
-            LL_GitHubLink.Text = _gitProjectAvailable == true ? "GitHub status: Accessible" : "GitHub status: Rate limited";
+            if (await _updateHandler.CheckProjectAccessible() == true)
+            {
+                await CheckForUpdate();
+                await SetChangelogTextBox();
+                LL_GitHubLink.Text = "GitHub status: Accessible";
+            }
+            else
+            {
+                LL_GitHubLink.Text = "GitHub status: Rate limited";
+
+            }
             //LL_GitHubLink.Links.Clear();
             //LL_GitHubLink.Links.Add(0, LL_GitHubLink.Text.Length, _updateHandler.ReleaseUrl);
         }
@@ -736,7 +742,7 @@ namespace ProjectExtractor
         {
             try
             {
-                if (_gitProjectAvailable == false)
+                if (_updateHandler.GitProjectAvailable == false)
                 { return; }
                 if (await _updateHandler.IsNewerVersionAvailable() == true)
                 {
@@ -868,7 +874,7 @@ namespace ProjectExtractor
         }
         private async Task SetChangelogTextBox()
         {
-            if (_gitProjectAvailable == false)
+            if (_updateHandler.GitProjectAvailable == false)
             { return; }
             string changelog = await _updateHandler.GetReleaseBodies();
             textBoxDescription.Text = changelog;
