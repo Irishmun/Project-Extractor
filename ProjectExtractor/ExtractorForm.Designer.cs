@@ -253,7 +253,7 @@ namespace ProjectExtractor
             CbB_FileVersion.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
             CbB_FileVersion.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             CbB_FileVersion.FormattingEnabled = true;
-            CbB_FileVersion.Items.AddRange(new object[] { "Version 1 (V1.X)", "Version 2 (V2.X)", "Version 3 (V3.X)" });
+            CbB_FileVersion.Items.AddRange(new object[] { "Version 1 (V1.X) [01/2016 - 10/2017]", "Version 2 (V2.X) [01/2018 - 08/2021]", "Version 3 (V3.X) [09/2021 - 2024]" });
             CbB_FileVersion.Location = new System.Drawing.Point(73, 103);
             CbB_FileVersion.Name = "CbB_FileVersion";
             CbB_FileVersion.Size = new System.Drawing.Size(473, 23);

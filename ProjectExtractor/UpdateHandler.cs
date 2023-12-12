@@ -1,6 +1,7 @@
 ﻿using Octokit;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -14,12 +15,12 @@ namespace ProjectExtractor
         private const string PROJECT_OWNER = "Irishmun", THIS_PROJECT = "Project-Extractor";
         private const string LATEST_URL = "https://github.com/Irishmun/Project-Extractor/releases/latest";
         private IReadOnlyList<Release> _releases;
+        private bool _gitProjectAvailable;
 
         private GitHubClient _client;
         public UpdateHandler()
         {
             _client = new GitHubClient(new ProductHeaderValue("Getting-updates"));
-            SetRelease();
         }
         public async Task<bool> CheckProjectAccessible()
         {
@@ -29,6 +30,7 @@ namespace ProjectExtractor
             try
             {
                 repo = await _client.Repository.Get(PROJECT_OWNER, THIS_PROJECT);
+                await SetRelease();
             }
             catch (Exception)
             {
@@ -36,7 +38,8 @@ namespace ProjectExtractor
             }
             //var latest = repo.Result.ElementAt(0);
             //System.Diagnostics.Debug.WriteLine("Repo: "+repo.Name);
-            return repo != null;
+            _gitProjectAvailable = repo != null;
+            return _gitProjectAvailable;
         }
         public async Task<bool> IsNewerVersionAvailable()
         {
@@ -139,13 +142,14 @@ namespace ProjectExtractor
             return true;
         }
 
-        private async void SetRelease()
+        private async Task SetRelease()
         {
             try
             {
                 if (CanMakeRequests() == false)
                 { return; }
                 _releases = await _client.Repository.Release.GetAll(PROJECT_OWNER, THIS_PROJECT);
+                Debug.WriteLine("releases set");
             }
             catch (Exception)
             {
@@ -170,5 +174,6 @@ namespace ProjectExtractor
         private Release LatestRelease => _releases[0];//latest release SHOULD be 0th item in Release List
 
         public string ReleaseUrl => LATEST_URL;
+        public bool GitProjectAvailable => _gitProjectAvailable;
     }
 }
