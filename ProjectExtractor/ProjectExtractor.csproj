@@ -13,7 +13,7 @@
     </PackageProjectUrl>
     <RepositoryUrl>https://github.com/Irishmun/Project-Extractor</RepositoryUrl>
     <NeutralLanguage>en-US</NeutralLanguage>
-    <AssemblyVersion>2.9.4</AssemblyVersion>
+    <AssemblyVersion>2.9.5</AssemblyVersion>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Resources\ProjectExtractorIcon.ico" />
