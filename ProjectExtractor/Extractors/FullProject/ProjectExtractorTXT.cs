@@ -384,14 +384,12 @@ namespace ProjectExtractor.Extractors.FullProject
         string RemoveMatching(string check, string comparison, out string remaining, bool appendNewLine = false, string safetyCheck = "")
         {
             remaining = string.Empty;
-            //string str1 = "Geef een algemene omschrijving van het project. Heeft u eerder WBSO aangevraagd voor dit project? Beschrijf dan de stand van zaken bij de vraag \"Update project\".";
             string res = check;
-            string lowerCheck = check;
             string[] checkWords = check.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
             string[] comparisonWords = comparison.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
             int foundIndex = 0;
             StringBuilder toRemove = new StringBuilder();
-            if (lowerCheck.Trim().StartsWith(comparisonWords[0]))
+            if (check.Trim().StartsWith(comparisonWords[0]))
             {
                 int searchLength = checkWords.Length < comparisonWords.Length ? checkWords.Length : comparisonWords.Length;//use shortest for search
                 int lastCorrect = -1;
@@ -410,7 +408,7 @@ namespace ProjectExtractor.Extractors.FullProject
                 }
                 if (lastCorrect > -1)
                 {
-                    if (safetyCheck.Length > 0 && safetyCheck.Equals(comparisonWords[lastCorrect]))
+                    if (safetyCheck.Length > 0 && safetyCheck.StartsWith(comparisonWords[lastCorrect]))
                     {//go back by one word if that word was added in error
                         lastCorrect -= 1;
                     }
