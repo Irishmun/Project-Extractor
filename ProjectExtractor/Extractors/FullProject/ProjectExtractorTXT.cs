@@ -408,10 +408,7 @@ namespace ProjectExtractor.Extractors.FullProject
                 }
                 if (lastCorrect > -1)
                 {
-                    if (safetyCheck.Length > 0 && safetyCheck.StartsWith(comparisonWords[lastCorrect]))
-                    {//go back by one word if that word was added in error
-                        lastCorrect -= 1;
-                    }
+                    lastCorrect = DetermineLastCorrect(lastCorrect);
                     for (int i = 0; i <= lastCorrect; ++i)
                     {
 
@@ -439,6 +436,41 @@ namespace ProjectExtractor.Extractors.FullProject
                 res += Environment.NewLine;
             }
             return res;
+
+            int DetermineLastCorrect(int lastCorrect)
+            {
+                //if (safetyCheck.Length > 0 && safetyCheck.StartsWith(comparisonWords[lastCorrect]))
+                //{//go back by one word if that word was added in error
+                //    return lastCorrect - 1;
+                //}
+                if (safetyCheck.Length > 0)
+                {
+                    string[] safetyCheckArray = safetyCheck.Split();
+                    int index = Array.IndexOf(safetyCheckArray, comparisonWords[lastCorrect]);//check if the first word of the safetycheck is present in the "correct" sentence
+                    if (index == -1)
+                    {
+                        return lastCorrect;
+                    }
+                    else
+                    {
+                        int j = lastCorrect;
+                        for (int i = index; i > -1; i--)
+                        {
+                            string comparisonWord = comparisonWords[j];
+                            if (safetyCheckArray[i].Equals(comparisonWord))
+                            {
+                                j--;
+                            }
+                            else
+                            {//weren't at the end of the sentence
+                                return lastCorrect;
+                            }
+                        }
+                        return j;//reached the end, it should then match at least one word
+                    }
+                }
+                return lastCorrect;
+            }
         }
 
         private void RemoveLines(int startIndex, int nextProjectIndex, ref StringBuilder str, string pageRegex, ref string possibleSection, string[] toRemove, string FollowingSectionString, out int nextSectionLine, bool removeInbetween = false)
