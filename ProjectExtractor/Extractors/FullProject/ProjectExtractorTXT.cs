@@ -333,6 +333,10 @@ namespace ProjectExtractor.Extractors.FullProject
             foundRemaining = string.Empty;
             isEndOfDocument = false;
             isEndOfProject = false;
+
+            if (string.IsNullOrWhiteSpace(check) == true)
+            { return check; }//no need to check
+
             int highestRemainingDif = -1;
             string res = string.Empty;
             for (int i = 0; i < comparisons.Length; i++)
@@ -342,7 +346,8 @@ namespace ProjectExtractor.Extractors.FullProject
                 {
                     string[] foundRemainingWords = string.IsNullOrWhiteSpace(resultFoundRemaining) ? new string[0] : resultFoundRemaining.Trim().Split(' ');
                     string[] checkStringWords = comparisons[i].CheckString.Trim().Split(' ');
-                    int dif = checkStringWords.Length - foundRemainingWords.Length;
+                    int dif = checkStringWords.Length - foundRemainingWords.Length;//get difference in words
+                    dif = AdjustDifFromSafetyCheck(dif, checkStringWords, safetyCheck);
                     if (dif >= comparisons[i].MinimumDifference || comparisons[i].IsEndOfDocument == true)
                     {
                         if (dif > highestRemainingDif)
@@ -379,6 +384,27 @@ namespace ProjectExtractor.Extractors.FullProject
                 return check + Environment.NewLine;
             }
             return check;
+
+            int AdjustDifFromSafetyCheck(int currentDif, string[] checkStringWords, string safetyCheck)
+            {
+                if (currentDif < 1 || currentDif == checkStringWords.Length)
+                { return currentDif; }//there is no actual difference OR there's nothing to adjust
+
+                if (safetyCheck.StartsWith(checkStringWords[currentDif]) == true)
+                {//the next sentence contains part of the check string
+                    string[] safetyCheckWords = safetyCheck.Trim().Split(' ');
+                    int smallest = SmallestLength(safetyCheckWords, checkStringWords);
+                    for (int i = 0; i < smallest-1; i++)
+                    {
+                        if (safetyCheckWords[i].Equals(checkStringWords[currentDif]))
+                        {
+                            currentDif += 1;
+                        }
+                        else { break; }
+                    }
+                }
+                return currentDif;
+            }
         }
 
         string RemoveMatching(string check, string comparison, out string remaining, bool appendNewLine = false, string safetyCheck = "")
@@ -446,13 +472,14 @@ namespace ProjectExtractor.Extractors.FullProject
                 if (safetyCheck.Length > 0)
                 {
                     string[] safetyCheckArray = safetyCheck.Split();
-                    int index = Array.IndexOf(safetyCheckArray, comparisonWords[lastCorrect]);//check if the first word of the safetycheck is present in the "correct" sentence
+                    //check if the last found word is also present inside the safetycheck sentence
+                    int index = Array.IndexOf(safetyCheckArray, comparisonWords[lastCorrect]);
                     if (index == -1)
-                    {
+                    {//not found, it's not present in the next sentence
                         return lastCorrect;
                     }
                     else
-                    {
+                    {//the new sentence contains one or more words from the found words
                         int j = lastCorrect;
                         for (int i = index; i > -1; i--)
                         {

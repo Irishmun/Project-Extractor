@@ -232,6 +232,12 @@ namespace ProjectExtractor.Extractors
             double progress = (double)((currentProgress + 1d) * 100d / Lines.Length);
             worker.ReportProgress((int)progress);
         }
+
+        /// <summary>Returns the length of the smaller array</summary>
+        protected int SmallestLength(Array arrayA, Array arrayB)
+        {
+            return arrayA.Length < arrayB.Length ? arrayA.Length : arrayB.Length;
+        }
         /// <summary>To which file extension will this extractor extract</summary>
         public abstract string FileExtension { get; }//return file format of extractor, all lowercase, sans period (e.x: text extractor= "txt")
     }
