@@ -1,194 +1,202 @@
 [
-    {
-        "SectionTitle": "Omschrijving",
-        "CheckString": "Geef een algemene omschrijving van het project. Heeft u eerder WBSO aangevraagd voor dit project? Beschrijf dan de stand van zaken bij de vraag \u201CUpdate project\u201D.",
-        "AppendNewLines": false,
-        "IsEndOfDocument": false,
-        "IsEndOfProject": false,
-        "MinimumDifference": 2
-    },
-    {
-        "SectionTitle": "Samenwerking?",
-        "CheckString": "Samenwerking Levert \u00E9\u00E9n of meer partijen (buiten uw fiscale eenheid) een bijdrage aan het project?",
-        "AppendNewLines": false,
-        "IsEndOfDocument": false,
-        "IsEndOfProject": false,
-        "MinimumDifference": 1
-    },
-    {
-        "SectionTitle": "Fasering Werkzaamheden",
-        "CheckString": "Fasering werkzaamheden Geef de fasen en de (tussen)resultaten van het project aan. Bijvoorbeeld de afsluiting van een onderzoek, de afronding van een ontwerpfase, de start van de bouw van een prototype, het testen van een prototype (maximaal 25 karakters per veld). Vermeld alleen uw eigen werkzaamheden. U kunt een fase toevoegen door op de \u002B te klikken en een fase verwijderen door op de - te klikken. Naam Datum gereed",
-        "AppendNewLines": true,
-        "IsEndOfDocument": false,
-        "IsEndOfProject": false,
-        "MinimumDifference": 2
-    },
-    {
-        "SectionTitle": "Update Project",
-        "CheckString": "Update project Vermeld de voortgang van uw S\u0026O-werkzaamheden. Zijn er wijzigingen in de oorspronkelijke projectopzet of -planning? Geef dan aan waarom dit het geval is.",
-        "AppendNewLines": false,
-        "IsEndOfDocument": false,
-        "IsEndOfProject": false,
-        "MinimumDifference": 2
-    },
-    {
-        "SectionTitle": "",
-        "CheckString": "Specifieke vragen ontwikkeling Beantwoord de vragen vanuit een technische invalshoek. Geef hier geen algemene of functionele beschrijving van het project. Ontwikkelen heeft altijd te maken met zoeken en bewijzen. U wilt iets ontwikkelen en loopt hierbij tegen een technisch probleem aan. U zoekt hiervoor een nieuwe technische oplossing waarvan u het werkingsprincipe wilt aantonen.",
-        "AppendNewLines": false,
-        "IsEndOfDocument": false,
-        "IsEndOfProject": false,
-        "MinimumDifference": 2
-    },
-    {
-        "SectionTitle": "- Technische knelpunten",
-        "CheckString": "Technische knelpunten. Geef aan welke concrete technische knelpunten u zelf tijdens het ontwikkelingsproces moet oplossen om het gewenste projectresultaat te bereiken. Vermeld geen aanleidingen, algemene randvoorwaarden of functionele eisen van het project.",
-        "AppendNewLines": false,
-        "IsEndOfDocument": false,
-        "IsEndOfProject": false,
-        "MinimumDifference": 2
-    },
-    {
-        "SectionTitle": "- Probleemstelling en oplossingsrichting",
-        "CheckString": "Technische knelpunten programmatuur. Geef aan welke concrete technische knelpunten u zelf tijdens het ontwikkelen van de programmatuur moet oplossen om het gewenste projectresultaat te bereiken. Vermeld geen aanleidingen, algemene randvoorwaarden of functionele eisen van de programmatuur.",
-        "AppendNewLines": false,
-        "IsEndOfDocument": false,
-        "IsEndOfProject": false,
-        "MinimumDifference": 2
-    },
-    {
-        "SectionTitle": "- Technische oplossingsrichtingen",
-        "CheckString": "Technische oplossingsrichtingen. Geef voor ieder genoemd technisch knelpunt aan wat u specifiek zelf gaat ontwikkelen om het knelpunt op te lossen.",
-        "AppendNewLines": false,
-        "IsEndOfDocument": false,
-        "IsEndOfProject": false,
-        "MinimumDifference": 2
-    },
-    {
-        "SectionTitle": "- Oplossingsrichtingen programmatuur",
-        "CheckString": "Oplossingsrichtingen programmatuur. Geef voor ieder genoemd technisch knelpunt aan wat u specifiek zelf gaat ontwikkelen om het knelpunt op te lossen.",
-        "AppendNewLines": false,
-        "IsEndOfDocument": false,
-        "IsEndOfProject": false,
-        "MinimumDifference": 2
-    },
-    {
-        "SectionTitle": "- Technische nieuwheid",
-        "CheckString": "Technische nieuwheid. Geef aan waarom de hiervoor genoemde oplossingsrichtingen technisch nieuw voor u zijn. Oftewel beschrijf waarom het project technisch vernieuwend en uitdagend is en geef aan welke technische risico\u2019s en onzekerheden u hierbij verwacht. Om technische risico\u2019s en onzekerheden in te schatten kijkt RVO naar de stand van de technologie.",
-        "AppendNewLines": false,
-        "IsEndOfDocument": false,
-        "IsEndOfProject": false,
-        "MinimumDifference": 2
-    },
-    {
-        "SectionTitle": "- Technische nieuwheid programmatuur",
-        "CheckString": "Programmeertalen, ontwikkelomgevingen en tools. Geef aan welke programmeertalen, ontwikkelomgevingen en tools u gebruikt bij de ontwikkeling van technisch nieuwe programmatuur.",
-        "AppendNewLines": false,
-        "IsEndOfDocument": false,
-        "IsEndOfProject": false,
-        "MinimumDifference": 2
-    },
-    {
-        "SectionTitle": "Wordt er mede programmatuur ontwikkeld?",
-        "CheckString": "Wordt er voor dit product of proces mede programmatuur ontwikkeld?",
-        "AppendNewLines": false,
-        "IsEndOfDocument": false,
-        "IsEndOfProject": false,
-        "MinimumDifference": 2
-    },
-    {
-        "SectionTitle": "",
-        "CheckString": "Specifieke vragen Technische Wetenschappelijk Onderzoek Maak duidelijk dat het technisch-wetenschappelijk onderzoek (TWO) dat u wilt uitvoeren twee kernelementen bevat: technisch en wetenschappelijk. Technisch betreft gebieden zoals fysica, chemie, biotechnologie, productietechnologie, informatie- of communicatietechnologie. Wetenschappelijk heeft betrekking op het doel en de resultaten van het onderzoek en op de manier waarop het onderzoek wordt opgezet en uitgevoerd (systematisch en planmatig en niet routinematig). TWO heeft tot doel een verklaring te zoeken voor een verschijnsel die niet is te geven op basis van algemeen toegankelijke kennis.",
-        "AppendNewLines": false,
-        "IsEndOfDocument": false,
-        "IsEndOfProject": false,
-        "MinimumDifference": 2
-    },
-    {
-        "SectionTitle": "Aanleiding",
-        "CheckString": "Aanleiding. Geef concreet aan voor welk verschijnsel u een verklaring zoekt. Waarom kunt u geen verklaring vinden voor het verschijnsel op basis van algemeen toegankelijke kennis of de al intern aanwezige kennis?",
-        "AppendNewLines": false,
-        "IsEndOfDocument": false,
-        "IsEndOfProject": false,
-        "MinimumDifference": 2
-    },
-    {
-        "SectionTitle": "Onderzoeksvragen",
-        "CheckString": "Onderzoeksvragen. Wat zijn concreet de onderzoeksvragen waarop u een antwoord zoekt? Uit uw onderzoeksvragen moet duidelijk naar voren komen dat het onderzoek verder gaat dan het verzamelen, observeren, vastleggen of correleren van data",
-        "AppendNewLines": false,
-        "IsEndOfDocument": false,
-        "IsEndOfProject": false,
-        "MinimumDifference": 2
-    },
-    {
-        "SectionTitle": "Opzet en uitvoering",
-        "CheckString": "Opzet en uitvoering. Wat is de praktische onderzoeksopzet? Hoe wilt u een antwoord vinden op de door u gestelde onderzoeksvragen? Omschrijf dit nauwkeurig in de door u zelf uit te voeren technische werkzaamheden.",
-        "AppendNewLines": false,
-        "IsEndOfDocument": false,
-        "IsEndOfProject": false,
-        "MinimumDifference": 2
-    },
-    {
-        "SectionTitle": "Beoogde uitkomsten",
-        "CheckString": "Beoogde uitkomsten. Wat zijn de beoogde uitkomsten van het (deel)onderzoek? Waarom is het voor u nieuwe technische kennis?",
-        "AppendNewLines": false,
-        "IsEndOfDocument": false,
-        "IsEndOfProject": false,
-        "MinimumDifference": 2
-    },
-    {
-        "SectionTitle": "Technologiegebied onderzoek",
-        "CheckString": "Technologiegebied onderzoek. Geef aan op welk technologiegebied het technisch wetenschappelijk onderzoek betrekking heeft. Uit uw antwoord moet blijken dat het onderzoek technisch van aard is.",
-        "AppendNewLines": false,
-        "IsEndOfDocument": false,
-        "IsEndOfProject": false,
-        "MinimumDifference": 2
-    },
-    {
-        "SectionTitle": "Kosten en/of uitgaven per project",
-        "CheckString": "Kosten en/of uitgaven per project Voorbeelden en uitgebreide informatie over kosten en uitgaven kunt u in de vinden.",
-        "AppendNewLines": true,
-        "IsEndOfDocument": false,
-        "IsEndOfProject": false,
-        "MinimumDifference": 2
-    },
-    {
-        "SectionTitle": "Kosten opvoeren bij dit project",
-        "CheckString": "Voorbeelden en uitgebreide informatie over kosten en uitgaven kunt u in de vinden.",
-        "AppendNewLines": false,
-        "IsEndOfDocument": false,
-        "IsEndOfProject": false,
-        "MinimumDifference": 2
-    },
-    {
-        "SectionTitle": "",
-        "CheckString": "Investeert u in een bedrijfsmiddel, waarvan het aan S\u0026O dienstbare en toerekenbare deel van de aanschafwaarde van het bedrijfsmiddel groter of gelijk is aan 1 miljoen euro? Voer deze dan hieronder in. Uitgaven kleiner dan 1 miljoen euro specificeert u per project.",
-        "AppendNewLines": true,
-        "IsEndOfDocument": false,
-        "IsEndOfProject": false,
-        "MinimumDifference": 2
-    },
-    {
-        "SectionTitle": "",
-        "CheckString": "Aanvraag Aantal doorlopende projecten",
-        "AppendNewLines": false,
-        "IsEndOfDocument": true,
-        "IsEndOfProject": false,
-        "MinimumDifference": 2
-    },
-    {
-        "SectionTitle": "",
-        "CheckString": "Probleemstelling en oplossingsrichting ",
-        "AppendNewLines": false,
-        "IsEndOfDocument": false,
-        "IsEndOfProject": false,
-        "MinimumDifference": 2
-    },
-    {
-        "SectionTitle": "",
-        "CheckString": "Opvoeren uitgaven",
-        "AppendNewLines": false,
-        "IsEndOfDocument": false,
-        "IsEndOfProject": false,
-        "MinimumDifference": 2
-    }
+  {
+    "SectionTitle": "Omschrijving",
+    "CheckString": "Geef een algemene omschrijving van het project. Heeft u eerder WBSO aangevraagd voor dit project? Beschrijf dan de stand van zaken bij de vraag \u201CUpdate project\u201D.",
+    "AppendNewLines": false,
+    "IsEndOfDocument": false,
+    "IsEndOfProject": false,
+    "MinimumDifference": 2
+  },
+  {
+    "SectionTitle": "Samenwerking?",
+    "CheckString": "Samenwerking Levert \u00E9\u00E9n of meer partijen (buiten uw fiscale eenheid) een bijdrage aan het project?",
+    "AppendNewLines": false,
+    "IsEndOfDocument": false,
+    "IsEndOfProject": false,
+    "MinimumDifference": 1
+  },
+  {
+    "SectionTitle": "Fasering Werkzaamheden",
+    "CheckString": "Fasering werkzaamheden Geef de fasen en de (tussen)resultaten van het project aan. Bijvoorbeeld de afsluiting van een onderzoek, de afronding van een ontwerpfase, de start van de bouw van een prototype, het testen van een prototype (maximaal 25 karakters per veld). Vermeld alleen uw eigen werkzaamheden. U kunt een fase toevoegen door op de \u002B te klikken en een fase verwijderen door op de - te klikken. Naam Datum gereed",
+    "AppendNewLines": true,
+    "IsEndOfDocument": false,
+    "IsEndOfProject": false,
+    "MinimumDifference": 2
+  },
+  {
+    "SectionTitle": "Update Project",
+    "CheckString": "Update project Vermeld de voortgang van uw S\u0026O-werkzaamheden. Zijn er wijzigingen in de oorspronkelijke projectopzet of -planning? Geef dan aan waarom dit het geval is.",
+    "AppendNewLines": false,
+    "IsEndOfDocument": false,
+    "IsEndOfProject": false,
+    "MinimumDifference": 2
+  },
+  {
+    "SectionTitle": "",
+    "CheckString": "Specifieke vragen ontwikkeling Beantwoord de vragen vanuit een technische invalshoek. Geef hier geen algemene of functionele beschrijving van het project. Ontwikkelen heeft altijd te maken met zoeken en bewijzen. U wilt iets ontwikkelen en loopt hierbij tegen een technisch probleem aan. U zoekt hiervoor een nieuwe technische oplossing waarvan u het werkingsprincipe wilt aantonen.",
+    "AppendNewLines": false,
+    "IsEndOfDocument": false,
+    "IsEndOfProject": false,
+    "MinimumDifference": 2
+  },
+  {
+    "SectionTitle": "- Technische knelpunten",
+    "CheckString": "Technische knelpunten. Geef aan welke concrete technische knelpunten u zelf tijdens het ontwikkelingsproces moet oplossen om het gewenste projectresultaat te bereiken. Vermeld geen aanleidingen, algemene randvoorwaarden of functionele eisen van het project.",
+    "AppendNewLines": false,
+    "IsEndOfDocument": false,
+    "IsEndOfProject": false,
+    "MinimumDifference": 2
+  },
+  {
+    "SectionTitle": "- Probleemstelling en oplossingsrichting",
+    "CheckString": "Technische knelpunten programmatuur. Geef aan welke concrete technische knelpunten u zelf tijdens het ontwikkelen van de programmatuur moet oplossen om het gewenste projectresultaat te bereiken. Vermeld geen aanleidingen, algemene randvoorwaarden of functionele eisen van de programmatuur.",
+    "AppendNewLines": false,
+    "IsEndOfDocument": false,
+    "IsEndOfProject": false,
+    "MinimumDifference": 2
+  },
+  {
+    "SectionTitle": "- Technische oplossingsrichtingen",
+    "CheckString": "Technische oplossingsrichtingen. Geef voor ieder genoemd technisch knelpunt aan wat u specifiek zelf gaat ontwikkelen om het knelpunt op te lossen.",
+    "AppendNewLines": false,
+    "IsEndOfDocument": false,
+    "IsEndOfProject": false,
+    "MinimumDifference": 2
+  },
+  {
+    "SectionTitle": "- Oplossingsrichtingen programmatuur",
+    "CheckString": "Oplossingsrichtingen programmatuur. Geef voor ieder genoemd technisch knelpunt aan wat u specifiek zelf gaat ontwikkelen om het knelpunt op te lossen.",
+    "AppendNewLines": false,
+    "IsEndOfDocument": false,
+    "IsEndOfProject": false,
+    "MinimumDifference": 2
+  },
+  {
+    "SectionTitle": "- Technische nieuwheid",
+    "CheckString": "Technische nieuwheid. Geef aan waarom de hiervoor genoemde oplossingsrichtingen technisch nieuw voor u zijn. Oftewel beschrijf waarom het project technisch vernieuwend en uitdagend is en geef aan welke technische risico\u2019s en onzekerheden u hierbij verwacht. Om technische risico\u2019s en onzekerheden in te schatten kijkt RVO naar de stand van de technologie.",
+    "AppendNewLines": false,
+    "IsEndOfDocument": false,
+    "IsEndOfProject": false,
+    "MinimumDifference": 2
+  },
+  {
+    "SectionTitle": "- Technische nieuwheid programmatuur",
+    "CheckString": "Programmeertalen, ontwikkelomgevingen en tools. Geef aan welke programmeertalen, ontwikkelomgevingen en tools u gebruikt bij de ontwikkeling van technisch nieuwe programmatuur.",
+    "AppendNewLines": false,
+    "IsEndOfDocument": false,
+    "IsEndOfProject": false,
+    "MinimumDifference": 2
+  },
+  {
+    "SectionTitle": "Wordt er mede programmatuur ontwikkeld?",
+    "CheckString": "Wordt er voor dit product of proces mede programmatuur ontwikkeld?",
+    "AppendNewLines": false,
+    "IsEndOfDocument": false,
+    "IsEndOfProject": false,
+    "MinimumDifference": 2
+  },
+  {
+    "SectionTitle": "",
+    "CheckString": "Specifieke vragen Technische Wetenschappelijk Onderzoek Maak duidelijk dat het technisch-wetenschappelijk onderzoek (TWO) dat u wilt uitvoeren twee kernelementen bevat: technisch en wetenschappelijk. Technisch betreft gebieden zoals fysica, chemie, biotechnologie, productietechnologie, informatie- of communicatietechnologie. Wetenschappelijk heeft betrekking op het doel en de resultaten van het onderzoek en op de manier waarop het onderzoek wordt opgezet en uitgevoerd (systematisch en planmatig en niet routinematig). TWO heeft tot doel een verklaring te zoeken voor een verschijnsel die niet is te geven op basis van algemeen toegankelijke kennis.",
+    "AppendNewLines": false,
+    "IsEndOfDocument": false,
+    "IsEndOfProject": false,
+    "MinimumDifference": 2
+  },
+  {
+    "SectionTitle": "Aanleiding",
+    "CheckString": "Aanleiding. Geef concreet aan voor welk verschijnsel u een verklaring zoekt. Waarom kunt u geen verklaring vinden voor het verschijnsel op basis van algemeen toegankelijke kennis of de al intern aanwezige kennis?",
+    "AppendNewLines": false,
+    "IsEndOfDocument": false,
+    "IsEndOfProject": false,
+    "MinimumDifference": 2
+  },
+  {
+    "SectionTitle": "Onderzoeksvragen",
+    "CheckString": "Onderzoeksvragen. Wat zijn concreet de onderzoeksvragen waarop u een antwoord zoekt? Uit uw onderzoeksvragen moet duidelijk naar voren komen dat het onderzoek verder gaat dan het verzamelen, observeren, vastleggen of correleren van data",
+    "AppendNewLines": false,
+    "IsEndOfDocument": false,
+    "IsEndOfProject": false,
+    "MinimumDifference": 2
+  },
+  {
+    "SectionTitle": "Opzet en uitvoering",
+    "CheckString": "Opzet en uitvoering. Wat is de praktische onderzoeksopzet? Hoe wilt u een antwoord vinden op de door u gestelde onderzoeksvragen? Omschrijf dit nauwkeurig in de door u zelf uit te voeren technische werkzaamheden.",
+    "AppendNewLines": false,
+    "IsEndOfDocument": false,
+    "IsEndOfProject": false,
+    "MinimumDifference": 2
+  },
+  {
+    "SectionTitle": "Beoogde uitkomsten",
+    "CheckString": "Beoogde uitkomsten. Wat zijn de beoogde uitkomsten van het (deel)onderzoek? Waarom is het voor u nieuwe technische kennis?",
+    "AppendNewLines": false,
+    "IsEndOfDocument": false,
+    "IsEndOfProject": false,
+    "MinimumDifference": 2
+  },
+  {
+    "SectionTitle": "Technologiegebied onderzoek",
+    "CheckString": "Technologiegebied onderzoek. Geef aan op welk technologiegebied het technisch wetenschappelijk onderzoek betrekking heeft. Uit uw antwoord moet blijken dat het onderzoek technisch van aard is.",
+    "AppendNewLines": false,
+    "IsEndOfDocument": false,
+    "IsEndOfProject": false,
+    "MinimumDifference": 2
+  },
+  {
+    "SectionTitle": "Kosten en/of uitgaven per project",
+    "CheckString": "Kosten en/of uitgaven per project Voorbeelden en uitgebreide informatie over kosten en uitgaven kunt u in de vinden.",
+    "AppendNewLines": true,
+    "IsEndOfDocument": false,
+    "IsEndOfProject": false,
+    "MinimumDifference": 2
+  },
+  {
+    "SectionTitle": "Kosten opvoeren bij dit project",
+    "CheckString": "Voorbeelden en uitgebreide informatie over kosten en uitgaven kunt u in de vinden.",
+    "AppendNewLines": false,
+    "IsEndOfDocument": false,
+    "IsEndOfProject": false,
+    "MinimumDifference": 2
+  },
+  {
+    "SectionTitle": "",
+    "CheckString": "Investeert u in een bedrijfsmiddel, waarvan het aan S\u0026O dienstbare en toerekenbare deel van de aanschafwaarde van het bedrijfsmiddel groter of gelijk is aan 1 miljoen euro? Voer deze dan hieronder in. Uitgaven kleiner dan 1 miljoen euro specificeert u per project.",
+    "AppendNewLines": true,
+    "IsEndOfDocument": false,
+    "IsEndOfProject": false,
+    "MinimumDifference": 2
+  },
+  {
+    "SectionTitle": "",
+    "CheckString": "Aanvraag Aantal doorlopende projecten",
+    "AppendNewLines": false,
+    "IsEndOfDocument": true,
+    "IsEndOfProject": false,
+    "MinimumDifference": 2
+  },
+  {
+    "SectionTitle": "",
+    "CheckString": "Probleemstelling en oplossingsrichting ",
+    "AppendNewLines": false,
+    "IsEndOfDocument": false,
+    "IsEndOfProject": false,
+    "MinimumDifference": 2
+  },
+  {
+    "SectionTitle": "",
+    "CheckString": "Opvoeren uitgaven",
+    "AppendNewLines": false,
+    "IsEndOfDocument": false,
+    "IsEndOfProject": false,
+    "MinimumDifference": 2
+  },
+  {
+    "SectionTitle": "",
+    "CheckString": "Technische nieuwheid programmatuur",
+    "AppendNewLines": false,
+    "IsEndOfDocument": false,
+    "IsEndOfProject": false,
+    "MinimumDifference": 3
+  }
 ]
