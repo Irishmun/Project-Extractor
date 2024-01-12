@@ -483,6 +483,10 @@ namespace ProjectExtractor.Extractors.FullProject
                         int j = lastCorrect;
                         for (int i = index; i > -1; i--)
                         {
+                            if (j < 0)
+                            {
+                                return lastCorrect;
+                            }
                             string comparisonWord = comparisonWords[j];
                             if (safetyCheckArray[i].Equals(comparisonWord))
                             {
