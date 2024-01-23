@@ -45,6 +45,7 @@ namespace ProjectExtractor
             TSPB_Extraction = new System.Windows.Forms.ToolStripProgressBar();
             TC_MainView = new System.Windows.Forms.TabControl();
             TabPage_Extractor = new System.Windows.Forms.TabPage();
+            BT_BatchExtract = new System.Windows.Forms.Button();
             BT_DebugComputeHash = new System.Windows.Forms.Button();
             BT_DebugJson = new System.Windows.Forms.Button();
             label8 = new System.Windows.Forms.Label();
@@ -190,6 +191,7 @@ namespace ProjectExtractor
             // 
             // TabPage_Extractor
             // 
+            TabPage_Extractor.Controls.Add(BT_BatchExtract);
             TabPage_Extractor.Controls.Add(BT_DebugComputeHash);
             TabPage_Extractor.Controls.Add(BT_DebugJson);
             TabPage_Extractor.Controls.Add(label8);
@@ -217,10 +219,21 @@ namespace ProjectExtractor
             TabPage_Extractor.ToolTipText = "Main screen for extraction";
             TabPage_Extractor.UseVisualStyleBackColor = true;
             // 
+            // BT_BatchExtract
+            // 
+            BT_BatchExtract.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
+            BT_BatchExtract.Location = new System.Drawing.Point(246, 230);
+            BT_BatchExtract.Name = "BT_BatchExtract";
+            BT_BatchExtract.Size = new System.Drawing.Size(147, 25);
+            BT_BatchExtract.TabIndex = 106;
+            BT_BatchExtract.Text = "&Batch Extract";
+            BT_BatchExtract.UseVisualStyleBackColor = true;
+            BT_BatchExtract.Click += BT_BatchExtract_Click;
+            // 
             // BT_DebugComputeHash
             // 
             BT_DebugComputeHash.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
-            BT_DebugComputeHash.Location = new System.Drawing.Point(397, 188);
+            BT_DebugComputeHash.Location = new System.Drawing.Point(175, 174);
             BT_DebugComputeHash.Name = "BT_DebugComputeHash";
             BT_DebugComputeHash.Size = new System.Drawing.Size(161, 25);
             BT_DebugComputeHash.TabIndex = 105;
@@ -231,7 +244,7 @@ namespace ProjectExtractor
             // BT_DebugJson
             // 
             BT_DebugJson.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
-            BT_DebugJson.Location = new System.Drawing.Point(230, 188);
+            BT_DebugJson.Location = new System.Drawing.Point(8, 174);
             BT_DebugJson.Name = "BT_DebugJson";
             BT_DebugJson.Size = new System.Drawing.Size(161, 25);
             BT_DebugJson.TabIndex = 104;
@@ -277,7 +290,7 @@ namespace ProjectExtractor
             // 
             CB_DebugIncludeWhiteSpace.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
             CB_DebugIncludeWhiteSpace.AutoSize = true;
-            CB_DebugIncludeWhiteSpace.Location = new System.Drawing.Point(397, 223);
+            CB_DebugIncludeWhiteSpace.Location = new System.Drawing.Point(399, 200);
             CB_DebugIncludeWhiteSpace.Name = "CB_DebugIncludeWhiteSpace";
             CB_DebugIncludeWhiteSpace.Size = new System.Drawing.Size(129, 19);
             CB_DebugIncludeWhiteSpace.TabIndex = 100;
@@ -320,7 +333,7 @@ namespace ProjectExtractor
             // BT_DebugExtract
             // 
             BT_DebugExtract.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
-            BT_DebugExtract.Location = new System.Drawing.Point(230, 219);
+            BT_DebugExtract.Location = new System.Drawing.Point(342, 174);
             BT_DebugExtract.Name = "BT_DebugExtract";
             BT_DebugExtract.Size = new System.Drawing.Size(161, 25);
             BT_DebugExtract.TabIndex = 80;
@@ -1135,6 +1148,7 @@ namespace ProjectExtractor
         private System.Windows.Forms.LinkLabel LL_GitHubLink;
         private System.Windows.Forms.Button BT_DebugJson;
         private System.Windows.Forms.Button BT_DebugComputeHash;
+        private System.Windows.Forms.Button BT_BatchExtract;
     }
 }
 

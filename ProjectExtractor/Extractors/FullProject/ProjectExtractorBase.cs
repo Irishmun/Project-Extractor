@@ -32,6 +32,23 @@ namespace ProjectExtractor.Extractors.FullProject
             }
         }
 
+        public ExitCode BatchExtractProjects(ProjectLayoutRevision revision, string batchPath, string extractPath, string exportExtension, string[] Sections, string EndProject, System.ComponentModel.BackgroundWorker Worker)
+        {
+            switch (revision)
+            {
+                case ProjectLayoutRevision.REVISION_ONE:
+                    return BatchExtractRevisionOneProject(batchPath, extractPath, exportExtension, Sections, EndProject, Worker);
+                case ProjectLayoutRevision.REVISION_TWO:
+                    return BatchExtractRevisionTwoProject(batchPath, extractPath, exportExtension, Sections, EndProject, Worker);
+                case ProjectLayoutRevision.REVISION_THREE:
+                    return BatchExtractRevisionThreeProject(batchPath, extractPath, exportExtension, Sections, EndProject, Worker);
+                case ProjectLayoutRevision.UNKNOWN_REVISION:
+                default:
+                    System.Diagnostics.Debug.WriteLine("[ProjectExtractorBase]Unknown revision given...");
+                    return ExitCode.NOT_IMPLEMENTED;
+            }
+        }
+
         public void RevisionTwoSectionsToJson(string path)
         {
             string content = JsonUtil.ToJson(RevTwoSectionDescriptions);
@@ -59,6 +76,10 @@ namespace ProjectExtractor.Extractors.FullProject
         protected abstract ExitCode ExtractRevisionOneProject(string file, string extractPath, string[] Sections, string EndProject, BackgroundWorker Worker);
         protected abstract ExitCode ExtractRevisionTwoProject(string file, string extractPath, string[] Sections, string EndProject, BackgroundWorker Worker);
         protected abstract ExitCode ExtractRevisionThreeProject(string file, string extractPath, string[] Sections, string EndProject, BackgroundWorker Worker);
+
+        protected abstract ExitCode BatchExtractRevisionOneProject(string folder, string extractPath, string fileExtension, string[] Sections, string EndProject, BackgroundWorker Worker);
+        protected abstract ExitCode BatchExtractRevisionTwoProject(string folder, string extractPath, string fileExtension, string[] Sections, string EndProject, BackgroundWorker Worker);
+        protected abstract ExitCode BatchExtractRevisionThreeProject(string folder, string extractPath, string fileExtension, string[] Sections, string EndProject, BackgroundWorker Worker);
 
 
         /// <summary>

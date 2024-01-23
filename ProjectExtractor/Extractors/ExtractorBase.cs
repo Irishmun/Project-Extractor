@@ -10,6 +10,8 @@ namespace ProjectExtractor.Extractors
 {
     abstract class ExtractorBase
     {
+
+
         protected const string ContinuationString = "Dit project is een voortzetting van een vorig project";
         protected string[] Lines;
 
