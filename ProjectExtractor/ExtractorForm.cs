@@ -21,7 +21,7 @@ namespace ProjectExtractor
         private const string _projectExtractionSuffix = " - Projecten";
 
 
-        private string _programPath = AppContext.BaseDirectory, ExportFile;
+        private string _programPath = AppContext.BaseDirectory, _exportFile, _batchFolder;
         private string _latestTag;
         //private bool _startingUp = false;
         private string[] _keywords, _sections;
@@ -319,35 +319,54 @@ namespace ProjectExtractor
         }
         private void BT_ExtractDetails_Click(object sender, EventArgs e)
         {//extract details from pdf file based on preferences
-            if (!backgroundWorker.IsBusy)
+            if (backgroundWorker.IsBusy)
+            { return; }
+            if (BothPathsExists())
             {
-                if (BothPathsExists())
+                if (string.IsNullOrWhiteSpace(TB_StopChapter.Text) == true || string.IsNullOrWhiteSpace(TB_Chapter.Text) == true)
                 {
-                    if (string.IsNullOrWhiteSpace(TB_StopChapter.Text) == true || string.IsNullOrWhiteSpace(TB_Chapter.Text) == true)
-                    {
-                        MessageBox.Show("One or more of the \"Chapters\" textboxes are empty! be sure to fill these in.\n" +
-                            "[default values: \"Fasering werkzaamheden\" & \"Update project\"]", "Empty Chapter box(es)", MessageBoxButtons.OK, MessageBoxIcon.Stop);
-                        return;
-                    }
-                    _keywords = ConvertCheckedListViewItemsToArray(LV_Keywords);
-                    _extractor = GetDetailExportSetting();
-                    SetButtonsEnabled(false);
-                    backgroundWorker.RunWorkerAsync("DETAIL");
+                    MessageBox.Show("One or more of the \"Chapters\" textboxes are empty! be sure to fill these in.\n" +
+                        "[default values: \"Fasering werkzaamheden\" & \"Update project\"]", "Empty Chapter box(es)", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                    return;
                 }
+                _keywords = ConvertCheckedListViewItemsToArray(LV_Keywords);
+                _extractor = GetDetailExportSetting();
+                SetButtonsEnabled(false);
+                backgroundWorker.RunWorkerAsync("DETAIL");
             }
+
         }
         private void BT_ExtractFullProject_Click(object sender, EventArgs e)
         {
-            if (!backgroundWorker.IsBusy)
+            if (backgroundWorker.IsBusy)
+            { return; }
+            if (BothPathsExists())
             {
-                if (BothPathsExists())
-                {
-                    _sections = ConvertListViewItemsToArray(LV_Sections);
-                    _extractor = GetProjectExtractorSetting();
-                    SetButtonsEnabled(false);
-                    backgroundWorker.RunWorkerAsync("PROJECT");
-                }
+                _sections = ConvertListViewItemsToArray(LV_Sections);
+                _extractor = GetProjectExtractorSetting();
+                SetButtonsEnabled(false);
+                backgroundWorker.RunWorkerAsync("PROJECT");
             }
+        }
+        private void BT_BatchExtract_Click(object sender, EventArgs e)
+        {
+            if (backgroundWorker.IsBusy)
+            { return; }
+            _batchFolder = string.Empty;
+            using (FolderBrowserDialog folder = new FolderBrowserDialog())
+            {
+                if (folder.ShowDialog() != DialogResult.OK)
+                { return; }
+
+                _batchFolder = folder.SelectedPath;
+            }
+            if (_batchFolder.IsPathValid() == false || TB_ExtractLocation.Text.IsPathValid() == false)
+            { return; }
+
+            _sections = ConvertListViewItemsToArray(LV_Sections);
+            _extractor = GetProjectExtractorSetting();
+            SetButtonsEnabled(false);
+            backgroundWorker.RunWorkerAsync("BATCH");
         }
 
         //detail setting events
@@ -505,58 +524,60 @@ namespace ProjectExtractor
             _settings.SelectedFileVersionIndex = _currentRevision;
         }
         #endregion
+
         #region BackgroundWorker events
         private void backgroundWorker_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
-            if (!string.IsNullOrWhiteSpace(TB_PDFLocation.Text) && !string.IsNullOrWhiteSpace(TB_ExtractLocation.Text))
+            if (string.IsNullOrWhiteSpace(TB_PDFLocation.Text) || string.IsNullOrWhiteSpace(TB_ExtractLocation.Text))
             {//extract contents
-                string fileName = TB_PDFLocation.Text.Substring(TB_PDFLocation.Text.LastIndexOf('\\') + 1);//create filename from original file
+                MessageBox.Show("PDF file or extract location is empty!", "Empty field", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            string fileName = TB_PDFLocation.Text.Substring(TB_PDFLocation.Text.LastIndexOf('\\') + 1);//create filename from original file
 
 
-                string extractionType = e.Argument as string;
-                if (e != null)
-                {
-                    if (_extractor != null)
-                    {
-                        switch (extractionType)
-                        {
-                            case "DETAIL":
-                                ExportFile = $"{TB_ExtractLocation.Text}{Path.GetFileNameWithoutExtension(fileName)}{_detailExtractionSuffix}.{_extractor.FileExtension}";//add path and file extension
-                                _extractionResult = (_extractor as DetailExtractorBase).ExtractDetails(ProjectRevisionUtil.GetProjectRevision(_currentRevision), TB_PDFLocation.Text, ExportFile, _keywords, TB_Chapter.Text, TB_StopChapter.Text, TB_TotalHours.Text, CB_TotalHoursEnabled.Checked, CB_WriteKeywordsToFile.Checked, sender as System.ComponentModel.BackgroundWorker);
-                                break;
-                            case "PROJECT":
-                                ExportFile = $"{TB_ExtractLocation.Text}{Path.GetFileNameWithoutExtension(fileName)}{_projectExtractionSuffix}.{_extractor.FileExtension}";//add path and file extension
-                                _extractionResult = (_extractor as ProjectExtractorBase).ExtractProjects(ProjectRevisionUtil.GetProjectRevision(_currentRevision), TB_PDFLocation.Text, ExportFile, _sections, TB_SectionsEndProject.Text, sender as System.ComponentModel.BackgroundWorker);
-                                break;
-                            case "DEBUG":
-                                ExportFile = $"{TB_ExtractLocation.Text}\\DEBUG {Path.GetFileNameWithoutExtension(fileName)}{_detailExtractionSuffix}.{_extractor.FileExtension}";//add path and file extension
-                                _extractionResult = (_extractor as DetailExtractorBase).ExtractDetails(ProjectRevisionUtil.GetProjectRevision(_currentRevision), TB_PDFLocation.Text, ExportFile, _keywords, TB_Chapter.Text, TB_StopChapter.Text, TB_TotalHours.Text, CB_TotalHoursEnabled.Checked, CB_WriteKeywordsToFile.Checked, sender as System.ComponentModel.BackgroundWorker);
-                                break;
-                            default:
-                                UpdateStatus("ERROR extracting: unknown extractor given.");
-                                return;
-                        }
-                    }
-                    else
-                    {
-                        UpdateStatus("Invalid file extension marked!");
-                    }
-                }
+            string extractionType = e.Argument as string;
+            if (e == null)
+            {
+                return;
+            }
+            if (_extractor == null)
+            {
+                UpdateStatus("Invalid file extension marked!");
+                return;
+            }
 
-                if (_extractionResult != ExitCode.NONE && _extractionResult != ExitCode.FLAWED)//something went wrong
-                {
-                    string code = ExitCodeUtil.GetReturnCode(_extractionResult);
-                    UpdateStatus("ERROR extracting: " + code);
-                    MessageBox.Show("An Error was thrown whilst extracting from the file:\n" + code, "Error extracting", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-                else
-                {
-                    UpdateStatus("Extraction completed.");
-                }
+            switch (extractionType.ToUpper())
+            {
+                case "DETAIL":
+                    _exportFile = $"{TB_ExtractLocation.Text}{Path.GetFileNameWithoutExtension(fileName)}{_detailExtractionSuffix}.{_extractor.FileExtension}";//add path and file extension
+                    _extractionResult = (_extractor as DetailExtractorBase).ExtractDetails(ProjectRevisionUtil.GetProjectRevision(_currentRevision), TB_PDFLocation.Text, _exportFile, _keywords, TB_Chapter.Text, TB_StopChapter.Text, TB_TotalHours.Text, CB_TotalHoursEnabled.Checked, CB_WriteKeywordsToFile.Checked, sender as System.ComponentModel.BackgroundWorker);
+                    break;
+                case "PROJECT":
+                    _exportFile = $"{TB_ExtractLocation.Text}{Path.GetFileNameWithoutExtension(fileName)}{_projectExtractionSuffix}.{_extractor.FileExtension}";//add path and file extension
+                    _extractionResult = (_extractor as ProjectExtractorBase).ExtractProjects(ProjectRevisionUtil.GetProjectRevision(_currentRevision), TB_PDFLocation.Text, _exportFile, _sections, TB_SectionsEndProject.Text, sender as System.ComponentModel.BackgroundWorker);
+                    break;
+                case "DEBUG":
+                    _exportFile = $"{TB_ExtractLocation.Text}\\DEBUG {Path.GetFileNameWithoutExtension(fileName)}{_detailExtractionSuffix}.{_extractor.FileExtension}";//add path and file extension
+                    _extractionResult = (_extractor as DetailExtractorBase).ExtractDetails(ProjectRevisionUtil.GetProjectRevision(_currentRevision), TB_PDFLocation.Text, _exportFile, _keywords, TB_Chapter.Text, TB_StopChapter.Text, TB_TotalHours.Text, CB_TotalHoursEnabled.Checked, CB_WriteKeywordsToFile.Checked, sender as System.ComponentModel.BackgroundWorker);
+                    break;
+                case "BATCH":
+                    _extractionResult = (_extractor as ProjectExtractorBase).BatchExtractProjects(ProjectRevisionUtil.GetProjectRevision(_currentRevision), _batchFolder, TB_ExtractLocation.Text, _extractor.FileExtension, _sections, TB_SectionsEndProject.Text, sender as System.ComponentModel.BackgroundWorker);
+                    break;
+                default:
+                    UpdateStatus("ERROR extracting: unknown extractor given.");
+                    return;
+            }
+
+            if (_extractionResult != ExitCode.NONE && _extractionResult != ExitCode.FLAWED && _extractionResult != ExitCode.BATCH)//something went wrong
+            {
+                string code = ExitCodeUtil.GetReturnCode(_extractionResult);
+                UpdateStatus("ERROR extracting: " + code);
+                MessageBox.Show("An Error was thrown whilst extracting from the file:\n" + code, "Error extracting", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             else
             {
-                MessageBox.Show("PDF file or extract location is empty!", "Empty field", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                UpdateStatus("Extraction completed.");
             }
         }
         private void backgroundWorker_ProgressChanged(object sender, System.ComponentModel.ProgressChangedEventArgs e)
@@ -568,7 +589,11 @@ namespace ProjectExtractor
             //open the created file in its default application
             if (_extractionResult == ExitCode.NONE || _extractionResult == ExitCode.FLAWED)//none error or flawed error
             {
-                OpenFile(ExportFile);
+                OpenFile(_exportFile);
+            }
+            else if (_extractionResult == ExitCode.BATCH)
+            {
+                OpenFolder(TB_ExtractLocation.Text);
             }
             if (_extractionResult == ExitCode.FLAWED)
             {
@@ -576,7 +601,6 @@ namespace ProjectExtractor
             }
             SetButtonsEnabled(true);
         }
-
         #endregion
 
         #region methods
@@ -595,6 +619,21 @@ namespace ProjectExtractor
                 };
                 process.Start();
             }
+        }
+
+        private void OpenFolder(string path)
+        {
+            if (path.IsPathValid() == true)
+            {
+                Process process = new Process();
+                process.StartInfo = new ProcessStartInfo()
+                {
+                    UseShellExecute = true,
+                    FileName = path
+                };
+                process.Start();
+            }
+
         }
 
         /// <summary>Generates and displays the to be extracted file path</summary>
@@ -733,6 +772,7 @@ namespace ProjectExtractor
         {
             BT_Extract.Enabled = enabled;
             BT_ExtractFullProject.Enabled = enabled;
+            BT_BatchExtract.Enabled = enabled;
 #if DEBUG
             BT_DebugExtract.Enabled = enabled;
 #endif

@@ -1,5 +1,6 @@
 ﻿using iText.Kernel.XMP.Impl;
 using System.Collections.Generic;
+using System.IO;
 using System.Text.RegularExpressions;
 
 namespace ProjectExtractor.Util
@@ -62,6 +63,14 @@ namespace ProjectExtractor.Util
         public static int LastCharIndexOf(this string original, string value)
         {
             return original.IndexOf(value) + (int)value.Length;
+        }
+
+        /// <summary>Returns whether the path is valid or not</summary>
+        public static bool IsPathValid(this string path)
+        {
+            if (string.IsNullOrWhiteSpace(path) == true)
+            { return false; }
+            return Directory.Exists(path);
         }
     }
 }
