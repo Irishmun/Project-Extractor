@@ -11,7 +11,8 @@ namespace ProjectExtractor.Extractors
     abstract class ExtractorBase
     {
 
-
+        public const string DETAIL_SUFFIX = " - Details";
+        public const string PROJECT_SUFFIX = " - Projecten";
         protected const string ContinuationString = "Dit project is een voortzetting van een vorig project";
         protected string[] Lines;
 

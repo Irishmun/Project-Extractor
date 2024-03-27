@@ -16,6 +16,7 @@ namespace ProjectExtractor
         private const string INI_KEY_WRITE_HOURS = "WriteTotalHours", INI_KEY_TOTAL_HOURS = "TotalHoursKeyword";
         private const string INI_KEY_SAVE_PDF = "Save_PDF_Path", INI_KEY_SAVE_EXTRACT = "Save_Extract_Path", INI_KEY_DISABLE_EXTRACT = "DisableExtractionPath";
         private const string INI_KEY_PDF_PATH = "PDF_Path", INI_KEY_EXTRACT_PATH = "Extract_Path";
+        private const string INI_KEY_DATABASE = "Database_Path";
 
         private const string INI_LIST_SEPARATOR = "; ", INI_DICT_SEPARATOR = ": ";//dict separator is for the key: value pair (e.g. "listviewLabel: checked; ")
 
@@ -30,6 +31,7 @@ namespace ProjectExtractor
         private string _sectionsEndProject;
         private string _chapterStart, _chapterEnd, _totalHoursKeyword;
         private string _PDFPath, _ExtractionPath;
+        private string _databasePath;
         private Dictionary<string, bool> _keywords, _sections;
 
         /// <summary>The Settings for the program</summary>
@@ -49,7 +51,7 @@ namespace ProjectExtractor
         }
 
         /// <summary>Creates an ini file with default settings</summary>
-        public void CreateDefaultIni(bool savePDF, bool saveExtract, bool disableExtract, bool writeKeywords, bool writeHours, int fileIndex, string fileExtension, string endProject, string chapterStart, string chapterEnd, string totalHoursKey)
+        public void CreateDefaultIni(bool savePDF, bool saveExtract, bool disableExtract, bool writeKeywords, bool writeHours, int fileIndex, string fileExtension, string endProject, string chapterStart, string chapterEnd, string totalHoursKey,string databasePath)
         {
             //bools
             UpdateSetting(ref _savePDFPath, savePDF, INI_KEY_SAVE_PDF, INI_SECTION_PATHS);
@@ -65,6 +67,7 @@ namespace ProjectExtractor
             UpdateSetting(ref _chapterStart, chapterStart, INI_KEY_CHAPTER_START, INI_SECTION_CHAPTERS);
             UpdateSetting(ref _chapterEnd, chapterEnd, INI_KEY_CHAPTER_END, INI_SECTION_CHAPTERS);
             UpdateSetting(ref _totalHoursKeyword, totalHoursKey, INI_KEY_TOTAL_HOURS, INI_SECTION_HOURS);
+            UpdateSetting(ref _databasePath, DatabasePath, INI_KEY_DATABASE, INI_SECTION_PATHS);
         }
 
         /// <summary>Update the setting value and the setting by key in the ini file, but only if NOT starting</summary>
@@ -145,6 +148,7 @@ namespace ProjectExtractor
             _WriteTotalHours = _ini.ReadBoolIfExists(INI_KEY_WRITE_HOURS, INI_SECTION_HOURS);//get if total hours should be written
             _totalHoursKeyword = _ini.ReadIfExists(INI_KEY_TOTAL_HOURS, INI_SECTION_HOURS);//get keyword for total hours
             _disableExtractionPath = _ini.ReadBoolIfExists(INI_KEY_DISABLE_EXTRACT, INI_SECTION_PATHS);//get disable extraction path
+            _databasePath = _ini.ReadIfExists(INI_KEY_DATABASE, INI_SECTION_PATHS);
             //get extraction path setting if needed
             _saveExtractPath = _ini.ReadBoolIfExists(INI_KEY_SAVE_EXTRACT, INI_SECTION_PATHS);
             if (_saveExtractPath == true)
@@ -270,6 +274,7 @@ namespace ProjectExtractor
         public Dictionary<string, bool> SectionsList { get => _sections; set => UpdateSettingIfNotStarting(ref _sections, value, INI_KEY_SECTIONS, INI_SECTION_EXPORT, _isStarting); }
         public string KeywordsString { get => string.Join(INI_LIST_SEPARATOR, _keywords); set => KeywordsList = ParseIniDictionary(value); }
         public string SectionsString { get => string.Join(INI_LIST_SEPARATOR, _sections); set => SectionsList = ParseIniDictionary(value); }
+        public string DatabasePath { get => _databasePath; set => UpdateSettingIfNotStarting(ref _databasePath, value, INI_KEY_DATABASE, INI_SECTION_PATHS, _isStarting); }
 
         public bool IsStarting { get => _isStarting; set => _isStarting = value; }
     }

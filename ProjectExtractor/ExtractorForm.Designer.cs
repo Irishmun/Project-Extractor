@@ -29,6 +29,8 @@ namespace ProjectExtractor
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("Projectnummer");
             System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("Projecttitel");
             System.Windows.Forms.ListViewItem listViewItem3 = new System.Windows.Forms.ListViewItem("Aantal uren werknemers");
@@ -65,6 +67,17 @@ namespace ProjectExtractor
             label1 = new System.Windows.Forms.Label();
             TB_PDFLocation = new System.Windows.Forms.TextBox();
             BT_BrowsePDF = new System.Windows.Forms.Button();
+            TabPage_Database = new System.Windows.Forms.TabPage();
+            splitContainer1 = new System.Windows.Forms.SplitContainer();
+            BT_SetDatabase = new System.Windows.Forms.Button();
+            TB_DatabasePath = new System.Windows.Forms.TextBox();
+            TV_Database = new System.Windows.Forms.TreeView();
+            BT_BrowseDatabase = new System.Windows.Forms.Button();
+            DGV_DatabaseResults = new System.Windows.Forms.DataGridView();
+            Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            BT_SearchDatabase = new System.Windows.Forms.Button();
+            TB_DatabaseSearch = new System.Windows.Forms.TextBox();
+            label9 = new System.Windows.Forms.Label();
             TabPage_Settings = new System.Windows.Forms.TabPage();
             groupBox3 = new System.Windows.Forms.GroupBox();
             CB_SaveExtractionPath = new System.Windows.Forms.CheckBox();
@@ -114,10 +127,17 @@ namespace ProjectExtractor
             LL_GitHubLink = new System.Windows.Forms.LinkLabel();
             BT_UpdateProgram = new System.Windows.Forms.Button();
             backgroundWorker = new System.ComponentModel.BackgroundWorker();
+            toolTip1 = new System.Windows.Forms.ToolTip(components);
             statusStrip1.SuspendLayout();
             TC_MainView.SuspendLayout();
             TabPage_Extractor.SuspendLayout();
             groupBox1.SuspendLayout();
+            TabPage_Database.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
+            splitContainer1.Panel1.SuspendLayout();
+            splitContainer1.Panel2.SuspendLayout();
+            splitContainer1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)DGV_DatabaseResults).BeginInit();
             TabPage_Settings.SuspendLayout();
             groupBox3.SuspendLayout();
             GB_ExportSettings.SuspendLayout();
@@ -178,6 +198,7 @@ namespace ProjectExtractor
             // 
             TC_MainView.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
             TC_MainView.Controls.Add(TabPage_Extractor);
+            TC_MainView.Controls.Add(TabPage_Database);
             TC_MainView.Controls.Add(TabPage_Settings);
             TC_MainView.Controls.Add(TabPage_DetailSettings);
             TC_MainView.Controls.Add(TabPage_ProjectSettings);
@@ -433,6 +454,139 @@ namespace ProjectExtractor
             BT_BrowsePDF.Text = "...";
             BT_BrowsePDF.UseVisualStyleBackColor = true;
             BT_BrowsePDF.Click += BT_BrowsePDF_Click;
+            // 
+            // TabPage_Database
+            // 
+            TabPage_Database.Controls.Add(splitContainer1);
+            TabPage_Database.Location = new System.Drawing.Point(4, 24);
+            TabPage_Database.Name = "TabPage_Database";
+            TabPage_Database.Size = new System.Drawing.Size(564, 322);
+            TabPage_Database.TabIndex = 5;
+            TabPage_Database.Text = "Search";
+            TabPage_Database.UseVisualStyleBackColor = true;
+            // 
+            // splitContainer1
+            // 
+            splitContainer1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
+            splitContainer1.Location = new System.Drawing.Point(0, 0);
+            splitContainer1.Name = "splitContainer1";
+            // 
+            // splitContainer1.Panel1
+            // 
+            splitContainer1.Panel1.Controls.Add(BT_SetDatabase);
+            splitContainer1.Panel1.Controls.Add(TB_DatabasePath);
+            splitContainer1.Panel1.Controls.Add(TV_Database);
+            splitContainer1.Panel1.Controls.Add(BT_BrowseDatabase);
+            splitContainer1.Panel1MinSize = 100;
+            // 
+            // splitContainer1.Panel2
+            // 
+            splitContainer1.Panel2.Controls.Add(DGV_DatabaseResults);
+            splitContainer1.Panel2.Controls.Add(BT_SearchDatabase);
+            splitContainer1.Panel2.Controls.Add(TB_DatabaseSearch);
+            splitContainer1.Panel2.Controls.Add(label9);
+            splitContainer1.Size = new System.Drawing.Size(564, 322);
+            splitContainer1.SplitterDistance = 188;
+            splitContainer1.TabIndex = 0;
+            // 
+            // BT_SetDatabase
+            // 
+            BT_SetDatabase.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            BT_SetDatabase.Location = new System.Drawing.Point(3, 30);
+            BT_SetDatabase.Name = "BT_SetDatabase";
+            BT_SetDatabase.Size = new System.Drawing.Size(178, 23);
+            BT_SetDatabase.TabIndex = 4;
+            BT_SetDatabase.Text = "Set as Database";
+            BT_SetDatabase.UseVisualStyleBackColor = true;
+            BT_SetDatabase.Click += BT_SetDatabase_Click;
+            // 
+            // TB_DatabasePath
+            // 
+            TB_DatabasePath.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            TB_DatabasePath.Location = new System.Drawing.Point(3, 4);
+            TB_DatabasePath.Name = "TB_DatabasePath";
+            TB_DatabasePath.Size = new System.Drawing.Size(155, 23);
+            TB_DatabasePath.TabIndex = 4;
+            toolTip1.SetToolTip(TB_DatabasePath, "Browse for database");
+            TB_DatabasePath.TextChanged += TB_DatabasePath_TextChanged;
+            // 
+            // TV_Database
+            // 
+            TV_Database.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            TV_Database.Location = new System.Drawing.Point(0, 59);
+            TV_Database.Name = "TV_Database";
+            TV_Database.Size = new System.Drawing.Size(184, 259);
+            TV_Database.TabIndex = 0;
+            // 
+            // BT_BrowseDatabase
+            // 
+            BT_BrowseDatabase.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+            BT_BrowseDatabase.Location = new System.Drawing.Point(156, 3);
+            BT_BrowseDatabase.Name = "BT_BrowseDatabase";
+            BT_BrowseDatabase.Size = new System.Drawing.Size(25, 25);
+            BT_BrowseDatabase.TabIndex = 3;
+            BT_BrowseDatabase.Text = "...";
+            BT_BrowseDatabase.UseVisualStyleBackColor = true;
+            BT_BrowseDatabase.Click += BT_BrowseDatabase_Click;
+            // 
+            // DGV_DatabaseResults
+            // 
+            DGV_DatabaseResults.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            DGV_DatabaseResults.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            DGV_DatabaseResults.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
+            DGV_DatabaseResults.BackgroundColor = System.Drawing.SystemColors.Window;
+            DGV_DatabaseResults.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.Sunken;
+            DGV_DatabaseResults.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+            DGV_DatabaseResults.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] { Column1 });
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            DGV_DatabaseResults.DefaultCellStyle = dataGridViewCellStyle1;
+            DGV_DatabaseResults.Location = new System.Drawing.Point(3, 59);
+            DGV_DatabaseResults.Name = "DGV_DatabaseResults";
+            DGV_DatabaseResults.RowTemplate.Height = 25;
+            DGV_DatabaseResults.Size = new System.Drawing.Size(359, 256);
+            DGV_DatabaseResults.TabIndex = 4;
+            DGV_DatabaseResults.CellStateChanged += DGV_DatabaseResults_CellStateChanged;
+            // 
+            // Column1
+            // 
+            Column1.HeaderText = "Search Results";
+            Column1.Name = "Column1";
+            Column1.ReadOnly = true;
+            // 
+            // BT_SearchDatabase
+            // 
+            BT_SearchDatabase.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+            BT_SearchDatabase.Location = new System.Drawing.Point(221, 30);
+            BT_SearchDatabase.Name = "BT_SearchDatabase";
+            BT_SearchDatabase.Size = new System.Drawing.Size(141, 23);
+            BT_SearchDatabase.TabIndex = 3;
+            BT_SearchDatabase.Text = "Search Database";
+            BT_SearchDatabase.UseVisualStyleBackColor = true;
+            BT_SearchDatabase.Click += BT_SearchDatabase_Click;
+            // 
+            // TB_DatabaseSearch
+            // 
+            TB_DatabaseSearch.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            TB_DatabaseSearch.Location = new System.Drawing.Point(54, 5);
+            TB_DatabaseSearch.Name = "TB_DatabaseSearch";
+            TB_DatabaseSearch.Size = new System.Drawing.Size(308, 23);
+            TB_DatabaseSearch.TabIndex = 1;
+            // 
+            // label9
+            // 
+            label9.AutoSize = true;
+            label9.Location = new System.Drawing.Point(3, 8);
+            label9.Name = "label9";
+            label9.Size = new System.Drawing.Size(45, 15);
+            label9.TabIndex = 0;
+            label9.Text = "Search:";
             // 
             // TabPage_Settings
             // 
@@ -930,7 +1084,6 @@ namespace ProjectExtractor
             // logoPictureBox
             // 
             logoPictureBox.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            logoPictureBox.Image = (System.Drawing.Image)resources.GetObject("logoPictureBox.Image");
             logoPictureBox.Location = new System.Drawing.Point(4, 3);
             logoPictureBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             logoPictureBox.Name = "logoPictureBox";
@@ -1046,6 +1199,14 @@ namespace ProjectExtractor
             TabPage_Extractor.ResumeLayout(false);
             TabPage_Extractor.PerformLayout();
             groupBox1.ResumeLayout(false);
+            TabPage_Database.ResumeLayout(false);
+            splitContainer1.Panel1.ResumeLayout(false);
+            splitContainer1.Panel1.PerformLayout();
+            splitContainer1.Panel2.ResumeLayout(false);
+            splitContainer1.Panel2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)splitContainer1).EndInit();
+            splitContainer1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)DGV_DatabaseResults).EndInit();
             TabPage_Settings.ResumeLayout(false);
             groupBox3.ResumeLayout(false);
             groupBox3.PerformLayout();
@@ -1149,6 +1310,18 @@ namespace ProjectExtractor
         private System.Windows.Forms.Button BT_DebugJson;
         private System.Windows.Forms.Button BT_DebugComputeHash;
         private System.Windows.Forms.Button BT_BatchExtract;
+        private System.Windows.Forms.TabPage TabPage_Database;
+        private System.Windows.Forms.SplitContainer splitContainer1;
+        private System.Windows.Forms.TreeView TV_Database;
+        private System.Windows.Forms.TextBox TB_DatabaseSearch;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.TextBox TB_DatabasePath;
+        private System.Windows.Forms.Button BT_BrowseDatabase;
+        private System.Windows.Forms.ToolTip toolTip1;
+        private System.Windows.Forms.Button BT_SearchDatabase;
+        private System.Windows.Forms.Button BT_SetDatabase;
+        private System.Windows.Forms.DataGridView DGV_DatabaseResults;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
     }
 }
 
