@@ -27,14 +27,14 @@ namespace ProjectExtractor
         private Settings _settings;
         private ExtractorBase _extractor;
         private ExitCode _extractionResult = ExitCode.NONE;
-        private DatabaseUtil _databaseUtil;
+        private DatabaseSearch _databaseSearch;
 
         public ExtractorForm()
         {
             _settings = new Settings();
             _settings.IsStarting = true;
             _updateHandler = new UpdateHandler();
-            _databaseUtil = new DatabaseUtil();
+            _databaseSearch = new DatabaseSearch();
             InitializeComponent();
             InitializeAbout();
 #if !DEBUG
@@ -404,13 +404,22 @@ namespace ProjectExtractor
         {
             //fill treeview with projects
             //TODO: change from just the files, to also the projects inside
-            _databaseUtil.PopulateTreeView(TV_Database, TB_DatabasePath.Text);
+            _databaseSearch.PopulateTreeView(TV_Database, TB_DatabasePath.Text);
+            if (TV_Database.Nodes.Count == 1)
+            {
+                TV_Database.Nodes[0].Expand();
+            }
         }
         private void BT_SearchDatabase_Click(object sender, EventArgs e)
         {//perform search for matching words in database
             //DGV_DatabaseResults.Rows.Add("Search result\n    result subitem");
             //^do this with each result (\t doesn't work) with the subitem being the related line
             //add a tag (or put in a second, hidden, collumn) the file and project that it is related to in the tree view
+            this.Cursor = Cursors.WaitCursor;
+            BT_SearchDatabase.Enabled = false;
+            _databaseSearch.PopulateRowsWithResults(ref DGV_DatabaseResults, TB_DatabaseSearch.Text, TV_Database);
+            BT_SearchDatabase.Enabled = true;
+            this.Cursor = Cursors.Default;
         }
 
         //detail setting events
@@ -586,7 +595,17 @@ namespace ProjectExtractor
         #region BackgroundWorker events
         private void backgroundWorker_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(TB_PDFLocation.Text) || string.IsNullOrWhiteSpace(TB_ExtractLocation.Text))
+            string extractionType = e.Argument as string;
+            if (e == null)
+            {
+                return;
+            }
+            if (extractionType.ToUpper().Equals("BATCH") && string.IsNullOrWhiteSpace(TB_ExtractLocation.Text))
+            {
+                MessageBox.Show("PDF extract location is empty!", "Empty field", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            else if (string.IsNullOrWhiteSpace(TB_PDFLocation.Text) || string.IsNullOrWhiteSpace(TB_ExtractLocation.Text))
             {//extract contents
                 MessageBox.Show("PDF file or extract location is empty!", "Empty field", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
@@ -594,11 +613,6 @@ namespace ProjectExtractor
             string fileName = TB_PDFLocation.Text.Substring(TB_PDFLocation.Text.LastIndexOf('\\') + 1);//create filename from original file
 
 
-            string extractionType = e.Argument as string;
-            if (e == null)
-            {
-                return;
-            }
             if (_extractor == null)
             {
                 UpdateStatus("Invalid file extension marked!");
@@ -929,7 +943,7 @@ namespace ProjectExtractor
             labelCopyright.Text = AssemblyCopyright();
             labelCompanyName.Text = AssemblyCompany();
             //textBoxDescription.Text = AssemblyDescription();
-
+            /*
             string AssemblyProduct()
             {
                 object[] attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyProductAttribute), false);
@@ -938,7 +952,7 @@ namespace ProjectExtractor
                     return "";
                 }
                 return ((AssemblyProductAttribute)attributes[0]).Product;
-            }
+            }*/
             string AssemblyVersion()
             {
                 Version ver = Assembly.GetExecutingAssembly().GetName().Version;
@@ -962,6 +976,7 @@ namespace ProjectExtractor
                 }
                 return ((AssemblyCompanyAttribute)attributes[0]).Company;
             }
+            /*
             string AssemblyDescription()
             {
                 object[] attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyDescriptionAttribute), false);
@@ -970,7 +985,7 @@ namespace ProjectExtractor
                     return "";
                 }
                 return ((AssemblyDescriptionAttribute)attributes[0]).Description;
-            }
+            }*/
         }
         private async Task SetChangelogTextBox()
         {
@@ -1036,6 +1051,15 @@ namespace ProjectExtractor
 #endif
         }
 
+        private void BT_DebugFillMemory_Click(object sender, EventArgs e)
+        {
+#if DEBUG
+            _databaseSearch.SearchDatabase("", TV_Database);
+#endif
+        }
+
         #endregion
+
+
     }
 }

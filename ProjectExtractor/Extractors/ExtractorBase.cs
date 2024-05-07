@@ -16,7 +16,7 @@ namespace ProjectExtractor.Extractors
         protected const string ContinuationString = "Dit project is een voortzetting van een vorig project";
         protected string[] Lines;
 
-        private char[] _removeCharacters = new char[] { ' ', '\r', '\n' };//whitespaces, carriage returns and linefeeds
+        private readonly char[] _removeCharacters = new char[] { ' ', '\r', '\n' };//whitespaces, carriage returns and linefeeds
         /// <summary>
         /// Extracts all text from the given pdf file, putting it in <see cref="Lines"/> 
         /// </summary>

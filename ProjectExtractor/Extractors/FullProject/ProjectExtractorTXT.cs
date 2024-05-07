@@ -120,7 +120,6 @@ namespace ProjectExtractor.Extractors.FullProject
             List<int> ProjectStartIndexes = new List<int>();
             string[] sectionWords = Sections;
             string possibleSection = string.Empty;
-            bool startProject = false;
             string firstProjecTitle = RevTwoTryGetProjectTitle(Lines, 0, EndProject, out int titleIndex);
             ProjectStartIndexes.Add(titleIndex);
             titleIndex += 1;
@@ -139,7 +138,6 @@ namespace ProjectExtractor.Extractors.FullProject
             }
             bool preFirstSection;
             bool searchNextSection;
-            int sectionIndex;
             string checkString = string.Empty;
             bool appendNewLines = false;
             string remaining = string.Empty;
@@ -291,7 +289,6 @@ namespace ProjectExtractor.Extractors.FullProject
 
             string[] sectionWords = Sections;//ConvertSectionsToArray(Sections);
             string possibleSection = string.Empty;
-            bool startProject = false;
             string firstProjecTitle = RevThreeTryGetProjecTitle(Lines, 0, EndProject, out int titleIndex);
             ProjectStartIndexes.Add(titleIndex);
             titleIndex += 1;
@@ -312,7 +309,6 @@ namespace ProjectExtractor.Extractors.FullProject
             }
             bool continuationDone;
             bool searchNextSection;
-            int sectionIndex;
             string checkString = string.Empty;
             bool appendNewLines = false;
             string remaining = string.Empty;
@@ -484,7 +480,6 @@ namespace ProjectExtractor.Extractors.FullProject
             string res = check;
             string[] checkWords = check.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
             string[] comparisonWords = comparison.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
-            int foundIndex = 0;
             StringBuilder toRemove = new StringBuilder();
             if (check.Trim().StartsWith(comparisonWords[0]))
             {
