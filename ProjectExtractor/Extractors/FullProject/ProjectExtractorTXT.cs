@@ -1,13 +1,10 @@
-﻿using iText.Layout.Borders;
-using Octokit;
-using ProjectExtractor.Util;
+﻿using ProjectExtractor.Util;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
-using static System.Collections.Specialized.BitVector32;
 
 namespace ProjectExtractor.Extractors.FullProject
 {
@@ -27,7 +24,9 @@ namespace ProjectExtractor.Extractors.FullProject
 
         protected override ExitCode ExtractRevisionOneProject(string file, string extractPath, string[] Sections, string EndProject, BackgroundWorker Worker)
         {
+#if DEBUG
             System.Diagnostics.Debug.WriteLine("[ProjectExtractorTXT]\"ExtractRevisionOneProject\" not implemented.");
+#endif
             return ExitCode.NOT_IMPLEMENTED;
         }
         protected override ExitCode ExtractRevisionTwoProject(string file, string extractPath, string[] Sections, string EndProject, BackgroundWorker Worker)
@@ -53,7 +52,9 @@ namespace ProjectExtractor.Extractors.FullProject
 
         protected override ExitCode BatchExtractRevisionOneProject(string folder, string extractPath, string fileExtension, string[] Sections, string EndProject, BackgroundWorker Worker)
         {
+#if DEBUG
             System.Diagnostics.Debug.WriteLine("[ProjectExtractorTXT]\"BatchExtractRevisionOneProject\" not implemented.");
+#endif
             return ExitCode.NOT_IMPLEMENTED;
         }
         protected override ExitCode BatchExtractRevisionTwoProject(string folder, string extractPath, string fileExtension, string[] Sections, string EndProject, BackgroundWorker Worker)
@@ -69,7 +70,7 @@ namespace ProjectExtractor.Extractors.FullProject
                 if (returnCode == ExitCode.ERROR)
                 {
                     code = ExitCode.BATCH_FLAWED;
-                    continue; 
+                    continue;
                 }
 
                 using (StreamWriter sw = File.CreateText(exportFile))

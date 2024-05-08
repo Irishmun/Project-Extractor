@@ -72,5 +72,21 @@ namespace ProjectExtractor.Util
             { return false; }
             return Directory.Exists(path);
         }
+
+        /// <summary>Truncates the string to the given length if needed, adding ellipsis AFTER the word where the limit was exceeded</summary>
+        /// <param name="length">maximum number of characters before truncating.</param>
+        /// <returns>truncated string</returns>
+        public static string TruncateForDisplay(this string value, int length)
+        {
+            if (string.IsNullOrEmpty(value)) return string.Empty;
+            var returnValue = value;
+            if (value.Length > length)
+            {
+                var tmp = value.Substring(0, length);
+                if (tmp.LastIndexOf(' ') > 0)
+                    returnValue = tmp.Substring(0, tmp.LastIndexOf(' ')) + "…";
+            }
+            return returnValue;
+        }
     }
 }

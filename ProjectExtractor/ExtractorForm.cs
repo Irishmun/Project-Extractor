@@ -1,4 +1,5 @@
 ﻿using Microsoft.WindowsAPICodePack.Dialogs;
+using ProjectExtractor.Database;
 using ProjectExtractor.Extractors;
 using ProjectExtractor.Extractors.Detail;
 using ProjectExtractor.Extractors.FullProject;
@@ -395,20 +396,14 @@ namespace ProjectExtractor
             if (result == CommonFileDialogResult.Ok && !string.IsNullOrWhiteSpace(res))
             {
                 TB_DatabasePath.Text = res;
-                UpdateStatus("set database path");
+                //UpdateStatus("set database path");
                 _settings.DatabasePath = res;
+                FillDatabaseTree();
             }
-            //
         }
         private void BT_SetDatabase_Click(object sender, EventArgs e)
         {
-            //fill treeview with projects
-            //TODO: change from just the files, to also the projects inside
-            _databaseSearch.PopulateTreeView(TV_Database, TB_DatabasePath.Text);
-            if (TV_Database.Nodes.Count == 1)
-            {
-                TV_Database.Nodes[0].Expand();
-            }
+            FillDatabaseTree();
         }
         private void BT_SearchDatabase_Click(object sender, EventArgs e)
         {//perform search for matching words in database
@@ -418,6 +413,7 @@ namespace ProjectExtractor
             this.Cursor = Cursors.WaitCursor;
             BT_SearchDatabase.Enabled = false;
             _databaseSearch.PopulateRowsWithResults(ref DGV_DatabaseResults, TB_DatabaseSearch.Text, TV_Database);
+            UpdateStatus($"Done searching for \"{TB_DatabaseSearch.Text}\"");
             BT_SearchDatabase.Enabled = true;
             this.Cursor = Cursors.Default;
         }
@@ -583,12 +579,18 @@ namespace ProjectExtractor
         }
         #endregion
         #region DataGridView Events
-        private void DGV_DatabaseResults_CellStateChanged(object sender, DataGridViewCellStateChangedEventArgs e)
+        private void DGV_DatabaseResults_CellContentDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.Cell.State == DataGridViewElementStates.Selected)
+            DataGridViewCell cell = DGV_DatabaseResults.Rows[e.RowIndex].Cells[e.ColumnIndex];
+            if (cell.OwningRow.Tag == null)
             {
-                Debug.WriteLine(e.Cell.State + " State changed on cell: " + e.Cell.RowIndex);
+                MessageBox.Show("Was not able to get path for this file.", "No file path", MessageBoxButtons.OK);
+                return;
             }
+#if DEBUG
+            Debug.WriteLine("Opening file at: " + cell.OwningRow.Tag.ToString());
+#endif
+            OpenFile(cell.OwningRow.Tag.ToString());
         }
         #endregion
 
@@ -892,6 +894,22 @@ namespace ProjectExtractor
             await _updateHandler.DownloadAndInstallRelease(_latestTag);
         }
 
+        private void FillDatabaseTree()
+        {
+            //fill treeview with projects
+            //TODO: change from just the files, to also the projects inside
+            this.Cursor = Cursors.WaitCursor;
+            BT_SetDatabase.Enabled = false;
+            _databaseSearch.PopulateTreeView(TV_Database, TB_DatabasePath.Text);
+            if (TV_Database.Nodes.Count > 0)
+            {
+                TV_Database.Nodes[0].Expand();
+            }
+            UpdateStatus("Finished showing projects");
+            BT_SetDatabase.Enabled = true;
+            this.Cursor = Cursors.Default;
+        }
+
         #endregion
         #region Settings methods
         /// <summary>Gets the current export setting radiobutton and returns its associated detail extractor</summary>
@@ -1051,15 +1069,6 @@ namespace ProjectExtractor
 #endif
         }
 
-        private void BT_DebugFillMemory_Click(object sender, EventArgs e)
-        {
-#if DEBUG
-            _databaseSearch.SearchDatabase("", TV_Database);
-#endif
-        }
-
         #endregion
-
-
     }
 }

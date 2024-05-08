@@ -57,7 +57,9 @@ namespace ProjectExtractor
                 }
             }
             catch (Exception) { }
+#if DEBUG
             System.Diagnostics.Debug.WriteLine($"Current version({ver}) is equal to, or newer than, latest version on Git({latestTag})");
+#endif
             return false;
         }
         public async Task<IReadOnlyList<string>> GetAllReleases()
@@ -68,10 +70,14 @@ namespace ProjectExtractor
             List<string> versionTags = new List<string>();
             foreach (Release item in releases)
             {
+#if DEBUG
                 System.Diagnostics.Debug.WriteLine("Release: " + item.TagName);
+#endif
                 versionTags.Add(item.TagName);
             }
+#if DEBUG
             System.Diagnostics.Debug.WriteLine("Latest: " + releases[0].TagName);
+#endif
             return versionTags.AsReadOnly();
         }
 
@@ -80,7 +86,9 @@ namespace ProjectExtractor
             if (ReleaseAvailable == false)
             { return string.Empty; }
             Release release = LatestRelease;
+#if DEBUG
             System.Diagnostics.Debug.WriteLine(release.AssetsUrl);
+#endif
             return release.TagName;
         }
         public async Task DownloadAndInstallRelease(string TagName)
@@ -105,15 +113,6 @@ namespace ProjectExtractor
             }
             return str.ToString();
         }
-        /// <summary>Gets the rate limit from GitHub directly</summary>
-        /// <returns><see cref="MiscellaneousRateLimit"/></returns>
-        /// <remarks>Note that this will send a request to GitHub and thus affect the rate limit</remarks>
-        public async Task<MiscellaneousRateLimit> GetDirectRateLimit()
-        {
-            MiscellaneousRateLimit miscRate = await _client.Miscellaneous.GetRateLimits();
-            System.Diagnostics.Debug.WriteLine($"Rate Limit: {miscRate?.Rate.Limit}, Remaining: {miscRate?.Rate.Remaining}, Reset: {miscRate?.Rate.Reset}");
-            return miscRate;
-        }
 
         /// <summary>Opens the URL specified in <see cref="LATEST_URL"/> in the default browser</summary>
         public void OpenReleasePage()
@@ -126,11 +125,13 @@ namespace ProjectExtractor
         private RateLimit GetRateLimit()
         {
             ApiInfo apiInfo = _client.GetLastApiInfo();
+#if DEBUG
             if (apiInfo == null)
             {
                 System.Diagnostics.Debug.WriteLine("Rate Limit: null, no call made");
             }
             System.Diagnostics.Debug.WriteLine($"Rate Limit: {apiInfo?.RateLimit.Limit}, Remaining: {apiInfo?.RateLimit.Remaining}, Reset: {apiInfo?.RateLimit.Reset}");
+#endif
             return apiInfo?.RateLimit;
         }
 
@@ -149,7 +150,9 @@ namespace ProjectExtractor
                 if (CanMakeRequests() == false)
                 { return; }
                 _releases = await _client.Repository.Release.GetAll(PROJECT_OWNER, THIS_PROJECT);
+#if DEBUG
                 Debug.WriteLine("releases set");
+#endif
             }
             catch (Exception)
             {

@@ -13,7 +13,9 @@ namespace ProjectExtractor.Extractors.Detail
     {
         protected override ExitCode ExtractRevisionOneDetails(string file, string extractPath, string[] keywords, string chapters, string stopChapters, string totalHoursKeyword, bool writeTotalHoursToFile, bool writeKeywordsToFile, BackgroundWorker worker)
         {
+#if DEBUG
             System.Diagnostics.Debug.WriteLine("[DetailExtractorTXT]\"ExtractRevisionOneDetails\" not implemented.");
+#endif
             return ExitCode.NOT_IMPLEMENTED;
         }
 

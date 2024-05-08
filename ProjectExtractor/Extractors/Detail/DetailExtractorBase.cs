@@ -24,7 +24,9 @@ namespace ProjectExtractor.Extractors.Detail
                     return ExtractRevisionThreeDetails(file, extractPath, Keywords, chapters, stopChapters, totalHoursKeyword, WriteTotalHoursToFile, WriteKeywordsToFile, Worker);
                 case ProjectLayoutRevision.UNKNOWN_REVISION:
                 default:
+#if DEBUG
                     System.Diagnostics.Debug.WriteLine("[ProjectExtractorBase]Unknown revision given...");
+#endif
                     return ExitCode.NOT_IMPLEMENTED;
             }
         }

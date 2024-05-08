@@ -27,7 +27,9 @@ namespace ProjectExtractor.Extractors.FullProject
                     return ExtractRevisionThreeProject(file, extractPath, Sections, EndProject, Worker);
                 case ProjectLayoutRevision.UNKNOWN_REVISION:
                 default:
+#if DEBUG
                     System.Diagnostics.Debug.WriteLine("[ProjectExtractorBase]Unknown revision given...");
+#endif
                     return ExitCode.NOT_IMPLEMENTED;
             }
         }
@@ -44,7 +46,9 @@ namespace ProjectExtractor.Extractors.FullProject
                     return BatchExtractRevisionThreeProject(batchPath, extractPath, exportExtension, Sections, EndProject, Worker);
                 case ProjectLayoutRevision.UNKNOWN_REVISION:
                 default:
+#if DEBUG
                     System.Diagnostics.Debug.WriteLine("[ProjectExtractorBase]Unknown revision given...");
+#endif
                     return ExitCode.NOT_IMPLEMENTED;
             }
         }

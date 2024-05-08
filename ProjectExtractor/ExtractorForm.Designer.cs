@@ -552,7 +552,7 @@ namespace ProjectExtractor
             DGV_DatabaseResults.RowTemplate.Height = 25;
             DGV_DatabaseResults.Size = new System.Drawing.Size(359, 256);
             DGV_DatabaseResults.TabIndex = 4;
-            DGV_DatabaseResults.CellStateChanged += DGV_DatabaseResults_CellStateChanged;
+            DGV_DatabaseResults.CellContentDoubleClick += DGV_DatabaseResults_CellContentDoubleClick;
             // 
             // Column1
             // 
