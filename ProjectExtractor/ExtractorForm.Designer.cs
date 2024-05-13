@@ -518,6 +518,7 @@ namespace ProjectExtractor
             TV_Database.Name = "TV_Database";
             TV_Database.Size = new System.Drawing.Size(184, 259);
             TV_Database.TabIndex = 0;
+            TV_Database.NodeMouseDoubleClick += TV_Database_NodeMouseDoubleClick;
             // 
             // BT_BrowseDatabase
             // 

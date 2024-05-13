@@ -1,4 +1,5 @@
-﻿using ProjectExtractor.Extractors;
+﻿using Octokit;
+using ProjectExtractor.Extractors;
 using ProjectExtractor.Util;
 using System;
 using System.Collections.Generic;
@@ -11,20 +12,23 @@ using System.Windows.Forms;
 using System.Windows.Forms.Design.Behavior;
 
 namespace ProjectExtractor.Database
-{
+{//TODO: add files to search if they aren't part of the projects array
     internal class DatabaseSearch
     {
-        private const int MAX_FUZZY_DISTANCE = 3;
+        private const int MAX_FUZZY_DISTANCE = 2;
         private const int SEARCH_RESULT_TRUNCATE = 64;//characters before truncating
 
         private readonly string[] _projectFileTypes = new string[] { ".txt" };
-        private string[] _projectFiles;
-        private DatabaseProject[] _projects;
+        private string[] _projectPaths;//paths to possible project files
+        private Dictionary<string, string> _miscDocuments;//<path,text>documents in the folder that could not be turned into a project
+        private DatabaseProject[] _projects;//found projects
 
         public void PopulateTreeView(TreeView tree, string path)
         {//fill treeview with project documents, with subnodes of the projects in that document
             List<string> files = new List<string>();
+            _miscDocuments = new Dictionary<string, string>();
             tree.Nodes.Clear();
+            List<TreeNode> projectNodes = new List<TreeNode>();
             Stack<TreeNode> stack = new Stack<TreeNode>();
             DirectoryInfo rootDir = new DirectoryInfo(path);
             TreeNode node = new TreeNode(rootDir.Name) { Tag = rootDir };
@@ -49,12 +53,15 @@ namespace ProjectExtractor.Database
                     if (file.Name.Contains("WBSO") && _projectFileTypes.Contains(file.Extension))
                     {//if WBSO and of a permitted filetype, add to tree
                         files.Add(file.FullName);
-                        currentNode.Nodes.Add(new TreeNode(TrimExtractionData(file.Name)));
+                        TreeNode subnode = new TreeNode(TrimExtractionData(file.Name));
+                        subnode.Tag = file.FullName;
+                        projectNodes.Add(subnode);
+                        currentNode.Nodes.Add(subnode);
                     }
                 }
             }
 
-            _projectFiles = files.ToArray();
+            _projectPaths = files.ToArray();
 #if DEBUG
             long memoryUsage = GC.GetTotalMemory(false);
 #endif
@@ -69,7 +76,21 @@ namespace ProjectExtractor.Database
             memoryUsage = GC.GetTotalMemory(false) - memoryUsage;
             Debug.WriteLine($"{(memoryUsage * 0.000001d).ToString("0.00")}MB used for {_projects.Length} projects");
 #endif
-
+            //add found projects as subnodes
+            for (int i = 0; i < _projects.Length; i++)
+            {
+                foreach (TreeNode item in projectNodes)
+                {
+                    if (item.Tag == null)
+                    { continue; }
+                    if (_projects[i].Path.Equals(item.Tag.ToString()))
+                    {
+                        TreeNode subnode = new TreeNode(_projects[i].Id);
+                        subnode.Tag = _projects[i].Path;
+                        item.Nodes.Add(subnode);
+                    }
+                }
+            }
             tree.Nodes.Add(node);
         }
 
@@ -79,12 +100,20 @@ namespace ProjectExtractor.Database
             SearchDatabase(query, ref grid);
         }
 
-        public List<string> SearchDatabase(string query, ref DataGridView grid)
+        public void SearchDatabase(string query, ref DataGridView grid)
         {
-            List<string> res = new List<string>();
+            string reg;
+            if (query.StartsWith('\"'))
+            {//exact match search
+                reg = CreateRegex(query.Trim('\"').ToLower(), true);
+            }
+            else
+            {
+                reg = CreateRegex(query.ToLower());
+            }
 
-            string reg = CreateRegex(query.ToLower());
 
+            //search through propper projects
             for (int i = 0; i < _projects.Length; i++)
             {//look through each project
                 //check if project name is correct
@@ -112,43 +141,34 @@ namespace ProjectExtractor.Database
                     }
                 }
             }
-            return res;
+            //search through misc documents
+            foreach (KeyValuePair<string, string> doc in _miscDocuments)
+            {
+                Match match = Regex.Match(doc.Value.ToLower(), reg);
+                if (match.Success == true)
+                {
+                    addValueToGridView($"[?] bad extraction\n    {match.Value.TruncateForDisplay(SEARCH_RESULT_TRUNCATE)}", doc.Key, ref grid);
+                }
+            }
 
             bool isMatch(string text, DatabaseProject project, ref DataGridView grid)
             {
                 Match match = Regex.Match(text.ToLower(), reg);
                 if (match.Success == true)
                 {
-                    DataGridViewRow row = new DataGridViewRow();
-                    res.Add(project.Id + "\n    " + match.Value.TruncateForDisplay(SEARCH_RESULT_TRUNCATE));
-                    row.CreateCells(grid, project.Id + "\n    " + match.Value.TruncateForDisplay(SEARCH_RESULT_TRUNCATE));
-                    row.Tag = project.Path;
-                    grid.Rows.Add(row);
+                    addValueToGridView($"[{project.NumberInDocument}] {project.Id}\n    {match.Value.TruncateForDisplay(SEARCH_RESULT_TRUNCATE)}", project.Path, ref grid);
                     return true;
                 }
                 return false;
             }
-        }
 
-        private List<string> SearchTreeView(string query, TreeView tree)
-        {
-            List<string> res = new List<string>();
-
-            string reg = CreateRegex(query.ToLower());
-
-            for (int node = 0; node < tree.Nodes.Count; node++)
+            void addValueToGridView(string cellContent, string path, ref DataGridView grid)
             {
-                for (int i = 0; i < tree.Nodes[node].Nodes.Count; i++)
-                {
-                    Match match = Regex.Match(tree.Nodes[node].Nodes[i].Text.ToLower(), reg);
-                    if (match.Success == true)
-                    {
-                        res.Add(tree.Nodes[node].Nodes[i].Text);
-                    }
-                }
+                DataGridViewRow row = new DataGridViewRow();
+                row.CreateCells(grid, cellContent);
+                row.Tag = path;
+                grid.Rows.Add(row);
             }
-
-            return res;
         }
 
         /// <summary>Fuzzy search text for matches</summary>
@@ -182,17 +202,28 @@ namespace ProjectExtractor.Database
             {
                 name = name.Substring(19);
             }
+            if (name.StartsWith("Aanvraag WBSO"))
+            {
+                name = name.Substring(13);
+            }
             name = name.Trim();
             return name;
         }
 
-        private string CreateRegex(string query)
+        private string CreateRegex(string query, bool exactMatch = false)
         {
             //StringBuilder regex = new StringBuilder();
             StringBuilder regex = new StringBuilder("[^.!?;]*(");
-            for (int i = 0; i < query.Length; i++)
+            if (exactMatch == false)
             {
-                regex.Append("[^\\s]{0," + MAX_FUZZY_DISTANCE + "}" + query[i]);
+                for (int i = 0; i < query.Length; i++)
+                {
+                    regex.Append("[^\\s]{0," + MAX_FUZZY_DISTANCE + "}" + query[i]);
+                }
+            }
+            else
+            {
+                regex.Append(query);
             }
             regex.Append(")[^.!?;]*");
             return regex.ToString();
@@ -206,129 +237,61 @@ namespace ProjectExtractor.Database
             List<DatabaseProject> projects = new List<DatabaseProject>();
             DatabaseProject currentProject = new DatabaseProject();
             currentProject.Path = path;
+            int prevProjectIndex = 0;
+            int projIndex = 0;
             for (int i = 0; i < lines.Length; i++)
             {
                 if (lines[i].Equals("========[END PROJECTS]========="))
                 {//end of document found, add last project and exit out
-                    if (currentProject.Id == null)
+
+                    if (TryGetProject(path, lines, prevProjectIndex, i - 1, projIndex, out currentProject) == false)
                     {//don't add project if it doesn't have anything
-                        currentProject = new DatabaseProject();
-                        continue;
+                        break;
                     }
                     projects.Add(currentProject);
                     break;
                 }
                 if (lines[i].Equals("========[NEXT PROJECT]========="))
                 {//new project, add whatever was found before this to the list and start over
-                    if (currentProject.Id == null)
+                    projIndex += 1;
+                    if (TryGetProject(path, lines, prevProjectIndex, i - 1, projIndex, out currentProject) == false)
                     {//don't add project if it doesn't have anything
-                        currentProject = new DatabaseProject();
+                        prevProjectIndex = i + 1;
                         continue;
                     }
+                    prevProjectIndex = i + 1;
                     projects.Add(currentProject);
-                    currentProject = new DatabaseProject();
                     currentProject.Path = path;
                 }
-                if (lines[i].StartsWith("Project "))
-                {
-#if DEBUG
-                    // Debug.WriteLine("id: " + lines[i]);
-#endif
-                    currentProject.Id = lines[i];
-                    continue;
-                }
-                if (lines[i].StartsWith("Omschrijving:"))
-                {
-                    currentProject.Description = lines[i + 1];
-                    i += 1;
-                    continue;
-                }
-                if (lines[i].StartsWith("Samenwerking?:"))
-                {
-                    currentProject.Cooperation = lines[i + 1].Contains("Ja") ? true : false;
-#if DEBUG
-                    //Debug.WriteLine("coop: " + lines[i + 1] + "(" + currentProject.Cooperation + ")");
-#endif
-                    i += 1;
-                    continue;
-                }
-                if (lines[i].StartsWith("Fasering Werkzaamheden:"))
-                {
-                    currentProject.ProjectPhases = GetDates(lines, i, "Update Project:", out i);
-                    continue;
-                }
-                if (lines[i].StartsWith("- Technische knelpunten:"))
-                {
-                    currentProject.Technical = GetTechnical(lines, i, "Wordt er mede programmatuur ontwikkeld?:", out i);
-                    continue;
-                }
-                if (lines[i].StartsWith("Wordt er mede programmatuur ontwikkeld?:"))
-                {
-                    currentProject.SoftwareDeveloped = lines[i + 1].Contains("Ja") ? true : false;
-#if DEBUG
-                    //Debug.WriteLine("software developed: " + lines[i + 1] + "(" + currentProject.SoftwareDeveloped + ")");
-#endif
-                    i += 1;
-                    continue;
-                }
+
             }
 #if DEBUG
             Debug.WriteLine("found " + projects.Count + " projects in text.");
+#endif
             if (projects.Count == 0)
             {
+#if DEBUG            
                 Debug.WriteLine("check file for errors");
                 Debug.WriteLine(path);
-            }
 #endif
+                //add to misc documents to still allow for searching
+                _miscDocuments.Add(path, text);
+            }
             return projects.ToArray();
-        }
 
-        private string[] GetTechnical(string[] lines, int startIndex, string stopLine, out int lastprocessedIndex)
-        {
-            List<string> technicals = new List<string>();
-            for (lastprocessedIndex = startIndex; lastprocessedIndex < lines.Length; lastprocessedIndex++)
+            bool TryGetProject(string path, string[] lines, int startIndex, int endIndex, int projIndex, out DatabaseProject project)
             {
-                if (lines[lastprocessedIndex].StartsWith(stopLine))
+                if (DatabaseProject.TextToProject(path, lines, startIndex, endIndex, projIndex, out project) == false)
                 {
-                    return technicals.ToArray();
+#if DEBUG
+                    Debug.WriteLine($"Couldn't find project between lines {prevProjectIndex} - {endIndex} in {path}");
+#endif
+                    return false;
                 }
-                if (lines[lastprocessedIndex].StartsWith("- "))
-                {
-                    technicals.Add(lines[lastprocessedIndex] + Environment.NewLine + lines[lastprocessedIndex + 1]);
-                    lastprocessedIndex += 1;
-                    continue;
-                }
+                return true;
             }
-            return technicals.ToArray();
         }
 
-        private Dictionary<DateTime, string> GetDates(string[] lines, int startIndex, string stopLine, out int lastprocessedIndex)
-        {
-            Dictionary<DateTime, string> dates = new Dictionary<DateTime, string>();
-            for (lastprocessedIndex = startIndex; lastprocessedIndex < lines.Length; lastprocessedIndex++)
-            {
-                if (lines[lastprocessedIndex].StartsWith(stopLine))
-                {
-                    return dates;
-                }
-                try
-                {
-                    //try and find a datetime text matching the smallest to the largest structure
-                    //^([0-9]{2}-[0-9]{2}-[0-9]{4})
-                    Match match = Regex.Match(lines[lastprocessedIndex], @"[0-9]{1,2}(-|/)[0-9]{1,2}(-|/)[0-9]{2,4}");
-                    if (!string.IsNullOrEmpty(match.Value))
-                    {
-                        DateTime date = DateTime.Parse(match.Value);//, new System.Globalization.CultureInfo("nl", false));
-                        dates.Add(date, lines[lastprocessedIndex].Substring(0, match.Index));
-                    }
-                }
-                catch (Exception)
-                {
-                }
-            }
-            return dates;
-        }
-
-        public string[] ProjectFiles => _projectFiles;
+        public string[] ProjectFiles => _projectPaths;
     }
 }

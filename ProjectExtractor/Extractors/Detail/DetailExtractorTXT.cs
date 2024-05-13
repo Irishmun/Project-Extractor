@@ -21,7 +21,6 @@ namespace ProjectExtractor.Extractors.Detail
 
         protected override ExitCode ExtractRevisionTwoDetails(string file, string extractPath, string[] keywords, string chapters, string stopChapters, string totalHoursKeyword, bool writeTotalHoursToFile, bool writeKeywordsToFile, BackgroundWorker worker)
         {
-            //TODO: get start date and last update date
             string titleRegex = @"WBSO[ ][0-9]{1,4}";
             ExitCode returnCode = ExitCode.NONE;
             ExtractTextFromPDF(file);

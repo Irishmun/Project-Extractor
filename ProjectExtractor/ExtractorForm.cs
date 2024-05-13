@@ -1,4 +1,5 @@
-﻿using Microsoft.WindowsAPICodePack.Dialogs;
+﻿using iText.Layout.Element;
+using Microsoft.WindowsAPICodePack.Dialogs;
 using ProjectExtractor.Database;
 using ProjectExtractor.Extractors;
 using ProjectExtractor.Extractors.Detail;
@@ -582,15 +583,13 @@ namespace ProjectExtractor
         private void DGV_DatabaseResults_CellContentDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
             DataGridViewCell cell = DGV_DatabaseResults.Rows[e.RowIndex].Cells[e.ColumnIndex];
-            if (cell.OwningRow.Tag == null)
-            {
-                MessageBox.Show("Was not able to get path for this file.", "No file path", MessageBoxButtons.OK);
-                return;
-            }
-#if DEBUG
-            Debug.WriteLine("Opening file at: " + cell.OwningRow.Tag.ToString());
-#endif
-            OpenFile(cell.OwningRow.Tag.ToString());
+            TryOpenFileByTag(cell.OwningRow.Tag);
+        }
+        #endregion
+        #region TreeView Events
+        private void TV_Database_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
+        {
+            TryOpenFileByTag(e.Node.Tag);
         }
         #endregion
 
@@ -680,6 +679,19 @@ namespace ProjectExtractor
         #endregion
 
         #region methods
+
+        private void TryOpenFileByTag(object tag)
+        {
+            if (tag == null)
+            {
+                MessageBox.Show("Was not able to get path for this file.", "No file path", MessageBoxButtons.OK);
+                return;
+            }
+#if DEBUG
+            Debug.WriteLine("Opening file at: " + tag.ToString());
+#endif
+            OpenFile(tag.ToString());
+        }
 
         /// <summary>Opens file in default application, if the file exists</summary>
         /// <param name="path">full path to the file to open</param>
@@ -897,7 +909,7 @@ namespace ProjectExtractor
         private void FillDatabaseTree()
         {
             //fill treeview with projects
-            //TODO: change from just the files, to also the projects inside
+            UpdateStatus("Indexing projects...");
             this.Cursor = Cursors.WaitCursor;
             BT_SetDatabase.Enabled = false;
             _databaseSearch.PopulateTreeView(TV_Database, TB_DatabasePath.Text);
@@ -905,7 +917,7 @@ namespace ProjectExtractor
             {
                 TV_Database.Nodes[0].Expand();
             }
-            UpdateStatus("Finished showing projects");
+            UpdateStatus("Finished indexing projects");
             BT_SetDatabase.Enabled = true;
             this.Cursor = Cursors.Default;
         }
