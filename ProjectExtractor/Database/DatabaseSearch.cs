@@ -68,7 +68,12 @@ namespace ProjectExtractor.Database
             List<DatabaseProject> proj = new List<DatabaseProject>();
             foreach (string projectPath in files)
             {
-                proj.AddRange(TextToProjects(projectPath, File.ReadAllText(projectPath)));
+                DatabaseProject[] res = TextToProjects(projectPath, File.ReadAllText(projectPath));
+                if (res == null)
+                {
+                    continue;
+                }
+                proj.AddRange(res);
             }
             _projects = proj.ToArray();
             proj = null;
@@ -116,18 +121,23 @@ namespace ProjectExtractor.Database
             //search through propper projects
             for (int i = 0; i < _projects.Length; i++)
             {//look through each project
+                string[] lines;
                 //check if project name is correct
                 if (isMatch(_projects[i].Id, _projects[i], ref grid))
                 {
                     continue;
                 }
                 //check if query is in project description
-                string[] lines = _projects[i].Description.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
-                for (int j = 0; j < lines.Length; j++)
+                if (_projects[i].Description != null)
                 {
-                    if (isMatch(lines[j], _projects[i], ref grid))
+
+                    lines = _projects[i].Description.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+                    for (int j = 0; j < lines.Length; j++)
                     {
-                        break;
+                        if (isMatch(lines[j], _projects[i], ref grid))
+                        {
+                            break;
+                        }
                     }
                 }
                 if (_projects[i].Technical == null)
@@ -147,7 +157,7 @@ namespace ProjectExtractor.Database
                 Match match = Regex.Match(doc.Value.ToLower(), reg);
                 if (match.Success == true)
                 {
-                    addValueToGridView($"[?] bad extraction\n    {match.Value.TruncateForDisplay(SEARCH_RESULT_TRUNCATE)}", doc.Key, ref grid);
+                    addValueToGridView($"[?] bad extraction ({DatabaseProject.GetCustomerFromPath(doc.Key)})\n    {match.Value.TruncateForDisplay(SEARCH_RESULT_TRUNCATE)}", doc.Key, ref grid);
                 }
             }
 
@@ -156,7 +166,7 @@ namespace ProjectExtractor.Database
                 Match match = Regex.Match(text.ToLower(), reg);
                 if (match.Success == true)
                 {
-                    addValueToGridView($"[{project.NumberInDocument}] {project.Id}\n    {match.Value.TruncateForDisplay(SEARCH_RESULT_TRUNCATE)}", project.Path, ref grid);
+                    addValueToGridView($"[{project.NumberInDocument}] {project.Id} ({project.Customer})\n    {match.Value.TruncateForDisplay(SEARCH_RESULT_TRUNCATE)}", project.Path, ref grid);
                     return true;
                 }
                 return false;
