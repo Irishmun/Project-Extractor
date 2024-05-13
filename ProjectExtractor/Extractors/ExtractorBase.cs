@@ -11,11 +11,13 @@ namespace ProjectExtractor.Extractors
     abstract class ExtractorBase
     {
 
-
+        public const string DETAIL_SUFFIX = " - Details";
+        public const string PROJECT_SUFFIX = " - Projecten";
         protected const string ContinuationString = "Dit project is een voortzetting van een vorig project";
         protected string[] Lines;
 
-        private char[] _removeCharacters = new char[] { ' ', '\r', '\n' };//whitespaces, carriage returns and linefeeds
+        private readonly char[] _removeCharacters = new char[] { ' ', '\r', '\n' };//whitespaces, carriage returns and linefeeds
+        private readonly string[] _newLineCharacters = new string[] { "\r\n", "\r", "\n" };
         /// <summary>
         /// Extracts all text from the given pdf file, putting it in <see cref="Lines"/> 
         /// </summary>
@@ -38,11 +40,11 @@ namespace ProjectExtractor.Extractors
 
             if (StripEmtpies)
             {
-                Lines = str.ToString().Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+                Lines = str.ToString().Split(_newLineCharacters, StringSplitOptions.RemoveEmptyEntries);
             }
             else
             {
-                Lines = str.ToString().Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+                Lines = str.ToString().Split(_newLineCharacters, StringSplitOptions.None);
             }
         }
 

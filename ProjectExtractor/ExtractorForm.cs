@@ -1,10 +1,13 @@
-﻿using Microsoft.WindowsAPICodePack.Dialogs;
+﻿using iText.Layout.Element;
+using Microsoft.WindowsAPICodePack.Dialogs;
+using ProjectExtractor.Database;
 using ProjectExtractor.Extractors;
 using ProjectExtractor.Extractors.Detail;
 using ProjectExtractor.Extractors.FullProject;
 using ProjectExtractor.Util;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -17,10 +20,6 @@ namespace ProjectExtractor
 {
     public partial class ExtractorForm : Form
     {
-        private const string _detailExtractionSuffix = " - Details";
-        private const string _projectExtractionSuffix = " - Projecten";
-
-
         private string _programPath = AppContext.BaseDirectory, _exportFile, _batchFolder;
         private string _latestTag;
         //private bool _startingUp = false;
@@ -30,12 +29,14 @@ namespace ProjectExtractor
         private Settings _settings;
         private ExtractorBase _extractor;
         private ExitCode _extractionResult = ExitCode.NONE;
+        private DatabaseSearch _databaseSearch;
 
         public ExtractorForm()
         {
             _settings = new Settings();
             _settings.IsStarting = true;
             _updateHandler = new UpdateHandler();
+            _databaseSearch = new DatabaseSearch();
             InitializeComponent();
             InitializeAbout();
 #if !DEBUG
@@ -64,8 +65,8 @@ namespace ProjectExtractor
                 CbB_FileVersion.SelectedIndex = _settings.SelectedFileVersionIndex;
             }
             if (_settings.DoesIniExist() == false)
-            {//no ini file yet, so we set with all the defaults
-                _settings.CreateDefaultIni(CB_SavePDFPath.Checked, CB_SaveExtractionPath.Checked, CB_DisableExtractionPath.Checked, CB_WriteKeywordsToFile.Checked, CB_TotalHoursEnabled.Checked, CbB_FileVersion.SelectedIndex, "txt", TB_SectionsEndProject.Text, TB_Chapter.Text, TB_StopChapter.Text, TB_TotalHours.Text);
+            {//no ini file yet, so we set with all the default
+                _settings.CreateDefaultIni(CB_SavePDFPath.Checked, CB_SaveExtractionPath.Checked, CB_DisableExtractionPath.Checked, CB_WriteKeywordsToFile.Checked, CB_TotalHoursEnabled.Checked, CbB_FileVersion.SelectedIndex, "txt", TB_SectionsEndProject.Text, TB_Chapter.Text, TB_StopChapter.Text, TB_TotalHours.Text, TB_DatabasePath.Text);
                 //check all keywords
                 foreach (ListViewItem item in LV_Keywords.Items)
                 {
@@ -157,6 +158,8 @@ namespace ProjectExtractor
                 CB_TotalHoursEnabled.Checked = _settings.WriteTotalHours;
                 //set Total hours keyword
                 TB_TotalHours.Text = _settings.TotalHoursKeyword;
+                //set database path
+                TB_DatabasePath.Text = _settings.DatabasePath;
             }
         }
         private async void CheckForUpdateThenSetAbout()
@@ -369,6 +372,53 @@ namespace ProjectExtractor
             backgroundWorker.RunWorkerAsync("BATCH");
         }
 
+        //database screen setting events
+        private void BT_BrowseDatabase_Click(object sender, EventArgs e)
+        {//browse for database path
+            string res = string.Empty;
+            CommonFileDialogResult result;
+            //open folder browser
+            using (CommonOpenFileDialog fd = new CommonOpenFileDialog())
+            {
+                fd.EnsurePathExists = true;
+                fd.IsFolderPicker = true;
+                fd.Multiselect = false;
+                result = fd.ShowDialog();
+                if (result == CommonFileDialogResult.Ok)
+                {
+                    res = Directory.Exists(fd.FileName) ? fd.FileName : Path.GetDirectoryName(fd.FileName);
+                    if (!res.EndsWith('\\'))
+                    {
+                        res += "\\";
+                    }
+                }
+            }
+            res = string.IsNullOrWhiteSpace(res) ? TB_DatabasePath.Text : res;
+            if (result == CommonFileDialogResult.Ok && !string.IsNullOrWhiteSpace(res))
+            {
+                TB_DatabasePath.Text = res;
+                //UpdateStatus("set database path");
+                _settings.DatabasePath = res;
+                FillDatabaseTree();
+            }
+        }
+        private void BT_SetDatabase_Click(object sender, EventArgs e)
+        {
+            FillDatabaseTree();
+        }
+        private void BT_SearchDatabase_Click(object sender, EventArgs e)
+        {//perform search for matching words in database
+            //DGV_DatabaseResults.Rows.Add("Search result\n    result subitem");
+            //^do this with each result (\t doesn't work) with the subitem being the related line
+            //add a tag (or put in a second, hidden, collumn) the file and project that it is related to in the tree view
+            this.Cursor = Cursors.WaitCursor;
+            BT_SearchDatabase.Enabled = false;
+            _databaseSearch.PopulateRowsWithResults(ref DGV_DatabaseResults, TB_DatabaseSearch.Text, TV_Database);
+            UpdateStatus($"Done searching for \"{TB_DatabaseSearch.Text}\"");
+            BT_SearchDatabase.Enabled = true;
+            this.Cursor = Cursors.Default;
+        }
+
         //detail setting events
         private void BT_KeywordsNew_Click(object sender, EventArgs e)
         {
@@ -502,6 +552,11 @@ namespace ProjectExtractor
             _settings.ChapterEnd = TB_StopChapter.Text;
         }
 
+        private void TB_DatabasePath_TextChanged(object sender, EventArgs e)
+        {
+            _settings.DatabasePath = TB_DatabasePath.Text;
+        }
+
         private void TB_Chapter_TextChanged(object sender, EventArgs e)
         {
             _settings.ChapterStart = TB_Chapter.Text;
@@ -524,11 +579,34 @@ namespace ProjectExtractor
             _settings.SelectedFileVersionIndex = _currentRevision;
         }
         #endregion
+        #region DataGridView Events
+        private void DGV_DatabaseResults_CellContentDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            DataGridViewCell cell = DGV_DatabaseResults.Rows[e.RowIndex].Cells[e.ColumnIndex];
+            TryOpenFileByTag(cell.OwningRow.Tag);
+        }
+        #endregion
+        #region TreeView Events
+        private void TV_Database_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
+        {
+            TryOpenFileByTag(e.Node.Tag);
+        }
+        #endregion
 
         #region BackgroundWorker events
         private void backgroundWorker_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(TB_PDFLocation.Text) || string.IsNullOrWhiteSpace(TB_ExtractLocation.Text))
+            string extractionType = e.Argument as string;
+            if (e == null)
+            {
+                return;
+            }
+            if (extractionType.ToUpper().Equals("BATCH") && string.IsNullOrWhiteSpace(TB_ExtractLocation.Text))
+            {
+                MessageBox.Show("PDF extract location is empty!", "Empty field", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            else if (string.IsNullOrWhiteSpace(TB_PDFLocation.Text) || string.IsNullOrWhiteSpace(TB_ExtractLocation.Text))
             {//extract contents
                 MessageBox.Show("PDF file or extract location is empty!", "Empty field", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
@@ -536,11 +614,6 @@ namespace ProjectExtractor
             string fileName = TB_PDFLocation.Text.Substring(TB_PDFLocation.Text.LastIndexOf('\\') + 1);//create filename from original file
 
 
-            string extractionType = e.Argument as string;
-            if (e == null)
-            {
-                return;
-            }
             if (_extractor == null)
             {
                 UpdateStatus("Invalid file extension marked!");
@@ -550,17 +623,19 @@ namespace ProjectExtractor
             switch (extractionType.ToUpper())
             {
                 case "DETAIL":
-                    _exportFile = $"{TB_ExtractLocation.Text}{Path.GetFileNameWithoutExtension(fileName)}{_detailExtractionSuffix}.{_extractor.FileExtension}";//add path and file extension
+                    _exportFile = $"{TB_ExtractLocation.Text}{Path.GetFileNameWithoutExtension(fileName)}{ExtractorBase.DETAIL_SUFFIX}.{_extractor.FileExtension}";//add path and file extension
                     _extractionResult = (_extractor as DetailExtractorBase).ExtractDetails(ProjectRevisionUtil.GetProjectRevision(_currentRevision), TB_PDFLocation.Text, _exportFile, _keywords, TB_Chapter.Text, TB_StopChapter.Text, TB_TotalHours.Text, CB_TotalHoursEnabled.Checked, CB_WriteKeywordsToFile.Checked, sender as System.ComponentModel.BackgroundWorker);
                     break;
                 case "PROJECT":
-                    _exportFile = $"{TB_ExtractLocation.Text}{Path.GetFileNameWithoutExtension(fileName)}{_projectExtractionSuffix}.{_extractor.FileExtension}";//add path and file extension
+                    _exportFile = $"{TB_ExtractLocation.Text}{Path.GetFileNameWithoutExtension(fileName)}{ExtractorBase.PROJECT_SUFFIX}.{_extractor.FileExtension}";//add path and file extension
                     _extractionResult = (_extractor as ProjectExtractorBase).ExtractProjects(ProjectRevisionUtil.GetProjectRevision(_currentRevision), TB_PDFLocation.Text, _exportFile, _sections, TB_SectionsEndProject.Text, sender as System.ComponentModel.BackgroundWorker);
                     break;
+#if DEBUG
                 case "DEBUG":
-                    _exportFile = $"{TB_ExtractLocation.Text}\\DEBUG {Path.GetFileNameWithoutExtension(fileName)}{_detailExtractionSuffix}.{_extractor.FileExtension}";//add path and file extension
+                    _exportFile = $"{TB_ExtractLocation.Text}\\DEBUG {Path.GetFileNameWithoutExtension(fileName)}{ExtractorBase.DETAIL_SUFFIX}.{_extractor.FileExtension}";//add path and file extension
                     _extractionResult = (_extractor as DetailExtractorBase).ExtractDetails(ProjectRevisionUtil.GetProjectRevision(_currentRevision), TB_PDFLocation.Text, _exportFile, _keywords, TB_Chapter.Text, TB_StopChapter.Text, TB_TotalHours.Text, CB_TotalHoursEnabled.Checked, CB_WriteKeywordsToFile.Checked, sender as System.ComponentModel.BackgroundWorker);
                     break;
+#endif
                 case "BATCH":
                     _extractionResult = (_extractor as ProjectExtractorBase).BatchExtractProjects(ProjectRevisionUtil.GetProjectRevision(_currentRevision), _batchFolder, TB_ExtractLocation.Text, _extractor.FileExtension, _sections, TB_SectionsEndProject.Text, sender as System.ComponentModel.BackgroundWorker);
                     break;
@@ -605,6 +680,19 @@ namespace ProjectExtractor
 
         #region methods
 
+        private void TryOpenFileByTag(object tag)
+        {
+            if (tag == null)
+            {
+                MessageBox.Show("Was not able to get path for this file.", "No file path", MessageBoxButtons.OK);
+                return;
+            }
+#if DEBUG
+            Debug.WriteLine("Opening file at: " + tag.ToString());
+#endif
+            OpenFile(tag.ToString());
+        }
+
         /// <summary>Opens file in default application, if the file exists</summary>
         /// <param name="path">full path to the file to open</param>
         private void OpenFile(string path)
@@ -645,11 +733,11 @@ namespace ProjectExtractor
                 string extension = $".{_settings.ExportFileExtension}";// Read("ExportExtension", "Export")}";
                 if (TB_ExtractLocation.Text.EndsWith("\\"))
                 {
-                    TB_FullPath.Text = TB_ExtractLocation.Text + file + _detailExtractionSuffix + extension;
+                    TB_FullPath.Text = TB_ExtractLocation.Text + file + ExtractorBase.DETAIL_SUFFIX + extension;
                 }
                 else
                 {
-                    TB_FullPath.Text = TB_ExtractLocation.Text + "\\" + file + _detailExtractionSuffix + extension;
+                    TB_FullPath.Text = TB_ExtractLocation.Text + "\\" + file + ExtractorBase.DETAIL_SUFFIX + extension;
                 }
             }
         }
@@ -818,6 +906,22 @@ namespace ProjectExtractor
             await _updateHandler.DownloadAndInstallRelease(_latestTag);
         }
 
+        private void FillDatabaseTree()
+        {
+            //fill treeview with projects
+            UpdateStatus("Indexing projects...");
+            this.Cursor = Cursors.WaitCursor;
+            BT_SetDatabase.Enabled = false;
+            _databaseSearch.PopulateTreeView(TV_Database, TB_DatabasePath.Text);
+            if (TV_Database.Nodes.Count > 0)
+            {
+                TV_Database.Nodes[0].Expand();
+            }
+            UpdateStatus("Finished indexing projects");
+            BT_SetDatabase.Enabled = true;
+            this.Cursor = Cursors.Default;
+        }
+
         #endregion
         #region Settings methods
         /// <summary>Gets the current export setting radiobutton and returns its associated detail extractor</summary>
@@ -869,7 +973,7 @@ namespace ProjectExtractor
             labelCopyright.Text = AssemblyCopyright();
             labelCompanyName.Text = AssemblyCompany();
             //textBoxDescription.Text = AssemblyDescription();
-
+            /*
             string AssemblyProduct()
             {
                 object[] attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyProductAttribute), false);
@@ -878,7 +982,7 @@ namespace ProjectExtractor
                     return "";
                 }
                 return ((AssemblyProductAttribute)attributes[0]).Product;
-            }
+            }*/
             string AssemblyVersion()
             {
                 Version ver = Assembly.GetExecutingAssembly().GetName().Version;
@@ -902,6 +1006,7 @@ namespace ProjectExtractor
                 }
                 return ((AssemblyCompanyAttribute)attributes[0]).Company;
             }
+            /*
             string AssemblyDescription()
             {
                 object[] attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyDescriptionAttribute), false);
@@ -910,7 +1015,7 @@ namespace ProjectExtractor
                     return "";
                 }
                 return ((AssemblyDescriptionAttribute)attributes[0]).Description;
-            }
+            }*/
         }
         private async Task SetChangelogTextBox()
         {
@@ -977,6 +1082,5 @@ namespace ProjectExtractor
         }
 
         #endregion
-
     }
 }

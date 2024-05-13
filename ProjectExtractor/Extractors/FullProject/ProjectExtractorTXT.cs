@@ -1,13 +1,10 @@
-﻿using iText.Layout.Borders;
-using Octokit;
-using ProjectExtractor.Util;
+﻿using ProjectExtractor.Util;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
-using static System.Collections.Specialized.BitVector32;
 
 namespace ProjectExtractor.Extractors.FullProject
 {
@@ -27,7 +24,9 @@ namespace ProjectExtractor.Extractors.FullProject
 
         protected override ExitCode ExtractRevisionOneProject(string file, string extractPath, string[] Sections, string EndProject, BackgroundWorker Worker)
         {
+#if DEBUG
             System.Diagnostics.Debug.WriteLine("[ProjectExtractorTXT]\"ExtractRevisionOneProject\" not implemented.");
+#endif
             return ExitCode.NOT_IMPLEMENTED;
         }
         protected override ExitCode ExtractRevisionTwoProject(string file, string extractPath, string[] Sections, string EndProject, BackgroundWorker Worker)
@@ -53,7 +52,9 @@ namespace ProjectExtractor.Extractors.FullProject
 
         protected override ExitCode BatchExtractRevisionOneProject(string folder, string extractPath, string fileExtension, string[] Sections, string EndProject, BackgroundWorker Worker)
         {
+#if DEBUG
             System.Diagnostics.Debug.WriteLine("[ProjectExtractorTXT]\"BatchExtractRevisionOneProject\" not implemented.");
+#endif
             return ExitCode.NOT_IMPLEMENTED;
         }
         protected override ExitCode BatchExtractRevisionTwoProject(string folder, string extractPath, string fileExtension, string[] Sections, string EndProject, BackgroundWorker Worker)
@@ -69,7 +70,7 @@ namespace ProjectExtractor.Extractors.FullProject
                 if (returnCode == ExitCode.ERROR)
                 {
                     code = ExitCode.BATCH_FLAWED;
-                    continue; 
+                    continue;
                 }
 
                 using (StreamWriter sw = File.CreateText(exportFile))
@@ -120,7 +121,6 @@ namespace ProjectExtractor.Extractors.FullProject
             List<int> ProjectStartIndexes = new List<int>();
             string[] sectionWords = Sections;
             string possibleSection = string.Empty;
-            bool startProject = false;
             string firstProjecTitle = RevTwoTryGetProjectTitle(Lines, 0, EndProject, out int titleIndex);
             ProjectStartIndexes.Add(titleIndex);
             titleIndex += 1;
@@ -139,7 +139,6 @@ namespace ProjectExtractor.Extractors.FullProject
             }
             bool preFirstSection;
             bool searchNextSection;
-            int sectionIndex;
             string checkString = string.Empty;
             bool appendNewLines = false;
             string remaining = string.Empty;
@@ -291,7 +290,6 @@ namespace ProjectExtractor.Extractors.FullProject
 
             string[] sectionWords = Sections;//ConvertSectionsToArray(Sections);
             string possibleSection = string.Empty;
-            bool startProject = false;
             string firstProjecTitle = RevThreeTryGetProjecTitle(Lines, 0, EndProject, out int titleIndex);
             ProjectStartIndexes.Add(titleIndex);
             titleIndex += 1;
@@ -312,7 +310,6 @@ namespace ProjectExtractor.Extractors.FullProject
             }
             bool continuationDone;
             bool searchNextSection;
-            int sectionIndex;
             string checkString = string.Empty;
             bool appendNewLines = false;
             string remaining = string.Empty;
@@ -484,7 +481,6 @@ namespace ProjectExtractor.Extractors.FullProject
             string res = check;
             string[] checkWords = check.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
             string[] comparisonWords = comparison.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
-            int foundIndex = 0;
             StringBuilder toRemove = new StringBuilder();
             if (check.Trim().StartsWith(comparisonWords[0]))
             {
