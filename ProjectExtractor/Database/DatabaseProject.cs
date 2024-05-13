@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ProjectExtractor.Util;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
@@ -178,7 +179,8 @@ namespace ProjectExtractor.Database
         public static string GetCustomerFromPath(string path)
         {
             string name = System.IO.Path.GetFileNameWithoutExtension(path);
-            Match match = Regex.Match(name, @"^(Aanvraag WBSO )\d{4} \d{1,2}-\d{1,2}");
+            name = name.TrimExtractionData();
+            Match match = Regex.Match(name, @"\d{4} \d{1,2}-\d{1,2}");
             if (match.Success == true)
             {
                 return name.Substring(match.Length);

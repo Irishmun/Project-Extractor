@@ -1,4 +1,5 @@
 ﻿using iText.Kernel.XMP.Impl;
+using ProjectExtractor.Extractors;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -87,6 +88,34 @@ namespace ProjectExtractor.Util
                     returnValue = tmp.Substring(0, tmp.LastIndexOf(' ')) + "…";
             }
             return returnValue;
+        }
+
+        public static string TrimExtractionData(this string name)
+        {
+            name = Path.GetFileNameWithoutExtension(name);
+            if (name.EndsWith(ExtractorBase.DETAIL_SUFFIX))
+            {
+                name = name.Substring(0, name.Length - ExtractorBase.DETAIL_SUFFIX.Length);
+            }
+            else if (name.EndsWith(ExtractorBase.PROJECT_SUFFIX))
+            {
+                name = name.Substring(0, name.Length - ExtractorBase.PROJECT_SUFFIX.Length);
+            }
+            //legacy names
+            if (name.StartsWith("Extracted Projects -"))
+            {
+                name = name.Substring(20);//20 is the length of this legacy prefix
+            }
+            else if (name.StartsWith("Extracted Details -"))
+            {
+                name = name.Substring(19);
+            }
+            if (name.StartsWith("Aanvraag WBSO"))
+            {
+                name = name.Substring(13);
+            }
+            name = name.Trim();
+            return name;
         }
     }
 }
