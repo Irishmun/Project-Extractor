@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ProjectExtractor.Util;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
@@ -10,6 +11,7 @@ namespace ProjectExtractor.Database
         private string _path;
         private string _id;
         private string _description;
+        private string _customer;
         private int _numberInDocument;
         private Dictionary<DateTime, string> _projectPhases;
         private string _latestUpdate;
@@ -25,10 +27,11 @@ namespace ProjectExtractor.Database
         private decimal _totalExpense;
         private string _expenseDescription;
 
-        public DatabaseProject(string path, string id, int numberInDocument, string description)
+        public DatabaseProject(string path, string id, string customer, int numberInDocument, string description)
         {
             _path = path;
             _id = id;
+            _customer = customer;
             _numberInDocument = numberInDocument;
             _description = description;
             _cooperation = false;
@@ -44,7 +47,7 @@ namespace ProjectExtractor.Database
             _expenseDescription = String.Empty;
         }
 
-        public DatabaseProject(string path, string id, int numberInDocument, string description, bool cooperation, Dictionary<DateTime, string> projectPhases, string latestUpdate, string[] technical, bool softwareDeveloped = default, bool projectCost = default, decimal totalCost = default, string costDescription = default, bool projectExpense = default, decimal totalExpense = default, string expenseDescription = default) : this(path, id, numberInDocument, description)
+        public DatabaseProject(string path, string id, string customer, int numberInDocument, string description, bool cooperation, Dictionary<DateTime, string> projectPhases, string latestUpdate, string[] technical, bool softwareDeveloped = default, bool projectCost = default, decimal totalCost = default, string costDescription = default, bool projectExpense = default, decimal totalExpense = default, string expenseDescription = default) : this(path, id, customer, numberInDocument, description)
         {
             _cooperation = cooperation;
             _projectPhases = projectPhases;
@@ -68,6 +71,9 @@ namespace ProjectExtractor.Database
             project = new DatabaseProject();
             project.Path = path;
             project._numberInDocument = projIndex;
+
+            project._customer = GetCustomerFromPath(path);
+
             for (int i = startIndex; i < endIndex; i++)
             {
                 if (lines[i].StartsWith("Project "))
@@ -166,6 +172,20 @@ namespace ProjectExtractor.Database
                 }
                 return dates;
             }
+
+            
+        }
+
+        public static string GetCustomerFromPath(string path)
+        {
+            string name = System.IO.Path.GetFileNameWithoutExtension(path);
+            name = name.TrimExtractionData();
+            Match match = Regex.Match(name, @"\d{4} \d{1,2}-\d{1,2}");
+            if (match.Success == true)
+            {
+                return name.Substring(match.Length);
+            }
+            return string.Empty;
         }
 
         public bool Cooperation { get => _cooperation; set => _cooperation = value; }
@@ -183,5 +203,6 @@ namespace ProjectExtractor.Database
         public string LatestUpdate { get => _latestUpdate; set => _latestUpdate = value; }
         public string Path { get => _path; set => _path = value; }
         public string[] Technical { get => _technical; set => _technical = value; }
+        public string Customer { get => _customer; set => _customer = value; }
     }
 }

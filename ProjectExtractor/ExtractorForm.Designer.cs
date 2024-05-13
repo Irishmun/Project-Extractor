@@ -30,6 +30,7 @@ namespace ProjectExtractor
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ExtractorForm));
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("Projectnummer");
             System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("Projecttitel");
@@ -40,7 +41,6 @@ namespace ProjectExtractor
             System.Windows.Forms.ListViewItem listViewItem7 = new System.Windows.Forms.ListViewItem("aangevraagd voor dit project? Beschrijf");
             System.Windows.Forms.ListViewItem listViewItem8 = new System.Windows.Forms.ListViewItem("dan de stand van zaken bij de vraag");
             System.Windows.Forms.ListViewItem listViewItem9 = new System.Windows.Forms.ListViewItem("“Update project”.");
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ExtractorForm));
             statusStrip1 = new System.Windows.Forms.StatusStrip();
             toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             TSSL_ExtractionProgress = new System.Windows.Forms.ToolStripStatusLabel();
@@ -72,6 +72,7 @@ namespace ProjectExtractor
             BT_SetDatabase = new System.Windows.Forms.Button();
             TB_DatabasePath = new System.Windows.Forms.TextBox();
             TV_Database = new System.Windows.Forms.TreeView();
+            IL_DatabaseTree = new System.Windows.Forms.ImageList(components);
             BT_BrowseDatabase = new System.Windows.Forms.Button();
             DGV_DatabaseResults = new System.Windows.Forms.DataGridView();
             Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -514,11 +515,24 @@ namespace ProjectExtractor
             // TV_Database
             // 
             TV_Database.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            TV_Database.ImageIndex = 0;
+            TV_Database.ImageList = IL_DatabaseTree;
             TV_Database.Location = new System.Drawing.Point(0, 59);
             TV_Database.Name = "TV_Database";
+            TV_Database.SelectedImageIndex = 0;
             TV_Database.Size = new System.Drawing.Size(184, 259);
             TV_Database.TabIndex = 0;
             TV_Database.NodeMouseDoubleClick += TV_Database_NodeMouseDoubleClick;
+            // 
+            // IL_DatabaseTree
+            // 
+            IL_DatabaseTree.ColorDepth = System.Windows.Forms.ColorDepth.Depth16Bit;
+            IL_DatabaseTree.ImageStream = (System.Windows.Forms.ImageListStreamer)resources.GetObject("IL_DatabaseTree.ImageStream");
+            IL_DatabaseTree.TransparentColor = System.Drawing.Color.Transparent;
+            IL_DatabaseTree.Images.SetKeyName(0, "Root Folder.ico");
+            IL_DatabaseTree.Images.SetKeyName(1, "Folder.ico");
+            IL_DatabaseTree.Images.SetKeyName(2, "Project File.ico");
+            IL_DatabaseTree.Images.SetKeyName(3, "Project.ico");
             // 
             // BT_BrowseDatabase
             // 
@@ -579,6 +593,7 @@ namespace ProjectExtractor
             TB_DatabaseSearch.Name = "TB_DatabaseSearch";
             TB_DatabaseSearch.Size = new System.Drawing.Size(308, 23);
             TB_DatabaseSearch.TabIndex = 1;
+            TB_DatabaseSearch.KeyPress += TB_DatabaseSearch_KeyPress;
             // 
             // label9
             // 
@@ -1323,6 +1338,7 @@ namespace ProjectExtractor
         private System.Windows.Forms.Button BT_SetDatabase;
         private System.Windows.Forms.DataGridView DGV_DatabaseResults;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
+        private System.Windows.Forms.ImageList IL_DatabaseTree;
     }
 }
 

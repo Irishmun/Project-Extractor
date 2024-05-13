@@ -571,6 +571,13 @@ namespace ProjectExtractor
             _settings.ExtractionPath = TB_ExtractLocation.Text;
             DisplayFullExtractionFilePath();
         }
+        private void TB_DatabaseSearch_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == (char)Keys.Return)
+            {
+                BT_SearchDatabase_Click(sender, null);
+            }
+        }
         #endregion
         #region ComboBox Events
         private void CbB_FileVersion_SelectedIndexChanged(object sender, EventArgs e)
@@ -697,15 +704,9 @@ namespace ProjectExtractor
         /// <param name="path">full path to the file to open</param>
         private void OpenFile(string path)
         {
-            if (File.Exists(path))
+            if (File.Exists(path) || Directory.Exists(path))
             {
-                Process process = new Process();
-                process.StartInfo = new ProcessStartInfo()
-                {
-                    UseShellExecute = true,
-                    FileName = path
-                };
-                process.Start();
+                Process.Start("explorer.exe", path);
             }
         }
 
@@ -1055,11 +1056,11 @@ namespace ProjectExtractor
                 case 0://revision 1
                     break;
                 case 1://revision 2
-                    exportFile += $"Sections\\Rev_2.json";
+                    exportFile += $"Resources\\Sections\\Rev_2.json";
                     (_extractor as ProjectExtractorBase).RevisionTwoSectionsToJson(exportFile);
                     break;
                 case 2://revision 3
-                    exportFile += $"Sections\\Rev_3.json";
+                    exportFile += $"Resources\\Sections\\Rev_3.json";
                     (_extractor as ProjectExtractorBase).RevisionThreeSectionsToJson(exportFile);
                     break;
                 default:

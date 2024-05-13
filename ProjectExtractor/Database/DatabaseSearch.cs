@@ -31,7 +31,7 @@ namespace ProjectExtractor.Database
             List<TreeNode> projectNodes = new List<TreeNode>();
             Stack<TreeNode> stack = new Stack<TreeNode>();
             DirectoryInfo rootDir = new DirectoryInfo(path);
-            TreeNode node = new TreeNode(rootDir.Name) { Tag = rootDir };
+            TreeNode node = new TreeNode(rootDir.Name) { Tag = rootDir, ImageIndex = 0, SelectedImageIndex = 0 };
             stack.Push(node);
 
             while (stack.Count > 0)
@@ -41,7 +41,7 @@ namespace ProjectExtractor.Database
                 DirectoryInfo info = (DirectoryInfo)currentNode.Tag;
                 foreach (DirectoryInfo dir in info.GetDirectories())
                 {//get all subdirectories
-                    TreeNode childDirectoryNode = new TreeNode(dir.Name) { Tag = dir };
+                    TreeNode childDirectoryNode = new TreeNode(dir.Name) { Tag = dir, ImageIndex = 1, SelectedImageIndex = 1 };
                     currentNode.Nodes.Add(childDirectoryNode);
                     stack.Push(childDirectoryNode);
                 }
@@ -53,8 +53,7 @@ namespace ProjectExtractor.Database
                     if (file.Name.Contains("WBSO") && _projectFileTypes.Contains(file.Extension))
                     {//if WBSO and of a permitted filetype, add to tree
                         files.Add(file.FullName);
-                        TreeNode subnode = new TreeNode(TrimExtractionData(file.Name));
-                        subnode.Tag = file.FullName;
+                        TreeNode subnode = new TreeNode(file.Name.TrimExtractionData()) { Tag = file.FullName, ImageIndex = 2, SelectedImageIndex = 2 };
                         projectNodes.Add(subnode);
                         currentNode.Nodes.Add(subnode);
                     }
@@ -68,7 +67,12 @@ namespace ProjectExtractor.Database
             List<DatabaseProject> proj = new List<DatabaseProject>();
             foreach (string projectPath in files)
             {
-                proj.AddRange(TextToProjects(projectPath, File.ReadAllText(projectPath)));
+                DatabaseProject[] res = TextToProjects(projectPath, File.ReadAllText(projectPath));
+                if (res == null)
+                {
+                    continue;
+                }
+                proj.AddRange(res);
             }
             _projects = proj.ToArray();
             proj = null;
@@ -85,8 +89,7 @@ namespace ProjectExtractor.Database
                     { continue; }
                     if (_projects[i].Path.Equals(item.Tag.ToString()))
                     {
-                        TreeNode subnode = new TreeNode(_projects[i].Id);
-                        subnode.Tag = _projects[i].Path;
+                        TreeNode subnode = new TreeNode(_projects[i].Id) { Tag = _projects[i].Path, ImageIndex = 3, SelectedImageIndex = 3 };
                         item.Nodes.Add(subnode);
                     }
                 }
@@ -116,18 +119,23 @@ namespace ProjectExtractor.Database
             //search through propper projects
             for (int i = 0; i < _projects.Length; i++)
             {//look through each project
+                string[] lines;
                 //check if project name is correct
                 if (isMatch(_projects[i].Id, _projects[i], ref grid))
                 {
                     continue;
                 }
                 //check if query is in project description
-                string[] lines = _projects[i].Description.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
-                for (int j = 0; j < lines.Length; j++)
+                if (_projects[i].Description != null)
                 {
-                    if (isMatch(lines[j], _projects[i], ref grid))
+
+                    lines = _projects[i].Description.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+                    for (int j = 0; j < lines.Length; j++)
                     {
-                        break;
+                        if (isMatch(lines[j], _projects[i], ref grid))
+                        {
+                            break;
+                        }
                     }
                 }
                 if (_projects[i].Technical == null)
@@ -147,7 +155,7 @@ namespace ProjectExtractor.Database
                 Match match = Regex.Match(doc.Value.ToLower(), reg);
                 if (match.Success == true)
                 {
-                    addValueToGridView($"[?] bad extraction\n    {match.Value.TruncateForDisplay(SEARCH_RESULT_TRUNCATE)}", doc.Key, ref grid);
+                    addValueToGridView($"[?]{DatabaseProject.GetCustomerFromPath(doc.Key)} - bad extraction\n    {match.Value.TruncateForDisplay(SEARCH_RESULT_TRUNCATE)}", doc.Key, ref grid);
                 }
             }
 
@@ -156,7 +164,7 @@ namespace ProjectExtractor.Database
                 Match match = Regex.Match(text.ToLower(), reg);
                 if (match.Success == true)
                 {
-                    addValueToGridView($"[{project.NumberInDocument}] {project.Id}\n    {match.Value.TruncateForDisplay(SEARCH_RESULT_TRUNCATE)}", project.Path, ref grid);
+                    addValueToGridView($"[{project.NumberInDocument}] {project.Customer} - {project.Id}\n    {match.Value.TruncateForDisplay(SEARCH_RESULT_TRUNCATE)}", project.Path, ref grid);
                     return true;
                 }
                 return false;
@@ -182,33 +190,7 @@ namespace ProjectExtractor.Database
             return 0;
         }
 
-        private string TrimExtractionData(string name)
-        {
-            name = Path.GetFileNameWithoutExtension(name);
-            if (name.EndsWith(ExtractorBase.DETAIL_SUFFIX))
-            {
-                name = name.Substring(0, name.Length - ExtractorBase.DETAIL_SUFFIX.Length);
-            }
-            else if (name.EndsWith(ExtractorBase.PROJECT_SUFFIX))
-            {
-                name = name.Substring(0, name.Length - ExtractorBase.PROJECT_SUFFIX.Length);
-            }
-            //legacy names
-            if (name.StartsWith("Extracted Projects -"))
-            {
-                name = name.Substring(20);//20 is the length of this legacy prefix
-            }
-            else if (name.StartsWith("Extracted Details -"))
-            {
-                name = name.Substring(19);
-            }
-            if (name.StartsWith("Aanvraag WBSO"))
-            {
-                name = name.Substring(13);
-            }
-            name = name.Trim();
-            return name;
-        }
+
 
         private string CreateRegex(string query, bool exactMatch = false)
         {
