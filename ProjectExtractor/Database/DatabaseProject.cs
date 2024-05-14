@@ -76,7 +76,7 @@ namespace ProjectExtractor.Database
 
             for (int i = startIndex; i < endIndex; i++)
             {
-                if (lines[i].StartsWith("Project "))
+                if (Regex.Match(lines[i], @"([Pp]roject )?\d{1,4}.\d{1,3}").Success)
                 {
 #if DEBUG
                     Debug.WriteLine("id: " + lines[i]);
@@ -173,7 +173,7 @@ namespace ProjectExtractor.Database
                 return dates;
             }
 
-            
+
         }
 
         public static string GetCustomerFromPath(string path)

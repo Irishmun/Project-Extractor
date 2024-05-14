@@ -34,16 +34,16 @@ namespace ProjectExtractor.Extractors.FullProject
             }
         }
 
-        public ExitCode BatchExtractProjects(ProjectLayoutRevision revision, string batchPath, string extractPath, string exportExtension, string[] Sections, string EndProject, System.ComponentModel.BackgroundWorker Worker)
+        public ExitCode BatchExtractProjects(ProjectLayoutRevision revision, string batchPath, string extractPath, string exportExtension, string[] Sections, string EndProject, bool skipExisting, bool recursive, System.ComponentModel.BackgroundWorker Worker)
         {
             switch (revision)
             {
                 case ProjectLayoutRevision.REVISION_ONE:
-                    return BatchExtractRevisionOneProject(batchPath, extractPath, exportExtension, Sections, EndProject, Worker);
+                    return BatchExtractRevisionOneProject(batchPath, extractPath, exportExtension, Sections, EndProject, skipExisting, recursive, Worker);
                 case ProjectLayoutRevision.REVISION_TWO:
-                    return BatchExtractRevisionTwoProject(batchPath, extractPath, exportExtension, Sections, EndProject, Worker);
+                    return BatchExtractRevisionTwoProject(batchPath, extractPath, exportExtension, Sections, EndProject, skipExisting, recursive, Worker);
                 case ProjectLayoutRevision.REVISION_THREE:
-                    return BatchExtractRevisionThreeProject(batchPath, extractPath, exportExtension, Sections, EndProject, Worker);
+                    return BatchExtractRevisionThreeProject(batchPath, extractPath, exportExtension, Sections, EndProject, skipExisting, recursive, Worker);
                 case ProjectLayoutRevision.UNKNOWN_REVISION:
                 default:
 #if DEBUG
@@ -81,9 +81,9 @@ namespace ProjectExtractor.Extractors.FullProject
         protected abstract ExitCode ExtractRevisionTwoProject(string file, string extractPath, string[] Sections, string EndProject, BackgroundWorker Worker);
         protected abstract ExitCode ExtractRevisionThreeProject(string file, string extractPath, string[] Sections, string EndProject, BackgroundWorker Worker);
 
-        protected abstract ExitCode BatchExtractRevisionOneProject(string folder, string extractPath, string fileExtension, string[] Sections, string EndProject, BackgroundWorker Worker);
-        protected abstract ExitCode BatchExtractRevisionTwoProject(string folder, string extractPath, string fileExtension, string[] Sections, string EndProject, BackgroundWorker Worker);
-        protected abstract ExitCode BatchExtractRevisionThreeProject(string folder, string extractPath, string fileExtension, string[] Sections, string EndProject, BackgroundWorker Worker);
+        protected abstract ExitCode BatchExtractRevisionOneProject(string folder, string extractPath, string fileExtension, string[] Sections, string EndProject, bool skipExisting, bool recursive, BackgroundWorker Worker);
+        protected abstract ExitCode BatchExtractRevisionTwoProject(string folder, string extractPath, string fileExtension, string[] Sections, string EndProject, bool skipExisting, bool recursive, BackgroundWorker Worker);
+        protected abstract ExitCode BatchExtractRevisionThreeProject(string folder, string extractPath, string fileExtension, string[] Sections, string EndProject, bool skipExisting, bool recursive, BackgroundWorker Worker);
 
 
         /// <summary>

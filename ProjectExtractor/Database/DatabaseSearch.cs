@@ -3,6 +3,7 @@ using ProjectExtractor.Extractors;
 using ProjectExtractor.Util;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -15,7 +16,6 @@ namespace ProjectExtractor.Database
 {//TODO: add files to search if they aren't part of the projects array
     internal class DatabaseSearch
     {
-        private const int MAX_FUZZY_DISTANCE = 2;
         private const int SEARCH_RESULT_TRUNCATE = 64;//characters before truncating
 
         private readonly string[] _projectFileTypes = new string[] { ".txt" };
@@ -94,25 +94,25 @@ namespace ProjectExtractor.Database
                     }
                 }
             }
-            tree.Nodes.Add(node);
+            tree.Invoke(() => { tree.Nodes.Add(node); });
         }
 
         public void PopulateRowsWithResults(ref DataGridView grid, string query, TreeView tree)
         {
-            grid.Rows.Clear();
+                
             SearchDatabase(query, ref grid);
         }
 
         public void SearchDatabase(string query, ref DataGridView grid)
         {
             string reg;
-            if (query.StartsWith('\"'))
-            {//exact match search
-                reg = CreateRegex(query.Trim('\"').ToLower(), true);
+            if (query.StartsWith('~'))
+            {//rough search
+                reg = StringSearch.CreateSearchRegex(query.Trim('~').ToLower());
             }
             else
-            {
-                reg = CreateRegex(query.ToLower());
+            {//exact match search
+                reg = StringSearch.CreateSearchRegex(query.ToLower(), true);
             }
 
 
@@ -128,10 +128,11 @@ namespace ProjectExtractor.Database
                 //check if query is in project description
                 if (_projects[i].Description != null)
                 {
-
-                    lines = _projects[i].Description.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+                    lines = _projects[i].Description.SplitNewLines(StringSplitOptions.RemoveEmptyEntries);
                     for (int j = 0; j < lines.Length; j++)
                     {
+
+                        //if (matches.Count > 0)
                         if (isMatch(lines[j], _projects[i], ref grid))
                         {
                             break;
@@ -152,19 +153,17 @@ namespace ProjectExtractor.Database
             //search through misc documents
             foreach (KeyValuePair<string, string> doc in _miscDocuments)
             {
-                Match match = Regex.Match(doc.Value.ToLower(), reg);
-                if (match.Success == true)
+                if (doc.Value.ToLower().RegexMatch(reg, out Match match))
                 {
-                    addValueToGridView($"[?]{DatabaseProject.GetCustomerFromPath(doc.Key)} - bad extraction\n    {match.Value.TruncateForDisplay(SEARCH_RESULT_TRUNCATE)}", doc.Key, ref grid);
+                    addValueToGridView($"[?]{DatabaseProject.GetCustomerFromPath(doc.Key)} - bad extraction\n    {match.Value.TruncateForDisplay(SEARCH_RESULT_TRUNCATE, match.Index)}", doc.Key, ref grid);
                 }
             }
 
             bool isMatch(string text, DatabaseProject project, ref DataGridView grid)
             {
-                Match match = Regex.Match(text.ToLower(), reg);
-                if (match.Success == true)
+                if (text.ToLower().RegexMatch(reg, out Match match) == true)
                 {
-                    addValueToGridView($"[{project.NumberInDocument}] {project.Customer} - {project.Id}\n    {match.Value.TruncateForDisplay(SEARCH_RESULT_TRUNCATE)}", project.Path, ref grid);
+                    addValueToGridView($"[{project.NumberInDocument}] {project.Customer} - {project.Id}\n    {text.TruncateForDisplay(SEARCH_RESULT_TRUNCATE, match.Index)}", project.Path, ref grid);
                     return true;
                 }
                 return false;
@@ -172,43 +171,12 @@ namespace ProjectExtractor.Database
 
             void addValueToGridView(string cellContent, string path, ref DataGridView grid)
             {
+                //TODO:report progress to update grid
                 DataGridViewRow row = new DataGridViewRow();
                 row.CreateCells(grid, cellContent);
                 row.Tag = path;
                 grid.Rows.Add(row);
             }
-        }
-
-        /// <summary>Fuzzy search text for matches</summary>
-        /// <param name="input">text to search</param>
-        /// <param name="minMatch">Minimum amount to match to consider a match</param>
-        /// <param name="result">string that contains an amount of the found text</param>
-        /// <returns>total length of matching characters</returns>
-        private int FindMatchingText(string input, int minMatch, out string result)
-        {
-            result = string.Empty;
-            return 0;
-        }
-
-
-
-        private string CreateRegex(string query, bool exactMatch = false)
-        {
-            //StringBuilder regex = new StringBuilder();
-            StringBuilder regex = new StringBuilder("[^.!?;]*(");
-            if (exactMatch == false)
-            {
-                for (int i = 0; i < query.Length; i++)
-                {
-                    regex.Append("[^\\s]{0," + MAX_FUZZY_DISTANCE + "}" + query[i]);
-                }
-            }
-            else
-            {
-                regex.Append(query);
-            }
-            regex.Append(")[^.!?;]*");
-            return regex.ToString();
         }
 
         public DatabaseProject[] TextToProjects(string path, string text)
@@ -223,6 +191,18 @@ namespace ProjectExtractor.Database
             int projIndex = 0;
             for (int i = 0; i < lines.Length; i++)
             {
+                if (lines[i].Equals("========[PROJECTINDEX]========="))
+                {//revision two with project index found, search for start project before continuing
+                    for (int j = i; j < lines.Length; j++)
+                    {
+                        if (lines[j].Equals("=========[PROJECTS]==========="))
+                        {
+                            i = j;
+                            break;
+                        }
+                    }
+                    continue;
+                }
                 if (lines[i].Equals("========[END PROJECTS]========="))
                 {//end of document found, add last project and exit out
 

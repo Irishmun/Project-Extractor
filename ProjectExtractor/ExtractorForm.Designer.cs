@@ -47,7 +47,6 @@ namespace ProjectExtractor
             TSPB_Extraction = new System.Windows.Forms.ToolStripProgressBar();
             TC_MainView = new System.Windows.Forms.TabControl();
             TabPage_Extractor = new System.Windows.Forms.TabPage();
-            BT_BatchExtract = new System.Windows.Forms.Button();
             BT_DebugComputeHash = new System.Windows.Forms.Button();
             BT_DebugJson = new System.Windows.Forms.Button();
             label8 = new System.Windows.Forms.Label();
@@ -60,7 +59,9 @@ namespace ProjectExtractor
             BT_DebugExtract = new System.Windows.Forms.Button();
             BT_Extract = new System.Windows.Forms.Button();
             groupBox1 = new System.Windows.Forms.GroupBox();
-            RTB_SearchWords = new System.Windows.Forms.RichTextBox();
+            CB_SkipExisting = new System.Windows.Forms.CheckBox();
+            CB_BatchRecursive = new System.Windows.Forms.CheckBox();
+            BT_BatchExtract = new System.Windows.Forms.Button();
             label2 = new System.Windows.Forms.Label();
             TB_ExtractLocation = new System.Windows.Forms.TextBox();
             BT_BrowseExtract = new System.Windows.Forms.Button();
@@ -74,6 +75,7 @@ namespace ProjectExtractor
             TV_Database = new System.Windows.Forms.TreeView();
             IL_DatabaseTree = new System.Windows.Forms.ImageList(components);
             BT_BrowseDatabase = new System.Windows.Forms.Button();
+            label10 = new System.Windows.Forms.Label();
             DGV_DatabaseResults = new System.Windows.Forms.DataGridView();
             Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             BT_SearchDatabase = new System.Windows.Forms.Button();
@@ -213,7 +215,6 @@ namespace ProjectExtractor
             // 
             // TabPage_Extractor
             // 
-            TabPage_Extractor.Controls.Add(BT_BatchExtract);
             TabPage_Extractor.Controls.Add(BT_DebugComputeHash);
             TabPage_Extractor.Controls.Add(BT_DebugJson);
             TabPage_Extractor.Controls.Add(label8);
@@ -240,17 +241,6 @@ namespace ProjectExtractor
             TabPage_Extractor.Text = "Extractor";
             TabPage_Extractor.ToolTipText = "Main screen for extraction";
             TabPage_Extractor.UseVisualStyleBackColor = true;
-            // 
-            // BT_BatchExtract
-            // 
-            BT_BatchExtract.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
-            BT_BatchExtract.Location = new System.Drawing.Point(246, 230);
-            BT_BatchExtract.Name = "BT_BatchExtract";
-            BT_BatchExtract.Size = new System.Drawing.Size(147, 25);
-            BT_BatchExtract.TabIndex = 106;
-            BT_BatchExtract.Text = "&Batch Extract";
-            BT_BatchExtract.UseVisualStyleBackColor = true;
-            BT_BatchExtract.Click += BT_BatchExtract_Click;
             // 
             // BT_DebugComputeHash
             // 
@@ -377,24 +367,50 @@ namespace ProjectExtractor
             // groupBox1
             // 
             groupBox1.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
-            groupBox1.Controls.Add(RTB_SearchWords);
+            groupBox1.Controls.Add(CB_SkipExisting);
+            groupBox1.Controls.Add(CB_BatchRecursive);
+            groupBox1.Controls.Add(BT_BatchExtract);
             groupBox1.Location = new System.Drawing.Point(8, 200);
             groupBox1.Name = "groupBox1";
             groupBox1.Size = new System.Drawing.Size(200, 116);
             groupBox1.TabIndex = 99;
             groupBox1.TabStop = false;
-            groupBox1.Text = "Keywords";
+            groupBox1.Text = "batch";
             // 
-            // RTB_SearchWords
+            // CB_SkipExisting
             // 
-            RTB_SearchWords.BackColor = System.Drawing.SystemColors.Window;
-            RTB_SearchWords.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            RTB_SearchWords.Location = new System.Drawing.Point(6, 22);
-            RTB_SearchWords.Name = "RTB_SearchWords";
-            RTB_SearchWords.Size = new System.Drawing.Size(188, 88);
-            RTB_SearchWords.TabIndex = 99;
-            RTB_SearchWords.TabStop = false;
-            RTB_SearchWords.Text = "";
+            CB_SkipExisting.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
+            CB_SkipExisting.AutoSize = true;
+            CB_SkipExisting.Location = new System.Drawing.Point(6, 47);
+            CB_SkipExisting.Name = "CB_SkipExisting";
+            CB_SkipExisting.Size = new System.Drawing.Size(153, 19);
+            CB_SkipExisting.TabIndex = 107;
+            CB_SkipExisting.Text = "Skip existing extractions";
+            CB_SkipExisting.TextAlign = System.Drawing.ContentAlignment.TopLeft;
+            CB_SkipExisting.UseVisualStyleBackColor = true;
+            // 
+            // CB_BatchRecursive
+            // 
+            CB_BatchRecursive.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
+            CB_BatchRecursive.AutoSize = true;
+            CB_BatchRecursive.Location = new System.Drawing.Point(6, 22);
+            CB_BatchRecursive.Name = "CB_BatchRecursive";
+            CB_BatchRecursive.Size = new System.Drawing.Size(76, 19);
+            CB_BatchRecursive.TabIndex = 106;
+            CB_BatchRecursive.Text = "Recursive";
+            CB_BatchRecursive.UseVisualStyleBackColor = true;
+            CB_BatchRecursive.Visible = false;
+            // 
+            // BT_BatchExtract
+            // 
+            BT_BatchExtract.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
+            BT_BatchExtract.Location = new System.Drawing.Point(6, 72);
+            BT_BatchExtract.Name = "BT_BatchExtract";
+            BT_BatchExtract.Size = new System.Drawing.Size(188, 38);
+            BT_BatchExtract.TabIndex = 106;
+            BT_BatchExtract.Text = "&Batch Extract";
+            BT_BatchExtract.UseVisualStyleBackColor = true;
+            BT_BatchExtract.Click += BT_BatchExtract_Click;
             // 
             // label2
             // 
@@ -411,6 +427,7 @@ namespace ProjectExtractor
             TB_ExtractLocation.Enabled = false;
             TB_ExtractLocation.Location = new System.Drawing.Point(73, 74);
             TB_ExtractLocation.Name = "TB_ExtractLocation";
+            TB_ExtractLocation.PlaceholderText = "Extraction output folder";
             TB_ExtractLocation.Size = new System.Drawing.Size(450, 23);
             TB_ExtractLocation.TabIndex = 4;
             TB_ExtractLocation.TextChanged += TB_ExtractLocation_TextChanged;
@@ -441,6 +458,7 @@ namespace ProjectExtractor
             TB_PDFLocation.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
             TB_PDFLocation.Location = new System.Drawing.Point(73, 21);
             TB_PDFLocation.Name = "TB_PDFLocation";
+            TB_PDFLocation.PlaceholderText = "Path to PDF file to extract";
             TB_PDFLocation.Size = new System.Drawing.Size(450, 23);
             TB_PDFLocation.TabIndex = 1;
             TB_PDFLocation.TextChanged += TB_PDFLocation_TextChanged;
@@ -483,6 +501,7 @@ namespace ProjectExtractor
             // 
             // splitContainer1.Panel2
             // 
+            splitContainer1.Panel2.Controls.Add(label10);
             splitContainer1.Panel2.Controls.Add(DGV_DatabaseResults);
             splitContainer1.Panel2.Controls.Add(BT_SearchDatabase);
             splitContainer1.Panel2.Controls.Add(TB_DatabaseSearch);
@@ -507,6 +526,7 @@ namespace ProjectExtractor
             TB_DatabasePath.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
             TB_DatabasePath.Location = new System.Drawing.Point(3, 4);
             TB_DatabasePath.Name = "TB_DatabasePath";
+            TB_DatabasePath.PlaceholderText = "Database Folder";
             TB_DatabasePath.Size = new System.Drawing.Size(155, 23);
             TB_DatabasePath.TabIndex = 4;
             toolTip1.SetToolTip(TB_DatabasePath, "Browse for database");
@@ -544,6 +564,15 @@ namespace ProjectExtractor
             BT_BrowseDatabase.Text = "...";
             BT_BrowseDatabase.UseVisualStyleBackColor = true;
             BT_BrowseDatabase.Click += BT_BrowseDatabase_Click;
+            // 
+            // label10
+            // 
+            label10.AutoSize = true;
+            label10.Location = new System.Drawing.Point(54, 34);
+            label10.Name = "label10";
+            label10.Size = new System.Drawing.Size(150, 15);
+            label10.TabIndex = 5;
+            label10.Text = "Use '~' for rough searching";
             // 
             // DGV_DatabaseResults
             // 
@@ -591,6 +620,7 @@ namespace ProjectExtractor
             TB_DatabaseSearch.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
             TB_DatabaseSearch.Location = new System.Drawing.Point(54, 5);
             TB_DatabaseSearch.Name = "TB_DatabaseSearch";
+            TB_DatabaseSearch.PlaceholderText = "Enter Search Query";
             TB_DatabaseSearch.Size = new System.Drawing.Size(308, 23);
             TB_DatabaseSearch.TabIndex = 1;
             TB_DatabaseSearch.KeyPress += TB_DatabaseSearch_KeyPress;
@@ -781,6 +811,7 @@ namespace ProjectExtractor
             // 
             TB_TotalHours.Location = new System.Drawing.Point(27, 43);
             TB_TotalHours.Name = "TB_TotalHours";
+            TB_TotalHours.PlaceholderText = "Tottaal aantal uren";
             TB_TotalHours.Size = new System.Drawing.Size(201, 23);
             TB_TotalHours.TabIndex = 6;
             TB_TotalHours.Text = "Totaal aantal uren";
@@ -836,6 +867,7 @@ namespace ProjectExtractor
             TB_StopChapter.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
             TB_StopChapter.Location = new System.Drawing.Point(246, 32);
             TB_StopChapter.Name = "TB_StopChapter";
+            TB_StopChapter.PlaceholderText = "Update project";
             TB_StopChapter.Size = new System.Drawing.Size(233, 23);
             TB_StopChapter.TabIndex = 2;
             TB_StopChapter.Text = "Update project";
@@ -856,6 +888,7 @@ namespace ProjectExtractor
             TB_Chapter.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
             TB_Chapter.Location = new System.Drawing.Point(6, 32);
             TB_Chapter.Name = "TB_Chapter";
+            TB_Chapter.PlaceholderText = "Fasering werkzaamheden";
             TB_Chapter.Size = new System.Drawing.Size(233, 23);
             TB_Chapter.TabIndex = 0;
             TB_Chapter.Text = "Fasering werkzaamheden";
@@ -997,6 +1030,7 @@ namespace ProjectExtractor
             TB_SectionsEndProject.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
             TB_SectionsEndProject.Location = new System.Drawing.Point(6, 32);
             TB_SectionsEndProject.Name = "TB_SectionsEndProject";
+            TB_SectionsEndProject.PlaceholderText = "Samenwerking";
             TB_SectionsEndProject.Size = new System.Drawing.Size(262, 23);
             TB_SectionsEndProject.TabIndex = 3;
             TB_SectionsEndProject.Text = "Samenwerking";
@@ -1100,6 +1134,7 @@ namespace ProjectExtractor
             // logoPictureBox
             // 
             logoPictureBox.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            logoPictureBox.Image = Properties.Resources.logoPictureBox_Image;
             logoPictureBox.Location = new System.Drawing.Point(4, 3);
             logoPictureBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             logoPictureBox.Name = "logoPictureBox";
@@ -1184,7 +1219,7 @@ namespace ProjectExtractor
             BT_UpdateProgram.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
             BT_UpdateProgram.Location = new System.Drawing.Point(3, 3);
             BT_UpdateProgram.Name = "BT_UpdateProgram";
-            BT_UpdateProgram.Size = new System.Drawing.Size(214, 23);
+            BT_UpdateProgram.Size = new System.Drawing.Size(214, 35);
             BT_UpdateProgram.TabIndex = 26;
             BT_UpdateProgram.Text = "Update Available!";
             BT_UpdateProgram.UseVisualStyleBackColor = true;
@@ -1215,6 +1250,7 @@ namespace ProjectExtractor
             TabPage_Extractor.ResumeLayout(false);
             TabPage_Extractor.PerformLayout();
             groupBox1.ResumeLayout(false);
+            groupBox1.PerformLayout();
             TabPage_Database.ResumeLayout(false);
             splitContainer1.Panel1.ResumeLayout(false);
             splitContainer1.Panel1.PerformLayout();
@@ -1262,7 +1298,6 @@ namespace ProjectExtractor
         private System.Windows.Forms.TextBox TB_PDFLocation;
         private System.Windows.Forms.Button BT_BrowsePDF;
         private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.RichTextBox RTB_SearchWords;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox TB_ExtractLocation;
         private System.Windows.Forms.Button BT_BrowseExtract;
@@ -1318,7 +1353,6 @@ namespace ProjectExtractor
         private System.Windows.Forms.Label labelCompanyName;
         private System.Windows.Forms.ComboBox CbB_FileVersion;
         private System.Windows.Forms.Label label8;
-        private System.Windows.Forms.PictureBox logoPictureBox;
         private System.Windows.Forms.RichTextBox textBoxDescription;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Button BT_UpdateProgram;
@@ -1339,6 +1373,10 @@ namespace ProjectExtractor
         private System.Windows.Forms.DataGridView DGV_DatabaseResults;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
         private System.Windows.Forms.ImageList IL_DatabaseTree;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.PictureBox logoPictureBox;
+        private System.Windows.Forms.CheckBox CB_BatchRecursive;
+        private System.Windows.Forms.CheckBox CB_SkipExisting;
     }
 }
 

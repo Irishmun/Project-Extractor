@@ -1,5 +1,6 @@
 ﻿using iText.Kernel.XMP.Impl;
 using ProjectExtractor.Extractors;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -41,6 +42,7 @@ namespace ProjectExtractor.Util
             return false;
         }
 
+        /// <summary>Adds two arrays together</summary>
         public static string[] AddArrays(string[] a, string[] b)
         {
             string[] res = new string[a.Length + b.Length];
@@ -74,22 +76,39 @@ namespace ProjectExtractor.Util
             return Directory.Exists(path);
         }
 
+        /// <summary>Splits string on newline</summary>
+        /// <param name="options">A bitwise combination of the enumeration values that specifies whether to trim the substrings and include empty substrings</param>
+        /// <returns>An array whose elements contain the substring delimited by newlines.</returns>
+        public static string[] SplitNewLines(this string val, StringSplitOptions options)
+        {
+            return val.Split(new string[] { "\r\n", "\r", "\n" }, options);
+        }
+
         /// <summary>Truncates the string to the given length if needed, adding ellipsis AFTER the word where the limit was exceeded</summary>
         /// <param name="length">maximum number of characters before truncating.</param>
         /// <returns>truncated string</returns>
-        public static string TruncateForDisplay(this string value, int length)
+        public static string TruncateForDisplay(this string value, int length, int startIndex = 0)
         {
             if (string.IsNullOrEmpty(value)) return string.Empty;
-            var returnValue = value;
+            string returnValue = value;
+            int subStart = 0;
             if (value.Length > length)
             {
-                var tmp = value.Substring(0, length);
+                if (startIndex > 0)
+                {
+                    subStart = value.LastIndexOf(' ', startIndex);
+                }
+
+                string tmp = value.Substring(subStart, length);
                 if (tmp.LastIndexOf(' ') > 0)
-                    returnValue = tmp.Substring(0, tmp.LastIndexOf(' ')) + "…";
+                    returnValue = "…" + tmp.Substring(0, tmp.LastIndexOf(' ')) + "…";
             }
             return returnValue;
         }
 
+        /// <summary>Trims extraction suffixes and prefixes from given string</summary>
+        /// <returns>a substring stripped of text added by the extraction process</returns>
+        /// <remarks>should only be used on extracted document filenames</remarks>
         public static string TrimExtractionData(this string name)
         {
             name = Path.GetFileNameWithoutExtension(name);
