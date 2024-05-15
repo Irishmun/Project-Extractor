@@ -23,11 +23,11 @@ namespace ProjectExtractor.Database
         private Dictionary<string, string> _miscDocuments;//<path,text>documents in the folder that could not be turned into a project
         private DatabaseProject[] _projects;//found projects
 
-        public void PopulateTreeView(TreeView tree, string path)
+        public void PopulateTreeView(TreeView tree, string path, BackgroundWorker worker, WorkerStates workerState)
         {//fill treeview with project documents, with subnodes of the projects in that document
             List<string> files = new List<string>();
             _miscDocuments = new Dictionary<string, string>();
-            tree.Nodes.Clear();
+            //tree.Nodes.Clear();
             List<TreeNode> projectNodes = new List<TreeNode>();
             Stack<TreeNode> stack = new Stack<TreeNode>();
             DirectoryInfo rootDir = new DirectoryInfo(path);
@@ -65,14 +65,17 @@ namespace ProjectExtractor.Database
             long memoryUsage = GC.GetTotalMemory(false);
 #endif
             List<DatabaseProject> proj = new List<DatabaseProject>();
-            foreach (string projectPath in files)
+            for (int i = 0; i < files.Count; i++)
             {
-                DatabaseProject[] res = TextToProjects(projectPath, File.ReadAllText(projectPath));
+                DatabaseProject[] res = TextToProjects(files[i], File.ReadAllText(files[i]), worker, workerState);
                 if (res == null)
                 {
                     continue;
                 }
                 proj.AddRange(res);
+
+                double progress = (double)((i + 1d) * 100d / files.Count);
+                worker.ReportProgress((int)progress, workerState);
             }
             _projects = proj.ToArray();
             proj = null;
@@ -94,26 +97,25 @@ namespace ProjectExtractor.Database
                     }
                 }
             }
+            //add nodes to tree
             tree.Invoke(() => { tree.Nodes.Add(node); });
         }
 
-        public void PopulateRowsWithResults(ref DataGridView grid, string query, TreeView tree)
+        public void PopulateRowsWithResults(ref DataGridView grid, string query, TreeView tree, BackgroundWorker worker, WorkerStates workerState)
         {
-                
-            SearchDatabase(query, ref grid);
+
+            SearchDatabase(query, ref grid, worker, workerState);
         }
 
-        public void SearchDatabase(string query, ref DataGridView grid)
+        public void SearchDatabase(string query, ref DataGridView grid, BackgroundWorker worker, WorkerStates workerState)
         {
-            string reg;
+            bool exact = true;
             if (query.StartsWith('~'))
             {//rough search
-                reg = StringSearch.CreateSearchRegex(query.Trim('~').ToLower());
+                query = query.Trim('~');
+                exact = false;
             }
-            else
-            {//exact match search
-                reg = StringSearch.CreateSearchRegex(query.ToLower(), true);
-            }
+            string reg = StringSearch.CreateSearchSentenceRegex(query.ToLower(), exact);
 
 
             //search through propper projects
@@ -155,7 +157,7 @@ namespace ProjectExtractor.Database
             {
                 if (doc.Value.ToLower().RegexMatch(reg, out Match match))
                 {
-                    addValueToGridView($"[?]{DatabaseProject.GetCustomerFromPath(doc.Key)} - bad extraction\n    {match.Value.TruncateForDisplay(SEARCH_RESULT_TRUNCATE, match.Index)}", doc.Key, ref grid);
+                    addValueToGridView($"[?]{DatabaseProject.GetCustomerFromPath(doc.Key)} - bad extraction\n    {match.Value.TruncateForDisplay(SEARCH_RESULT_TRUNCATE, StringSearch.CreateSearchRegex(query, exact))}", doc.Key, ref grid);
                 }
             }
 
@@ -163,7 +165,7 @@ namespace ProjectExtractor.Database
             {
                 if (text.ToLower().RegexMatch(reg, out Match match) == true)
                 {
-                    addValueToGridView($"[{project.NumberInDocument}] {project.Customer} - {project.Id}\n    {text.TruncateForDisplay(SEARCH_RESULT_TRUNCATE, match.Index)}", project.Path, ref grid);
+                    addValueToGridView($"[{project.NumberInDocument}] {project.Customer} - {project.Id}\n    {match.Value.TruncateForDisplay(SEARCH_RESULT_TRUNCATE, StringSearch.CreateSearchRegex(query, exact))}", project.Path, ref grid);
                     return true;
                 }
                 return false;
@@ -172,14 +174,12 @@ namespace ProjectExtractor.Database
             void addValueToGridView(string cellContent, string path, ref DataGridView grid)
             {
                 //TODO:report progress to update grid
-                DataGridViewRow row = new DataGridViewRow();
-                row.CreateCells(grid, cellContent);
-                row.Tag = path;
-                grid.Rows.Add(row);
+
+                worker.ReportProgress(1, WorkerMethods.CreateWorkerArray(workerState, path, cellContent));
             }
         }
 
-        public DatabaseProject[] TextToProjects(string path, string text)
+        public DatabaseProject[] TextToProjects(string path, string text, BackgroundWorker worker, WorkerStates workerState)
         {
             if (string.IsNullOrWhiteSpace(text))
             { return null; }
@@ -225,7 +225,6 @@ namespace ProjectExtractor.Database
                     projects.Add(currentProject);
                     currentProject.Path = path;
                 }
-
             }
 #if DEBUG
             Debug.WriteLine("found " + projects.Count + " projects in text.");
@@ -255,5 +254,6 @@ namespace ProjectExtractor.Database
         }
 
         public string[] ProjectFiles => _projectPaths;
+        public int IndexedProjectCount => _projects.Length;
     }
 }

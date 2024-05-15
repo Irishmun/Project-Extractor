@@ -1,4 +1,5 @@
-﻿using ProjectExtractor.Util;
+﻿using iText.Layout.Borders;
+using ProjectExtractor.Util;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -11,7 +12,7 @@ namespace ProjectExtractor.Extractors.Detail
     /// <summary>Used for extracting pdf details to TXT file format. intended as ASCII plain text</summary>
     class DetailExtractorTXT : DetailExtractorBase
     {
-        protected override ExitCode ExtractRevisionOneDetails(string file, string extractPath, string[] keywords, string chapters, string stopChapters, string totalHoursKeyword, bool writeTotalHoursToFile, bool writeKeywordsToFile, BackgroundWorker worker)
+        protected override ExitCode ExtractRevisionOneDetails(string file, string extractPath, string[] keywords, string chapters, string stopChapters, string totalHoursKeyword, bool writeTotalHoursToFile, bool writeKeywordsToFile, BackgroundWorker worker, WorkerStates workerState)
         {
 #if DEBUG
             System.Diagnostics.Debug.WriteLine("[DetailExtractorTXT]\"ExtractRevisionOneDetails\" not implemented.");
@@ -19,7 +20,7 @@ namespace ProjectExtractor.Extractors.Detail
             return ExitCode.NOT_IMPLEMENTED;
         }
 
-        protected override ExitCode ExtractRevisionTwoDetails(string file, string extractPath, string[] keywords, string chapters, string stopChapters, string totalHoursKeyword, bool writeTotalHoursToFile, bool writeKeywordsToFile, BackgroundWorker worker)
+        protected override ExitCode ExtractRevisionTwoDetails(string file, string extractPath, string[] keywords, string chapters, string stopChapters, string totalHoursKeyword, bool writeTotalHoursToFile, bool writeKeywordsToFile, BackgroundWorker worker, WorkerStates workerState)
         {
             string titleRegex = @"WBSO[ ][0-9]{1,4}";
             ExitCode returnCode = ExitCode.NONE;
@@ -72,6 +73,8 @@ namespace ProjectExtractor.Extractors.Detail
                         projectCodes.Add(splitProj[0]);// get just the code for the later parts
                     }
                 }
+                //progress for the progress bar
+                ReportProgessToWorker(i, worker, workerState);
             }
             if (string.IsNullOrWhiteSpace(totalHours) == false)
             {
@@ -131,7 +134,7 @@ namespace ProjectExtractor.Extractors.Detail
             }
             return returnCode;
         }
-        protected override ExitCode ExtractRevisionThreeDetails(string file, string extractPath, string[] Keywords, string chapters, string stopChapters, string totalHoursKeyword, bool WriteTotalHoursToFile, bool WriteKeywordsToFile, BackgroundWorker Worker)
+        protected override ExitCode ExtractRevisionThreeDetails(string file, string extractPath, string[] Keywords, string chapters, string stopChapters, string totalHoursKeyword, bool WriteTotalHoursToFile, bool WriteKeywordsToFile, BackgroundWorker Worker, WorkerStates workerState)
         {
             //TODO: figure out way to handle different file structure versions
             ExitCode returnCode = ExitCode.NONE;//to return at the end
@@ -194,7 +197,7 @@ namespace ProjectExtractor.Extractors.Detail
                     }
                 }
                 //progress for the progress bar
-                ReportProgessToWorker(lineIndex, Worker);
+                ReportProgessToWorker(lineIndex, Worker, workerState);
             }
             WriteToFile(str, extractPath);
             return returnCode;

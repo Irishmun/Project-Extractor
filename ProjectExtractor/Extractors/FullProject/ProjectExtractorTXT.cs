@@ -23,16 +23,16 @@ namespace ProjectExtractor.Extractors.FullProject
 
         //iterate over text, per project, remove all these bits of text, do this per array, then once an array is complete, add corresponding title header
 
-        protected override ExitCode ExtractRevisionOneProject(string file, string extractPath, string[] Sections, string EndProject, BackgroundWorker Worker)
+        protected override ExitCode ExtractRevisionOneProject(string file, string extractPath, string[] Sections, string EndProject, BackgroundWorker Worker,WorkerStates workerState)
         {
 #if DEBUG
             System.Diagnostics.Debug.WriteLine("[ProjectExtractorTXT]\"ExtractRevisionOneProject\" not implemented.");
 #endif
             return ExitCode.NOT_IMPLEMENTED;
         }
-        protected override ExitCode ExtractRevisionTwoProject(string file, string extractPath, string[] Sections, string EndProject, BackgroundWorker Worker)
+        protected override ExitCode ExtractRevisionTwoProject(string file, string extractPath, string[] Sections, string EndProject, BackgroundWorker Worker,WorkerStates workerState)
         {
-            string res = ExtractRevisionTwoToString(file, Sections, EndProject, Worker, out ExitCode returnCode);
+            string res = ExtractRevisionTwoToString(file, Sections, EndProject, Worker, out ExitCode returnCode, workerState);
             using (StreamWriter sw = File.CreateText(extractPath))
             {
                 sw.Write(res);
@@ -40,9 +40,9 @@ namespace ProjectExtractor.Extractors.FullProject
             }
             return returnCode;
         }
-        protected override ExitCode ExtractRevisionThreeProject(string file, string extractPath, string[] Sections, string EndProject, BackgroundWorker Worker)
+        protected override ExitCode ExtractRevisionThreeProject(string file, string extractPath, string[] Sections, string EndProject, BackgroundWorker Worker,WorkerStates workerState)
         {
-            string res = ExtractRevisionThreeToString(file, Sections, EndProject, Worker, out ExitCode returnCode);
+            string res = ExtractRevisionThreeToString(file, Sections, EndProject, Worker, out ExitCode returnCode, workerState);
             using (StreamWriter sw = File.CreateText(extractPath))
             {
                 sw.Write(res);
@@ -51,14 +51,14 @@ namespace ProjectExtractor.Extractors.FullProject
             return returnCode;
         }
 
-        protected override ExitCode BatchExtractRevisionOneProject(string folder, string extractPath, string fileExtension, string[] Sections, string EndProject, bool skipExisting, bool recursive, BackgroundWorker Worker)
+        protected override ExitCode BatchExtractRevisionOneProject(string folder, string extractPath, string fileExtension, string[] Sections, string EndProject, bool skipExisting, bool recursive, BackgroundWorker Worker,WorkerStates workerState)
         {
 #if DEBUG
             System.Diagnostics.Debug.WriteLine("[ProjectExtractorTXT]\"BatchExtractRevisionOneProject\" not implemented.");
 #endif
             return ExitCode.NOT_IMPLEMENTED;
         }
-        protected override ExitCode BatchExtractRevisionTwoProject(string folder, string extractPath, string fileExtension, string[] Sections, string EndProject, bool skipExisting, bool recursive, BackgroundWorker Worker)
+        protected override ExitCode BatchExtractRevisionTwoProject(string folder, string extractPath, string fileExtension, string[] Sections, string EndProject, bool skipExisting, bool recursive, BackgroundWorker Worker,WorkerStates workerState)
         {
             string[] documentPaths = Directory.GetFiles(folder, "*.pdf");
             ExitCode code = ExitCode.BATCH;
@@ -71,7 +71,7 @@ namespace ProjectExtractor.Extractors.FullProject
                 {//skip existing
                     continue;
                 }
-                string result = ExtractRevisionTwoToString(documentPaths[i], Sections, EndProject, Worker, out ExitCode returnCode);
+                string result = ExtractRevisionTwoToString(documentPaths[i], Sections, EndProject, Worker, out ExitCode returnCode, workerState);
                 if (returnCode == ExitCode.ERROR)
                 {
                     code = ExitCode.BATCH_FLAWED;
@@ -87,7 +87,7 @@ namespace ProjectExtractor.Extractors.FullProject
             }
             return code;
         }
-        protected override ExitCode BatchExtractRevisionThreeProject(string folder, string extractPath, string fileExtension, string[] Sections, string EndProject, bool skipExisting, bool recursive, BackgroundWorker Worker)
+        protected override ExitCode BatchExtractRevisionThreeProject(string folder, string extractPath, string fileExtension, string[] Sections, string EndProject, bool skipExisting, bool recursive, BackgroundWorker Worker, WorkerStates workerState)
         {
             string[] documentPaths = Directory.GetFiles(folder, "*.pdf");
             ExitCode code = ExitCode.BATCH;
@@ -100,7 +100,7 @@ namespace ProjectExtractor.Extractors.FullProject
                 {//skip existing
                     continue;
                 }
-                string result = ExtractRevisionThreeToString(documentPaths[i], Sections, EndProject, Worker, out ExitCode returnCode);
+                string result = ExtractRevisionThreeToString(documentPaths[i], Sections, EndProject, Worker, out ExitCode returnCode,workerState);
                 if (returnCode == ExitCode.ERROR)
                 {
                     code = ExitCode.BATCH_FLAWED;
@@ -118,7 +118,7 @@ namespace ProjectExtractor.Extractors.FullProject
         }
 
 
-        private string ExtractRevisionTwoToString(string file, string[] Sections, string EndProject, BackgroundWorker Worker, out ExitCode returnCode)
+        private string ExtractRevisionTwoToString(string file, string[] Sections, string EndProject, BackgroundWorker Worker, out ExitCode returnCode, WorkerStates workerState)
         {
             returnCode = ExitCode.NONE;
             ExtractTextFromPDF(file);
@@ -214,8 +214,7 @@ namespace ProjectExtractor.Extractors.FullProject
                     {
                         searchNextSection = true;
                     }
-                    double progress = (double)(((double)lineIndex + 1d) * 100d / (double)Lines.Length);
-                    Worker.ReportProgress((int)progress);
+                    ReportProgessToWorker(lineIndex, Worker, workerState);
                 }
                 if (project < ProjectStartIndexes.Count - 1)
                 {
@@ -297,7 +296,7 @@ namespace ProjectExtractor.Extractors.FullProject
             }
         }
 
-        private string ExtractRevisionThreeToString(string file, string[] Sections, string EndProject, BackgroundWorker Worker, out ExitCode returnCode)
+        private string ExtractRevisionThreeToString(string file, string[] Sections, string EndProject, BackgroundWorker Worker, out ExitCode returnCode, WorkerStates workerState)
         {
             returnCode = ExitCode.NONE;
             ExtractTextFromPDF(file);
@@ -393,8 +392,7 @@ namespace ProjectExtractor.Extractors.FullProject
                     {
                         searchNextSection = true;
                     }
-                    double progress = (double)(((double)lineIndex + 1d) * 100d / (double)Lines.Length);
-                    Worker.ReportProgress((int)progress);
+                    ReportProgessToWorker(lineIndex, Worker, workerState);
                 }
                 if (project < ProjectStartIndexes.Count - 1)
                 {

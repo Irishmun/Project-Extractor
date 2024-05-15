@@ -15,16 +15,16 @@ namespace ProjectExtractor.Extractors.FullProject
         protected static ProjectSection[] RevThreeSectionDescriptions;
 
         //string[] Keywords, string chapters, string stopChapters, string totalHoursKeyword, bool WriteTotalHoursToFile, bool WriteKeywordsToFile,
-        public ExitCode ExtractProjects(ProjectLayoutRevision revision, string file, string extractPath, string[] Sections, string EndProject, System.ComponentModel.BackgroundWorker Worker)
+        public ExitCode ExtractProjects(ProjectLayoutRevision revision, string file, string extractPath, string[] Sections, string EndProject, System.ComponentModel.BackgroundWorker Worker, WorkerStates workerState)
         {
             switch (revision)
             {
                 case ProjectLayoutRevision.REVISION_ONE:
-                    return ExtractRevisionOneProject(file, extractPath, Sections, EndProject, Worker);
+                    return ExtractRevisionOneProject(file, extractPath, Sections, EndProject, Worker, workerState);
                 case ProjectLayoutRevision.REVISION_TWO:
-                    return ExtractRevisionTwoProject(file, extractPath, Sections, EndProject, Worker);
+                    return ExtractRevisionTwoProject(file, extractPath, Sections, EndProject, Worker, workerState);
                 case ProjectLayoutRevision.REVISION_THREE:
-                    return ExtractRevisionThreeProject(file, extractPath, Sections, EndProject, Worker);
+                    return ExtractRevisionThreeProject(file, extractPath, Sections, EndProject, Worker, workerState);
                 case ProjectLayoutRevision.UNKNOWN_REVISION:
                 default:
 #if DEBUG
@@ -34,16 +34,16 @@ namespace ProjectExtractor.Extractors.FullProject
             }
         }
 
-        public ExitCode BatchExtractProjects(ProjectLayoutRevision revision, string batchPath, string extractPath, string exportExtension, string[] Sections, string EndProject, bool skipExisting, bool recursive, System.ComponentModel.BackgroundWorker Worker)
+        public ExitCode BatchExtractProjects(ProjectLayoutRevision revision, string batchPath, string extractPath, string exportExtension, string[] Sections, string EndProject, bool skipExisting, bool recursive, System.ComponentModel.BackgroundWorker Worker, WorkerStates workerState)
         {
             switch (revision)
             {
                 case ProjectLayoutRevision.REVISION_ONE:
-                    return BatchExtractRevisionOneProject(batchPath, extractPath, exportExtension, Sections, EndProject, skipExisting, recursive, Worker);
+                    return BatchExtractRevisionOneProject(batchPath, extractPath, exportExtension, Sections, EndProject, skipExisting, recursive, Worker, workerState);
                 case ProjectLayoutRevision.REVISION_TWO:
-                    return BatchExtractRevisionTwoProject(batchPath, extractPath, exportExtension, Sections, EndProject, skipExisting, recursive, Worker);
+                    return BatchExtractRevisionTwoProject(batchPath, extractPath, exportExtension, Sections, EndProject, skipExisting, recursive, Worker, workerState);
                 case ProjectLayoutRevision.REVISION_THREE:
-                    return BatchExtractRevisionThreeProject(batchPath, extractPath, exportExtension, Sections, EndProject, skipExisting, recursive, Worker);
+                    return BatchExtractRevisionThreeProject(batchPath, extractPath, exportExtension, Sections, EndProject, skipExisting, recursive, Worker, workerState);
                 case ProjectLayoutRevision.UNKNOWN_REVISION:
                 default:
 #if DEBUG
@@ -77,13 +77,13 @@ namespace ProjectExtractor.Extractors.FullProject
             }
         }
 
-        protected abstract ExitCode ExtractRevisionOneProject(string file, string extractPath, string[] Sections, string EndProject, BackgroundWorker Worker);
-        protected abstract ExitCode ExtractRevisionTwoProject(string file, string extractPath, string[] Sections, string EndProject, BackgroundWorker Worker);
-        protected abstract ExitCode ExtractRevisionThreeProject(string file, string extractPath, string[] Sections, string EndProject, BackgroundWorker Worker);
+        protected abstract ExitCode ExtractRevisionOneProject(string file, string extractPath, string[] Sections, string EndProject, BackgroundWorker Worker, WorkerStates workerState);
+        protected abstract ExitCode ExtractRevisionTwoProject(string file, string extractPath, string[] Sections, string EndProject, BackgroundWorker Worker, WorkerStates workerState);
+        protected abstract ExitCode ExtractRevisionThreeProject(string file, string extractPath, string[] Sections, string EndProject, BackgroundWorker Worker, WorkerStates workerState);
 
-        protected abstract ExitCode BatchExtractRevisionOneProject(string folder, string extractPath, string fileExtension, string[] Sections, string EndProject, bool skipExisting, bool recursive, BackgroundWorker Worker);
-        protected abstract ExitCode BatchExtractRevisionTwoProject(string folder, string extractPath, string fileExtension, string[] Sections, string EndProject, bool skipExisting, bool recursive, BackgroundWorker Worker);
-        protected abstract ExitCode BatchExtractRevisionThreeProject(string folder, string extractPath, string fileExtension, string[] Sections, string EndProject, bool skipExisting, bool recursive, BackgroundWorker Worker);
+        protected abstract ExitCode BatchExtractRevisionOneProject(string folder, string extractPath, string fileExtension, string[] Sections, string EndProject, bool skipExisting, bool recursive, BackgroundWorker Worker, WorkerStates workerState);
+        protected abstract ExitCode BatchExtractRevisionTwoProject(string folder, string extractPath, string fileExtension, string[] Sections, string EndProject, bool skipExisting, bool recursive, BackgroundWorker Worker, WorkerStates workerState);
+        protected abstract ExitCode BatchExtractRevisionThreeProject(string folder, string extractPath, string fileExtension, string[] Sections, string EndProject, bool skipExisting, bool recursive, BackgroundWorker Worker, WorkerStates workerState);
 
 
         /// <summary>

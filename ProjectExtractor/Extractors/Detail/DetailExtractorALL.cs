@@ -11,21 +11,21 @@ namespace ProjectExtractor.Extractors.Detail
     {
         private bool _stripEmpties;
 
-        protected override ExitCode ExtractRevisionOneDetails(string file, string extractPath, string[] keywords, string chapters, string stopChapters, string totalHoursKeyword, bool writeTotalHoursToFile, bool writeKeywordsToFile, BackgroundWorker worker)
+        protected override ExitCode ExtractRevisionOneDetails(string file, string extractPath, string[] keywords, string chapters, string stopChapters, string totalHoursKeyword, bool writeTotalHoursToFile, bool writeKeywordsToFile, BackgroundWorker worker, WorkerStates workerState)
         {
-            return ExtractEverything(file, extractPath, worker);
+            return ExtractEverything(file, extractPath, worker, workerState);
         }
 
-        protected override ExitCode ExtractRevisionTwoDetails(string file, string extractPath, string[] keywords, string chapters, string stopChapters, string totalHoursKeyword, bool writeTotalHoursToFile, bool writeKeywordsToFile, BackgroundWorker worker)
+        protected override ExitCode ExtractRevisionTwoDetails(string file, string extractPath, string[] keywords, string chapters, string stopChapters, string totalHoursKeyword, bool writeTotalHoursToFile, bool writeKeywordsToFile, BackgroundWorker worker, WorkerStates workerState)
         {
-            return ExtractEverything(file, extractPath, worker);
+            return ExtractEverything(file, extractPath, worker, workerState);
         }
-        protected override ExitCode ExtractRevisionThreeDetails(string file, string extractPath, string[] Keywords, string chapters, string stopChapters, string totalHoursKeyword, bool WriteTotalHoursToFile, bool WriteKeywordsToFile, BackgroundWorker Worker)
+        protected override ExitCode ExtractRevisionThreeDetails(string file, string extractPath, string[] Keywords, string chapters, string stopChapters, string totalHoursKeyword, bool WriteTotalHoursToFile, bool WriteKeywordsToFile, BackgroundWorker Worker, WorkerStates workerState)
         {
-            return ExtractEverything(file, extractPath, Worker);
+            return ExtractEverything(file, extractPath, Worker, workerState);
         }
 
-        private ExitCode ExtractEverything(string file, string extractPath, BackgroundWorker Worker)
+        private ExitCode ExtractEverything(string file, string extractPath, BackgroundWorker Worker, WorkerStates workerState)
         {
             ExitCode returnCode = ExitCode.NONE;
             StringBuilder str = new StringBuilder();
@@ -40,7 +40,7 @@ namespace ProjectExtractor.Extractors.Detail
                 {
                 }
                 //progress for the progress bar
-                ReportProgessToWorker(i, Worker);
+                ReportProgessToWorker(i, Worker, workerState);
             }
             string res = string.Join(Environment.NewLine, Lines);
             using (StreamWriter sw = File.CreateText(extractPath))

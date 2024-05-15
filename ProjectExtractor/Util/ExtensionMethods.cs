@@ -87,21 +87,24 @@ namespace ProjectExtractor.Util
         /// <summary>Truncates the string to the given length if needed, adding ellipsis AFTER the word where the limit was exceeded</summary>
         /// <param name="length">maximum number of characters before truncating.</param>
         /// <returns>truncated string</returns>
-        public static string TruncateForDisplay(this string value, int length, int startIndex = 0)
+        public static string TruncateForDisplay(this string value, int length, string regex)
         {
             if (string.IsNullOrEmpty(value)) return string.Empty;
-            string returnValue = value;
-            int subStart = 0;
+            string returnValue = value.Trim();
+            string val = Regex.Match(value, regex).Value;
+            int subStart = value.IndexOf(val, StringComparison.OrdinalIgnoreCase);
+
             if (value.Length > length)
             {
-                if (startIndex > 0)
-                {
-                    subStart = value.LastIndexOf(' ', startIndex);
+                subStart = value.LastIndexOf(' ', subStart);//change to first space before found text
+                if (subStart + length >= value.Length)
+                {//move it further if it would exceed string length
+                    subStart = value.LastIndexOf(' ', value.Length - length);
                 }
 
                 string tmp = value.Substring(subStart, length);
                 if (tmp.LastIndexOf(' ') > 0)
-                    returnValue = "…" + tmp.Substring(0, tmp.LastIndexOf(' ')) + "…";
+                    returnValue = "…" + tmp.Substring(0, tmp.LastIndexOf(' ')).Trim() + "…";
             }
             return returnValue;
         }
@@ -136,5 +139,7 @@ namespace ProjectExtractor.Util
             name = name.Trim();
             return name;
         }
+
+
     }
 }

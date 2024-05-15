@@ -50,10 +50,14 @@ namespace ProjectExtractor.Util
             return match.Success;
         }
 
-        public static string CreateSearchRegex(string query, bool exactMatch = false)
+        public static string CreateSearchSentenceRegex(string query, bool exactMatch = false)
         {
-            //StringBuilder regex = new StringBuilder();
-            StringBuilder regex = new StringBuilder("[^.!?;]*(");
+            return "[^.!?;]*(" + CreateSearchRegex(query,exactMatch)+ ")[^.!?;]*";
+        }
+
+        public static string CreateSearchRegex(string query, bool exactMatch =false) 
+        {
+            StringBuilder regex = new StringBuilder();
             if (exactMatch == false)
             {
                 for (int i = 0; i < query.Length; i++)
@@ -65,7 +69,6 @@ namespace ProjectExtractor.Util
             {
                 regex.Append(query);
             }
-            regex.Append(")[^.!?;]*");
             return regex.ToString();
         }
 

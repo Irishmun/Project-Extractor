@@ -1,5 +1,4 @@
-﻿using iText.Layout.Element;
-using Microsoft.WindowsAPICodePack.Dialogs;
+﻿using Microsoft.WindowsAPICodePack.Dialogs;
 using ProjectExtractor.Database;
 using ProjectExtractor.Extractors;
 using ProjectExtractor.Extractors.Detail;
@@ -7,7 +6,6 @@ using ProjectExtractor.Extractors.FullProject;
 using ProjectExtractor.Util;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -334,7 +332,7 @@ namespace ProjectExtractor
                 _keywords = ConvertCheckedListViewItemsToArray(LV_Keywords);
                 _extractor = GetDetailExportSetting();
                 SetButtonsEnabled(false);
-                backgroundWorker.RunWorkerAsync(EXTRACT_DETAIL);
+                backgroundWorker.RunWorkerAsync(WorkerStates.EXTRACT_DETAIL);
             }
 
         }
@@ -347,7 +345,7 @@ namespace ProjectExtractor
                 _sections = ConvertListViewItemsToArray(LV_Sections);
                 _extractor = GetProjectExtractorSetting();
                 SetButtonsEnabled(false);
-                backgroundWorker.RunWorkerAsync(EXTRACT_PROJECT);
+                backgroundWorker.RunWorkerAsync(WorkerStates.EXTRACT_PROJECT);
             }
         }
         private void BT_BatchExtract_Click(object sender, EventArgs e)
@@ -368,7 +366,7 @@ namespace ProjectExtractor
             _sections = ConvertListViewItemsToArray(LV_Sections);
             _extractor = GetProjectExtractorSetting();
             SetButtonsEnabled(false);
-            backgroundWorker.RunWorkerAsync(EXTRACT_BATCH);
+            backgroundWorker.RunWorkerAsync(WorkerStates.EXTRACT_BATCH);
         }
 
         //database screen setting events
@@ -410,10 +408,10 @@ namespace ProjectExtractor
             //DGV_DatabaseResults.Rows.Add("Search result\n    result subitem");
             //^do this with each result (\t doesn't work) with the subitem being the related line
             //add a tag (or put in a second, hidden, collumn) the file and project that it is related to in the tree view
-            this.Cursor = Cursors.WaitCursor;
+            this.Cursor = Cursors.AppStarting;
             BT_SearchDatabase.Enabled = false;
             DGV_DatabaseResults.Rows.Clear();
-            backgroundWorker.RunWorkerAsync("DB_SEARCH");
+            backgroundWorker.RunWorkerAsync(WorkerStates.DATABASE_SEARCH);
         }
 
         //detail setting events
@@ -600,7 +598,7 @@ namespace ProjectExtractor
         #region BackgroundWorker events
         private void backgroundWorker_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
-            string workArgument = e.Argument as string;
+            WorkerStates workArgument = (WorkerStates)e.Argument;
             e.Result = workArgument;
             if (e == null)
             {
@@ -608,19 +606,19 @@ namespace ProjectExtractor
             }
 
             #region database
-            if (workArgument.Equals(DATABASE_SEARCH))
+            if (workArgument.Equals(WorkerStates.DATABASE_SEARCH))
             {
-                _databaseSearch.PopulateRowsWithResults(ref DGV_DatabaseResults, TB_DatabaseSearch.Text, TV_Database);
+                _databaseSearch.PopulateRowsWithResults(ref DGV_DatabaseResults, TB_DatabaseSearch.Text, TV_Database, sender as System.ComponentModel.BackgroundWorker, workArgument);
                 return;
             }
-            if (workArgument.Equals(DATABASE_INDEX))
+            if (workArgument.Equals(WorkerStates.DATABASE_INDEX))
             {
-                _databaseSearch.PopulateTreeView(TV_Database, TB_DatabasePath.Text);
+                _databaseSearch.PopulateTreeView(TV_Database, TB_DatabasePath.Text, sender as System.ComponentModel.BackgroundWorker, workArgument);
                 return;
             }
             #endregion
             #region extraction
-            if (workArgument.Equals(EXTRACT_BATCH))
+            if (workArgument.Equals(WorkerStates.EXTRACT_BATCH))
             {
                 if (string.IsNullOrWhiteSpace(TB_ExtractLocation.Text))
                 {
@@ -644,22 +642,22 @@ namespace ProjectExtractor
 
             switch (workArgument)
             {
-                case EXTRACT_DETAIL:
+                case WorkerStates.EXTRACT_DETAIL:
                     _exportFile = $"{TB_ExtractLocation.Text}{Path.GetFileNameWithoutExtension(fileName)}{ExtractorBase.DETAIL_SUFFIX}.{_extractor.FileExtension}";//add path and file extension
-                    _extractionResult = (_extractor as DetailExtractorBase).ExtractDetails(ProjectRevisionUtil.GetProjectRevision(_currentRevision), TB_PDFLocation.Text, _exportFile, _keywords, TB_Chapter.Text, TB_StopChapter.Text, TB_TotalHours.Text, CB_TotalHoursEnabled.Checked, CB_WriteKeywordsToFile.Checked, sender as System.ComponentModel.BackgroundWorker);
+                    _extractionResult = (_extractor as DetailExtractorBase).ExtractDetails(ProjectRevisionUtil.GetProjectRevision(_currentRevision), TB_PDFLocation.Text, _exportFile, _keywords, TB_Chapter.Text, TB_StopChapter.Text, TB_TotalHours.Text, CB_TotalHoursEnabled.Checked, CB_WriteKeywordsToFile.Checked, sender as System.ComponentModel.BackgroundWorker, workArgument);
                     break;
-                case EXTRACT_PROJECT:
+                case WorkerStates.EXTRACT_PROJECT:
                     _exportFile = $"{TB_ExtractLocation.Text}{Path.GetFileNameWithoutExtension(fileName)}{ExtractorBase.PROJECT_SUFFIX}.{_extractor.FileExtension}";//add path and file extension
-                    _extractionResult = (_extractor as ProjectExtractorBase).ExtractProjects(ProjectRevisionUtil.GetProjectRevision(_currentRevision), TB_PDFLocation.Text, _exportFile, _sections, TB_SectionsEndProject.Text, sender as System.ComponentModel.BackgroundWorker);
+                    _extractionResult = (_extractor as ProjectExtractorBase).ExtractProjects(ProjectRevisionUtil.GetProjectRevision(_currentRevision), TB_PDFLocation.Text, _exportFile, _sections, TB_SectionsEndProject.Text, sender as System.ComponentModel.BackgroundWorker, workArgument);
                     break;
 #if DEBUG
-                case EXTRACT_DEBUG:
+                case WorkerStates.EXTRACT_DEBUG:
                     _exportFile = $"{TB_ExtractLocation.Text}\\DEBUG {Path.GetFileNameWithoutExtension(fileName)}{ExtractorBase.DETAIL_SUFFIX}.{_extractor.FileExtension}";//add path and file extension
-                    _extractionResult = (_extractor as DetailExtractorBase).ExtractDetails(ProjectRevisionUtil.GetProjectRevision(_currentRevision), TB_PDFLocation.Text, _exportFile, _keywords, TB_Chapter.Text, TB_StopChapter.Text, TB_TotalHours.Text, CB_TotalHoursEnabled.Checked, CB_WriteKeywordsToFile.Checked, sender as System.ComponentModel.BackgroundWorker);
+                    _extractionResult = (_extractor as DetailExtractorBase).ExtractDetails(ProjectRevisionUtil.GetProjectRevision(_currentRevision), TB_PDFLocation.Text, _exportFile, _keywords, TB_Chapter.Text, TB_StopChapter.Text, TB_TotalHours.Text, CB_TotalHoursEnabled.Checked, CB_WriteKeywordsToFile.Checked, sender as System.ComponentModel.BackgroundWorker, workArgument);
                     break;
 #endif
-                case EXTRACT_BATCH:
-                    _extractionResult = (_extractor as ProjectExtractorBase).BatchExtractProjects(ProjectRevisionUtil.GetProjectRevision(_currentRevision), _batchFolder, TB_ExtractLocation.Text, _extractor.FileExtension, _sections, TB_SectionsEndProject.Text, CB_SkipExisting.Checked, CB_BatchRecursive.Checked, sender as System.ComponentModel.BackgroundWorker);
+                case WorkerStates.EXTRACT_BATCH:
+                    _extractionResult = (_extractor as ProjectExtractorBase).BatchExtractProjects(ProjectRevisionUtil.GetProjectRevision(_currentRevision), _batchFolder, TB_ExtractLocation.Text, _extractor.FileExtension, _sections, TB_SectionsEndProject.Text, CB_SkipExisting.Checked, CB_BatchRecursive.Checked, sender as System.ComponentModel.BackgroundWorker, workArgument);
                     break;
                 default:
                     UpdateStatus("ERROR extracting: unknown extractor given.");
@@ -680,7 +678,37 @@ namespace ProjectExtractor
         }
         private void backgroundWorker_ProgressChanged(object sender, System.ComponentModel.ProgressChangedEventArgs e)
         {
-            TSPB_Extraction.Value = e.ProgressPercentage;
+            Type statusType = e.UserState.GetType();
+            WorkerStates state;
+            if (statusType.IsArray)
+            {
+                state = (WorkerStates)((object[])e.UserState)[0];
+            }
+            else
+            {
+                state = (WorkerStates)e.UserState;
+            }
+            switch (state)
+            {
+                case WorkerStates.DATABASE_SEARCH:
+                    if (statusType.IsArray == false)
+                    { break; }
+                    DataGridViewRow row = new DataGridViewRow();
+                    row.CreateCells(DGV_DatabaseResults, ((object[])e.UserState)[2].ToString());
+                    row.Tag = ((object[])e.UserState)[1].ToString();
+                    DGV_DatabaseResults.Rows.Add(row);
+                    break;
+                case WorkerStates.NONE:
+                case WorkerStates.DATABASE_INDEX:
+                case WorkerStates.EXTRACT_BATCH:
+                case WorkerStates.EXTRACT_DETAIL:
+                case WorkerStates.EXTRACT_PROJECT:
+                case WorkerStates.EXTRACT_DEBUG:
+                default:
+                    TSPB_Extraction.Value = e.ProgressPercentage;
+                    break;
+            }
+
         }
         private void backgroundWorker_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
         {
@@ -690,18 +718,18 @@ namespace ProjectExtractor
 #endif
             if (e.Result == null)
             { return; }
-            if (e.Result.ToString().Equals(DATABASE_INDEX))
+            if (e.Result.Equals(WorkerStates.DATABASE_INDEX))
             {
                 if (TV_Database.Nodes.Count > 0)
                 {
                     TV_Database.Nodes[0].Expand();
                 }
-                UpdateStatus("Finished indexing projects");
+                UpdateStatus($"Finished indexing {_databaseSearch.IndexedProjectCount} projects");
                 BT_SetDatabase.Enabled = true;
                 this.Cursor = Cursors.Default;
                 return;
             }
-            if (e.Result.ToString().Equals(DATABASE_SEARCH))
+            if (e.Result.Equals(WorkerStates.DATABASE_SEARCH))
             {
                 UpdateStatus($"Done searching for \"{TB_DatabaseSearch.Text}\"");
                 BT_SearchDatabase.Enabled = true;
@@ -902,6 +930,21 @@ namespace ProjectExtractor
             BT_DebugExtract.Enabled = enabled;
 #endif
         }
+        private void FillDatabaseTree()
+        {
+            if (Directory.Exists(TB_DatabasePath.Text) == false)
+            {
+                MessageBox.Show("The given path could not be found:" + Environment.NewLine + TB_DatabasePath.Text, "Path not found", MessageBoxButtons.OK);
+                return;
+            }
+            UpdateStatus("Indexing projects...");
+            this.Cursor = Cursors.AppStarting;
+            BT_SetDatabase.Enabled = false;
+            TV_Database.Nodes.Clear();
+            backgroundWorker.RunWorkerAsync(WorkerStates.DATABASE_INDEX);
+            //fill treeview with projects
+
+        }
 
         private async Task CheckForUpdate()
         {
@@ -942,17 +985,6 @@ namespace ProjectExtractor
         {
             await _updateHandler.DownloadAndInstallRelease(_latestTag);
         }
-
-        private void FillDatabaseTree()
-        {
-            UpdateStatus("Indexing projects...");
-            this.Cursor = Cursors.WaitCursor;
-            BT_SetDatabase.Enabled = false;
-            backgroundWorker.RunWorkerAsync(DATABASE_INDEX);
-            //fill treeview with projects
-
-        }
-
         #endregion
         #region Settings methods
         /// <summary>Gets the current export setting radiobutton and returns its associated detail extractor</summary>
@@ -962,13 +994,13 @@ namespace ProjectExtractor
             switch (btn.Name)
             {
                 case "RB_ExportPDF":
-                    return new DetailExtractorPDF();
+                //return new DetailExtractorPDF();
                 case "RB_ExportExcel":
-                    return new DetailExtractorXLS();
+                //return new DetailExtractorXLS();
                 case "RB_ExportWord":
-                    return new DetailExtractorDOCX();
+                //return new DetailExtractorDOCX();
                 case "RB_ExportRichText":
-                    return new DetailExtractorRTF();
+                //return new DetailExtractorRTF();
                 case "RB_ExportTXT":
                 default:
                     return new DetailExtractorTXT();
@@ -1068,7 +1100,7 @@ namespace ProjectExtractor
                     _extractor = new DetailExtractorALL();
                     (_extractor as DetailExtractorALL).StripEmtpies = CB_DebugIncludeWhiteSpace.Checked;
                     SetButtonsEnabled(false);
-                    backgroundWorker.RunWorkerAsync(EXTRACT_DEBUG);
+                    backgroundWorker.RunWorkerAsync(WorkerStates.EXTRACT_DEBUG);
                 }
             }
 #endif
@@ -1114,13 +1146,6 @@ namespace ProjectExtractor
 
         #endregion
 
-        private const string DATABASE_SEARCH = "DB_SEARCH";
-        private const string DATABASE_INDEX = "DB_INDEX";
-        private const string EXTRACT_BATCH = "BATCH";
-        private const string EXTRACT_DETAIL = "DETAIL";
-        private const string EXTRACT_PROJECT = "PROJECT";
-#if DEBUG
-        private const string EXTRACT_DEBUG = "DEBUG";
-#endif
+
     }
 }
