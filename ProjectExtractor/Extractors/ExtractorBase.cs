@@ -231,10 +231,10 @@ namespace ProjectExtractor.Extractors
         /// <summary>Reports the progress to the backgroundworker</summary>
         /// <param name="currentProgress">The current progress point</param>
         /// <param name="worker">The worker to report to</param>
-        protected void ReportProgessToWorker(int currentProgress, System.ComponentModel.BackgroundWorker worker)
+        protected void ReportProgessToWorker(int currentProgress, System.ComponentModel.BackgroundWorker worker, WorkerStates workerState = default)
         {
             double progress = (double)((currentProgress + 1d) * 100d / Lines.Length);
-            worker.ReportProgress((int)progress);
+            worker.ReportProgress((int)progress, workerState);
         }
 
         /// <summary>Returns the length of the smaller array</summary>
