@@ -76,7 +76,7 @@ namespace ProjectExtractor.Database
 
             for (int i = startIndex; i < endIndex; i++)
             {
-                if (Regex.Match(lines[i], @"([Pp]roject )\d{1,4}.\d{0,3}|\d{1,4}.\d{1,3} -").Success)
+                if (Regex.Match(lines[i], @"([Pp]roject \d{1,4}\.\d{0,4})|(.{1,4}[\.-].{1,4} -)|([Pp]roject .{0,5}-\d{0,4})").Success)
                 {
 #if DEBUG
                     Debug.WriteLine("id: " + lines[i]);

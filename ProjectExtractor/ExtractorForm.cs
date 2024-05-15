@@ -408,7 +408,12 @@ namespace ProjectExtractor
             //DGV_DatabaseResults.Rows.Add("Search result\n    result subitem");
             //^do this with each result (\t doesn't work) with the subitem being the related line
             //add a tag (or put in a second, hidden, collumn) the file and project that it is related to in the tree view
+            if (string.IsNullOrWhiteSpace(TB_DatabaseSearch.Text))
+            {
+                return;
+            }
             this.Cursor = Cursors.AppStarting;
+            TB_DatabaseSearch.Enabled = false;
             BT_SearchDatabase.Enabled = false;
             DGV_DatabaseResults.Rows.Clear();
             backgroundWorker.RunWorkerAsync(WorkerStates.DATABASE_SEARCH);
@@ -703,7 +708,9 @@ namespace ProjectExtractor
                 case WorkerStates.EXTRACT_BATCH:
                 case WorkerStates.EXTRACT_DETAIL:
                 case WorkerStates.EXTRACT_PROJECT:
+#if DEBUG
                 case WorkerStates.EXTRACT_DEBUG:
+#endif
                 default:
                     TSPB_Extraction.Value = e.ProgressPercentage;
                     break;
@@ -726,6 +733,7 @@ namespace ProjectExtractor
                 }
                 UpdateStatus($"Finished indexing {_databaseSearch.IndexedProjectCount} projects");
                 BT_SetDatabase.Enabled = true;
+                TB_DatabaseSearch.Enabled = true;
                 this.Cursor = Cursors.Default;
                 return;
             }
@@ -733,6 +741,7 @@ namespace ProjectExtractor
             {
                 UpdateStatus($"Done searching for \"{TB_DatabaseSearch.Text}\"");
                 BT_SearchDatabase.Enabled = true;
+                TB_DatabaseSearch.Enabled = true;
                 this.Cursor = Cursors.Default;
                 return;
             }
@@ -939,6 +948,7 @@ namespace ProjectExtractor
             }
             UpdateStatus("Indexing projects...");
             this.Cursor = Cursors.AppStarting;
+            TB_DatabaseSearch.Enabled = false;
             BT_SetDatabase.Enabled = false;
             TV_Database.Nodes.Clear();
             backgroundWorker.RunWorkerAsync(WorkerStates.DATABASE_INDEX);
