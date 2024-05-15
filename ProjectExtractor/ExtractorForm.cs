@@ -413,8 +413,7 @@ namespace ProjectExtractor
                 return;
             }
             this.Cursor = Cursors.AppStarting;
-            TB_DatabaseSearch.Enabled = false;
-            BT_SearchDatabase.Enabled = false;
+            SetDatabaseControlsEnabled(false);
             DGV_DatabaseResults.Rows.Clear();
             backgroundWorker.RunWorkerAsync(WorkerStates.DATABASE_SEARCH);
         }
@@ -732,16 +731,14 @@ namespace ProjectExtractor
                     TV_Database.Nodes[0].Expand();
                 }
                 UpdateStatus($"Finished indexing {_databaseSearch.IndexedProjectCount} projects");
-                BT_SetDatabase.Enabled = true;
-                TB_DatabaseSearch.Enabled = true;
+                SetDatabaseControlsEnabled(true);
                 this.Cursor = Cursors.Default;
                 return;
             }
             if (e.Result.Equals(WorkerStates.DATABASE_SEARCH))
             {
                 UpdateStatus($"Done searching for \"{TB_DatabaseSearch.Text}\"");
-                BT_SearchDatabase.Enabled = true;
-                TB_DatabaseSearch.Enabled = true;
+                SetDatabaseControlsEnabled(true);
                 this.Cursor = Cursors.Default;
                 return;
             }
@@ -939,8 +936,19 @@ namespace ProjectExtractor
             BT_DebugExtract.Enabled = enabled;
 #endif
         }
+
+        private void SetDatabaseControlsEnabled(bool enabled)
+        {
+            BT_BrowseDatabase.Enabled = enabled;
+            BT_SetDatabase.Enabled = enabled;
+            BT_SearchDatabase.Enabled = enabled;
+            TB_DatabaseSearch.Enabled = enabled;
+            TB_DatabasePath.Enabled = enabled;
+        }
         private void FillDatabaseTree()
         {
+            if (string.IsNullOrWhiteSpace(TB_DatabasePath.Text))
+            { return; }
             if (Directory.Exists(TB_DatabasePath.Text) == false)
             {
                 MessageBox.Show("The given path could not be found:" + Environment.NewLine + TB_DatabasePath.Text, "Path not found", MessageBoxButtons.OK);
@@ -948,8 +956,7 @@ namespace ProjectExtractor
             }
             UpdateStatus("Indexing projects...");
             this.Cursor = Cursors.AppStarting;
-            TB_DatabaseSearch.Enabled = false;
-            BT_SetDatabase.Enabled = false;
+            SetDatabaseControlsEnabled(false);
             TV_Database.Nodes.Clear();
             backgroundWorker.RunWorkerAsync(WorkerStates.DATABASE_INDEX);
             //fill treeview with projects
