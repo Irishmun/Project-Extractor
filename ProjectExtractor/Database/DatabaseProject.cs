@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace ProjectExtractor.Database
@@ -69,49 +70,50 @@ namespace ProjectExtractor.Database
         public static bool TextToProject(string path, string[] lines, int startIndex, int endIndex, int projIndex, out DatabaseProject project)
         {
             project = new DatabaseProject();
-            project.Path = path;
-            project._numberInDocument = projIndex;
-
-            project._customer = GetCustomerFromPath(path);
-
-            for (int i = startIndex; i < endIndex; i++)
+            if (startIndex >= lines.Length)
             {
-                if (Regex.Match(lines[i], @"([Pp]roject \d{1,4}\.\d{0,4})|(.{1,4}[\.-].{1,4} -)|([Pp]roject .{0,5}-\d{0,4})").Success)
-                {
+                return false;
+            }
+            project.Path = path;
+            project.NumberInDocument = projIndex;
+            project.Customer = GetCustomerFromPath(path);
+
 #if DEBUG
-                    Debug.WriteLine("id: " + lines[i]);
+            Debug.WriteLine($"id: {lines[startIndex]}(line {startIndex})");
 #endif
-                    project._id = lines[i];
-                    continue;
-                }
+            //assume project id is always at startindex
+            project.Id = lines[startIndex];
+            for (int i = startIndex + 1; i < endIndex; i++)
+            {
+
                 if (lines[i].StartsWith("Omschrijving:"))
                 {
-                    project._description = lines[i + 1];
+                    project.Description = lines[i + 1];
                     i += 1;
                     continue;
                 }
                 if (lines[i].StartsWith("Samenwerking?:"))
                 {
-                    project._cooperation = lines[i + 1].Contains("Ja") ? true : false;
+                    project.Cooperation = lines[i + 1].Contains("Ja") ? true : false;
 #if DEBUG
-                    Debug.WriteLine("coop: " + lines[i + 1] + "(" + project._cooperation + ")");
+                    Debug.WriteLine("coop: " + lines[i + 1] + "(" + project.Cooperation + ")");
 #endif
                     i += 1;
                     continue;
                 }
                 if (lines[i].StartsWith("Fasering Werkzaamheden:"))
                 {
-                    project._projectPhases = GetDates(lines, i, "Update Project:", out i);
+                    project.ProjectPhases = GetDates(lines, i, endIndex, "Update Project:", out i);
                     continue;
                 }
                 if (lines[i].StartsWith("- Technische knelpunten:"))
                 {
-                    project._technical = GetTechnical(lines, i, "Wordt er mede programmatuur ontwikkeld?:", out i);
+                    project.Technical = GetTechnical(lines, i, endIndex, out i, "Wordt er mede programmatuur ontwikkeld?:", "Omschrijving kosten:");
                     continue;
                 }
                 if (lines[i].StartsWith("Wordt er mede programmatuur ontwikkeld?:"))
                 {
-                    project._softwareDeveloped = lines[i + 1].Contains("Ja") ? true : false;
+                    project.SoftwareDeveloped = lines[i + 1].Contains("Ja") ? true : false;
                     i += 1;
                     continue;
                 }
@@ -127,12 +129,13 @@ namespace ProjectExtractor.Database
             //project should be found here
             return true;
 
-            string[] GetTechnical(string[] lines, int startIndex, string stopLine, out int lastprocessedIndex)
+            string[] GetTechnical(string[] lines, int startIndex, int endIndex, out int lastprocessedIndex, params string[] stopLines)
             {
                 List<string> technicals = new List<string>();
-                for (lastprocessedIndex = startIndex; lastprocessedIndex < lines.Length; lastprocessedIndex++)
+                for (lastprocessedIndex = startIndex; lastprocessedIndex < endIndex; lastprocessedIndex++)
                 {
-                    if (lines[lastprocessedIndex].StartsWith(stopLine))
+                    string stopLine = Array.Find(stopLines, lines[lastprocessedIndex].StartsWith);
+                    if (string.IsNullOrWhiteSpace(stopLine) == false)
                     {
                         return technicals.ToArray();
                     }
@@ -146,10 +149,10 @@ namespace ProjectExtractor.Database
                 return technicals.ToArray();
             }
 
-            Dictionary<DateTime, string> GetDates(string[] lines, int startIndex, string stopLine, out int lastprocessedIndex)
+            Dictionary<DateTime, string> GetDates(string[] lines, int startIndex, int endIndex, string stopLine, out int lastprocessedIndex)
             {
                 Dictionary<DateTime, string> dates = new Dictionary<DateTime, string>();
-                for (lastprocessedIndex = startIndex; lastprocessedIndex < lines.Length; lastprocessedIndex++)
+                for (lastprocessedIndex = startIndex; lastprocessedIndex < endIndex; lastprocessedIndex++)
                 {
                     if (lines[lastprocessedIndex].StartsWith(stopLine))
                     {
@@ -180,12 +183,12 @@ namespace ProjectExtractor.Database
         {
             string name = System.IO.Path.GetFileNameWithoutExtension(path);
             name = name.TrimExtractionData();
-            Match match = Regex.Match(name, @"\d{4} \d{1,2}-\d{1,2}");
-            if (match.Success == true)
-            {
-                return name.Substring(match.Length);
-            }
-            return string.Empty;
+            //Match match = Regex.Match(name, @"\d{4} \d{1,2}-\d{1,2}");
+            //if (match.Success == true)
+            //{
+            //    return name.Substring(match.Length);
+            //}
+            return name;
         }
 
         public bool Cooperation { get => _cooperation; set => _cooperation = value; }

@@ -546,7 +546,7 @@ namespace ProjectExtractor
             // 
             // IL_DatabaseTree
             // 
-            IL_DatabaseTree.ColorDepth = System.Windows.Forms.ColorDepth.Depth16Bit;
+            IL_DatabaseTree.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
             IL_DatabaseTree.ImageStream = (System.Windows.Forms.ImageListStreamer)resources.GetObject("IL_DatabaseTree.ImageStream");
             IL_DatabaseTree.TransparentColor = System.Drawing.Color.Transparent;
             IL_DatabaseTree.Images.SetKeyName(0, "Root Folder.ico");

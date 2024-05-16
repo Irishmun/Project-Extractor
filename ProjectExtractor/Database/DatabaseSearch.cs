@@ -16,7 +16,7 @@ namespace ProjectExtractor.Database
 {//TODO: add files to search if they aren't part of the projects array
     internal class DatabaseSearch
     {
-        private const int SEARCH_RESULT_TRUNCATE = 64;//characters before truncating
+        private const int SEARCH_RESULT_TRUNCATE = 256;//characters before truncating
 
         private readonly string[] _projectFileTypes = new string[] { ".txt" };
         private string[] _projectPaths;//paths to possible project files
@@ -165,7 +165,8 @@ namespace ProjectExtractor.Database
             {
                 if (text.ToLower().RegexMatch(reg, out Match match) == true)
                 {
-                    addValueToGridView($"[{project.NumberInDocument}] {project.Customer} - {project.Id}\n    {match.Value.TruncateForDisplay(SEARCH_RESULT_TRUNCATE, StringSearch.CreateSearchRegex(query, exact))}", project.Path, ref grid);
+                    string value = text.Substring(match.Index, match.Length);
+                    addValueToGridView($"[{project.NumberInDocument}] {project.Customer} - {project.Id}\n    {value/*match.Value.TruncateForDisplay(SEARCH_RESULT_TRUNCATE, StringSearch.CreateSearchRegex(query, exact))*/}", project.Path, ref grid);
                     return true;
                 }
                 return false;
@@ -197,6 +198,7 @@ namespace ProjectExtractor.Database
                     {
                         if (lines[j].Equals("=========[PROJECTS]==========="))
                         {
+                            prevProjectIndex = j+1;
                             i = j;
                             break;
                         }
