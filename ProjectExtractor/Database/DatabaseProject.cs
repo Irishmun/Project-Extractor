@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace ProjectExtractor.Database
@@ -68,21 +69,20 @@ namespace ProjectExtractor.Database
         /// <returns></returns>
         public static bool TextToProject(string path, string[] lines, int startIndex, int endIndex, int projIndex, out DatabaseProject project)
         {
-            //TODO: figure out why projects get wrong description
             project = new DatabaseProject();
+            if (startIndex >= lines.Length)
+            {
+                return false;
+            }
             project.Path = path;
             project.NumberInDocument = projIndex;
-
             project.Customer = GetCustomerFromPath(path);
 
-            //if (Regex.Match(lines[startIndex], @"([Pp]roject \d{1,4}\.\d{0,4})|(.{1,4}[\.-].{1,4} -)|([Pp]roject .{0,5}-\d{0,4})|(\d{1,4}\. .*? )").Success)
-            //{
 #if DEBUG
             Debug.WriteLine($"id: {lines[startIndex]}(line {startIndex})");
 #endif
             //assume project id is always at startindex
             project.Id = lines[startIndex];
-            //}
             for (int i = startIndex + 1; i < endIndex; i++)
             {
 
@@ -103,12 +103,12 @@ namespace ProjectExtractor.Database
                 }
                 if (lines[i].StartsWith("Fasering Werkzaamheden:"))
                 {
-                    project.ProjectPhases = GetDates(lines, i, "Update Project:", out i);
+                    project.ProjectPhases = GetDates(lines, i, endIndex, "Update Project:", out i);
                     continue;
                 }
                 if (lines[i].StartsWith("- Technische knelpunten:"))
                 {
-                    project.Technical = GetTechnical(lines, i, "Wordt er mede programmatuur ontwikkeld?:", out i);
+                    project.Technical = GetTechnical(lines, i, endIndex, out i, "Wordt er mede programmatuur ontwikkeld?:", "Omschrijving kosten:");
                     continue;
                 }
                 if (lines[i].StartsWith("Wordt er mede programmatuur ontwikkeld?:"))
@@ -129,12 +129,13 @@ namespace ProjectExtractor.Database
             //project should be found here
             return true;
 
-            string[] GetTechnical(string[] lines, int startIndex, string stopLine, out int lastprocessedIndex)
+            string[] GetTechnical(string[] lines, int startIndex, int endIndex, out int lastprocessedIndex, params string[] stopLines)
             {
                 List<string> technicals = new List<string>();
-                for (lastprocessedIndex = startIndex; lastprocessedIndex < lines.Length; lastprocessedIndex++)
+                for (lastprocessedIndex = startIndex; lastprocessedIndex < endIndex; lastprocessedIndex++)
                 {
-                    if (lines[lastprocessedIndex].StartsWith(stopLine))
+                    string stopLine = Array.Find(stopLines, lines[lastprocessedIndex].StartsWith);
+                    if (string.IsNullOrWhiteSpace(stopLine) == false)
                     {
                         return technicals.ToArray();
                     }
@@ -148,10 +149,10 @@ namespace ProjectExtractor.Database
                 return technicals.ToArray();
             }
 
-            Dictionary<DateTime, string> GetDates(string[] lines, int startIndex, string stopLine, out int lastprocessedIndex)
+            Dictionary<DateTime, string> GetDates(string[] lines, int startIndex, int endIndex, string stopLine, out int lastprocessedIndex)
             {
                 Dictionary<DateTime, string> dates = new Dictionary<DateTime, string>();
-                for (lastprocessedIndex = startIndex; lastprocessedIndex < lines.Length; lastprocessedIndex++)
+                for (lastprocessedIndex = startIndex; lastprocessedIndex < endIndex; lastprocessedIndex++)
                 {
                     if (lines[lastprocessedIndex].StartsWith(stopLine))
                     {

@@ -208,7 +208,7 @@ namespace ProjectExtractor.Database
                 if (lines[i].Equals("========[END PROJECTS]========="))
                 {//end of document found, add last project and exit out
 
-                    if (TryGetProject(path, lines, prevProjectIndex+1, i - 1, projIndex, out currentProject) == false)
+                    if (TryGetProject(path, lines, prevProjectIndex, i - 1, projIndex, out currentProject) == false)
                     {//don't add project if it doesn't have anything
                         break;
                     }
