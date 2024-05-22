@@ -14,6 +14,7 @@
     <RepositoryUrl>https://github.com/Irishmun/Project-Extractor</RepositoryUrl>
     <NeutralLanguage>en-US</NeutralLanguage>
     <AssemblyVersion>3.0.2</AssemblyVersion>
+    <Platforms>AnyCPU;x86</Platforms>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Resources\logoPictureBox.Image.png" />
