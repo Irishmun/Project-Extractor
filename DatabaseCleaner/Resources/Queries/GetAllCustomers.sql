@@ -1,0 +1,1 @@
+﻿SELECT "CustomerID", "CompanyName" FROM Customers

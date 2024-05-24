@@ -32,28 +32,23 @@
             TB_DBLocation = new System.Windows.Forms.TextBox();
             BT_BrowseDB = new System.Windows.Forms.Button();
             BT_FindDuplicates = new System.Windows.Forms.Button();
-            PB_SearchProgress = new System.Windows.Forms.ProgressBar();
-            splitContainer1 = new System.Windows.Forms.SplitContainer();
-            LB_FoundProjects = new System.Windows.Forms.Label();
-            LV_DuplicateOverview = new System.Windows.Forms.ListView();
-            CH_Customers = new System.Windows.Forms.ColumnHeader();
-            CH_Title = new System.Windows.Forms.ColumnHeader();
-            CH_DuplicateCount = new System.Windows.Forms.ColumnHeader();
-            CH_Description = new System.Windows.Forms.ColumnHeader();
-            dataGridView1 = new System.Windows.Forms.DataGridView();
-            LB_DuplicateFiles = new System.Windows.Forms.ListBox();
+            DGV_DatabaseResults = new System.Windows.Forms.DataGridView();
             backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
-            ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
-            splitContainer1.Panel1.SuspendLayout();
-            splitContainer1.Panel2.SuspendLayout();
-            splitContainer1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
+            statusStrip1 = new System.Windows.Forms.StatusStrip();
+            TS_FoundProjects = new System.Windows.Forms.ToolStripStatusLabel();
+            TS_SearchProgress = new System.Windows.Forms.ToolStripProgressBar();
+            panel1 = new System.Windows.Forms.Panel();
+            BT_ExportTable = new System.Windows.Forms.Button();
+            CB_GetDuplicatesOnly = new System.Windows.Forms.CheckBox();
+            ((System.ComponentModel.ISupportInitialize)DGV_DatabaseResults).BeginInit();
+            statusStrip1.SuspendLayout();
+            panel1.SuspendLayout();
             SuspendLayout();
             // 
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new System.Drawing.Point(12, 9);
+            label1.Location = new System.Drawing.Point(3, 8);
             label1.Name = "label1";
             label1.Size = new System.Drawing.Size(79, 15);
             label1.TabIndex = 102;
@@ -62,16 +57,17 @@
             // TB_DBLocation
             // 
             TB_DBLocation.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-            TB_DBLocation.Location = new System.Drawing.Point(97, 5);
+            TB_DBLocation.Location = new System.Drawing.Point(88, 4);
             TB_DBLocation.Name = "TB_DBLocation";
             TB_DBLocation.PlaceholderText = "Path to Microsoft Access database file";
-            TB_DBLocation.Size = new System.Drawing.Size(440, 23);
+            TB_DBLocation.Size = new System.Drawing.Size(454, 23);
             TB_DBLocation.TabIndex = 101;
+            TB_DBLocation.TextChanged += TB_DBLocation_TextChanged;
             // 
             // BT_BrowseDB
             // 
             BT_BrowseDB.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
-            BT_BrowseDB.Location = new System.Drawing.Point(535, 4);
+            BT_BrowseDB.Location = new System.Drawing.Point(540, 3);
             BT_BrowseDB.Name = "BT_BrowseDB";
             BT_BrowseDB.Size = new System.Drawing.Size(25, 25);
             BT_BrowseDB.TabIndex = 100;
@@ -81,112 +77,27 @@
             // 
             // BT_FindDuplicates
             // 
-            BT_FindDuplicates.Location = new System.Drawing.Point(12, 35);
+            BT_FindDuplicates.Location = new System.Drawing.Point(3, 33);
             BT_FindDuplicates.Name = "BT_FindDuplicates";
-            BT_FindDuplicates.Size = new System.Drawing.Size(144, 23);
+            BT_FindDuplicates.Size = new System.Drawing.Size(128, 23);
             BT_FindDuplicates.TabIndex = 103;
             BT_FindDuplicates.Text = "Find Duplicates";
             BT_FindDuplicates.UseVisualStyleBackColor = true;
             BT_FindDuplicates.Click += BT_FindDuplicates_Click;
             // 
-            // PB_SearchProgress
+            // DGV_DatabaseResults
             // 
-            PB_SearchProgress.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-            PB_SearchProgress.Location = new System.Drawing.Point(162, 35);
-            PB_SearchProgress.Name = "PB_SearchProgress";
-            PB_SearchProgress.Size = new System.Drawing.Size(398, 23);
-            PB_SearchProgress.Step = 1;
-            PB_SearchProgress.TabIndex = 104;
-            // 
-            // splitContainer1
-            // 
-            splitContainer1.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-            splitContainer1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            splitContainer1.Location = new System.Drawing.Point(12, 64);
-            splitContainer1.Name = "splitContainer1";
-            // 
-            // splitContainer1.Panel1
-            // 
-            splitContainer1.Panel1.Controls.Add(LB_FoundProjects);
-            splitContainer1.Panel1.Controls.Add(LV_DuplicateOverview);
-            // 
-            // splitContainer1.Panel2
-            // 
-            splitContainer1.Panel2.Controls.Add(dataGridView1);
-            splitContainer1.Panel2.Controls.Add(LB_DuplicateFiles);
-            splitContainer1.Size = new System.Drawing.Size(548, 302);
-            splitContainer1.SplitterDistance = 270;
-            splitContainer1.TabIndex = 105;
-            // 
-            // LB_FoundProjects
-            // 
-            LB_FoundProjects.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
-            LB_FoundProjects.AutoSize = true;
-            LB_FoundProjects.Location = new System.Drawing.Point(3, 282);
-            LB_FoundProjects.Name = "LB_FoundProjects";
-            LB_FoundProjects.Size = new System.Drawing.Size(128, 15);
-            LB_FoundProjects.TabIndex = 1;
-            LB_FoundProjects.Text = "Press \"Find Duplicates\"";
-            // 
-            // LV_DuplicateOverview
-            // 
-            LV_DuplicateOverview.Activation = System.Windows.Forms.ItemActivation.OneClick;
-            LV_DuplicateOverview.AllowColumnReorder = true;
-            LV_DuplicateOverview.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-            LV_DuplicateOverview.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            LV_DuplicateOverview.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] { CH_Customers, CH_Title, CH_DuplicateCount, CH_Description });
-            LV_DuplicateOverview.GridLines = true;
-            LV_DuplicateOverview.Location = new System.Drawing.Point(-1, -1);
-            LV_DuplicateOverview.Name = "LV_DuplicateOverview";
-            LV_DuplicateOverview.Size = new System.Drawing.Size(269, 280);
-            LV_DuplicateOverview.TabIndex = 0;
-            LV_DuplicateOverview.UseCompatibleStateImageBehavior = false;
-            LV_DuplicateOverview.View = System.Windows.Forms.View.Details;
-            LV_DuplicateOverview.ColumnClick += LV_DuplicateOverview_ColumnClick;
-            LV_DuplicateOverview.ItemActivate += LV_DuplicateOverview_ItemActivate;
-            // 
-            // CH_Customers
-            // 
-            CH_Customers.Text = "Customer";
-            CH_Customers.Width = 64;
-            // 
-            // CH_Title
-            // 
-            CH_Title.Text = "Project title";
-            CH_Title.Width = 72;
-            // 
-            // CH_DuplicateCount
-            // 
-            CH_DuplicateCount.Text = "Duplicates";
-            CH_DuplicateCount.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            CH_DuplicateCount.Width = 70;
-            // 
-            // CH_Description
-            // 
-            CH_Description.Text = "description";
-            // 
-            // dataGridView1
-            // 
-            dataGridView1.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-            dataGridView1.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Sunken;
-            dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridView1.Location = new System.Drawing.Point(0, 0);
-            dataGridView1.Name = "dataGridView1";
-            dataGridView1.RowTemplate.Height = 25;
-            dataGridView1.Size = new System.Drawing.Size(272, 301);
-            dataGridView1.TabIndex = 1;
-            // 
-            // LB_DuplicateFiles
-            // 
-            LB_DuplicateFiles.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-            LB_DuplicateFiles.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            LB_DuplicateFiles.FormattingEnabled = true;
-            LB_DuplicateFiles.ItemHeight = 15;
-            LB_DuplicateFiles.Location = new System.Drawing.Point(0, 0);
-            LB_DuplicateFiles.Name = "LB_DuplicateFiles";
-            LB_DuplicateFiles.Size = new System.Drawing.Size(272, 300);
-            LB_DuplicateFiles.TabIndex = 0;
-            LB_DuplicateFiles.Visible = false;
+            DGV_DatabaseResults.AllowUserToAddRows = false;
+            DGV_DatabaseResults.AllowUserToDeleteRows = false;
+            DGV_DatabaseResults.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            DGV_DatabaseResults.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            DGV_DatabaseResults.Location = new System.Drawing.Point(3, 62);
+            DGV_DatabaseResults.Name = "DGV_DatabaseResults";
+            DGV_DatabaseResults.RowTemplate.Height = 25;
+            DGV_DatabaseResults.ShowEditingIcon = false;
+            DGV_DatabaseResults.Size = new System.Drawing.Size(562, 280);
+            DGV_DatabaseResults.TabIndex = 1;
+            DGV_DatabaseResults.DataSourceChanged += DGV_DatabaseResults_DataSourceChanged;
             // 
             // backgroundWorker1
             // 
@@ -195,26 +106,85 @@
             backgroundWorker1.ProgressChanged += backgroundWorker1_ProgressChanged;
             backgroundWorker1.RunWorkerCompleted += backgroundWorker1_RunWorkerCompleted;
             // 
+            // statusStrip1
+            // 
+            statusStrip1.GripStyle = System.Windows.Forms.ToolStripGripStyle.Visible;
+            statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { TS_FoundProjects, TS_SearchProgress });
+            statusStrip1.Location = new System.Drawing.Point(0, 347);
+            statusStrip1.Name = "statusStrip1";
+            statusStrip1.Size = new System.Drawing.Size(572, 24);
+            statusStrip1.TabIndex = 105;
+            statusStrip1.Text = "statusStrip1";
+            // 
+            // TS_FoundProjects
+            // 
+            TS_FoundProjects.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Left | System.Windows.Forms.ToolStripStatusLabelBorderSides.Top | System.Windows.Forms.ToolStripStatusLabelBorderSides.Right | System.Windows.Forms.ToolStripStatusLabelBorderSides.Bottom;
+            TS_FoundProjects.BorderStyle = System.Windows.Forms.Border3DStyle.SunkenInner;
+            TS_FoundProjects.Name = "TS_FoundProjects";
+            TS_FoundProjects.Size = new System.Drawing.Size(299, 19);
+            TS_FoundProjects.Spring = true;
+            TS_FoundProjects.Text = "Press \"Find Duplicates\"";
+            TS_FoundProjects.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // TS_SearchProgress
+            // 
+            TS_SearchProgress.Name = "TS_SearchProgress";
+            TS_SearchProgress.Size = new System.Drawing.Size(256, 18);
+            // 
+            // panel1
+            // 
+            panel1.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            panel1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            panel1.Controls.Add(BT_ExportTable);
+            panel1.Controls.Add(CB_GetDuplicatesOnly);
+            panel1.Controls.Add(DGV_DatabaseResults);
+            panel1.Controls.Add(BT_FindDuplicates);
+            panel1.Controls.Add(label1);
+            panel1.Controls.Add(BT_BrowseDB);
+            panel1.Controls.Add(TB_DBLocation);
+            panel1.Location = new System.Drawing.Point(0, 0);
+            panel1.Name = "panel1";
+            panel1.Size = new System.Drawing.Size(572, 346);
+            panel1.TabIndex = 106;
+            // 
+            // BT_ExportTable
+            // 
+            BT_ExportTable.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+            BT_ExportTable.Enabled = false;
+            BT_ExportTable.Location = new System.Drawing.Point(437, 33);
+            BT_ExportTable.Name = "BT_ExportTable";
+            BT_ExportTable.Size = new System.Drawing.Size(128, 23);
+            BT_ExportTable.TabIndex = 105;
+            BT_ExportTable.Text = "Export table";
+            BT_ExportTable.UseVisualStyleBackColor = true;
+            BT_ExportTable.Click += BT_ExportTable_Click;
+            // 
+            // CB_GetDuplicatesOnly
+            // 
+            CB_GetDuplicatesOnly.AutoSize = true;
+            CB_GetDuplicatesOnly.Location = new System.Drawing.Point(137, 36);
+            CB_GetDuplicatesOnly.Name = "CB_GetDuplicatesOnly";
+            CB_GetDuplicatesOnly.Size = new System.Drawing.Size(130, 19);
+            CB_GetDuplicatesOnly.TabIndex = 104;
+            CB_GetDuplicatesOnly.Text = "Get Duplicates Only";
+            CB_GetDuplicatesOnly.UseVisualStyleBackColor = true;
+            CB_GetDuplicatesOnly.CheckedChanged += CB_GetDuplicatesOnly_CheckedChanged;
+            // 
             // CleanerForm
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             ClientSize = new System.Drawing.Size(572, 371);
-            Controls.Add(splitContainer1);
-            Controls.Add(PB_SearchProgress);
-            Controls.Add(BT_FindDuplicates);
-            Controls.Add(label1);
-            Controls.Add(TB_DBLocation);
-            Controls.Add(BT_BrowseDB);
+            Controls.Add(panel1);
+            Controls.Add(statusStrip1);
             MinimumSize = new System.Drawing.Size(588, 410);
             Name = "CleanerForm";
             Text = "Access database cleaner";
-            splitContainer1.Panel1.ResumeLayout(false);
-            splitContainer1.Panel1.PerformLayout();
-            splitContainer1.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)splitContainer1).EndInit();
-            splitContainer1.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)DGV_DatabaseResults).EndInit();
+            statusStrip1.ResumeLayout(false);
+            statusStrip1.PerformLayout();
+            panel1.ResumeLayout(false);
+            panel1.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -225,16 +195,13 @@
         private System.Windows.Forms.TextBox TB_DBLocation;
         private System.Windows.Forms.Button BT_BrowseDB;
         private System.Windows.Forms.Button BT_FindDuplicates;
-        private System.Windows.Forms.ProgressBar PB_SearchProgress;
-        private System.Windows.Forms.SplitContainer splitContainer1;
-        private System.Windows.Forms.ListBox LB_DuplicateFiles;
-        private System.Windows.Forms.ListView LV_DuplicateOverview;
-        private System.Windows.Forms.ColumnHeader CH_Title;
-        private System.Windows.Forms.ColumnHeader CH_DuplicateCount;
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
-        private System.Windows.Forms.ColumnHeader CH_Customers;
-        private System.Windows.Forms.ColumnHeader CH_Description;
-        private System.Windows.Forms.Label LB_FoundProjects;
-        private System.Windows.Forms.DataGridView dataGridView1;
+        private System.Windows.Forms.DataGridView DGV_DatabaseResults;
+        private System.Windows.Forms.StatusStrip statusStrip1;
+        private System.Windows.Forms.ToolStripStatusLabel TS_FoundProjects;
+        private System.Windows.Forms.ToolStripProgressBar TS_SearchProgress;
+        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.CheckBox CB_GetDuplicatesOnly;
+        private System.Windows.Forms.Button BT_ExportTable;
     }
 }
