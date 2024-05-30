@@ -70,13 +70,13 @@ namespace DatabaseCleaner.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SELECT
+        ///   Looks up a localized string similar to SELECT TOP 10
         ///	COUNT(*) AS  duplicates ,&quot;TITLE&quot;,&quot;Period&quot;,&quot;CompanyName&quot;,&quot;PROJECT&quot;,&quot;STARTDATE&quot;,&quot;ENDDATE&quot;,&quot;HOURS&quot;,&quot;TYPE&quot;,&quot;SOFTWARE&quot;,&quot;DESC&quot;,&quot;TECHNEW&quot;,&quot;TECH&quot;,&quot;PROB&quot;,&quot;OPLO&quot;,&quot;METH&quot;,&quot;ZELF&quot;,&quot;PRIN&quot;,&quot;Opmerkingen&quot;,&quot;Vragen Senter&quot;,&quot;Afgewezen&quot;
         ///FROM ((WBSO_P  
         ///	INNER JOIN &quot;Periode&quot; ON [WBSO_P].[Periode] = [Periode].[PeriodID])
         ///	INNER JOIN &quot;Customers&quot; ON [WBSO_P].[CustomerID] = [Customers].[CustomerID])
         ///GROUP BY 
-        ///	 &quot;TITLE&quot;,&quot;Period&quot;,&quot;CompanyName&quot;,&quot;STARTDATE&quot;,&quot;ENDDATE&quot;,&quot;PROJECT&quot;,&quot;HOURS&quot;,&quot;TYPE&quot;,&quot;SOFTWARE&quot;,&quot;DESC&quot;,&quot;TECHNEW&quot;,&quot;TEC [rest of string was truncated]&quot;;.
+        ///	 &quot;TITLE&quot;,&quot;Period&quot;,&quot;CompanyName&quot;,&quot;STARTDATE&quot;,&quot;ENDDATE&quot;,&quot;PROJECT&quot;,&quot;HOURS&quot;,&quot;TYPE&quot;,&quot;SOFTWARE&quot;,&quot;DESC&quot;,&quot;TECHNE [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string GetProjects {
             get {

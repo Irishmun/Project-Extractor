@@ -34,8 +34,10 @@
     <PackageReference Include="itext7" Version="7.2.2" />
     <PackageReference Include="Microsoft.WindowsAPICodePack-Shell" Version="1.1.0" />
     <PackageReference Include="Octokit" Version="7.1.0" />
-    <PackageReference Include="System.IO.Hashing" Version="7.0.0" />
     <PackageReference Include="WindowsAPICodePack-Core" Version="1.1.2" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ProjectUtility\ProjectUtility.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\LICENSE">

@@ -1,9 +1,4 @@
-﻿using DatabaseCleaner.Util;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using ProjectUtility;
 
 namespace DatabaseCleaner
 {
@@ -23,7 +18,7 @@ namespace DatabaseCleaner
 
         internal Settings()
         {
-            ini = new IniFile();
+            ini = new IniFile(System.Reflection.Assembly.GetExecutingAssembly());
             Init();
         }
 

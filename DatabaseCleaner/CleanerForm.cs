@@ -1,9 +1,9 @@
+using DatabaseCleaner.Database;
 using DatabaseCleaner.Util;
 using System;
 using System.Data;
 using System.Diagnostics;
 using System.IO;
-using System.Runtime;
 using System.Text;
 using System.Windows.Forms;
 
@@ -13,6 +13,7 @@ namespace DatabaseCleaner
     {
         private Settings _settings;
         private Cleaner _cleaner;
+        private Extractor _extractor;
         private int _totalProjects = 0;
 #if DEBUG
         private System.Diagnostics.Stopwatch _watch = new System.Diagnostics.Stopwatch();
@@ -22,7 +23,6 @@ namespace DatabaseCleaner
             _settings = new Settings();
             _settings.IsStarting = true;
             InitializeComponent();
-            _cleaner = new Cleaner();
             SetValuesFromSettings();
             _settings.IsStarting = false;
         }
@@ -62,6 +62,8 @@ namespace DatabaseCleaner
         }
         private void BT_FindDuplicates_Click(object sender, EventArgs e)
         {
+            if (string.IsNullOrWhiteSpace(TB_DBLocation.Text))
+            { return; }
             if (backgroundWorker1.IsBusy == false)
             {
                 this.Cursor = Cursors.AppStarting;
@@ -72,7 +74,7 @@ namespace DatabaseCleaner
                 _watch.Start();
 #endif
                 //dataGridView1.DataSource = _cleaner.GetDuplicates(TB_DBLocation.Text);
-                backgroundWorker1.RunWorkerAsync();
+                backgroundWorker1.RunWorkerAsync(UtilMethods.CreateBackgroundWorkerArgs(WorkerStates.DATABASE_GET));
 
                 return;
             }
@@ -82,28 +84,18 @@ namespace DatabaseCleaner
         {
             if (DGV_DatabaseResults.DataSource == null)
             { return; }
-            using (SaveFileDialog save = new SaveFileDialog())
+            if (backgroundWorker1.IsBusy == false)
             {
-                save.Filter = "Text file (*.txt)|*.txt";
-                save.Title = "Export database projects";
-                if (save.ShowDialog() == DialogResult.OK)
+                using (FolderBrowserDialog save = new FolderBrowserDialog())
                 {
-                    if (string.IsNullOrWhiteSpace(save.FileName) == false)
+                    //save.Filter = "Text file (*.txt)|*.txt";
+                    //save.Title = "Export database projects";
+                    save.Description = "Export database projects";
+                    if (save.ShowDialog() == DialogResult.OK)
                     {
-                        using (StreamWriter sw = File.CreateText(save.FileName))
+                        if (string.IsNullOrWhiteSpace(save.SelectedPath) == false)
                         {
-                            StringBuilder str = new StringBuilder();
-                            foreach (DataGridViewRow row in DGV_DatabaseResults.Rows)
-                            {
-                                foreach (DataGridViewCell cell in row.Cells)
-                                {
-                                    //TODO: figure out why description (and other long cells) only have partial text
-                                    string name = DGV_DatabaseResults.Columns[cell.ColumnIndex].Name;
-                                    str.AppendLine($"[{name}]: { cell.Value}");
-                                }
-                                str.AppendLine("========[NEXT PROJECT]=========");
-                            }
-                            sw.Write(str.ToString());
+                            backgroundWorker1.RunWorkerAsync(UtilMethods.CreateBackgroundWorkerArgs(WorkerStates.EXTRACT_PROJECTS, save.SelectedPath));
                         }
                     }
                 }
@@ -132,9 +124,26 @@ namespace DatabaseCleaner
         #region BackgroundWorker settings
         private void backgroundWorker1_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
-            _cleaner.SetCustomersDict(TB_DBLocation.Text);
-            e.Result = _cleaner.GetDuplicatesAndCount(TB_DBLocation.Text, backgroundWorker1, out _totalProjects, CB_GetDuplicatesOnly.Checked);
-            //_cleaner.FindDuplicates(TB_DBLocation.Text, backgroundWorker1);
+            object[] args = UtilMethods.ReadBackgroundWorkerArgs(e.Argument, out WorkerStates state);
+            switch (state)
+            {
+                case WorkerStates.DATABASE_GET:
+                    if (_cleaner == null)
+                    { _cleaner = new Cleaner(); }
+                    _cleaner.SetCustomersDict(TB_DBLocation.Text);
+                    e.Result = _cleaner.GetDuplicatesAndCount(TB_DBLocation.Text, backgroundWorker1, out _totalProjects, CB_GetDuplicatesOnly.Checked);
+                    //_cleaner.FindDuplicates(TB_DBLocation.Text, backgroundWorker1);
+                    break;
+                case WorkerStates.EXTRACT_PROJECTS:
+                    if (_extractor == null)
+                    { _extractor = new Extractor(); }
+                    e.Result = (string)args[0];
+                    _extractor.ExtractDBProjects((DataTable)DGV_DatabaseResults.DataSource, (string)args[0], backgroundWorker1);
+                    break;
+                case WorkerStates.NONE:
+                default:
+                    return;
+            }
         }
 
         private void backgroundWorker1_ProgressChanged(object sender, System.ComponentModel.ProgressChangedEventArgs e)
@@ -150,20 +159,27 @@ namespace DatabaseCleaner
             {
                 Type statusType = e.Result.GetType();
                 if (statusType.Equals(typeof(DataTable)))
-                {
+                {//got projects
                     DGV_DatabaseResults.DataSource = (DataTable)e.Result;
                     DGV_DatabaseResults.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells);//DataGridViewAutoSizeColumnsMode.Fill);
+#if DEBUG
+                    _watch.Stop();
+                    System.Diagnostics.Debug.WriteLine("Process completed in " + _watch.Elapsed.TotalSeconds + " seconds...");
+                    TS_FoundProjects.Text = $"{DGV_DatabaseResults.Rows.Count}/{_totalProjects} \"unique\" projects found in {_watch.Elapsed.TotalSeconds.ToString("0.000")} seconds";// + _totalProjects;
+#else
+                    TS_FoundProjects.Text = $"{dataGridView1.Rows.Count}/{_totalProjects} \"unique\" projects found";
+#endif
+                }
+                else if (statusType.Equals(typeof(string)))
+                {//extracted projects
+                    if (Directory.Exists((string)e.Result))
+                    {
+                        Process.Start("explorer.exe", (string)e.Result);
+                    }
                 }
             }
             this.Cursor = Cursors.Default;
             SetEnabledInputFields(true);
-#if DEBUG
-            _watch.Stop();
-            System.Diagnostics.Debug.WriteLine("Process completed in " + _watch.Elapsed.TotalSeconds + " seconds...");
-            TS_FoundProjects.Text = $"{DGV_DatabaseResults.Rows.Count}/{_totalProjects} \"unique\" projects found in {_watch.Elapsed.TotalSeconds.ToString("0.000")} seconds";// + _totalProjects;
-#else
-            TS_FoundProjects.Text = $"{dataGridView1.Rows.Count}/{_totalProjects} \"unique\" projects found";
-#endif
         }
         #endregion
 

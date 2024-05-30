@@ -1,9 +1,5 @@
-﻿using ProjectExtractor.Util;
-using System;
+﻿using ProjectUtility;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
 
 namespace ProjectExtractor
 {
@@ -37,7 +33,7 @@ namespace ProjectExtractor
         /// <summary>The Settings for the program</summary>
         public Settings()
         {
-            _ini = new IniFile();
+            _ini = new IniFile(System.Reflection.Assembly.GetExecutingAssembly());
             _iniPath = _ini.Path;
             _sections = new Dictionary<string, bool>();
             _keywords = new Dictionary<string, bool>();
@@ -51,7 +47,7 @@ namespace ProjectExtractor
         }
 
         /// <summary>Creates an ini file with default settings</summary>
-        public void CreateDefaultIni(bool savePDF, bool saveExtract, bool disableExtract, bool writeKeywords, bool writeHours, int fileIndex, string fileExtension, string endProject, string chapterStart, string chapterEnd, string totalHoursKey,string databasePath)
+        public void CreateDefaultIni(bool savePDF, bool saveExtract, bool disableExtract, bool writeKeywords, bool writeHours, int fileIndex, string fileExtension, string endProject, string chapterStart, string chapterEnd, string totalHoursKey, string databasePath)
         {
             //bools
             UpdateSetting(ref _savePDFPath, savePDF, INI_KEY_SAVE_PDF, INI_SECTION_PATHS);

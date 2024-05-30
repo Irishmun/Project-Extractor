@@ -9,7 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 
-namespace DatabaseCleaner
+namespace DatabaseCleaner.Database
 {
     public class Cleaner
     {
@@ -22,7 +22,6 @@ namespace DatabaseCleaner
 
         private Dictionary<int, string> _customerIds = new Dictionary<int, string>();
         private object[] _listEntry = new object[4];//customer id, project title, duplicate estimate
-        private int customerColumn = 0, titleColumn = 0, descriptionColumn = 0;
 
         public DataTable GetDuplicatesAndCount(string path, BackgroundWorker worker, out int duplicateCount, bool duplicatesOnly = false)
         {
@@ -33,13 +32,15 @@ namespace DatabaseCleaner
             }
             DataTable table = GetDuplicates(path, duplicatesOnly);
             worker.ReportProgress(50);
-            duplicateCount = GetDuplicateCount(table, worker);
+            duplicateCount = GetDuplicateCount(table);
             worker.ReportProgress(100);
             return table;
         }
 
-        public int GetDuplicateCount(DataTable table, BackgroundWorker worker)
+        public int GetDuplicateCount(DataTable table)
         {
+            if (table.Columns.Contains("duplicates") == false)
+            { return table.Rows.Count; }
             object sumObject = table.Compute("Sum(duplicates)", null);
             return Convert.ToInt32(sumObject);
 
@@ -56,15 +57,15 @@ namespace DatabaseCleaner
                 try
                 {
                     conn.Open();
-                    OdbcCommand command = new OdbcCommand(comm, conn);
-                    OdbcDataAdapter da = new OdbcDataAdapter(command);
-                    DataSet ds = new DataSet();
-                    da.Fill(ds);
-                    return ds.Tables[0];
-                }
+                    OdbcCommand command = new OdbcCommand(comm, conn);//TODO: find source of issue bellow
+                    OdbcDataAdapter da = new OdbcDataAdapter(command);//<============================
+                    DataSet ds = new DataSet();                       //|Somewhere in here, Lines are                    
+                    da.Fill(ds);                                      //|limited to ~250 chacters. why??
+                    return ds.Tables[0];                              //<============================
+                }                                                     //Possibly, access file uses memo which gets interpreted as short text instead of long text
                 catch (Exception e)
                 {
-                    System.Windows.Forms.MessageBox.Show(e.Message, "SQL Error", System.Windows.Forms.MessageBoxButtons.OK);
+                    MessageBox.Show(e.Message, "SQL Error", MessageBoxButtons.OK);
                 }
                 finally
                 {

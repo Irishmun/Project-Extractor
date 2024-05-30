@@ -10,11 +10,32 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\Queries\GetAllCustomers.sql" />
+    <None Remove="Resources\Queries\GetProjects.sql" />
+    <None Remove="Resources\Sections\Access.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="Resources\Solitaire.ico" />
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Resources\Queries\GetAllCustomers.sql" />
+    <EmbeddedResource Include="Resources\Queries\GetProjects.sql" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="System.Data.Odbc" Version="8.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ProjectUtility\ProjectUtility.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Resources\Sections\Access.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
