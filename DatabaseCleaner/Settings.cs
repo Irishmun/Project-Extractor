@@ -1,68 +1,36 @@
 ﻿using ProjectUtility;
+using System.Reflection;
 
 namespace DatabaseCleaner
 {
-    internal class Settings
+    internal class Settings : ProjectUtility.SettingsBase<Settings>
     {
-        private const string SECTION_DATABASE = "Database";
+
+        private const string SECTION_PATHS = "Paths", SECTION_DATABASE = "Database", SECTION_EXPORT = "Export";
         private const string KEY_DATABASE_INPUT = "database_input", KEY_DATABASE_OUTPUT = "database_output";
-        private const string KEY_GET_DUPLICATES_ONLY = "get_duplicates_only";
+        private const string KEY_DATA_SOURCE = "data_source", KEY_INITIAL_CATALOG = "initial_catalog";
+        private const string KEY_INTEGRATED_SECURITY = "integrated_security", KEY_TRUST_SERVER_CERTIFICATE = "trust_server_certificate";
+        private const string KEY_GET_DUPLICATES_ONLY = "get_duplicates_only", KEY_PROJECTS_PER_FILE = "projects_per_file";
 
-        private readonly IniFile ini;
-        private bool _isStarting;
-
-        //setting values
-        private string _databaseInput, _databaseOutput;
-        private bool _getDuplicatesOnly;
-
-
-        internal Settings()
+        protected override void InitializeSettings()
         {
             ini = new IniFile(System.Reflection.Assembly.GetExecutingAssembly());
-            Init();
+
+            DbDataSource = DefaultIfNotExists(KEY_DATA_SOURCE, "TNWIN7-104\\SQLEXPRESS", SECTION_DATABASE);
+            DbInitialCatalog = DefaultIfNotExists(KEY_INITIAL_CATALOG, "WBSO_P", SECTION_DATABASE);
+            DbIntegratedSecurity = DefaultIfNotExists(KEY_INTEGRATED_SECURITY, true, SECTION_DATABASE);
+            DbTrustServerCertificate = DefaultIfNotExists(KEY_TRUST_SERVER_CERTIFICATE, true, SECTION_DATABASE);
         }
 
-        private void Init()
-        {
-            _databaseInput = ini.ReadIfExists(KEY_DATABASE_INPUT, SECTION_DATABASE);
-            _databaseOutput = ini.ReadIfExists(KEY_DATABASE_OUTPUT, SECTION_DATABASE);
-            _getDuplicatesOnly = ini.ReadBoolIfExists(KEY_GET_DUPLICATES_ONLY, SECTION_DATABASE);
-        }
 
-        /// <summary>Update the setting int value and the setting by key in the ini file, but only if NOT starting</summary>
-        /// <param name="setting">setting value to update</param>
-        /// <param name="newValue">value to set to</param>
-        /// <param name="Key">key of the value to set in the ini file</param>
-        /// <param name="Section">section that the key is in</param>
-        /// <param name="isStarting">is the this value set while starting up?</param>
-        public void UpdateSettingIfNotStarting<T>(ref T setting, T newValue, string Key, string Section = null, bool isStarting = false)
-        {
-            if (isStarting == true)
-            { return; }
-            setting = newValue;
-            ini.Write(Key, setting.ToString(), Section);
-        }
+        public string DatabaseInput { get => ini.ReadIfExists(KEY_DATABASE_INPUT, SECTION_PATHS); set => WriteToIniIfNotStarting(value, KEY_DATABASE_INPUT, SECTION_PATHS, isStarting); }
+        public string DatabaseOutput { get => ini.ReadIfExists(KEY_DATABASE_OUTPUT, SECTION_PATHS); set => WriteToIniIfNotStarting(value, KEY_DATABASE_OUTPUT, SECTION_PATHS, isStarting); }
 
-        /// <summary>Update the setting bool value and the setting by key in the ini file, but only if NOT starting</summary>
-        /// <param name="setting">setting value to update</param>
-        /// <param name="newValue">value to set to</param>
-        /// <param name="Key">key of the value to set in the ini file</param>
-        /// <param name="Section">section that the key is in</param>
-        /// <param name="isStarting">is the this value set while starting up?</param>
-        public void UpdateSettingIfNotStarting(ref bool setting, bool newValue, string Key, string Section = null, bool isStarting = false)
-        {
-            if (isStarting == true)
-            { return; }
-            setting = newValue;
-            ini.WriteBool(Key, setting, Section);
-        }
-
-        public string DatabaseInput { get => _databaseInput; set => UpdateSettingIfNotStarting(ref _databaseInput, value, KEY_DATABASE_INPUT, SECTION_DATABASE, _isStarting); }
-        public string DatabaseOutput { get => _databaseOutput; set => UpdateSettingIfNotStarting(ref _databaseOutput, value, KEY_DATABASE_OUTPUT, SECTION_DATABASE, _isStarting); }
-
-        public bool IsStarting { get => _isStarting; set => _isStarting = value; }
-        public bool GetDuplicatesOnly { get => _getDuplicatesOnly; set => UpdateSettingIfNotStarting(ref _getDuplicatesOnly, value, KEY_GET_DUPLICATES_ONLY, SECTION_DATABASE, _isStarting); }
-
-        internal bool DoesIniExist() => System.IO.File.Exists(ini.Path);
+        public bool GetDuplicatesOnly { get => ini.ReadBoolIfExists(KEY_GET_DUPLICATES_ONLY, SECTION_PATHS); set => WriteToIniIfNotStarting(value, KEY_GET_DUPLICATES_ONLY, SECTION_PATHS, isStarting); }
+        public string DbDataSource { get => DefaultIfNotExists(KEY_DATA_SOURCE, "TNWIN7-104\\SQLEXPRESS", SECTION_DATABASE); set => WriteToIniIfNotStarting(value, KEY_DATA_SOURCE, SECTION_DATABASE, isStarting); }
+        public string DbInitialCatalog { get => DefaultIfNotExists(KEY_INITIAL_CATALOG, "WBSO_P", SECTION_DATABASE); set => WriteToIniIfNotStarting(value, KEY_INITIAL_CATALOG, SECTION_DATABASE, isStarting); }
+        public bool DbIntegratedSecurity { get => DefaultIfNotExists(KEY_INTEGRATED_SECURITY, true, SECTION_DATABASE); set => WriteToIniIfNotStarting(value, KEY_INTEGRATED_SECURITY, SECTION_DATABASE, isStarting); }
+        public bool DbTrustServerCertificate { get => DefaultIfNotExists(KEY_TRUST_SERVER_CERTIFICATE, true, SECTION_DATABASE); set => WriteToIniIfNotStarting(value, KEY_TRUST_SERVER_CERTIFICATE, SECTION_DATABASE, isStarting); }
+        public int MaxProjectsPerFile { get => ini.ReadIntIfExists(KEY_PROJECTS_PER_FILE, SECTION_EXPORT); set => WriteToIniIfNotStarting(value, KEY_PROJECTS_PER_FILE, SECTION_EXPORT, isStarting); }
     }
 }

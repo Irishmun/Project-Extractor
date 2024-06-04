@@ -40,9 +40,11 @@
             panel1 = new System.Windows.Forms.Panel();
             BT_ExportTable = new System.Windows.Forms.Button();
             CB_GetDuplicatesOnly = new System.Windows.Forms.CheckBox();
+            NUD_MaxProjectsPerFile = new System.Windows.Forms.NumericUpDown();
             ((System.ComponentModel.ISupportInitialize)DGV_DatabaseResults).BeginInit();
             statusStrip1.SuspendLayout();
             panel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)NUD_MaxProjectsPerFile).BeginInit();
             SuspendLayout();
             // 
             // label1
@@ -135,6 +137,7 @@
             // 
             panel1.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
             panel1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            panel1.Controls.Add(NUD_MaxProjectsPerFile);
             panel1.Controls.Add(BT_ExportTable);
             panel1.Controls.Add(CB_GetDuplicatesOnly);
             panel1.Controls.Add(DGV_DatabaseResults);
@@ -170,6 +173,14 @@
             CB_GetDuplicatesOnly.UseVisualStyleBackColor = true;
             CB_GetDuplicatesOnly.CheckedChanged += CB_GetDuplicatesOnly_CheckedChanged;
             // 
+            // NUD_MaxProjectsPerFile
+            // 
+            NUD_MaxProjectsPerFile.Location = new System.Drawing.Point(311, 35);
+            NUD_MaxProjectsPerFile.Name = "NUD_MaxProjectsPerFile";
+            NUD_MaxProjectsPerFile.Size = new System.Drawing.Size(120, 23);
+            NUD_MaxProjectsPerFile.TabIndex = 106;
+            NUD_MaxProjectsPerFile.ValueChanged += NUD_MaxProjectsPerFile_ValueChanged;
+            // 
             // CleanerForm
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -185,6 +196,7 @@
             statusStrip1.PerformLayout();
             panel1.ResumeLayout(false);
             panel1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)NUD_MaxProjectsPerFile).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -203,5 +215,6 @@
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.CheckBox CB_GetDuplicatesOnly;
         private System.Windows.Forms.Button BT_ExportTable;
+        private System.Windows.Forms.NumericUpDown NUD_MaxProjectsPerFile;
     }
 }

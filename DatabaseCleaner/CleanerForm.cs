@@ -11,7 +11,6 @@ namespace DatabaseCleaner
 {
     public partial class CleanerForm : Form
     {
-        private Settings _settings;
         private Cleaner _cleaner;
         private Extractor _extractor;
         private int _totalProjects = 0;
@@ -20,17 +19,17 @@ namespace DatabaseCleaner
 #endif
         public CleanerForm()
         {
-            _settings = new Settings();
-            _settings.IsStarting = true;
+            Settings.Instance.IsStarting = true;
             InitializeComponent();
             SetValuesFromSettings();
-            _settings.IsStarting = false;
+            Settings.Instance.IsStarting = false;
         }
 
         private void SetValuesFromSettings()
         {
-            TB_DBLocation.Text = _settings.DatabaseInput;
-            CB_GetDuplicatesOnly.Checked = _settings.GetDuplicatesOnly;
+            TB_DBLocation.Text = Settings.Instance.DatabaseInput;
+            CB_GetDuplicatesOnly.Checked = Settings.Instance.GetDuplicatesOnly;
+            NUD_MaxProjectsPerFile.Value = Settings.Instance.MaxProjectsPerFile;
         }
         #region Button Events
         private void BT_BrowseDB_Click(object sender, EventArgs e)
@@ -105,19 +104,25 @@ namespace DatabaseCleaner
         #region Textbox events
         private void TB_DBLocation_TextChanged(object sender, EventArgs e)
         {
-            _settings.DatabaseInput = TB_DBLocation.Text;
+            Settings.Instance.DatabaseInput = TB_DBLocation.Text;
         }
         #endregion
         #region CheckBox events
         private void CB_GetDuplicatesOnly_CheckedChanged(object sender, EventArgs e)
         {
-            _settings.GetDuplicatesOnly = CB_GetDuplicatesOnly.Checked;
+            Settings.Instance.GetDuplicatesOnly = CB_GetDuplicatesOnly.Checked;
         }
         #endregion
         #region DataGridView events
         private void DGV_DatabaseResults_DataSourceChanged(object sender, EventArgs e)
         {
             BT_ExportTable.Enabled = DGV_DatabaseResults.DataSource != null;
+        }
+        #endregion
+        #region NumericUpDown events
+        private void NUD_MaxProjectsPerFile_ValueChanged(object sender, EventArgs e)
+        {
+            Settings.Instance.MaxProjectsPerFile = (int)((NumericUpDown)sender).Value;
         }
         #endregion
 
@@ -130,7 +135,6 @@ namespace DatabaseCleaner
                 case WorkerStates.DATABASE_GET:
                     if (_cleaner == null)
                     { _cleaner = new Cleaner(); }
-                    _cleaner.SetCustomersDict(TB_DBLocation.Text);
                     e.Result = _cleaner.GetDuplicatesAndCount(TB_DBLocation.Text, backgroundWorker1, out _totalProjects, CB_GetDuplicatesOnly.Checked);
                     //_cleaner.FindDuplicates(TB_DBLocation.Text, backgroundWorker1);
                     break;
@@ -138,7 +142,7 @@ namespace DatabaseCleaner
                     if (_extractor == null)
                     { _extractor = new Extractor(); }
                     e.Result = (string)args[0];
-                    _extractor.ExtractDBProjects((DataTable)DGV_DatabaseResults.DataSource, (string)args[0], backgroundWorker1);
+                    _extractor.ExtractDBProjects((DataTable)DGV_DatabaseResults.DataSource, (string)args[0], backgroundWorker1, Settings.Instance.MaxProjectsPerFile);
                     break;
                 case WorkerStates.NONE:
                 default:
@@ -190,8 +194,10 @@ namespace DatabaseCleaner
             TB_DBLocation.Enabled = enabled;
             BT_FindDuplicates.Enabled = enabled;
             CB_GetDuplicatesOnly.Enabled = enabled;
+            NUD_MaxProjectsPerFile.Enabled = enabled;
         }
         #endregion
+
 
 
     }

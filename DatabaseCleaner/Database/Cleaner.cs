@@ -3,7 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
-using System.Data.Odbc;
+using System.Data.OleDb;
+using System.Data.SqlClient;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -15,9 +16,8 @@ namespace DatabaseCleaner.Database
     {
         //note that these strings are made for a specific type of database, and should be adjusted somewhere
         private const string DUPLICATE_ONLY_SUFFIX = " HAVING COUNT(*) > 1";
-        private const string CONNECTION_PREFIX = @"Driver={Microsoft Access Driver (*.mdb, *.accdb)};Dbq=";
+        private const string CONNECTION_PREFIX = @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=";
 
-        private readonly string GET_ALL_CUSTOMERS_QUERY = Properties.Resources.GetAllCustomers;
         private readonly string FULL_DB_GET = Properties.Resources.GetProjects;
 
         private Dictionary<int, string> _customerIds = new Dictionary<int, string>();
@@ -26,7 +26,7 @@ namespace DatabaseCleaner.Database
         public DataTable GetDuplicatesAndCount(string path, BackgroundWorker worker, out int duplicateCount, bool duplicatesOnly = false)
         {
             if (UtilMethods.Is32Bit() == false)
-            {//Odbc only seems to work in 32 bit mode
+            {//OleDb only seems to work in 32 bit mode
                 duplicateCount = -1;
                 return null;
             }
@@ -39,6 +39,8 @@ namespace DatabaseCleaner.Database
 
         public int GetDuplicateCount(DataTable table)
         {
+            if (table == null)
+            { return -1; }
             if (table.Columns.Contains("duplicates") == false)
             { return table.Rows.Count; }
             object sumObject = table.Compute("Sum(duplicates)", null);
@@ -51,18 +53,59 @@ namespace DatabaseCleaner.Database
         /// <param name="duplicatesOnly">if only the duplicates need to be gotten</param>
         public DataTable GetDuplicates(string path, bool duplicatesOnly = false)
         {
+            SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder();
+            builder.DataSource = Settings.Instance.DbDataSource;
+            builder.IntegratedSecurity = Settings.Instance.DbIntegratedSecurity;
+            builder.TrustServerCertificate = Settings.Instance.DbTrustServerCertificate;
+            builder.InitialCatalog = Settings.Instance.DbInitialCatalog;
+
+            using (SqlConnection conn = new SqlConnection(builder.ConnectionString))
+            {
+                string sql = duplicatesOnly ? FULL_DB_GET + DUPLICATE_ONLY_SUFFIX : FULL_DB_GET;
+                using (SqlCommand comm = new SqlCommand(sql, conn))
+                {
+                    try
+                    {
+                        comm.CommandTimeout = 240;
+                        conn.Open();
+                        SqlDataAdapter da = new SqlDataAdapter(comm);
+                        DataSet ds = new DataSet();
+                        da.Fill(ds);
+                        return ds.Tables[0];
+                    }                                                       //access file uses longtext, so that is not the case
+                    catch (Exception e)
+                    {
+                        MessageBox.Show(e.Message, "SQL Error", MessageBoxButtons.OK);
+                    }
+                    finally
+                    {
+                        conn.Close();
+                    }
+                }
+                return null;
+            }
+            /*
+                        //This seems to give the full length results, look up if you can merge two datatables and then group them
+            string comm2 = "SELECT [DESC],[TECHNEW],[TECH],[PROB],[OPLO],[METH],[ZELF],[PRIN],[Opmerkingen],[Vragen Senter] FROM [WBSO_P]";//Asking for just the description, gives it back in full length
             string comm = duplicatesOnly ? FULL_DB_GET + DUPLICATE_ONLY_SUFFIX : FULL_DB_GET;
-            using (OdbcConnection conn = new OdbcConnection(CONNECTION_PREFIX + path))
+            using (OleDbConnection conn = new OleDbConnection(CONNECTION_PREFIX + path))
             {
                 try
                 {
                     conn.Open();
-                    OdbcCommand command = new OdbcCommand(comm, conn);//TODO: find source of issue bellow
-                    OdbcDataAdapter da = new OdbcDataAdapter(command);//<============================
-                    DataSet ds = new DataSet();                       //|Somewhere in here, Lines are                    
-                    da.Fill(ds);                                      //|limited to ~250 chacters. why??
-                    return ds.Tables[0];                              //<============================
-                }                                                     //Possibly, access file uses memo which gets interpreted as short text instead of long text
+                    OleDbCommand command = new OleDbCommand(comm, conn);//TODO: find source of issue bellow
+                    OleDbDataAdapter da = new OleDbDataAdapter(command);//<============================
+                    //DataSet ds = new DataSet();                         //|Somewhere in here, Lines are                    
+                    //da.Fill(ds);                                        //|limited to ~250 chacters. why??
+                    //return ds.Tables[0];                                //<============================
+                    DataTable table = new DataTable();
+                    table.Load(command.ExecuteReader());
+                    command = new OleDbCommand(comm2, conn);
+                    DataTable table2 = new DataTable();
+                    table2.Load(command.ExecuteReader());
+                    table.Merge(table2,false);
+                    return table;
+                }                                                       //access file uses longtext, so that is not the case
                 catch (Exception e)
                 {
                     MessageBox.Show(e.Message, "SQL Error", MessageBoxButtons.OK);
@@ -72,38 +115,7 @@ namespace DatabaseCleaner.Database
                     conn.Close();
                 }
             }
-            return null;
-        }
-
-        /// <summary>Fills the <see cref="_customerIds"/> Dictionary with entries from the database, returns false if no entries were found</summary>
-        /// <param name="path">path to the database file</param>
-        /// <returns>Whether any entries were found</returns>
-        public bool SetCustomersDict(string path)
-        {
-            if (File.Exists(path) == false)
-            { return false; }
-            using (OdbcConnection conn = new OdbcConnection(CONNECTION_PREFIX + path))
-            {
-                conn.Open();
-
-                OdbcCommand command = new OdbcCommand(GET_ALL_CUSTOMERS_QUERY, conn);
-                DataSet ds = new DataSet();
-                OdbcDataAdapter da = new OdbcDataAdapter(command);
-                da.Fill(ds);
-                DataTable col = ds.Tables[0];
-                _customerIds.Clear();
-                foreach (DataRow item in col.Rows)
-                {
-                    if (item[0] == null || item[1] == null)
-                    { continue; }
-                    _customerIds.Add(int.Parse(item[0].ToString()), item[1].ToString());
-                }
-                if (_customerIds.Count > 0)
-                {
-                    return true;
-                }
-            }
-            return false;
+            return null;*/
         }
 
         public Dictionary<int, string> CustomerIds { get => _customerIds; set => _customerIds = value; }

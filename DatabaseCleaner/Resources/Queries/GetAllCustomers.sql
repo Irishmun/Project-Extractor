@@ -1,1 +1,1 @@
-﻿SELECT "CustomerID", "CompanyName" FROM Customers
+﻿SELECT [CustomerID],[CompanyName] FROM [Customers]
