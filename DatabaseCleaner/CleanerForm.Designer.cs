@@ -28,58 +28,60 @@
         /// </summary>
         private void InitializeComponent()
         {
-            label1 = new System.Windows.Forms.Label();
-            TB_DBLocation = new System.Windows.Forms.TextBox();
-            BT_BrowseDB = new System.Windows.Forms.Button();
             BT_FindDuplicates = new System.Windows.Forms.Button();
             DGV_DatabaseResults = new System.Windows.Forms.DataGridView();
             backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             statusStrip1 = new System.Windows.Forms.StatusStrip();
             TS_FoundProjects = new System.Windows.Forms.ToolStripStatusLabel();
             TS_SearchProgress = new System.Windows.Forms.ToolStripProgressBar();
-            panel1 = new System.Windows.Forms.Panel();
-            BT_ExportTable = new System.Windows.Forms.Button();
-            CB_GetDuplicatesOnly = new System.Windows.Forms.CheckBox();
+            label2 = new System.Windows.Forms.Label();
             NUD_MaxProjectsPerFile = new System.Windows.Forms.NumericUpDown();
+            BT_ExportTable = new System.Windows.Forms.Button();
+            tabControl1 = new System.Windows.Forms.TabControl();
+            TP_Cleaner = new System.Windows.Forms.TabPage();
+            groupBox2 = new System.Windows.Forms.GroupBox();
+            BT_CleanAllProjects = new System.Windows.Forms.Button();
+            LB_Projects = new System.Windows.Forms.ListBox();
+            groupBox1 = new System.Windows.Forms.GroupBox();
+            BT_CleanSelectedProject = new System.Windows.Forms.Button();
+            LV_DuplicateProjects = new System.Windows.Forms.ListView();
+            LB_DuplicateCount = new System.Windows.Forms.Label();
+            label6 = new System.Windows.Forms.Label();
+            BT_BrowseProjectsFolder = new System.Windows.Forms.Button();
+            TB_ProjectsFolder = new System.Windows.Forms.TextBox();
+            label3 = new System.Windows.Forms.Label();
+            TB_Database = new System.Windows.Forms.TabPage();
+            TP_Settings = new System.Windows.Forms.TabPage();
+            groupBox3 = new System.Windows.Forms.GroupBox();
+            TB_ProjectsFolderSetting = new System.Windows.Forms.TextBox();
+            Project = new System.Windows.Forms.Label();
+            groupBox4 = new System.Windows.Forms.GroupBox();
+            LB_ProjectsPerFileSetting = new System.Windows.Forms.Label();
+            label4 = new System.Windows.Forms.Label();
+            CB_TrustServerCertificateSetting = new System.Windows.Forms.CheckBox();
+            CB_IntegratedSecuritySetting = new System.Windows.Forms.CheckBox();
+            TB_InitialCatalogSetting = new System.Windows.Forms.TextBox();
+            TB_DataSourceSetting = new System.Windows.Forms.TextBox();
+            label5 = new System.Windows.Forms.Label();
+            BT_CancelSettings = new System.Windows.Forms.Button();
+            label1 = new System.Windows.Forms.Label();
+            BT_SaveSettings = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)DGV_DatabaseResults).BeginInit();
             statusStrip1.SuspendLayout();
-            panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)NUD_MaxProjectsPerFile).BeginInit();
+            tabControl1.SuspendLayout();
+            TP_Cleaner.SuspendLayout();
+            groupBox2.SuspendLayout();
+            groupBox1.SuspendLayout();
+            TB_Database.SuspendLayout();
+            TP_Settings.SuspendLayout();
+            groupBox3.SuspendLayout();
+            groupBox4.SuspendLayout();
             SuspendLayout();
-            // 
-            // label1
-            // 
-            label1.AutoSize = true;
-            label1.Location = new System.Drawing.Point(3, 8);
-            label1.Name = "label1";
-            label1.Size = new System.Drawing.Size(79, 15);
-            label1.TabIndex = 102;
-            label1.Text = "Database File:";
-            // 
-            // TB_DBLocation
-            // 
-            TB_DBLocation.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-            TB_DBLocation.Location = new System.Drawing.Point(88, 4);
-            TB_DBLocation.Name = "TB_DBLocation";
-            TB_DBLocation.PlaceholderText = "Path to Microsoft Access database file";
-            TB_DBLocation.Size = new System.Drawing.Size(454, 23);
-            TB_DBLocation.TabIndex = 101;
-            TB_DBLocation.TextChanged += TB_DBLocation_TextChanged;
-            // 
-            // BT_BrowseDB
-            // 
-            BT_BrowseDB.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
-            BT_BrowseDB.Location = new System.Drawing.Point(540, 3);
-            BT_BrowseDB.Name = "BT_BrowseDB";
-            BT_BrowseDB.Size = new System.Drawing.Size(25, 25);
-            BT_BrowseDB.TabIndex = 100;
-            BT_BrowseDB.Text = "...";
-            BT_BrowseDB.UseVisualStyleBackColor = true;
-            BT_BrowseDB.Click += BT_BrowseDB_Click;
             // 
             // BT_FindDuplicates
             // 
-            BT_FindDuplicates.Location = new System.Drawing.Point(3, 33);
+            BT_FindDuplicates.Location = new System.Drawing.Point(6, 6);
             BT_FindDuplicates.Name = "BT_FindDuplicates";
             BT_FindDuplicates.Size = new System.Drawing.Size(128, 23);
             BT_FindDuplicates.TabIndex = 103;
@@ -93,11 +95,11 @@
             DGV_DatabaseResults.AllowUserToDeleteRows = false;
             DGV_DatabaseResults.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
             DGV_DatabaseResults.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            DGV_DatabaseResults.Location = new System.Drawing.Point(3, 62);
+            DGV_DatabaseResults.Location = new System.Drawing.Point(-2, 37);
             DGV_DatabaseResults.Name = "DGV_DatabaseResults";
             DGV_DatabaseResults.RowTemplate.Height = 25;
             DGV_DatabaseResults.ShowEditingIcon = false;
-            DGV_DatabaseResults.Size = new System.Drawing.Size(562, 280);
+            DGV_DatabaseResults.Size = new System.Drawing.Size(561, 279);
             DGV_DatabaseResults.TabIndex = 1;
             DGV_DatabaseResults.DataSourceChanged += DGV_DatabaseResults_DataSourceChanged;
             // 
@@ -133,28 +135,33 @@
             TS_SearchProgress.Name = "TS_SearchProgress";
             TS_SearchProgress.Size = new System.Drawing.Size(256, 18);
             // 
-            // panel1
+            // label2
             // 
-            panel1.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-            panel1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            panel1.Controls.Add(NUD_MaxProjectsPerFile);
-            panel1.Controls.Add(BT_ExportTable);
-            panel1.Controls.Add(CB_GetDuplicatesOnly);
-            panel1.Controls.Add(DGV_DatabaseResults);
-            panel1.Controls.Add(BT_FindDuplicates);
-            panel1.Controls.Add(label1);
-            panel1.Controls.Add(BT_BrowseDB);
-            panel1.Controls.Add(TB_DBLocation);
-            panel1.Location = new System.Drawing.Point(0, 0);
-            panel1.Name = "panel1";
-            panel1.Size = new System.Drawing.Size(572, 346);
-            panel1.TabIndex = 106;
+            label2.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+            label2.AutoSize = true;
+            label2.Location = new System.Drawing.Point(180, 10);
+            label2.Name = "label2";
+            label2.Size = new System.Drawing.Size(114, 15);
+            label2.TabIndex = 107;
+            label2.Text = "Max projects per file";
+            // 
+            // NUD_MaxProjectsPerFile
+            // 
+            NUD_MaxProjectsPerFile.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+            NUD_MaxProjectsPerFile.Location = new System.Drawing.Point(300, 6);
+            NUD_MaxProjectsPerFile.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
+            NUD_MaxProjectsPerFile.Name = "NUD_MaxProjectsPerFile";
+            NUD_MaxProjectsPerFile.Size = new System.Drawing.Size(120, 23);
+            NUD_MaxProjectsPerFile.TabIndex = 106;
+            NUD_MaxProjectsPerFile.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            NUD_MaxProjectsPerFile.Value = new decimal(new int[] { 1, 0, 0, 0 });
+            NUD_MaxProjectsPerFile.ValueChanged += NUD_MaxProjectsPerFile_ValueChanged;
             // 
             // BT_ExportTable
             // 
             BT_ExportTable.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
             BT_ExportTable.Enabled = false;
-            BT_ExportTable.Location = new System.Drawing.Point(437, 33);
+            BT_ExportTable.Location = new System.Drawing.Point(426, 6);
             BT_ExportTable.Name = "BT_ExportTable";
             BT_ExportTable.Size = new System.Drawing.Size(128, 23);
             BT_ExportTable.TabIndex = 105;
@@ -162,31 +169,331 @@
             BT_ExportTable.UseVisualStyleBackColor = true;
             BT_ExportTable.Click += BT_ExportTable_Click;
             // 
-            // CB_GetDuplicatesOnly
+            // tabControl1
             // 
-            CB_GetDuplicatesOnly.AutoSize = true;
-            CB_GetDuplicatesOnly.Location = new System.Drawing.Point(137, 36);
-            CB_GetDuplicatesOnly.Name = "CB_GetDuplicatesOnly";
-            CB_GetDuplicatesOnly.Size = new System.Drawing.Size(130, 19);
-            CB_GetDuplicatesOnly.TabIndex = 104;
-            CB_GetDuplicatesOnly.Text = "Get Duplicates Only";
-            CB_GetDuplicatesOnly.UseVisualStyleBackColor = true;
-            CB_GetDuplicatesOnly.CheckedChanged += CB_GetDuplicatesOnly_CheckedChanged;
+            tabControl1.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            tabControl1.Controls.Add(TP_Cleaner);
+            tabControl1.Controls.Add(TB_Database);
+            tabControl1.Controls.Add(TP_Settings);
+            tabControl1.Location = new System.Drawing.Point(0, 0);
+            tabControl1.Name = "tabControl1";
+            tabControl1.SelectedIndex = 0;
+            tabControl1.Size = new System.Drawing.Size(572, 346);
+            tabControl1.TabIndex = 107;
             // 
-            // NUD_MaxProjectsPerFile
+            // TP_Cleaner
             // 
-            NUD_MaxProjectsPerFile.Location = new System.Drawing.Point(311, 35);
-            NUD_MaxProjectsPerFile.Name = "NUD_MaxProjectsPerFile";
-            NUD_MaxProjectsPerFile.Size = new System.Drawing.Size(120, 23);
-            NUD_MaxProjectsPerFile.TabIndex = 106;
-            NUD_MaxProjectsPerFile.ValueChanged += NUD_MaxProjectsPerFile_ValueChanged;
+            TP_Cleaner.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            TP_Cleaner.Controls.Add(groupBox2);
+            TP_Cleaner.Controls.Add(groupBox1);
+            TP_Cleaner.Controls.Add(BT_BrowseProjectsFolder);
+            TP_Cleaner.Controls.Add(TB_ProjectsFolder);
+            TP_Cleaner.Controls.Add(label3);
+            TP_Cleaner.Location = new System.Drawing.Point(4, 24);
+            TP_Cleaner.Name = "TP_Cleaner";
+            TP_Cleaner.Padding = new System.Windows.Forms.Padding(3);
+            TP_Cleaner.Size = new System.Drawing.Size(564, 318);
+            TP_Cleaner.TabIndex = 1;
+            TP_Cleaner.Text = "Duplicate cleaner";
+            TP_Cleaner.UseVisualStyleBackColor = true;
+            // 
+            // groupBox2
+            // 
+            groupBox2.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
+            groupBox2.Controls.Add(BT_CleanAllProjects);
+            groupBox2.Controls.Add(LB_Projects);
+            groupBox2.Location = new System.Drawing.Point(6, 36);
+            groupBox2.Name = "groupBox2";
+            groupBox2.Size = new System.Drawing.Size(200, 277);
+            groupBox2.TabIndex = 107;
+            groupBox2.TabStop = false;
+            groupBox2.Text = "Projects";
+            // 
+            // BT_CleanAllProjects
+            // 
+            BT_CleanAllProjects.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            BT_CleanAllProjects.Enabled = false;
+            BT_CleanAllProjects.Location = new System.Drawing.Point(6, 251);
+            BT_CleanAllProjects.Name = "BT_CleanAllProjects";
+            BT_CleanAllProjects.Size = new System.Drawing.Size(188, 23);
+            BT_CleanAllProjects.TabIndex = 1;
+            BT_CleanAllProjects.Text = "Clean all";
+            BT_CleanAllProjects.UseVisualStyleBackColor = true;
+            BT_CleanAllProjects.Click += BT_CleanAllProjects_Click;
+            // 
+            // LB_Projects
+            // 
+            LB_Projects.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            LB_Projects.FormattingEnabled = true;
+            LB_Projects.ItemHeight = 15;
+            LB_Projects.Location = new System.Drawing.Point(6, 22);
+            LB_Projects.Name = "LB_Projects";
+            LB_Projects.Size = new System.Drawing.Size(188, 229);
+            LB_Projects.TabIndex = 0;
+            LB_Projects.SelectedIndexChanged += LB_Projects_SelectedIndexChanged;
+            // 
+            // groupBox1
+            // 
+            groupBox1.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            groupBox1.Controls.Add(BT_CleanSelectedProject);
+            groupBox1.Controls.Add(LV_DuplicateProjects);
+            groupBox1.Controls.Add(LB_DuplicateCount);
+            groupBox1.Controls.Add(label6);
+            groupBox1.Location = new System.Drawing.Point(212, 36);
+            groupBox1.Name = "groupBox1";
+            groupBox1.Size = new System.Drawing.Size(342, 277);
+            groupBox1.TabIndex = 106;
+            groupBox1.TabStop = false;
+            groupBox1.Text = "Suspected Duplicates";
+            // 
+            // BT_CleanSelectedProject
+            // 
+            BT_CleanSelectedProject.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+            BT_CleanSelectedProject.Enabled = false;
+            BT_CleanSelectedProject.Location = new System.Drawing.Point(220, 17);
+            BT_CleanSelectedProject.Name = "BT_CleanSelectedProject";
+            BT_CleanSelectedProject.Size = new System.Drawing.Size(116, 23);
+            BT_CleanSelectedProject.TabIndex = 3;
+            BT_CleanSelectedProject.Text = "Clean selected";
+            BT_CleanSelectedProject.UseVisualStyleBackColor = true;
+            BT_CleanSelectedProject.Click += BT_CleanSelectedProject_Click;
+            // 
+            // LV_DuplicateProjects
+            // 
+            LV_DuplicateProjects.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            LV_DuplicateProjects.CheckBoxes = true;
+            LV_DuplicateProjects.Location = new System.Drawing.Point(6, 40);
+            LV_DuplicateProjects.Name = "LV_DuplicateProjects";
+            LV_DuplicateProjects.Size = new System.Drawing.Size(330, 232);
+            LV_DuplicateProjects.TabIndex = 2;
+            LV_DuplicateProjects.UseCompatibleStateImageBehavior = false;
+            LV_DuplicateProjects.View = System.Windows.Forms.View.Details;
+            // 
+            // LB_DuplicateCount
+            // 
+            LB_DuplicateCount.AutoSize = true;
+            LB_DuplicateCount.Location = new System.Drawing.Point(123, 22);
+            LB_DuplicateCount.Name = "LB_DuplicateCount";
+            LB_DuplicateCount.Size = new System.Drawing.Size(13, 15);
+            LB_DuplicateCount.TabIndex = 1;
+            LB_DuplicateCount.Text = "0";
+            // 
+            // label6
+            // 
+            label6.AutoSize = true;
+            label6.Location = new System.Drawing.Point(6, 22);
+            label6.Name = "label6";
+            label6.Size = new System.Drawing.Size(111, 15);
+            label6.TabIndex = 0;
+            label6.Text = "Possible Duplicates:";
+            // 
+            // BT_BrowseProjectsFolder
+            // 
+            BT_BrowseProjectsFolder.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+            BT_BrowseProjectsFolder.Location = new System.Drawing.Point(529, 6);
+            BT_BrowseProjectsFolder.Name = "BT_BrowseProjectsFolder";
+            BT_BrowseProjectsFolder.Size = new System.Drawing.Size(25, 25);
+            BT_BrowseProjectsFolder.TabIndex = 103;
+            BT_BrowseProjectsFolder.Text = "...";
+            BT_BrowseProjectsFolder.UseVisualStyleBackColor = true;
+            BT_BrowseProjectsFolder.Click += BT_BrowseProjectsFolder_Click;
+            // 
+            // TB_ProjectsFolder
+            // 
+            TB_ProjectsFolder.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            TB_ProjectsFolder.Location = new System.Drawing.Point(100, 7);
+            TB_ProjectsFolder.Name = "TB_ProjectsFolder";
+            TB_ProjectsFolder.PlaceholderText = "Path to the folder containing project files";
+            TB_ProjectsFolder.Size = new System.Drawing.Size(431, 23);
+            TB_ProjectsFolder.TabIndex = 104;
+            TB_ProjectsFolder.KeyPress += TB_ProjectsFolder_KeyPress;
+            // 
+            // label3
+            // 
+            label3.AutoSize = true;
+            label3.Location = new System.Drawing.Point(6, 11);
+            label3.Name = "label3";
+            label3.Size = new System.Drawing.Size(88, 15);
+            label3.TabIndex = 105;
+            label3.Text = "Projects Folder:";
+            // 
+            // TB_Database
+            // 
+            TB_Database.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            TB_Database.Controls.Add(BT_FindDuplicates);
+            TB_Database.Controls.Add(label2);
+            TB_Database.Controls.Add(NUD_MaxProjectsPerFile);
+            TB_Database.Controls.Add(DGV_DatabaseResults);
+            TB_Database.Controls.Add(BT_ExportTable);
+            TB_Database.Location = new System.Drawing.Point(4, 24);
+            TB_Database.Name = "TB_Database";
+            TB_Database.Padding = new System.Windows.Forms.Padding(3);
+            TB_Database.Size = new System.Drawing.Size(564, 318);
+            TB_Database.TabIndex = 0;
+            TB_Database.Text = "Database searcher";
+            TB_Database.UseVisualStyleBackColor = true;
+            // 
+            // TP_Settings
+            // 
+            TP_Settings.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            TP_Settings.Controls.Add(groupBox3);
+            TP_Settings.Controls.Add(groupBox4);
+            TP_Settings.Location = new System.Drawing.Point(4, 24);
+            TP_Settings.Name = "TP_Settings";
+            TP_Settings.Size = new System.Drawing.Size(564, 318);
+            TP_Settings.TabIndex = 2;
+            TP_Settings.Text = "Settings";
+            TP_Settings.UseVisualStyleBackColor = true;
+            // 
+            // groupBox3
+            // 
+            groupBox3.Controls.Add(TB_ProjectsFolderSetting);
+            groupBox3.Controls.Add(Project);
+            groupBox3.Location = new System.Drawing.Point(3, 3);
+            groupBox3.Name = "groupBox3";
+            groupBox3.Size = new System.Drawing.Size(551, 98);
+            groupBox3.TabIndex = 2;
+            groupBox3.TabStop = false;
+            groupBox3.Text = "Duplicate cleaner";
+            // 
+            // TB_ProjectsFolderSetting
+            // 
+            TB_ProjectsFolderSetting.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            TB_ProjectsFolderSetting.Enabled = false;
+            TB_ProjectsFolderSetting.Location = new System.Drawing.Point(126, 22);
+            TB_ProjectsFolderSetting.Name = "TB_ProjectsFolderSetting";
+            TB_ProjectsFolderSetting.ScrollBars = System.Windows.Forms.ScrollBars.Horizontal;
+            TB_ProjectsFolderSetting.Size = new System.Drawing.Size(419, 23);
+            TB_ProjectsFolderSetting.TabIndex = 1;
+            // 
+            // Project
+            // 
+            Project.AutoSize = true;
+            Project.Location = new System.Drawing.Point(6, 25);
+            Project.Name = "Project";
+            Project.Size = new System.Drawing.Size(86, 15);
+            Project.TabIndex = 0;
+            Project.Text = "projects folder:";
+            // 
+            // groupBox4
+            // 
+            groupBox4.Controls.Add(LB_ProjectsPerFileSetting);
+            groupBox4.Controls.Add(label4);
+            groupBox4.Controls.Add(CB_TrustServerCertificateSetting);
+            groupBox4.Controls.Add(CB_IntegratedSecuritySetting);
+            groupBox4.Controls.Add(TB_InitialCatalogSetting);
+            groupBox4.Controls.Add(TB_DataSourceSetting);
+            groupBox4.Controls.Add(label5);
+            groupBox4.Controls.Add(BT_CancelSettings);
+            groupBox4.Controls.Add(label1);
+            groupBox4.Controls.Add(BT_SaveSettings);
+            groupBox4.Location = new System.Drawing.Point(3, 107);
+            groupBox4.Name = "groupBox4";
+            groupBox4.Size = new System.Drawing.Size(551, 206);
+            groupBox4.TabIndex = 1;
+            groupBox4.TabStop = false;
+            groupBox4.Text = "Database searcher";
+            // 
+            // LB_ProjectsPerFileSetting
+            // 
+            LB_ProjectsPerFileSetting.AutoSize = true;
+            LB_ProjectsPerFileSetting.Location = new System.Drawing.Point(126, 141);
+            LB_ProjectsPerFileSetting.Name = "LB_ProjectsPerFileSetting";
+            LB_ProjectsPerFileSetting.Size = new System.Drawing.Size(19, 15);
+            LB_ProjectsPerFileSetting.TabIndex = 11;
+            LB_ProjectsPerFileSetting.Text = "00";
+            // 
+            // label4
+            // 
+            label4.AutoSize = true;
+            label4.Location = new System.Drawing.Point(6, 141);
+            label4.Name = "label4";
+            label4.Size = new System.Drawing.Size(117, 15);
+            label4.TabIndex = 10;
+            label4.Text = "Max projects per file:";
+            // 
+            // CB_TrustServerCertificateSetting
+            // 
+            CB_TrustServerCertificateSetting.AutoSize = true;
+            CB_TrustServerCertificateSetting.Location = new System.Drawing.Point(6, 105);
+            CB_TrustServerCertificateSetting.Name = "CB_TrustServerCertificateSetting";
+            CB_TrustServerCertificateSetting.Size = new System.Drawing.Size(145, 19);
+            CB_TrustServerCertificateSetting.TabIndex = 9;
+            CB_TrustServerCertificateSetting.Text = "Trust server certificate?";
+            CB_TrustServerCertificateSetting.UseVisualStyleBackColor = true;
+            // 
+            // CB_IntegratedSecuritySetting
+            // 
+            CB_IntegratedSecuritySetting.AutoSize = true;
+            CB_IntegratedSecuritySetting.Location = new System.Drawing.Point(6, 80);
+            CB_IntegratedSecuritySetting.Name = "CB_IntegratedSecuritySetting";
+            CB_IntegratedSecuritySetting.Size = new System.Drawing.Size(124, 19);
+            CB_IntegratedSecuritySetting.TabIndex = 8;
+            CB_IntegratedSecuritySetting.Text = "Integrated security";
+            CB_IntegratedSecuritySetting.UseVisualStyleBackColor = true;
+            // 
+            // TB_InitialCatalogSetting
+            // 
+            TB_InitialCatalogSetting.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            TB_InitialCatalogSetting.Location = new System.Drawing.Point(126, 51);
+            TB_InitialCatalogSetting.Name = "TB_InitialCatalogSetting";
+            TB_InitialCatalogSetting.Size = new System.Drawing.Size(419, 23);
+            TB_InitialCatalogSetting.TabIndex = 7;
+            // 
+            // TB_DataSourceSetting
+            // 
+            TB_DataSourceSetting.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            TB_DataSourceSetting.Location = new System.Drawing.Point(126, 22);
+            TB_DataSourceSetting.Name = "TB_DataSourceSetting";
+            TB_DataSourceSetting.Size = new System.Drawing.Size(419, 23);
+            TB_DataSourceSetting.TabIndex = 6;
+            // 
+            // label5
+            // 
+            label5.AutoSize = true;
+            label5.Location = new System.Drawing.Point(6, 54);
+            label5.Name = "label5";
+            label5.Size = new System.Drawing.Size(82, 15);
+            label5.TabIndex = 4;
+            label5.Text = "catalog name:";
+            // 
+            // BT_CancelSettings
+            // 
+            BT_CancelSettings.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
+            BT_CancelSettings.Location = new System.Drawing.Point(283, 177);
+            BT_CancelSettings.Name = "BT_CancelSettings";
+            BT_CancelSettings.Size = new System.Drawing.Size(128, 23);
+            BT_CancelSettings.TabIndex = 2;
+            BT_CancelSettings.Text = "Cancel";
+            BT_CancelSettings.UseVisualStyleBackColor = true;
+            BT_CancelSettings.Click += BT_CancelSettings_Click;
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Location = new System.Drawing.Point(6, 25);
+            label1.Name = "label1";
+            label1.Size = new System.Drawing.Size(95, 15);
+            label1.TabIndex = 1;
+            label1.Text = "database source:";
+            // 
+            // BT_SaveSettings
+            // 
+            BT_SaveSettings.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
+            BT_SaveSettings.Location = new System.Drawing.Point(417, 177);
+            BT_SaveSettings.Name = "BT_SaveSettings";
+            BT_SaveSettings.Size = new System.Drawing.Size(128, 23);
+            BT_SaveSettings.TabIndex = 0;
+            BT_SaveSettings.Text = " Save Settings";
+            BT_SaveSettings.UseVisualStyleBackColor = true;
+            BT_SaveSettings.Click += BT_SaveSettings_Click;
             // 
             // CleanerForm
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             ClientSize = new System.Drawing.Size(572, 371);
-            Controls.Add(panel1);
+            Controls.Add(tabControl1);
             Controls.Add(statusStrip1);
             MinimumSize = new System.Drawing.Size(588, 410);
             Name = "CleanerForm";
@@ -194,27 +501,62 @@
             ((System.ComponentModel.ISupportInitialize)DGV_DatabaseResults).EndInit();
             statusStrip1.ResumeLayout(false);
             statusStrip1.PerformLayout();
-            panel1.ResumeLayout(false);
-            panel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)NUD_MaxProjectsPerFile).EndInit();
+            tabControl1.ResumeLayout(false);
+            TP_Cleaner.ResumeLayout(false);
+            TP_Cleaner.PerformLayout();
+            groupBox2.ResumeLayout(false);
+            groupBox1.ResumeLayout(false);
+            groupBox1.PerformLayout();
+            TB_Database.ResumeLayout(false);
+            TB_Database.PerformLayout();
+            TP_Settings.ResumeLayout(false);
+            groupBox3.ResumeLayout(false);
+            groupBox3.PerformLayout();
+            groupBox4.ResumeLayout(false);
+            groupBox4.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
 
         #endregion
-
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TextBox TB_DBLocation;
-        private System.Windows.Forms.Button BT_BrowseDB;
         private System.Windows.Forms.Button BT_FindDuplicates;
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
         private System.Windows.Forms.DataGridView DGV_DatabaseResults;
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel TS_FoundProjects;
         private System.Windows.Forms.ToolStripProgressBar TS_SearchProgress;
-        private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.CheckBox CB_GetDuplicatesOnly;
         private System.Windows.Forms.Button BT_ExportTable;
         private System.Windows.Forms.NumericUpDown NUD_MaxProjectsPerFile;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.TabControl tabControl1;
+        private System.Windows.Forms.TabPage TB_Database;
+        private System.Windows.Forms.TabPage TP_Cleaner;
+        private System.Windows.Forms.Button BT_BrowseProjectsFolder;
+        private System.Windows.Forms.TextBox TB_ProjectsFolder;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.ListBox LB_Projects;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.TabPage TP_Settings;
+        private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.TextBox TB_ProjectsFolderSetting;
+        private System.Windows.Forms.Label Project;
+        private System.Windows.Forms.GroupBox groupBox4;
+        private System.Windows.Forms.Button BT_SaveSettings;
+        private System.Windows.Forms.TextBox TB_InitialCatalogSetting;
+        private System.Windows.Forms.TextBox TB_DataSourceSetting;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Button BT_CancelSettings;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.CheckBox CB_TrustServerCertificateSetting;
+        private System.Windows.Forms.CheckBox CB_IntegratedSecuritySetting;
+        private System.Windows.Forms.Label LB_ProjectsPerFileSetting;
+        private System.Windows.Forms.ListView LV_DuplicateProjects;
+        private System.Windows.Forms.Label LB_DuplicateCount;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Button BT_CleanAllProjects;
+        private System.Windows.Forms.Button BT_CleanSelectedProject;
     }
 }

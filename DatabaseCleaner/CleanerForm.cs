@@ -1,17 +1,18 @@
 using DatabaseCleaner.Database;
+using DatabaseCleaner.Projects;
 using DatabaseCleaner.Util;
 using System;
 using System.Data;
 using System.Diagnostics;
 using System.IO;
-using System.Text;
 using System.Windows.Forms;
 
 namespace DatabaseCleaner
 {
     public partial class CleanerForm : Form
     {
-        private Cleaner _cleaner;
+        private DatabaseReader _databaseReader;
+        private DuplicateCleaner _duplicateCleaner;
         private Extractor _extractor;
         private int _totalProjects = 0;
 #if DEBUG
@@ -27,42 +28,69 @@ namespace DatabaseCleaner
 
         private void SetValuesFromSettings()
         {
-            TB_DBLocation.Text = Settings.Instance.DatabaseInput;
-            CB_GetDuplicatesOnly.Checked = Settings.Instance.GetDuplicatesOnly;
             NUD_MaxProjectsPerFile.Value = Settings.Instance.MaxProjectsPerFile;
+            TB_DataSourceSetting.Text = Settings.Instance.DbDataSource;
+            TB_InitialCatalogSetting.Text = Settings.Instance.DbInitialCatalog;
+            CB_IntegratedSecuritySetting.Checked = Settings.Instance.DbIntegratedSecurity;
+            CB_TrustServerCertificateSetting.Checked = Settings.Instance.DbTrustServerCertificate;
+            LB_ProjectsPerFileSetting.Text = Settings.Instance.MaxProjectsPerFile.ToString();
         }
-        #region Button Events
-        private void BT_BrowseDB_Click(object sender, EventArgs e)
+
+        #region Duplicate cleaner tab
+        #region button events
+        private void BT_BrowseProjectsFolder_Click(object sender, EventArgs e)
         {
-            string res = string.Empty;
-            DialogResult result;
-            //open file browser
-            using (OpenFileDialog fd = new OpenFileDialog())
+            using (FolderBrowserDialog fbd = new FolderBrowserDialog())
             {
-                fd.Filter = "Microsoft Access-databases(*.mdb;*.accdb)|*.mdb;*.accdb";
-                if (!string.IsNullOrEmpty(TB_DBLocation.Text))
+                fbd.InitialDirectory = Settings.Instance.ProjectsFolder;
+                if (fbd.ShowDialog() == DialogResult.OK)
                 {
-                    fd.FileName = TB_DBLocation.Text;
+                    Settings.Instance.ProjectsFolder = fbd.SelectedPath;
+                    TB_ProjectsFolder.Text = fbd.SelectedPath;
+                    TB_ProjectsFolderSetting.Text = fbd.SelectedPath;
                 }
-                result = fd.ShowDialog();
-
-                if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(fd.FileName))
-                {
-                    res = fd.FileName;
-                }
-            }
-            //check if it has changed, else leave it as what it is.
-            res = string.IsNullOrWhiteSpace(res) ? TB_DBLocation.Text : res;
-
-            if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(res))
-            {
-                TB_DBLocation.Text = res;
             }
         }
+        private void BT_CleanSelectedProject_Click(object sender, EventArgs e)
+        {
+            //do the same as clean all but with only one item in the listview that have been checked (manual controlling)
+        }
+
+        private void BT_CleanAllProjects_Click(object sender, EventArgs e)
+        {
+            //go through all projects in the list, merging duplicate entries into top entry
+        }
+        #endregion
+        #region textbox events
+        private void TB_ProjectsFolder_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (!e.KeyChar.Equals((char)Keys.Enter))
+            { return; }
+            Settings.Instance.ProjectsFolder = TB_ProjectsFolder.Text;
+            TB_ProjectsFolderSetting.Text = Settings.Instance.ProjectsFolder;
+            //start search
+        }
+        #endregion
+        #region ListBox events
+        private void LB_Projects_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            LV_DuplicateProjects.Items.Clear();
+            BT_CleanAllProjects.Enabled = LB_Projects.Items.Count >= 0;
+            if (LB_Projects.Items.Count == 0)
+            { return; }
+            //list all "duplicate" items in listview
+            //enable or disable clean selected button depending on if the selected project has duplicates or not
+            BT_CleanSelectedProject.Enabled = false;
+            //set duplicate count label
+            LB_DuplicateCount.Text = LV_DuplicateProjects.Items.Count.ToString();
+        }
+        #endregion
+        #endregion
+
+        #region Database searches tab
+        #region Button Events
         private void BT_FindDuplicates_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(TB_DBLocation.Text))
-            { return; }
             if (backgroundWorker1.IsBusy == false)
             {
                 this.Cursor = Cursors.AppStarting;
@@ -101,18 +129,6 @@ namespace DatabaseCleaner
             }
         }
         #endregion
-        #region Textbox events
-        private void TB_DBLocation_TextChanged(object sender, EventArgs e)
-        {
-            Settings.Instance.DatabaseInput = TB_DBLocation.Text;
-        }
-        #endregion
-        #region CheckBox events
-        private void CB_GetDuplicatesOnly_CheckedChanged(object sender, EventArgs e)
-        {
-            Settings.Instance.GetDuplicatesOnly = CB_GetDuplicatesOnly.Checked;
-        }
-        #endregion
         #region DataGridView events
         private void DGV_DatabaseResults_DataSourceChanged(object sender, EventArgs e)
         {
@@ -125,17 +141,38 @@ namespace DatabaseCleaner
             Settings.Instance.MaxProjectsPerFile = (int)((NumericUpDown)sender).Value;
         }
         #endregion
+        #endregion
 
-        #region BackgroundWorker settings
+        #region Settings tab
+        #region button events
+        private void BT_CancelSettings_Click(object sender, EventArgs e)
+        {
+            TB_DataSourceSetting.Text = Settings.Instance.DbDataSource;
+            TB_InitialCatalogSetting.Text = Settings.Instance.DbInitialCatalog;
+            CB_IntegratedSecuritySetting.Checked = Settings.Instance.DbIntegratedSecurity;
+            CB_TrustServerCertificateSetting.Checked = Settings.Instance.DbTrustServerCertificate;
+        }
+
+        private void BT_SaveSettings_Click(object sender, EventArgs e)
+        {
+            Settings.Instance.DbDataSource = TB_DataSourceSetting.Text;
+            Settings.Instance.DbInitialCatalog = TB_InitialCatalogSetting.Text;
+            Settings.Instance.DbIntegratedSecurity = CB_IntegratedSecuritySetting.Checked;
+            Settings.Instance.DbTrustServerCertificate = CB_TrustServerCertificateSetting.Checked;
+        }
+        #endregion
+        #endregion
+
+        #region BackgroundWorker
         private void backgroundWorker1_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
             object[] args = UtilMethods.ReadBackgroundWorkerArgs(e.Argument, out WorkerStates state);
             switch (state)
             {
                 case WorkerStates.DATABASE_GET:
-                    if (_cleaner == null)
-                    { _cleaner = new Cleaner(); }
-                    e.Result = _cleaner.GetDuplicatesAndCount(TB_DBLocation.Text, backgroundWorker1, out _totalProjects, CB_GetDuplicatesOnly.Checked);
+                    if (_databaseReader == null)
+                    { _databaseReader = new DatabaseReader(); }
+                    e.Result = _databaseReader.GetDuplicatesAndCount(backgroundWorker1, out _totalProjects);
                     //_cleaner.FindDuplicates(TB_DBLocation.Text, backgroundWorker1);
                     break;
                 case WorkerStates.EXTRACT_PROJECTS:
@@ -143,6 +180,10 @@ namespace DatabaseCleaner
                     { _extractor = new Extractor(); }
                     e.Result = (string)args[0];
                     _extractor.ExtractDBProjects((DataTable)DGV_DatabaseResults.DataSource, (string)args[0], backgroundWorker1, Settings.Instance.MaxProjectsPerFile);
+                    break;
+                case WorkerStates.GET_DUPLICATES:
+                    break;
+                case WorkerStates.CLEAN_DUPLICATES:
                     break;
                 case WorkerStates.NONE:
                 default:
@@ -190,15 +231,10 @@ namespace DatabaseCleaner
         #region methods
         private void SetEnabledInputFields(bool enabled)
         {
-            BT_BrowseDB.Enabled = enabled;
-            TB_DBLocation.Enabled = enabled;
             BT_FindDuplicates.Enabled = enabled;
-            CB_GetDuplicatesOnly.Enabled = enabled;
             NUD_MaxProjectsPerFile.Enabled = enabled;
         }
+
         #endregion
-
-
-
     }
 }

@@ -12,7 +12,7 @@ using System.Windows.Forms;
 
 namespace DatabaseCleaner.Database
 {
-    public class Cleaner
+    public class DatabaseReader
     {
         //note that these strings are made for a specific type of database, and should be adjusted somewhere
         private const string DUPLICATE_ONLY_SUFFIX = " HAVING COUNT(*) > 1";
@@ -23,14 +23,14 @@ namespace DatabaseCleaner.Database
         private Dictionary<int, string> _customerIds = new Dictionary<int, string>();
         private object[] _listEntry = new object[4];//customer id, project title, duplicate estimate
 
-        public DataTable GetDuplicatesAndCount(string path, BackgroundWorker worker, out int duplicateCount, bool duplicatesOnly = false)
+        public DataTable GetDuplicatesAndCount(BackgroundWorker worker, out int duplicateCount, bool duplicatesOnly = false)
         {
             if (UtilMethods.Is32Bit() == false)
             {//OleDb only seems to work in 32 bit mode
                 duplicateCount = -1;
                 return null;
             }
-            DataTable table = GetDuplicates(path, duplicatesOnly);
+            DataTable table = GetDuplicates(duplicatesOnly);
             worker.ReportProgress(50);
             duplicateCount = GetDuplicateCount(table);
             worker.ReportProgress(100);
@@ -51,7 +51,7 @@ namespace DatabaseCleaner.Database
         /// <summary>Gets duplicate queries from the database</summary>
         /// <param name="path">path to the database</param>
         /// <param name="duplicatesOnly">if only the duplicates need to be gotten</param>
-        public DataTable GetDuplicates(string path, bool duplicatesOnly = false)
+        public DataTable GetDuplicates(bool duplicatesOnly = false)
         {
             SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder();
             builder.DataSource = Settings.Instance.DbDataSource;
