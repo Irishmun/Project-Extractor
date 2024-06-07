@@ -4,6 +4,8 @@ namespace DatabaseCleaner.Database
 {
     internal struct DatabaseSection
     {
+        public const string PROJECT_SEPARATOR = "==========PROJECT==========";
+
         private bool _isFileName = false;
         private bool _isBoolValue = false;
         private bool _appendNewLine = true;

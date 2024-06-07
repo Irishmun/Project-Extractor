@@ -28,6 +28,7 @@ namespace DatabaseCleaner
 
         private void SetValuesFromSettings()
         {
+            TB_ProjectsFolder.Text = Settings.Instance.ProjectsFolder;
             NUD_MaxProjectsPerFile.Value = Settings.Instance.MaxProjectsPerFile;
             TB_DataSourceSetting.Text = Settings.Instance.DbDataSource;
             TB_InitialCatalogSetting.Text = Settings.Instance.DbInitialCatalog;
@@ -48,6 +49,7 @@ namespace DatabaseCleaner
                     Settings.Instance.ProjectsFolder = fbd.SelectedPath;
                     TB_ProjectsFolder.Text = fbd.SelectedPath;
                     TB_ProjectsFolderSetting.Text = fbd.SelectedPath;
+                    backgroundWorker1.RunWorkerAsync(UtilMethods.CreateBackgroundWorkerArgs(WorkerStates.GET_DUPLICATES, TB_ProjectsFolder.Text));
                 }
             }
         }
@@ -69,6 +71,7 @@ namespace DatabaseCleaner
             Settings.Instance.ProjectsFolder = TB_ProjectsFolder.Text;
             TB_ProjectsFolderSetting.Text = Settings.Instance.ProjectsFolder;
             //start search
+            backgroundWorker1.RunWorkerAsync(UtilMethods.CreateBackgroundWorkerArgs(WorkerStates.GET_DUPLICATES, TB_ProjectsFolder.Text));
         }
         #endregion
         #region ListBox events
@@ -182,6 +185,9 @@ namespace DatabaseCleaner
                     _extractor.ExtractDBProjects((DataTable)DGV_DatabaseResults.DataSource, (string)args[0], backgroundWorker1, Settings.Instance.MaxProjectsPerFile);
                     break;
                 case WorkerStates.GET_DUPLICATES:
+                    if (_duplicateCleaner == null)
+                    { _duplicateCleaner = new DuplicateCleaner(); }
+                    _duplicateCleaner.FindPossibleDuplicates(backgroundWorker1, true, (string)args[0]);
                     break;
                 case WorkerStates.CLEAN_DUPLICATES:
                     break;

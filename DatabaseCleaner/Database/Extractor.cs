@@ -53,7 +53,7 @@ namespace DatabaseCleaner.Database
                 //check if file needs to be made
                 createFile = writtenProjects == 0;
 
-                str.AppendLine("==========PROJECT==========");
+                str.AppendLine(DatabaseSection.PROJECT_SEPARATOR);
                 for (int s = 0; s < _sections.Length; s++)
                 {//format each string and add it to the stringbuilder
                     columnValues.Clear();
