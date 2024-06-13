@@ -2,6 +2,7 @@ using DatabaseCleaner.Database;
 using DatabaseCleaner.Projects;
 using DatabaseCleaner.Util;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.IO;
@@ -15,6 +16,9 @@ namespace DatabaseCleaner
         private DuplicateCleaner _duplicateCleaner;
         private Extractor _extractor;
         private int _totalProjects = 0;
+        private ProjectData _selectedProject;
+        private List<int> _selectedIndexes;
+
 #if DEBUG
         private System.Diagnostics.Stopwatch _watch = new System.Diagnostics.Stopwatch();
 #endif
@@ -24,6 +28,7 @@ namespace DatabaseCleaner
             InitializeComponent();
             SetValuesFromSettings();
             Settings.Instance.IsStarting = false;
+            _selectedIndexes = new List<int>();
         }
 
         private void SetValuesFromSettings()
@@ -56,11 +61,52 @@ namespace DatabaseCleaner
         private void BT_CleanSelectedProject_Click(object sender, EventArgs e)
         {
             //do the same as clean all but with only one item in the listview that have been checked (manual controlling)
+            if (_selectedIndexes.Count == 0)
+            { return; }
+            string cleanedPath = Path.Combine(TB_ProjectsFolder.Text, "Cleaned");
+            if (Directory.Exists(cleanedPath) == false)
+            {
+                Directory.CreateDirectory(cleanedPath);
+            }
+            backgroundWorker1.RunWorkerAsync(UtilMethods.CreateBackgroundWorkerArgs(WorkerStates.CLEAN_DUPLICATES, _selectedProject, cleanedPath));
+
         }
 
         private void BT_CleanAllProjects_Click(object sender, EventArgs e)
         {
             //go through all projects in the list, merging duplicate entries into top entry
+            //do the same as clean all but with only one item in the listview that have been checked (manual controlling)
+            if (LB_Projects.Items.Count == 0)
+            { return; }
+            string cleanedPath = Path.Combine(TB_ProjectsFolder.Text, "Cleaned");
+            if (Directory.Exists(cleanedPath) == false)
+            {
+                Directory.CreateDirectory(cleanedPath);
+            }
+            backgroundWorker1.RunWorkerAsync(UtilMethods.CreateBackgroundWorkerArgs(WorkerStates.BATCH_CLEAN_DUPLICATES, cleanedPath));
+
+        }
+
+        private void BT_MergeSelected_Click(object sender, EventArgs e)
+        {
+            if (_selectedIndexes.Count <= 1)
+            { return; }
+#if DEBUG
+            Debug.WriteLine($"Mergin the following with {_selectedProject}:");
+            foreach (int item in _selectedIndexes)
+            {
+                Debug.WriteLine((ProjectData)LB_Projects.Items[item]);
+            }
+#endif
+            foreach (int item in _selectedIndexes)
+            {
+                if (_selectedProject.Equals((ProjectData)LB_Projects.Items[item]))
+                { continue; }
+                _duplicateCleaner.MergeProjects(_selectedProject, (ProjectData)LB_Projects.Items[item]);
+            }
+            _selectedIndexes.Clear();
+            FillProjectListBox();
+            FillDuplicateListView();
         }
         #endregion
         #region textbox events
@@ -77,15 +123,8 @@ namespace DatabaseCleaner
         #region ListBox events
         private void LB_Projects_SelectedIndexChanged(object sender, EventArgs e)
         {
-            LV_DuplicateProjects.Items.Clear();
-            BT_CleanAllProjects.Enabled = LB_Projects.Items.Count >= 0;
-            if (LB_Projects.Items.Count == 0)
-            { return; }
-            //list all "duplicate" items in listview
-            //enable or disable clean selected button depending on if the selected project has duplicates or not
-            BT_CleanSelectedProject.Enabled = false;
-            //set duplicate count label
-            LB_DuplicateCount.Text = LV_DuplicateProjects.Items.Count.ToString();
+            TrackSelectionChange((ListBox)sender, _selectedIndexes);
+            FillDuplicateListView();
         }
         #endregion
         #endregion
@@ -166,7 +205,8 @@ namespace DatabaseCleaner
         #endregion
         #endregion
 
-        #region BackgroundWorker
+        #region Background Worker
+
         private void backgroundWorker1_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
             object[] args = UtilMethods.ReadBackgroundWorkerArgs(e.Argument, out WorkerStates state);
@@ -190,6 +230,15 @@ namespace DatabaseCleaner
                     _duplicateCleaner.FindPossibleDuplicates(backgroundWorker1, true, (string)args[0]);
                     break;
                 case WorkerStates.CLEAN_DUPLICATES:
+                    e.Result = args[1];
+                    _duplicateCleaner.CleanDuplicatesAndWriteToFile((ProjectData)args[0], (string)args[1], backgroundWorker1);
+                    break;
+                case WorkerStates.BATCH_CLEAN_DUPLICATES:
+                    e.Result = args[0];
+                    foreach (KeyValuePair<ProjectData, ProjectData[]> project in _duplicateCleaner.DuplicateProjects)
+                    {
+                        _duplicateCleaner.CleanDuplicatesAndWriteToFile(project.Key, (string)args[0], backgroundWorker1);
+                    }
                     break;
                 case WorkerStates.NONE:
                 default:
@@ -229,6 +278,10 @@ namespace DatabaseCleaner
                     }
                 }
             }
+            else
+            {
+                FillProjectListBox();
+            }
             this.Cursor = Cursors.Default;
             SetEnabledInputFields(true);
         }
@@ -239,6 +292,65 @@ namespace DatabaseCleaner
         {
             BT_FindDuplicates.Enabled = enabled;
             NUD_MaxProjectsPerFile.Enabled = enabled;
+        }
+
+        private void TrackSelectionChange(ListBox sender, List<int> selection)
+        {//keep track of last selected index
+            ListBox.SelectedIndexCollection sic = sender.SelectedIndices;
+            foreach (int index in sic)
+                if (!selection.Contains(index)) selection.Add(index);
+
+            foreach (int index in new List<int>(selection))
+                if (!sic.Contains(index)) selection.Remove(index);
+        }
+
+        private void FillProjectListBox()
+        {
+            LB_Projects.Items.Clear();
+            foreach (KeyValuePair<ProjectData, ProjectData[]> item in _duplicateCleaner.DuplicateProjects)
+            {
+                LB_Projects.Items.Add(item.Key);
+            }
+            GB_Projects.Text = _duplicateCleaner.DuplicateProjects.Count + " Projects";
+            BT_CleanAllProjects.Enabled = LB_Projects.Items.Count >= 0;
+        }
+
+        private void FillDuplicateListView()
+        {
+#if DEBUG
+            Debug.WriteLine($"ListBox selected items:");
+            foreach (int item in _selectedIndexes)
+            {
+                Debug.WriteLine(LB_Projects.Items[item]);
+            }
+#endif
+            LV_DuplicateProjects.Items.Clear();
+            if (_selectedIndexes.Count == 0)
+            {
+                LB_DuplicateCount.Text = "0";
+                BT_CleanSelectedProject.Enabled = false;
+                return;
+            }
+            _selectedProject = (ProjectData)LB_Projects.Items[_selectedIndexes[_selectedIndexes.Count - 1]];
+            BT_MergeSelected.Enabled = _selectedIndexes.Count > 1;
+            //list all "duplicate" items in listview
+            if (_duplicateCleaner.DuplicateProjects.ContainsKey(_selectedProject) == true)
+            {//this should always happen, but it doesn't sometimes
+
+                for (int i = 0; i < _duplicateCleaner.DuplicateProjects[_selectedProject].Length; i++)
+                {
+                    LV_DuplicateProjects.Items.Add(_duplicateCleaner.DuplicateProjects[_selectedProject][i].Title);
+                    LV_DuplicateProjects.Items[i].Checked = true;
+                }
+                //enable or disable clean selected button depending on if the selected project has duplicates or not
+                BT_CleanSelectedProject.Enabled = _duplicateCleaner.DuplicateProjects[_selectedProject].Length > 0;
+                //set duplicate count label
+                LB_DuplicateCount.Text = _duplicateCleaner.DuplicateProjects[_selectedProject].Length.ToString();
+                return;
+            }
+            //if project does not exist, disable button and reset label
+            BT_CleanSelectedProject.Enabled = false;
+            LB_DuplicateCount.Text = "0";
         }
 
         #endregion

@@ -39,7 +39,9 @@
             BT_ExportTable = new System.Windows.Forms.Button();
             tabControl1 = new System.Windows.Forms.TabControl();
             TP_Cleaner = new System.Windows.Forms.TabPage();
-            groupBox2 = new System.Windows.Forms.GroupBox();
+            splitContainer1 = new System.Windows.Forms.SplitContainer();
+            GB_Projects = new System.Windows.Forms.GroupBox();
+            BT_MergeSelected = new System.Windows.Forms.Button();
             BT_CleanAllProjects = new System.Windows.Forms.Button();
             LB_Projects = new System.Windows.Forms.ListBox();
             groupBox1 = new System.Windows.Forms.GroupBox();
@@ -71,7 +73,11 @@
             ((System.ComponentModel.ISupportInitialize)NUD_MaxProjectsPerFile).BeginInit();
             tabControl1.SuspendLayout();
             TP_Cleaner.SuspendLayout();
-            groupBox2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
+            splitContainer1.Panel1.SuspendLayout();
+            splitContainer1.Panel2.SuspendLayout();
+            splitContainer1.SuspendLayout();
+            GB_Projects.SuspendLayout();
             groupBox1.SuspendLayout();
             TB_Database.SuspendLayout();
             TP_Settings.SuspendLayout();
@@ -116,7 +122,7 @@
             statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { TS_FoundProjects, TS_SearchProgress });
             statusStrip1.Location = new System.Drawing.Point(0, 347);
             statusStrip1.Name = "statusStrip1";
-            statusStrip1.Size = new System.Drawing.Size(572, 24);
+            statusStrip1.Size = new System.Drawing.Size(582, 24);
             statusStrip1.TabIndex = 105;
             statusStrip1.Text = "statusStrip1";
             // 
@@ -125,7 +131,7 @@
             TS_FoundProjects.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Left | System.Windows.Forms.ToolStripStatusLabelBorderSides.Top | System.Windows.Forms.ToolStripStatusLabelBorderSides.Right | System.Windows.Forms.ToolStripStatusLabelBorderSides.Bottom;
             TS_FoundProjects.BorderStyle = System.Windows.Forms.Border3DStyle.SunkenInner;
             TS_FoundProjects.Name = "TS_FoundProjects";
-            TS_FoundProjects.Size = new System.Drawing.Size(299, 19);
+            TS_FoundProjects.Size = new System.Drawing.Size(309, 19);
             TS_FoundProjects.Spring = true;
             TS_FoundProjects.Text = "Press \"Find Duplicates\"";
             TS_FoundProjects.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -171,51 +177,82 @@
             // 
             // tabControl1
             // 
-            tabControl1.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
             tabControl1.Controls.Add(TP_Cleaner);
             tabControl1.Controls.Add(TB_Database);
             tabControl1.Controls.Add(TP_Settings);
+            tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             tabControl1.Location = new System.Drawing.Point(0, 0);
             tabControl1.Name = "tabControl1";
             tabControl1.SelectedIndex = 0;
-            tabControl1.Size = new System.Drawing.Size(572, 346);
+            tabControl1.Size = new System.Drawing.Size(582, 347);
             tabControl1.TabIndex = 107;
             // 
             // TP_Cleaner
             // 
             TP_Cleaner.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            TP_Cleaner.Controls.Add(groupBox2);
-            TP_Cleaner.Controls.Add(groupBox1);
+            TP_Cleaner.Controls.Add(splitContainer1);
             TP_Cleaner.Controls.Add(BT_BrowseProjectsFolder);
             TP_Cleaner.Controls.Add(TB_ProjectsFolder);
             TP_Cleaner.Controls.Add(label3);
             TP_Cleaner.Location = new System.Drawing.Point(4, 24);
             TP_Cleaner.Name = "TP_Cleaner";
             TP_Cleaner.Padding = new System.Windows.Forms.Padding(3);
-            TP_Cleaner.Size = new System.Drawing.Size(564, 318);
+            TP_Cleaner.Size = new System.Drawing.Size(574, 319);
             TP_Cleaner.TabIndex = 1;
             TP_Cleaner.Text = "Duplicate cleaner";
             TP_Cleaner.UseVisualStyleBackColor = true;
             // 
-            // groupBox2
+            // splitContainer1
             // 
-            groupBox2.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
-            groupBox2.Controls.Add(BT_CleanAllProjects);
-            groupBox2.Controls.Add(LB_Projects);
-            groupBox2.Location = new System.Drawing.Point(6, 36);
-            groupBox2.Name = "groupBox2";
-            groupBox2.Size = new System.Drawing.Size(200, 277);
-            groupBox2.TabIndex = 107;
-            groupBox2.TabStop = false;
-            groupBox2.Text = "Projects";
+            splitContainer1.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            splitContainer1.Location = new System.Drawing.Point(3, 33);
+            splitContainer1.Name = "splitContainer1";
+            // 
+            // splitContainer1.Panel1
+            // 
+            splitContainer1.Panel1.Controls.Add(GB_Projects);
+            splitContainer1.Panel1MinSize = 200;
+            // 
+            // splitContainer1.Panel2
+            // 
+            splitContainer1.Panel2.Controls.Add(groupBox1);
+            splitContainer1.Panel2MinSize = 250;
+            splitContainer1.Size = new System.Drawing.Size(564, 279);
+            splitContainer1.SplitterDistance = 200;
+            splitContainer1.TabIndex = 108;
+            // 
+            // GB_Projects
+            // 
+            GB_Projects.Controls.Add(BT_MergeSelected);
+            GB_Projects.Controls.Add(BT_CleanAllProjects);
+            GB_Projects.Controls.Add(LB_Projects);
+            GB_Projects.Dock = System.Windows.Forms.DockStyle.Fill;
+            GB_Projects.Location = new System.Drawing.Point(0, 0);
+            GB_Projects.Name = "GB_Projects";
+            GB_Projects.Size = new System.Drawing.Size(200, 279);
+            GB_Projects.TabIndex = 107;
+            GB_Projects.TabStop = false;
+            GB_Projects.Text = "Projects";
+            // 
+            // BT_MergeSelected
+            // 
+            BT_MergeSelected.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
+            BT_MergeSelected.Enabled = false;
+            BT_MergeSelected.Location = new System.Drawing.Point(97, 250);
+            BT_MergeSelected.Name = "BT_MergeSelected";
+            BT_MergeSelected.Size = new System.Drawing.Size(97, 23);
+            BT_MergeSelected.TabIndex = 2;
+            BT_MergeSelected.Text = "Merge selected";
+            BT_MergeSelected.UseVisualStyleBackColor = true;
+            BT_MergeSelected.Click += BT_MergeSelected_Click;
             // 
             // BT_CleanAllProjects
             // 
-            BT_CleanAllProjects.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            BT_CleanAllProjects.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
             BT_CleanAllProjects.Enabled = false;
             BT_CleanAllProjects.Location = new System.Drawing.Point(6, 251);
             BT_CleanAllProjects.Name = "BT_CleanAllProjects";
-            BT_CleanAllProjects.Size = new System.Drawing.Size(188, 23);
+            BT_CleanAllProjects.Size = new System.Drawing.Size(85, 23);
             BT_CleanAllProjects.TabIndex = 1;
             BT_CleanAllProjects.Text = "Clean all";
             BT_CleanAllProjects.UseVisualStyleBackColor = true;
@@ -228,20 +265,21 @@
             LB_Projects.ItemHeight = 15;
             LB_Projects.Location = new System.Drawing.Point(6, 22);
             LB_Projects.Name = "LB_Projects";
-            LB_Projects.Size = new System.Drawing.Size(188, 229);
+            LB_Projects.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
+            LB_Projects.Size = new System.Drawing.Size(188, 214);
             LB_Projects.TabIndex = 0;
             LB_Projects.SelectedIndexChanged += LB_Projects_SelectedIndexChanged;
             // 
             // groupBox1
             // 
-            groupBox1.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
             groupBox1.Controls.Add(BT_CleanSelectedProject);
             groupBox1.Controls.Add(LV_DuplicateProjects);
             groupBox1.Controls.Add(LB_DuplicateCount);
             groupBox1.Controls.Add(label6);
-            groupBox1.Location = new System.Drawing.Point(212, 36);
+            groupBox1.Dock = System.Windows.Forms.DockStyle.Fill;
+            groupBox1.Location = new System.Drawing.Point(0, 0);
             groupBox1.Name = "groupBox1";
-            groupBox1.Size = new System.Drawing.Size(342, 277);
+            groupBox1.Size = new System.Drawing.Size(360, 279);
             groupBox1.TabIndex = 106;
             groupBox1.TabStop = false;
             groupBox1.Text = "Suspected Duplicates";
@@ -250,7 +288,7 @@
             // 
             BT_CleanSelectedProject.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
             BT_CleanSelectedProject.Enabled = false;
-            BT_CleanSelectedProject.Location = new System.Drawing.Point(220, 17);
+            BT_CleanSelectedProject.Location = new System.Drawing.Point(238, 18);
             BT_CleanSelectedProject.Name = "BT_CleanSelectedProject";
             BT_CleanSelectedProject.Size = new System.Drawing.Size(116, 23);
             BT_CleanSelectedProject.TabIndex = 3;
@@ -262,17 +300,18 @@
             // 
             LV_DuplicateProjects.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
             LV_DuplicateProjects.CheckBoxes = true;
-            LV_DuplicateProjects.Location = new System.Drawing.Point(6, 40);
+            LV_DuplicateProjects.FullRowSelect = true;
+            LV_DuplicateProjects.Location = new System.Drawing.Point(6, 47);
             LV_DuplicateProjects.Name = "LV_DuplicateProjects";
-            LV_DuplicateProjects.Size = new System.Drawing.Size(330, 232);
+            LV_DuplicateProjects.Size = new System.Drawing.Size(348, 226);
             LV_DuplicateProjects.TabIndex = 2;
             LV_DuplicateProjects.UseCompatibleStateImageBehavior = false;
-            LV_DuplicateProjects.View = System.Windows.Forms.View.Details;
+            LV_DuplicateProjects.View = System.Windows.Forms.View.List;
             // 
             // LB_DuplicateCount
             // 
             LB_DuplicateCount.AutoSize = true;
-            LB_DuplicateCount.Location = new System.Drawing.Point(123, 22);
+            LB_DuplicateCount.Location = new System.Drawing.Point(113, 22);
             LB_DuplicateCount.Name = "LB_DuplicateCount";
             LB_DuplicateCount.Size = new System.Drawing.Size(13, 15);
             LB_DuplicateCount.TabIndex = 1;
@@ -290,7 +329,7 @@
             // BT_BrowseProjectsFolder
             // 
             BT_BrowseProjectsFolder.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
-            BT_BrowseProjectsFolder.Location = new System.Drawing.Point(529, 6);
+            BT_BrowseProjectsFolder.Location = new System.Drawing.Point(539, 6);
             BT_BrowseProjectsFolder.Name = "BT_BrowseProjectsFolder";
             BT_BrowseProjectsFolder.Size = new System.Drawing.Size(25, 25);
             BT_BrowseProjectsFolder.TabIndex = 103;
@@ -304,7 +343,7 @@
             TB_ProjectsFolder.Location = new System.Drawing.Point(100, 7);
             TB_ProjectsFolder.Name = "TB_ProjectsFolder";
             TB_ProjectsFolder.PlaceholderText = "Path to the folder containing project files";
-            TB_ProjectsFolder.Size = new System.Drawing.Size(431, 23);
+            TB_ProjectsFolder.Size = new System.Drawing.Size(441, 23);
             TB_ProjectsFolder.TabIndex = 104;
             TB_ProjectsFolder.KeyPress += TB_ProjectsFolder_KeyPress;
             // 
@@ -328,7 +367,7 @@
             TB_Database.Location = new System.Drawing.Point(4, 24);
             TB_Database.Name = "TB_Database";
             TB_Database.Padding = new System.Windows.Forms.Padding(3);
-            TB_Database.Size = new System.Drawing.Size(564, 318);
+            TB_Database.Size = new System.Drawing.Size(574, 319);
             TB_Database.TabIndex = 0;
             TB_Database.Text = "Database searcher";
             TB_Database.UseVisualStyleBackColor = true;
@@ -340,7 +379,7 @@
             TP_Settings.Controls.Add(groupBox4);
             TP_Settings.Location = new System.Drawing.Point(4, 24);
             TP_Settings.Name = "TP_Settings";
-            TP_Settings.Size = new System.Drawing.Size(564, 318);
+            TP_Settings.Size = new System.Drawing.Size(574, 319);
             TP_Settings.TabIndex = 2;
             TP_Settings.Text = "Settings";
             TP_Settings.UseVisualStyleBackColor = true;
@@ -492,10 +531,10 @@
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            ClientSize = new System.Drawing.Size(572, 371);
+            ClientSize = new System.Drawing.Size(582, 371);
             Controls.Add(tabControl1);
             Controls.Add(statusStrip1);
-            MinimumSize = new System.Drawing.Size(588, 410);
+            MinimumSize = new System.Drawing.Size(598, 410);
             Name = "CleanerForm";
             Text = "Access database cleaner";
             ((System.ComponentModel.ISupportInitialize)DGV_DatabaseResults).EndInit();
@@ -505,7 +544,11 @@
             tabControl1.ResumeLayout(false);
             TP_Cleaner.ResumeLayout(false);
             TP_Cleaner.PerformLayout();
-            groupBox2.ResumeLayout(false);
+            splitContainer1.Panel1.ResumeLayout(false);
+            splitContainer1.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)splitContainer1).EndInit();
+            splitContainer1.ResumeLayout(false);
+            GB_Projects.ResumeLayout(false);
             groupBox1.ResumeLayout(false);
             groupBox1.PerformLayout();
             TB_Database.ResumeLayout(false);
@@ -535,7 +578,7 @@
         private System.Windows.Forms.Button BT_BrowseProjectsFolder;
         private System.Windows.Forms.TextBox TB_ProjectsFolder;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.GroupBox GB_Projects;
         private System.Windows.Forms.ListBox LB_Projects;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.TabPage TP_Settings;
@@ -558,5 +601,7 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Button BT_CleanAllProjects;
         private System.Windows.Forms.Button BT_CleanSelectedProject;
+        private System.Windows.Forms.SplitContainer splitContainer1;
+        private System.Windows.Forms.Button BT_MergeSelected;
     }
 }
