@@ -40,5 +40,17 @@ namespace DatabaseCleaner.Util
             args = null;
             return res.ToArray();
         }
+
+        public static T[] RemoveAt<T>(T[] arr, int index)
+        {
+            for (int a = index; a < arr.Length - 1; a++)
+            {
+                // moving elements downwards, to fill the gap at [index]
+                arr[a] = arr[a + 1];
+            }
+            //decrement Array's size by one
+            Array.Resize(ref arr, arr.Length - 1);
+            return arr;
+        }
     }
 }
