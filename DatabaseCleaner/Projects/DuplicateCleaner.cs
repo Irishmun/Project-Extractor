@@ -11,23 +11,6 @@ using System.Windows.Forms;
 
 namespace DatabaseCleaner.Projects
 {
-    internal struct ProjectData
-    {//TODO: 1 add missing sections
-        private string title;
-        private string description;
-
-        public ProjectData(string title, string description)
-        {
-            this.title = title;
-            this.description = description;
-        }
-
-        public override string ToString() => title;
-
-        public string Title { get => title; set => title = value; }
-        public string Description { get => description; set => description = value; }
-    }
-
     internal class DuplicateCleaner
     {
         private const int DUPLICATE_PROJECT_WORD_THRESHOLD = 20;

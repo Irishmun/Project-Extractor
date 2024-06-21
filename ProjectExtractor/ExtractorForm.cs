@@ -1,5 +1,5 @@
 ﻿using Microsoft.WindowsAPICodePack.Dialogs;
-using ProjectExtractor.Database;
+using ProjectExtractor.Search;
 using ProjectExtractor.Extractors;
 using ProjectExtractor.Extractors.Detail;
 using ProjectExtractor.Extractors.FullProject;
