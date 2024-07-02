@@ -12,7 +12,7 @@ using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using System.Windows.Forms.Design.Behavior;
 
-namespace ProjectExtractor.Database
+namespace ProjectExtractor.Search
 {//TODO: add files to search if they aren't part of the projects array
     internal class DatabaseSearch
     {
@@ -21,7 +21,7 @@ namespace ProjectExtractor.Database
         private readonly string[] _projectFileTypes = new string[] { ".txt" };
         private string[] _projectPaths;//paths to possible project files
         private Dictionary<string, string> _miscDocuments;//<path,text>documents in the folder that could not be turned into a project
-        private DatabaseProject[] _projects;//found projects
+        private ProjectData[] _projects;//found projects
 
         public void PopulateTreeView(TreeView tree, string path, BackgroundWorker worker, WorkerStates workerState)
         {//fill treeview with project documents, with subnodes of the projects in that document
@@ -64,10 +64,10 @@ namespace ProjectExtractor.Database
 #if DEBUG
             long memoryUsage = GC.GetTotalMemory(false);
 #endif
-            List<DatabaseProject> proj = new List<DatabaseProject>();
+            List<ProjectData> proj = new List<ProjectData>();
             for (int i = 0; i < files.Count; i++)
             {
-                DatabaseProject[] res = TextToProjects(files[i], File.ReadAllText(files[i]), worker, workerState);
+                ProjectData[] res = TextToProjects(files[i], File.ReadAllText(files[i]), worker, workerState);
                 if (res == null)
                 {
                     continue;
@@ -157,11 +157,11 @@ namespace ProjectExtractor.Database
             {
                 if (doc.Value.ToLower().RegexMatch(reg, out Match match))
                 {
-                    addValueToGridView($"[?]{DatabaseProject.GetCustomerFromPath(doc.Key)} - bad extraction\n    {match.Value.TruncateForDisplay(SEARCH_RESULT_TRUNCATE, StringSearch.CreateSearchRegex(query, exact))}", doc.Key, ref grid);
+                    addValueToGridView($"[?]{ProjectData.GetCustomerFromPath(doc.Key)} - bad extraction\n    {match.Value.TruncateForDisplay(SEARCH_RESULT_TRUNCATE, StringSearch.CreateSearchRegex(query, exact))}", doc.Key, ref grid);
                 }
             }
 
-            bool isMatch(string text, DatabaseProject project, ref DataGridView grid)
+            bool isMatch(string text, ProjectData project, ref DataGridView grid)
             {
                 if (text.ToLower().RegexMatch(reg, out Match match) == true)
                 {
@@ -180,13 +180,13 @@ namespace ProjectExtractor.Database
             }
         }
 
-        public DatabaseProject[] TextToProjects(string path, string text, BackgroundWorker worker, WorkerStates workerState)
+        public ProjectData[] TextToProjects(string path, string text, BackgroundWorker worker, WorkerStates workerState)
         {
             if (string.IsNullOrWhiteSpace(text))
             { return null; }
             string[] lines = text.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
-            List<DatabaseProject> projects = new List<DatabaseProject>();
-            DatabaseProject currentProject = new DatabaseProject();
+            List<ProjectData> projects = new List<ProjectData>();
+            ProjectData currentProject = new ProjectData();
             currentProject.Path = path;
             int prevProjectIndex = 0;
             int projIndex = 0;
@@ -242,9 +242,9 @@ namespace ProjectExtractor.Database
             }
             return projects.ToArray();
 
-            bool TryGetProject(string path, string[] lines, int startIndex, int endIndex, int projIndex, out DatabaseProject project)
+            bool TryGetProject(string path, string[] lines, int startIndex, int endIndex, int projIndex, out ProjectData project)
             {
-                if (DatabaseProject.TextToProject(path, lines, startIndex, endIndex, projIndex, out project) == false)
+                if (ProjectData.TextToProject(path, lines, startIndex, endIndex, projIndex, out project) == false)
                 {
 #if DEBUG
                     Debug.WriteLine($"Couldn't find project between lines {prevProjectIndex} - {endIndex} in {path}");
