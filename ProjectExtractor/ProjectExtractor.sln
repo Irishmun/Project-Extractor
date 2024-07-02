@@ -6,7 +6,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProjectExtractor", "Project
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DatabaseCleaner", "..\DatabaseCleaner\DatabaseCleaner.csproj", "{157C4550-52DA-40FC-B416-A6E3471AE6FA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectUtility", "..\ProjectUtility\ProjectUtility.csproj", "{88B6A4B3-17DF-48E1-AC18-C263FE385BD1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProjectUtility", "..\ProjectUtility\ProjectUtility.csproj", "{88B6A4B3-17DF-48E1-AC18-C263FE385BD1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

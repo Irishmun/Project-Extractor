@@ -79,9 +79,6 @@ namespace ProjectExtractor.Search
             project.NumberInDocument = projIndex;
             project.Customer = GetCustomerFromPath(path);
 
-#if DEBUG
-            Debug.WriteLine($"id: {lines[startIndex]}(line {startIndex})");
-#endif
             //assume project id is always at startindex
             project.Id = lines[startIndex];
             for (int i = startIndex + 1; i < endIndex; i++)
@@ -96,9 +93,6 @@ namespace ProjectExtractor.Search
                 if (lines[i].StartsWith("Samenwerking?:"))
                 {
                     project.Cooperation = lines[i + 1].Contains("Ja") ? true : false;
-#if DEBUG
-                    Debug.WriteLine("coop: " + lines[i + 1] + "(" + project.Cooperation + ")");
-#endif
                     i += 1;
                     continue;
                 }
@@ -122,9 +116,6 @@ namespace ProjectExtractor.Search
             //end of project found, check if a project was found
             if (string.IsNullOrWhiteSpace(project._id))
             {//no project found :(
-#if DEBUG
-                Debug.WriteLine("No project found for some text in file: " + path);
-#endif
                 return false;
             }
             //project should be found here

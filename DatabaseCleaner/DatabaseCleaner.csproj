@@ -5,8 +5,10 @@
     <TargetFramework>net6.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
+	<PackageLicenseFile>LICENSE</PackageLicenseFile>
     <ApplicationIcon>Resources\Solitaire.ico</ApplicationIcon>
-    <Platforms>x86</Platforms>
+    <Platforms>x86;AnyCPU</Platforms>
+	<AssemblyVersion>1.0.0</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>

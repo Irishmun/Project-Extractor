@@ -2,7 +2,7 @@
 
 namespace DatabaseCleaner.Util
 {
-    public class UtilMethods
+    public static class UtilMethods
     {
         /// <summary>Returns whether the application is running in 32 bit mode or not</summary>
         /// <returns>true if application is running in 32 bit mode, false if in another mode</returns>
@@ -10,6 +10,11 @@ namespace DatabaseCleaner.Util
         {
             //IntPtr size of 4 is 32 bit, 8 is 64 bit and more is something not present at this time
             return IntPtr.Size == 4;
+        }
+
+        public static string YesNo(this bool val,string yes="ja",string no="nee")
+        {
+            return val == true ? yes : no;
         }
 
         internal static object[] CreateBackgroundWorkerArgs(WorkerStates state, params object[] args)

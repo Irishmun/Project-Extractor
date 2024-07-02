@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
 
@@ -27,6 +28,7 @@ namespace DatabaseCleaner
         {
             Settings.Instance.IsStarting = true;
             InitializeComponent();
+            this.Text = "Access Database Cleaner - V" + AssemblyVersion();
             SetValuesFromSettings();
             Settings.Instance.IsStarting = false;
             _selectedIndexes = new List<int>();
@@ -404,6 +406,12 @@ namespace DatabaseCleaner
         private ProjectData LastSelectedProject()
         {
             return (ProjectData)LB_Projects.Items[_selectedIndexes[_selectedIndexes.Count - 1]];
+        }
+
+        string AssemblyVersion()
+        {
+            Version ver = Assembly.GetExecutingAssembly().GetName().Version;
+            return String.Format("{0}.{1}.{2}", ver.Major, ver.Minor, ver.Build);
         }
 
         #endregion
