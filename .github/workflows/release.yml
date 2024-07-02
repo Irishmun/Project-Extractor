@@ -24,7 +24,7 @@ jobs:
           dotnet publish ProjectExtractor/ProjectExtractor.csproj --framework net6.0-windows --no-self-contained -c Release -o "$release_name"
           #pack files
           7z a -tzip "${release_name}.zip" "./${release_name}/*"
-          #delte output directoty
+          #delete output directoty
           rm -r "$release_name"
     - name: Build Cleaner
       shell: bash
@@ -35,13 +35,13 @@ jobs:
           dotnet publish DatabaseCleaner/DatabaseCleaner.csproj --framework net6.0-windows --no-self-contained -c Release -o "$release_name"
           #pack files
           7z a -tzip "${release_name}.zip" "./${release_name}/*"
-          #delte output directoty
+          #delete output directoty
           rm -r "$release_name"
     - name: Publish
       uses: softprops/action-gh-release@v1
       with:
        files: |
-         "ProjectExtractor*"
-         "DatabaseCleaner"
+         ProjectExtractor*
+         DatabaseCleaner
       env:
        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
