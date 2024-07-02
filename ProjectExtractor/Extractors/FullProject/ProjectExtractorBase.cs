@@ -1,4 +1,5 @@
 ﻿using ProjectExtractor.Util;
+using ProjectUtility;
 using System.ComponentModel;
 using System.Text;
 
@@ -11,8 +12,14 @@ namespace ProjectExtractor.Extractors.FullProject
         //see text file for example
 
         protected const string RevOneFileName = "Rev_1.json", RevTwoFileName = "Rev_2.json", RevThreeFileName = "Rev_3.json";
-        protected static ProjectSection[] RevTwoSectionDescriptions;
-        protected static ProjectSection[] RevThreeSectionDescriptions;
+        protected ProjectSection[] RevTwoSectionDescriptions;
+        protected ProjectSection[] RevThreeSectionDescriptions;
+        protected SectionsFolder Sections;
+
+        protected ProjectExtractorBase(SectionsFolder sections)
+        {
+            this.Sections = sections;
+        }
 
         //string[] Keywords, string chapters, string stopChapters, string totalHoursKeyword, bool WriteTotalHoursToFile, bool WriteKeywordsToFile,
         public ExitCode ExtractProjects(ProjectLayoutRevision revision, string file, string extractPath, string[] Sections, string EndProject, System.ComponentModel.BackgroundWorker Worker, WorkerStates workerState)

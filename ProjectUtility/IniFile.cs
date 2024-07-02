@@ -3,12 +3,11 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace ProjectExtractor.Util
+namespace ProjectUtility
 {
-    class IniFile
+    public class IniFile
     {
-        private string _path;
-        string EXE = Assembly.GetExecutingAssembly().GetName().Name;
+        private readonly string EXE, _path;
 
         //NOTE: Kernel32 is Windows only! if cross platform support is needed, consider using non Kernel32 dependant ini implementation
         [DllImport("kernel32", CharSet = CharSet.Unicode)]
@@ -18,10 +17,10 @@ namespace ProjectExtractor.Util
         static extern int GetPrivateProfileString(string Section, string Key, string Default, StringBuilder RetVal, int Size, string FilePath);
 
         /// <param name="IniPath"></param>
-        public IniFile(string IniPath = null)
+        public IniFile(Assembly executingAssembly)
         {
-            //get path from passed inipath, otherwise use EXE variable as path
-            _path = new FileInfo(IniPath ?? EXE + ".ini").FullName;
+            EXE = executingAssembly.GetName().Name;
+            _path = new FileInfo(EXE + ".ini").FullName;
         }
 
         /// <summary>Writes value to key in section</summary>

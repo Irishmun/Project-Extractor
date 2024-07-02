@@ -1,0 +1,141 @@
+[
+  {
+    "IsFileName": true,
+    "IsBoolValue": false,
+    "AppendNewLine": false,
+    "ContentString": "Aanvraag WBSO {0} {1} - Projecten.txt",
+    "Columns": [
+      "Period",
+      "CompanyName"
+    ]
+  },
+  {
+    "IsFileName": false,
+    "IsBoolValue": false,
+    "AppendNewLine": false,
+    "ContentString": "Project {0}: {1} ({2})",
+    "Columns": [
+      "Period",
+      "TITLE",
+      "PROJECT"
+    ]
+  },
+  {
+    "IsFileName": false,
+    "IsBoolValue": false,
+    "AppendNewLine": true,
+    "ContentString": "Bedrijf: {0}",
+    "Columns": [ "CompanyName" ]
+  },
+  {
+    "IsFileName": false,
+    "IsBoolValue": false,
+    "AppendNewLine": false,
+    "ContentString": "Start datum: {0}",
+    "Columns": [ "STARTDATE" ]
+  },
+  {
+    "IsFileName": false,
+    "AppendNewLine": false,
+    "ContentString": "Eind datum: {0}",
+    "Columns": [ "ENDDATE" ]
+  },
+  {
+    "IsFileName": false,
+    "IsBoolValue": false,
+    "AppendNewLine": false,
+    "ContentString": "Uren: {0}",
+    "Columns": [ "HOURS" ]
+  },
+  {
+    "IsFileName": false,
+    "IsBoolValue": false,
+    "AppendNewLine": false,
+    "ContentString": "Project type: {0}",
+    "Columns": [ "TYPE" ]
+  },
+  {
+    "IsFileName": false,
+    "IsBoolValue": true,
+    "AppendNewLine": true,
+    "ContentString": "Afgewezen?: {0}",
+    "Columns": [ "Afgewezen" ]
+  },
+  {
+    "IsFileName": false,
+    "IsBoolValue": false,
+    "AppendNewLine": true,
+    "ContentString": "Omschrijving:\n{0}",
+    "Columns": [ "DESC" ]
+  },
+  {
+    "IsFileName": false,
+    "IsBoolValue": false,
+    "AppendNewLine": true,
+    "ContentString": "Opmerkingen:\n{0}",
+    "Columns": [ "Opmerkingen" ]
+  },
+  {
+    "IsFileName": false,
+    "IsBoolValue": false,
+    "AppendNewLine": true,
+    "ContentString": "Methode:\n{0}",
+    "Columns": [ "METH" ]
+  },
+  {
+    "IsFileName": false,
+    "IsBoolValue": false,
+    "AppendNewLine": true,
+    "ContentString": "- Technische knelpunten:\n{0}",
+    "Columns": [ "PROB" ]
+  },
+  {
+    "IsFileName": false,
+    "IsBoolValue": false,
+    "AppendNewLine": true,
+    "ContentString": "- Technische oplossingsrichtingen:\n{0}",
+    "Columns": [ "OPLO" ]
+  },
+  {
+    "IsFileName": false,
+    "IsBoolValue": false,
+    "AppendNewLine": true,
+    "ContentString": "- Technische nieuwheid:\n{0}",
+    "Columns": [ "TECHNEW" ]
+  },
+  {
+    "IsFileName": false,
+    "IsBoolValue": false,
+    "AppendNewLine": true,
+    "ContentString": "Technologiegebied onderzoek:\n{0}",
+    "Columns": [ "TECH" ]
+  },
+  {
+    "IsFileName": false,
+    "IsBoolValue": true,
+    "AppendNewLine": true,
+    "ContentString": "Wordt er mede programmatuur ontwikkeld?:\n{0}",
+    "Columns": [ "SOFTWARE" ]
+  },
+  {
+    "IsFileName": false,
+    "IsBoolValue": false,
+    "AppendNewLine": true,
+    "ContentString": "Vragen senter:\n{0}",
+    "Columns": [ "Vragen Senter" ]
+  },
+  {
+    "IsFileName": false,
+    "IsBoolValue": false,
+    "AppendNewLine": true,
+    "ContentString": "Zelf:\n{0}",
+    "Columns": [ "ZELF" ]
+  },
+  {
+    "IsFileName": false,
+    "IsBoolValue": false,
+    "AppendNewLine": false,
+    "ContentString": "Prin:\n{0}",
+    "Columns": [ "PRIN" ]
+  }
+]

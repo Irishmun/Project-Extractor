@@ -5,9 +5,10 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace ProjectExtractor.Database
+
+namespace ProjectExtractor.Search
 {
-    internal struct DatabaseProject
+    internal struct ProjectData
     {
         private string _path;
         private string _id;
@@ -28,7 +29,7 @@ namespace ProjectExtractor.Database
         private decimal _totalExpense;
         private string _expenseDescription;
 
-        public DatabaseProject(string path, string id, string customer, int numberInDocument, string description)
+        public ProjectData(string path, string id, string customer, int numberInDocument, string description)
         {
             _path = path;
             _id = id;
@@ -48,7 +49,7 @@ namespace ProjectExtractor.Database
             _expenseDescription = String.Empty;
         }
 
-        public DatabaseProject(string path, string id, string customer, int numberInDocument, string description, bool cooperation, Dictionary<DateTime, string> projectPhases, string latestUpdate, string[] technical, bool softwareDeveloped = default, bool projectCost = default, decimal totalCost = default, string costDescription = default, bool projectExpense = default, decimal totalExpense = default, string expenseDescription = default) : this(path, id, customer, numberInDocument, description)
+        public ProjectData(string path, string id, string customer, int numberInDocument, string description, bool cooperation, Dictionary<DateTime, string> projectPhases, string latestUpdate, string[] technical, bool softwareDeveloped = default, bool projectCost = default, decimal totalCost = default, string costDescription = default, bool projectExpense = default, decimal totalExpense = default, string expenseDescription = default) : this(path, id, customer, numberInDocument, description)
         {
             _cooperation = cooperation;
             _projectPhases = projectPhases;
@@ -63,13 +64,13 @@ namespace ProjectExtractor.Database
             _expenseDescription = expenseDescription;
         }
 
-        /// <summary>Tries to convert given text to a <see cref="DatabaseProject"/></summary>
+        /// <summary>Tries to convert given text to a <see cref="ProjectData"/></summary>
         /// <param name="path">path to project file</param>
         /// <param name="text">text to convert</param>
         /// <returns></returns>
-        public static bool TextToProject(string path, string[] lines, int startIndex, int endIndex, int projIndex, out DatabaseProject project)
+        public static bool TextToProject(string path, string[] lines, int startIndex, int endIndex, int projIndex, out ProjectData project)
         {
-            project = new DatabaseProject();
+            project = new ProjectData();
             if (startIndex >= lines.Length)
             {
                 return false;
@@ -78,9 +79,6 @@ namespace ProjectExtractor.Database
             project.NumberInDocument = projIndex;
             project.Customer = GetCustomerFromPath(path);
 
-#if DEBUG
-            Debug.WriteLine($"id: {lines[startIndex]}(line {startIndex})");
-#endif
             //assume project id is always at startindex
             project.Id = lines[startIndex];
             for (int i = startIndex + 1; i < endIndex; i++)
@@ -95,9 +93,6 @@ namespace ProjectExtractor.Database
                 if (lines[i].StartsWith("Samenwerking?:"))
                 {
                     project.Cooperation = lines[i + 1].Contains("Ja") ? true : false;
-#if DEBUG
-                    Debug.WriteLine("coop: " + lines[i + 1] + "(" + project.Cooperation + ")");
-#endif
                     i += 1;
                     continue;
                 }
@@ -121,9 +116,6 @@ namespace ProjectExtractor.Database
             //end of project found, check if a project was found
             if (string.IsNullOrWhiteSpace(project._id))
             {//no project found :(
-#if DEBUG
-                Debug.WriteLine("No project found for some text in file: " + path);
-#endif
                 return false;
             }
             //project should be found here
@@ -183,11 +175,6 @@ namespace ProjectExtractor.Database
         {
             string name = System.IO.Path.GetFileNameWithoutExtension(path);
             name = name.TrimExtractionData();
-            //Match match = Regex.Match(name, @"\d{4} \d{1,2}-\d{1,2}");
-            //if (match.Success == true)
-            //{
-            //    return name.Substring(match.Length);
-            //}
             return name;
         }
 

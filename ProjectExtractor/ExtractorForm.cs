@@ -1,5 +1,5 @@
 ﻿using Microsoft.WindowsAPICodePack.Dialogs;
-using ProjectExtractor.Database;
+using ProjectExtractor.Search;
 using ProjectExtractor.Extractors;
 using ProjectExtractor.Extractors.Detail;
 using ProjectExtractor.Extractors.FullProject;
@@ -13,6 +13,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using ProjectUtility;
 
 namespace ProjectExtractor
 {
@@ -28,6 +29,7 @@ namespace ProjectExtractor
         private ExtractorBase _extractor;
         private ExitCode _extractionResult = ExitCode.NONE;
         private DatabaseSearch _databaseSearch;
+        private SectionsFolder _sectionsFolder;
 
         public ExtractorForm()
         {
@@ -35,6 +37,7 @@ namespace ProjectExtractor
             _settings.IsStarting = true;
             _updateHandler = new UpdateHandler();
             _databaseSearch = new DatabaseSearch();
+            _sectionsFolder = new SectionsFolder(@"Resources\Sections");
             InitializeComponent();
             InitializeAbout();
 #if !DEBUG
@@ -1040,7 +1043,7 @@ namespace ProjectExtractor
                 //    return new ProjectExtractorRTF();
                 //case "RB_ExportTXT":
                 default:
-                    return new ProjectExtractorTXT();
+                    return new ProjectExtractorTXT(_sectionsFolder);
             }
         }
 
@@ -1152,12 +1155,12 @@ namespace ProjectExtractor
         private void BT_DebugComputeHash_Click(object sender, EventArgs e)
         {
 #if DEBUG
-            if (SectionsFolder.IsHashDifferent() == true)
+            if (_sectionsFolder.IsHashDifferent() == true)
             {
                 MessageBox.Show("Hash has changed");
             }
-            SectionsFolder.SetFolderHash();
-            UpdateStatus("hash: " + SectionsFolder.CurrentFolderHash);
+            _sectionsFolder.SetFolderHash();
+            UpdateStatus("hash: " + _sectionsFolder.CurrentFolderHash);
 #endif
         }
 
