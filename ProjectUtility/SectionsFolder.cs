@@ -8,55 +8,33 @@ namespace ProjectUtility
 {
     public class SectionsFolder
     {
-        private const string _nullHex = "00000000";
-        private string _sectionFolderHash;
         public readonly string _sectionsFolder;// = AppContext.BaseDirectory + "Resources\\Sections";
+        private FileHash _hash;
+
 
         public SectionsFolder(string baseDir, string path = "Resources\\Sections")
         {
             _sectionsFolder = Path.Combine(baseDir, path);
+            _hash = new FileHash(_sectionsFolder);
         }
 
         private string CreateHashFromFolder()
         {//create a Crc32 hash file (4 bytes)
-            if (Directory.Exists(_sectionsFolder) == false)
-            { return _nullHex; }
-            Crc32 crc32 = new Crc32();
-            string[] files = Directory.GetFiles(_sectionsFolder);
-            List<byte> hashes = new List<byte>();
-            for (int i = 0; i < files.Length; i++)
-            {
-                crc32.Append(File.ReadAllBytes(files[i]));
-                foreach (byte b in crc32.GetHashAndReset())
-                {
-                    hashes.Add(b);
-                }
-            }
-            //put created hash to a string
-            crc32.Append(hashes.ToArray());
-            StringBuilder str = new StringBuilder();
-            foreach (byte b in crc32.GetHashAndReset())
-            {
-                str.Append(b.ToString("x2").ToLower());
-            }
-            return str.ToString();
+
+            return _hash.CreateHash();
         }
 
         /// <summary>Checks if a new hash would be different from the current hash</summary>
         public bool IsHashDifferent()
         {
-            if (_sectionFolderHash == null)
-            { return true; }
-            return _sectionFolderHash.Equals(CreateHashFromFolder(), StringComparison.OrdinalIgnoreCase) == false;
+
+            return _hash.IsHashDifferent();
         }
 
         /// <summary>Creates and sets a new hash for the sections folder</summary>
         public void SetFolderHash()
         {
-            _sectionFolderHash = CreateHashFromFolder();
-#if DEBUG
-            System.Diagnostics.Debug.WriteLine("Current Hash: " + _sectionFolderHash);
-#endif
+            _hash.SetHash();
         }
 
         /// <summary>Reads all the content for the given file in the sections folder</summary>
@@ -70,6 +48,6 @@ namespace ProjectUtility
             return File.ReadAllText(fullPath);
         }
 
-        public string CurrentFolderHash => _sectionFolderHash;
+        public string CurrentFolderHash => _hash.Hash;
     }
 }

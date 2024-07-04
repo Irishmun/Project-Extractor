@@ -459,6 +459,6 @@ namespace DatabaseCleaner.Projects
 
 
 
-        internal Dictionary<ProjectData, ProjectData[]> DuplicateProjects => _duplicateProjects;
+        internal Dictionary<ProjectData, ProjectData[]> DuplicateProjects { get => _duplicateProjects; set => _duplicateProjects = value; }
     }
 }
