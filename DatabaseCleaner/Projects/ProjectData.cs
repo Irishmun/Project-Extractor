@@ -4,7 +4,7 @@ using System.Text;
 
 namespace DatabaseCleaner.Projects
 {
-    internal struct ProjectData
+    public struct ProjectData
     {//TODO: 1 add missing sections
         private string _title;//Period TITLE PROJECT
         private string _description;//DESC
@@ -274,7 +274,7 @@ namespace DatabaseCleaner.Projects
         }
 
 
-        public override string ToString() => _title;
+        public override string ToString() => $"({_customer}) {_title}";
 
         public string Title { get => _title; set => _title = value; }
         public string Description { get => _description; set => _description = value; }

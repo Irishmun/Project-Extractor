@@ -30,6 +30,6 @@ namespace DatabaseCleaner
         public string DbInitialCatalog { get => DefaultIfNotExists(KEY_INITIAL_CATALOG, "WBSO_P", SECTION_DATABASE); set => WriteToIniIfNotStarting(value, KEY_INITIAL_CATALOG, SECTION_DATABASE, isStarting); }
         public bool DbIntegratedSecurity { get => DefaultIfNotExists(KEY_INTEGRATED_SECURITY, true, SECTION_DATABASE); set => WriteToIniIfNotStarting(value, KEY_INTEGRATED_SECURITY, SECTION_DATABASE, isStarting); }
         public bool DbTrustServerCertificate { get => DefaultIfNotExists(KEY_TRUST_SERVER_CERTIFICATE, true, SECTION_DATABASE); set => WriteToIniIfNotStarting(value, KEY_TRUST_SERVER_CERTIFICATE, SECTION_DATABASE, isStarting); }
-        public int MaxProjectsPerFile { get => ini.ReadIntIfExists(KEY_PROJECTS_PER_FILE, SECTION_EXPORT); set => WriteToIniIfNotStarting(value, KEY_PROJECTS_PER_FILE, SECTION_EXPORT, isStarting); }
+        public int MaxProjectsPerFile { get => DefaultIfNotExists(KEY_PROJECTS_PER_FILE, 1, SECTION_EXPORT); set => WriteToIniIfNotStarting(value, KEY_PROJECTS_PER_FILE, SECTION_EXPORT, isStarting); }
     }
 }

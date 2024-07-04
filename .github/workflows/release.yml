@@ -26,22 +26,10 @@ jobs:
           7z a -tzip "${release_name}.zip" "./${release_name}/*"
           #delete output directoty
           rm -r "$release_name"
-    - name: Build Cleaner
-      shell: bash
-      run: |
-          release_name="DatabaseCleaner"
-          echo publish will be called DatabaseCleaner
-          #build everything
-          dotnet publish DatabaseCleaner/DatabaseCleaner.csproj --framework net6.0-windows --no-self-contained -c Release -o "$release_name"
-          #pack files
-          7z a -tzip "${release_name}.zip" "./${release_name}/*"
-          #delete output directoty
-          rm -r "$release_name"
     - name: Publish
       uses: softprops/action-gh-release@v1
       with:
        files: |
          ProjectExtractor*
-         DatabaseCleaner
       env:
        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
