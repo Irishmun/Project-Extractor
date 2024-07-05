@@ -66,7 +66,7 @@ namespace ProjectExtractor
             }
             if (_settings.DoesIniExist() == false)
             {//no ini file yet, so we set with all the default
-                _settings.CreateDefaultIni(CB_SavePDFPath.Checked, CB_SaveExtractionPath.Checked, CB_DisableExtractionPath.Checked, CB_WriteKeywordsToFile.Checked, CB_TotalHoursEnabled.Checked, CbB_FileVersion.SelectedIndex, "txt", TB_SectionsEndProject.Text, TB_Chapter.Text, TB_StopChapter.Text, TB_TotalHours.Text, TB_DatabasePath.Text);
+                _settings.CreateDefaultIni(CB_SavePDFPath.Checked, CB_SaveExtractionPath.Checked, CB_DisableExtractionPath.Checked, CB_WriteKeywordsToFile.Checked, CB_TotalHoursEnabled.Checked, CbB_FileVersion.SelectedIndex, "txt", TB_SectionsEndProject.Text, TB_Chapter.Text, TB_StopChapter.Text, CB_WritePhaseDateOnly.Checked, TB_TotalHours.Text, TB_DatabasePath.Text);
                 //check all keywords
                 foreach (ListViewItem item in LV_Keywords.Items)
                 {
@@ -152,6 +152,8 @@ namespace ProjectExtractor
                 TB_Chapter.Text = _settings.ChapterStart;
                 //set Chapter End textbox
                 TB_StopChapter.Text = _settings.ChapterEnd;
+                //set write phase date only checkbox
+                CB_WritePhaseDateOnly.Checked = _settings.WriteDateOnly;
                 //set write keywords checkbox
                 CB_WriteKeywordsToFile.Checked = _settings.WriteKeywordsToFile;
                 //set write total hours checkbox
@@ -543,6 +545,10 @@ namespace ProjectExtractor
                 }
             }
         }
+        private void CB_WritePhaseDateOnly_CheckedChanged(object sender, EventArgs e)
+        {
+            _settings.WriteDateOnly = CB_WritePhaseDateOnly.Checked;
+        }
         #endregion
         #region TextBox events
         private void TB_Chapter_Leave(object sender, EventArgs e)
@@ -651,7 +657,7 @@ namespace ProjectExtractor
             {
                 case WorkerStates.EXTRACT_DETAIL:
                     _exportFile = $"{TB_ExtractLocation.Text}{Path.GetFileNameWithoutExtension(fileName)}{ExtractorBase.DETAIL_SUFFIX}.{_extractor.FileExtension}";//add path and file extension
-                    _extractionResult = (_extractor as DetailExtractorBase).ExtractDetails(ProjectRevisionUtil.GetProjectRevision(_currentRevision), TB_PDFLocation.Text, _exportFile, _keywords, TB_Chapter.Text, TB_StopChapter.Text, TB_TotalHours.Text, CB_TotalHoursEnabled.Checked, CB_WriteKeywordsToFile.Checked, sender as System.ComponentModel.BackgroundWorker, workArgument);
+                    _extractionResult = (_extractor as DetailExtractorBase).ExtractDetails(ProjectRevisionUtil.GetProjectRevision(_currentRevision), TB_PDFLocation.Text, _exportFile, _keywords, TB_Chapter.Text, TB_StopChapter.Text, TB_TotalHours.Text, CB_TotalHoursEnabled.Checked, CB_WriteKeywordsToFile.Checked, CB_WritePhaseDateOnly.Checked, sender as System.ComponentModel.BackgroundWorker, workArgument);
                     break;
                 case WorkerStates.EXTRACT_PROJECT:
                     _exportFile = $"{TB_ExtractLocation.Text}{Path.GetFileNameWithoutExtension(fileName)}{ExtractorBase.PROJECT_SUFFIX}.{_extractor.FileExtension}";//add path and file extension
@@ -660,7 +666,7 @@ namespace ProjectExtractor
 #if DEBUG
                 case WorkerStates.EXTRACT_DEBUG:
                     _exportFile = $"{TB_ExtractLocation.Text}\\DEBUG {Path.GetFileNameWithoutExtension(fileName)}{ExtractorBase.DETAIL_SUFFIX}.{_extractor.FileExtension}";//add path and file extension
-                    _extractionResult = (_extractor as DetailExtractorBase).ExtractDetails(ProjectRevisionUtil.GetProjectRevision(_currentRevision), TB_PDFLocation.Text, _exportFile, _keywords, TB_Chapter.Text, TB_StopChapter.Text, TB_TotalHours.Text, CB_TotalHoursEnabled.Checked, CB_WriteKeywordsToFile.Checked, sender as System.ComponentModel.BackgroundWorker, workArgument);
+                    _extractionResult = (_extractor as DetailExtractorBase).ExtractDetails(ProjectRevisionUtil.GetProjectRevision(_currentRevision), TB_PDFLocation.Text, _exportFile, _keywords, TB_Chapter.Text, TB_StopChapter.Text, TB_TotalHours.Text, CB_TotalHoursEnabled.Checked, CB_WriteKeywordsToFile.Checked, CB_WritePhaseDateOnly.Checked, sender as System.ComponentModel.BackgroundWorker, workArgument);
                     break;
 #endif
                 case WorkerStates.EXTRACT_BATCH:
@@ -1165,6 +1171,7 @@ namespace ProjectExtractor
         }
 
         #endregion
+
 
 
     }

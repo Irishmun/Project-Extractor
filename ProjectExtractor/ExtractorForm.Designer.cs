@@ -99,6 +99,7 @@ namespace ProjectExtractor
             groupBox5 = new System.Windows.Forms.GroupBox();
             CB_WriteKeywordsToFile = new System.Windows.Forms.CheckBox();
             groupBox4 = new System.Windows.Forms.GroupBox();
+            CB_WritePhaseDateOnly = new System.Windows.Forms.CheckBox();
             label4 = new System.Windows.Forms.Label();
             TB_StopChapter = new System.Windows.Forms.TextBox();
             label3 = new System.Windows.Forms.Label();
@@ -199,17 +200,17 @@ namespace ProjectExtractor
             // 
             // TC_MainView
             // 
-            TC_MainView.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
             TC_MainView.Controls.Add(TabPage_Extractor);
             TC_MainView.Controls.Add(TabPage_Database);
             TC_MainView.Controls.Add(TabPage_Settings);
             TC_MainView.Controls.Add(TabPage_DetailSettings);
             TC_MainView.Controls.Add(TabPage_ProjectSettings);
             TC_MainView.Controls.Add(TabPage_About);
+            TC_MainView.Dock = System.Windows.Forms.DockStyle.Fill;
             TC_MainView.Location = new System.Drawing.Point(0, 0);
             TC_MainView.Name = "TC_MainView";
             TC_MainView.SelectedIndex = 0;
-            TC_MainView.Size = new System.Drawing.Size(572, 350);
+            TC_MainView.Size = new System.Drawing.Size(572, 347);
             TC_MainView.TabIndex = 1;
             TC_MainView.SelectedIndexChanged += TC_MainView_SelectedIndexChanged;
             // 
@@ -236,7 +237,7 @@ namespace ProjectExtractor
             TabPage_Extractor.Location = new System.Drawing.Point(4, 24);
             TabPage_Extractor.Name = "TabPage_Extractor";
             TabPage_Extractor.Padding = new System.Windows.Forms.Padding(3);
-            TabPage_Extractor.Size = new System.Drawing.Size(564, 322);
+            TabPage_Extractor.Size = new System.Drawing.Size(564, 319);
             TabPage_Extractor.TabIndex = 0;
             TabPage_Extractor.Text = "Extractor";
             TabPage_Extractor.ToolTipText = "Main screen for extraction";
@@ -479,7 +480,7 @@ namespace ProjectExtractor
             TabPage_Database.Controls.Add(splitContainer1);
             TabPage_Database.Location = new System.Drawing.Point(4, 24);
             TabPage_Database.Name = "TabPage_Database";
-            TabPage_Database.Size = new System.Drawing.Size(564, 322);
+            TabPage_Database.Size = new System.Drawing.Size(564, 319);
             TabPage_Database.TabIndex = 5;
             TabPage_Database.Text = "Search";
             TabPage_Database.UseVisualStyleBackColor = true;
@@ -506,7 +507,7 @@ namespace ProjectExtractor
             splitContainer1.Panel2.Controls.Add(BT_SearchDatabase);
             splitContainer1.Panel2.Controls.Add(TB_DatabaseSearch);
             splitContainer1.Panel2.Controls.Add(label9);
-            splitContainer1.Size = new System.Drawing.Size(564, 322);
+            splitContainer1.Size = new System.Drawing.Size(564, 319);
             splitContainer1.SplitterDistance = 188;
             splitContainer1.TabIndex = 0;
             // 
@@ -540,7 +541,7 @@ namespace ProjectExtractor
             TV_Database.Location = new System.Drawing.Point(0, 59);
             TV_Database.Name = "TV_Database";
             TV_Database.SelectedImageIndex = 0;
-            TV_Database.Size = new System.Drawing.Size(184, 259);
+            TV_Database.Size = new System.Drawing.Size(184, 256);
             TV_Database.TabIndex = 0;
             TV_Database.NodeMouseDoubleClick += TV_Database_NodeMouseDoubleClick;
             // 
@@ -594,7 +595,7 @@ namespace ProjectExtractor
             DGV_DatabaseResults.Location = new System.Drawing.Point(3, 59);
             DGV_DatabaseResults.Name = "DGV_DatabaseResults";
             DGV_DatabaseResults.RowTemplate.Height = 25;
-            DGV_DatabaseResults.Size = new System.Drawing.Size(359, 256);
+            DGV_DatabaseResults.Size = new System.Drawing.Size(359, 253);
             DGV_DatabaseResults.TabIndex = 4;
             DGV_DatabaseResults.CellContentDoubleClick += DGV_DatabaseResults_CellContentDoubleClick;
             // 
@@ -640,7 +641,7 @@ namespace ProjectExtractor
             TabPage_Settings.Controls.Add(GB_ExportSettings);
             TabPage_Settings.Location = new System.Drawing.Point(4, 24);
             TabPage_Settings.Name = "TabPage_Settings";
-            TabPage_Settings.Size = new System.Drawing.Size(564, 322);
+            TabPage_Settings.Size = new System.Drawing.Size(564, 319);
             TabPage_Settings.TabIndex = 3;
             TabPage_Settings.Text = "Settings";
             TabPage_Settings.ToolTipText = "General settings";
@@ -767,7 +768,7 @@ namespace ProjectExtractor
             TabPage_DetailSettings.Location = new System.Drawing.Point(4, 24);
             TabPage_DetailSettings.Name = "TabPage_DetailSettings";
             TabPage_DetailSettings.Padding = new System.Windows.Forms.Padding(3);
-            TabPage_DetailSettings.Size = new System.Drawing.Size(564, 322);
+            TabPage_DetailSettings.Size = new System.Drawing.Size(564, 319);
             TabPage_DetailSettings.TabIndex = 1;
             TabPage_DetailSettings.Text = "Detail Settings";
             TabPage_DetailSettings.ToolTipText = "Settings for project detail extraction";
@@ -781,7 +782,7 @@ namespace ProjectExtractor
             groupBox6.Controls.Add(TB_TotalHours);
             groupBox6.Location = new System.Drawing.Point(320, 79);
             groupBox6.Name = "groupBox6";
-            groupBox6.Size = new System.Drawing.Size(238, 170);
+            groupBox6.Size = new System.Drawing.Size(238, 167);
             groupBox6.TabIndex = 7;
             groupBox6.TabStop = false;
             groupBox6.Text = "Hours";
@@ -841,22 +842,35 @@ namespace ProjectExtractor
             // groupBox4
             // 
             groupBox4.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            groupBox4.Controls.Add(CB_WritePhaseDateOnly);
             groupBox4.Controls.Add(label4);
             groupBox4.Controls.Add(TB_StopChapter);
             groupBox4.Controls.Add(label3);
             groupBox4.Controls.Add(TB_Chapter);
-            groupBox4.Location = new System.Drawing.Point(6, 255);
+            groupBox4.Location = new System.Drawing.Point(6, 252);
             groupBox4.Name = "groupBox4";
             groupBox4.Size = new System.Drawing.Size(552, 61);
             groupBox4.TabIndex = 5;
             groupBox4.TabStop = false;
             groupBox4.Text = "Chapters";
             // 
+            // CB_WritePhaseDateOnly
+            // 
+            CB_WritePhaseDateOnly.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
+            CB_WritePhaseDateOnly.AutoSize = true;
+            CB_WritePhaseDateOnly.Location = new System.Drawing.Point(418, 34);
+            CB_WritePhaseDateOnly.Name = "CB_WritePhaseDateOnly";
+            CB_WritePhaseDateOnly.Size = new System.Drawing.Size(109, 19);
+            CB_WritePhaseDateOnly.TabIndex = 4;
+            CB_WritePhaseDateOnly.Text = "Write Date Only";
+            CB_WritePhaseDateOnly.UseVisualStyleBackColor = true;
+            CB_WritePhaseDateOnly.CheckedChanged += CB_WritePhaseDateOnly_CheckedChanged;
+            // 
             // label4
             // 
             label4.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
             label4.AutoSize = true;
-            label4.Location = new System.Drawing.Point(246, 14);
+            label4.Location = new System.Drawing.Point(212, 14);
             label4.Name = "label4";
             label4.Size = new System.Drawing.Size(110, 15);
             label4.TabIndex = 3;
@@ -865,10 +879,10 @@ namespace ProjectExtractor
             // TB_StopChapter
             // 
             TB_StopChapter.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
-            TB_StopChapter.Location = new System.Drawing.Point(246, 32);
+            TB_StopChapter.Location = new System.Drawing.Point(212, 32);
             TB_StopChapter.Name = "TB_StopChapter";
             TB_StopChapter.PlaceholderText = "Update project";
-            TB_StopChapter.Size = new System.Drawing.Size(233, 23);
+            TB_StopChapter.Size = new System.Drawing.Size(200, 23);
             TB_StopChapter.TabIndex = 2;
             TB_StopChapter.Text = "Update project";
             TB_StopChapter.TextChanged += TB_StopChapter_TextChanged;
@@ -889,7 +903,7 @@ namespace ProjectExtractor
             TB_Chapter.Location = new System.Drawing.Point(6, 32);
             TB_Chapter.Name = "TB_Chapter";
             TB_Chapter.PlaceholderText = "Fasering werkzaamheden";
-            TB_Chapter.Size = new System.Drawing.Size(233, 23);
+            TB_Chapter.Size = new System.Drawing.Size(200, 23);
             TB_Chapter.TabIndex = 0;
             TB_Chapter.Text = "Fasering werkzaamheden";
             TB_Chapter.TextChanged += TB_Chapter_TextChanged;
@@ -905,7 +919,7 @@ namespace ProjectExtractor
             groupBox2.Controls.Add(BT_KeywordsNew);
             groupBox2.Location = new System.Drawing.Point(6, 6);
             groupBox2.Name = "groupBox2";
-            groupBox2.Size = new System.Drawing.Size(312, 243);
+            groupBox2.Size = new System.Drawing.Size(312, 240);
             groupBox2.TabIndex = 0;
             groupBox2.TabStop = false;
             groupBox2.Text = "Keywords";
@@ -959,7 +973,7 @@ namespace ProjectExtractor
             LV_Keywords.Location = new System.Drawing.Point(6, 22);
             LV_Keywords.MultiSelect = false;
             LV_Keywords.Name = "LV_Keywords";
-            LV_Keywords.Size = new System.Drawing.Size(188, 215);
+            LV_Keywords.Size = new System.Drawing.Size(188, 212);
             LV_Keywords.TabIndex = 4;
             LV_Keywords.UseCompatibleStateImageBehavior = false;
             LV_Keywords.View = System.Windows.Forms.View.List;
@@ -997,7 +1011,7 @@ namespace ProjectExtractor
             TabPage_ProjectSettings.Controls.Add(groupBox7);
             TabPage_ProjectSettings.Location = new System.Drawing.Point(4, 24);
             TabPage_ProjectSettings.Name = "TabPage_ProjectSettings";
-            TabPage_ProjectSettings.Size = new System.Drawing.Size(564, 322);
+            TabPage_ProjectSettings.Size = new System.Drawing.Size(564, 319);
             TabPage_ProjectSettings.TabIndex = 2;
             TabPage_ProjectSettings.Text = "Project Settings";
             TabPage_ProjectSettings.ToolTipText = "Settings for entire project extraction";
@@ -1102,7 +1116,7 @@ namespace ProjectExtractor
             TabPage_About.Controls.Add(tableLayoutPanel);
             TabPage_About.Location = new System.Drawing.Point(4, 24);
             TabPage_About.Name = "TabPage_About";
-            TabPage_About.Size = new System.Drawing.Size(564, 322);
+            TabPage_About.Size = new System.Drawing.Size(564, 319);
             TabPage_About.TabIndex = 4;
             TabPage_About.Text = "About";
             TabPage_About.UseVisualStyleBackColor = true;
@@ -1377,6 +1391,7 @@ namespace ProjectExtractor
         private System.Windows.Forms.PictureBox logoPictureBox;
         private System.Windows.Forms.CheckBox CB_BatchRecursive;
         private System.Windows.Forms.CheckBox CB_SkipExisting;
+        private System.Windows.Forms.CheckBox CB_WritePhaseDateOnly;
     }
 }
 

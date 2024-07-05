@@ -285,6 +285,7 @@
             LB_Projects.Name = "LB_Projects";
             LB_Projects.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
             LB_Projects.Size = new System.Drawing.Size(188, 229);
+            LB_Projects.Sorted = true;
             LB_Projects.TabIndex = 0;
             LB_Projects.SelectedIndexChanged += LB_Projects_SelectedIndexChanged;
             // 
@@ -637,14 +638,14 @@
             // loadProjectToolStripMenuItem
             // 
             loadProjectToolStripMenuItem.Name = "loadProjectToolStripMenuItem";
-            loadProjectToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
+            loadProjectToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             loadProjectToolStripMenuItem.Text = "Load Project";
             loadProjectToolStripMenuItem.Click += loadProjectToolStripMenuItem_Click;
             // 
             // saveProjectToolStripMenuItem
             // 
             saveProjectToolStripMenuItem.Name = "saveProjectToolStripMenuItem";
-            saveProjectToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
+            saveProjectToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             saveProjectToolStripMenuItem.Text = "Save Project";
             saveProjectToolStripMenuItem.Click += saveProjectToolStripMenuItem_Click;
             // 
@@ -652,7 +653,7 @@
             // 
             cleanProjectsToolStripMenuItem.Enabled = false;
             cleanProjectsToolStripMenuItem.Name = "cleanProjectsToolStripMenuItem";
-            cleanProjectsToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
+            cleanProjectsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             cleanProjectsToolStripMenuItem.Text = "Clean Projects";
             cleanProjectsToolStripMenuItem.Click += cleanProjectsToolStripMenuItem_Click;
             // 

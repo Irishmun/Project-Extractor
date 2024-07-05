@@ -433,7 +433,7 @@ namespace DatabaseCleaner
 
                 for (int i = 0; i < _duplicateCleaner.DuplicateProjects[_selectedProject].Length; i++)
                 {
-                    LV_DuplicateProjects.Items.Add(_duplicateCleaner.DuplicateProjects[_selectedProject][i].Title);
+                    LV_DuplicateProjects.Items.Add(_duplicateCleaner.DuplicateProjects[_selectedProject][i].ToString());
                     LV_DuplicateProjects.Items[i].Checked = true;
                 }
                 //enable or disable clean selected button depending on if the selected project has duplicates or not

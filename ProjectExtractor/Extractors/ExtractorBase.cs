@@ -160,7 +160,7 @@ namespace ProjectExtractor.Extractors
         /// <param name="startIndex">currentProgress of line to start looking from</param>
         /// <param name="stopLine"> line to stop looking for dates, always returns after this line</param>
         /// <returns></returns>
-        protected int GetLatestDate(string[] lines, int startIndex, string stopLine, out string latestDateString)
+        protected int GetLatestDate(string[] lines, int startIndex, string stopLine, out string latestDateString, bool onlyDate = false)
         {
             DateTime latestDate = new DateTime(0);
             latestDateString = string.Empty;
@@ -183,7 +183,14 @@ namespace ProjectExtractor.Extractors
                         {
                             latestDate = current;
                             index = i;
-                            latestDateString = lines[i].Remove(match.Index) + match;
+                            if (onlyDate == false)
+                            {
+                                latestDateString = lines[i].Remove(match.Index) + match;
+                            }
+                            else
+                            {
+                                latestDateString = match.Value;
+                            }
                         }
                     }
                 }
