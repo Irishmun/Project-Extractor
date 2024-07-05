@@ -351,7 +351,6 @@
             // LV_DuplicateProjects
             // 
             LV_DuplicateProjects.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-            LV_DuplicateProjects.CheckBoxes = true;
             LV_DuplicateProjects.FullRowSelect = true;
             LV_DuplicateProjects.Location = new System.Drawing.Point(3, 32);
             LV_DuplicateProjects.Name = "LV_DuplicateProjects";
@@ -638,14 +637,14 @@
             // loadProjectToolStripMenuItem
             // 
             loadProjectToolStripMenuItem.Name = "loadProjectToolStripMenuItem";
-            loadProjectToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            loadProjectToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
             loadProjectToolStripMenuItem.Text = "Load Project";
             loadProjectToolStripMenuItem.Click += loadProjectToolStripMenuItem_Click;
             // 
             // saveProjectToolStripMenuItem
             // 
             saveProjectToolStripMenuItem.Name = "saveProjectToolStripMenuItem";
-            saveProjectToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            saveProjectToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
             saveProjectToolStripMenuItem.Text = "Save Project";
             saveProjectToolStripMenuItem.Click += saveProjectToolStripMenuItem_Click;
             // 
@@ -653,7 +652,7 @@
             // 
             cleanProjectsToolStripMenuItem.Enabled = false;
             cleanProjectsToolStripMenuItem.Name = "cleanProjectsToolStripMenuItem";
-            cleanProjectsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            cleanProjectsToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
             cleanProjectsToolStripMenuItem.Text = "Clean Projects";
             cleanProjectsToolStripMenuItem.Click += cleanProjectsToolStripMenuItem_Click;
             // 

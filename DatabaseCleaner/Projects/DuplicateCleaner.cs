@@ -272,8 +272,13 @@ namespace DatabaseCleaner.Projects
                     ProjectData proj = duplicates[i];
                     if (compareProperty(proj).Equals(baseValue, StringComparison.OrdinalIgnoreCase))
                     { continue; }
+                    if (i > 0)
+                    {
+                        if (compareProperty(duplicates[i - 1]).Trim().Equals(compareProperty(proj).Trim(), StringComparison.OrdinalIgnoreCase))
+                        { continue; }//unique duplicates
+                    }
                     //Need to figure out how to best show the changes in the output file
-                    string remove = MatchingLength(baseValue, proj.Description, out _, true);
+                    string remove = MatchingLength(baseValue, compareProperty(proj), out _, true);
                     string[] removeWords = remove.Split(' ', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
                     string removePrefix;
                     if (removeWords.Length >= 5)
@@ -285,8 +290,11 @@ namespace DatabaseCleaner.Projects
                         removePrefix = string.Join(' ', removeWords);
                     }
                     removeWords = null;
-                    diff.AppendLine();
-                    diff.AppendLine($"[...{removePrefix}] " + proj.Description.Substring(remove.Length));
+                    if (remove.Length < compareProperty(proj).Length)
+                    {
+                        diff.AppendLine();
+                        diff.AppendLine($"[...{removePrefix}] " + compareProperty(proj).Substring(remove.Length));
+                    }
                 }
                 return diff.ToString();
             }
