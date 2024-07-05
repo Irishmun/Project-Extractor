@@ -12,7 +12,7 @@ namespace ProjectExtractor.Extractors.Detail
     /// <summary>Used for extracting pdf details to TXT file format. intended as ASCII plain text</summary>
     class DetailExtractorTXT : DetailExtractorBase
     {
-        protected override ExitCode ExtractRevisionOneDetails(string file, string extractPath, string[] keywords, string chapters, string stopChapters, string totalHoursKeyword, bool writeTotalHoursToFile, bool writeKeywordsToFile, BackgroundWorker worker, WorkerStates workerState)
+        protected override ExitCode ExtractRevisionOneDetails(string file, string extractPath, string[] keywords, string chapters, string stopChapters, string totalHoursKeyword, bool writeTotalHoursToFile, bool writeKeywordsToFile, bool writePhaseDate, BackgroundWorker worker, WorkerStates workerState)
         {
 #if DEBUG
             System.Diagnostics.Debug.WriteLine("[DetailExtractorTXT]\"ExtractRevisionOneDetails\" not implemented.");
@@ -20,7 +20,7 @@ namespace ProjectExtractor.Extractors.Detail
             return ExitCode.NOT_IMPLEMENTED;
         }
 
-        protected override ExitCode ExtractRevisionTwoDetails(string file, string extractPath, string[] keywords, string chapters, string stopChapters, string totalHoursKeyword, bool writeTotalHoursToFile, bool writeKeywordsToFile, BackgroundWorker worker, WorkerStates workerState)
+        protected override ExitCode ExtractRevisionTwoDetails(string file, string extractPath, string[] keywords, string chapters, string stopChapters, string totalHoursKeyword, bool writeTotalHoursToFile, bool writeKeywordsToFile, bool writePhaseDate, BackgroundWorker worker, WorkerStates workerState)
         {
             string titleRegex = @"WBSO[ ][0-9]{1,4}";
             ExitCode returnCode = ExitCode.NONE;
@@ -58,7 +58,15 @@ namespace ProjectExtractor.Extractors.Detail
                     {//if for whatever reason, the contents are on the next line
                         projectCodes.Add(Lines[i]);//is just the code
                         lastSpace = Lines[i + 1].LastIndexOf(' ');
-                        string proj = Lines[i + 1].Substring(0, lastSpace);
+                        string proj;
+                        if (lastSpace > 0)
+                        {
+                            proj = Lines[i + 1].Substring(0, lastSpace);
+                        }
+                        else
+                        {//still no spaces, must be the entire original line then
+                            proj = Lines[i];
+                        }
                         ProjectStrings.RemoveAt(ProjectStrings.Count - 1);//remove previous line because it has values for THIS line
                         ProjectStrings.Add(Lines[i] + " | " + proj + " | " + Lines[i + 1].Substring(lastSpace));
 
@@ -103,7 +111,7 @@ namespace ProjectExtractor.Extractors.Detail
                         }
                         if (foundProjectCode == true && Lines[line].Contains(chapters))
                         {//BUG: date that is ended by page will be parsed correctly, but WILL show page number if it is the latest
-                            int skipTo = GetLatestDate(Lines, line, stopChapters, out lastUpdate);
+                            int skipTo = GetLatestDate(Lines, line, stopChapters, out lastUpdate, writePhaseDate);
                             line = skipTo;
                             lastIndex = line + 1;
                             foundProjectCode = false;
@@ -134,7 +142,7 @@ namespace ProjectExtractor.Extractors.Detail
             }
             return returnCode;
         }
-        protected override ExitCode ExtractRevisionThreeDetails(string file, string extractPath, string[] Keywords, string chapters, string stopChapters, string totalHoursKeyword, bool WriteTotalHoursToFile, bool WriteKeywordsToFile, BackgroundWorker Worker, WorkerStates workerState)
+        protected override ExitCode ExtractRevisionThreeDetails(string file, string extractPath, string[] Keywords, string chapters, string stopChapters, string totalHoursKeyword, bool WriteTotalHoursToFile, bool WriteKeywordsToFile, bool writePhaseDate, BackgroundWorker Worker, WorkerStates workerState)
         {
             //TODO: figure out way to handle different file structure versions
             ExitCode returnCode = ExitCode.NONE;//to return at the end
@@ -182,9 +190,16 @@ namespace ProjectExtractor.Extractors.Detail
                     keywordValuePairs.Clear();
 
                     //get the latest date and put it's line in there, skip to past that point as the data on the preceded lines is not needed
-                    int skipTo = GetLatestDate(Lines, lineIndex, stopChapters, out _);
+                    int skipTo = GetLatestDate(Lines, lineIndex, stopChapters, out string date, writePhaseDate);
                     lineIndex = skipTo;
-                    str.Append(Lines[lineIndex]);
+                    if (writePhaseDate == true)
+                    {
+                        str.Append(date);
+                    }
+                    else
+                    {
+                        str.Append(Lines[lineIndex]);
+                    }
                     str.Append(Environment.NewLine);
                 }
 

@@ -43,7 +43,6 @@
             splitContainer1 = new System.Windows.Forms.SplitContainer();
             GB_Projects = new System.Windows.Forms.GroupBox();
             BT_MergeSelected = new System.Windows.Forms.Button();
-            BT_CleanAllProjects = new System.Windows.Forms.Button();
             LB_Projects = new System.Windows.Forms.ListBox();
             groupBox1 = new System.Windows.Forms.GroupBox();
             splitContainer2 = new System.Windows.Forms.SplitContainer();
@@ -52,7 +51,9 @@
             LV_DuplicateProjects = new System.Windows.Forms.ListView();
             LB_DuplicateCount = new System.Windows.Forms.Label();
             label6 = new System.Windows.Forms.Label();
+            splitContainer3 = new System.Windows.Forms.SplitContainer();
             RTB_ProjectDescription = new System.Windows.Forms.RichTextBox();
+            RTB_DuplicateDescription = new System.Windows.Forms.RichTextBox();
             BT_BrowseProjectsFolder = new System.Windows.Forms.Button();
             TB_ProjectsFolder = new System.Windows.Forms.TextBox();
             label3 = new System.Windows.Forms.Label();
@@ -72,6 +73,11 @@
             BT_CancelSettings = new System.Windows.Forms.Button();
             label1 = new System.Windows.Forms.Label();
             BT_SaveSettings = new System.Windows.Forms.Button();
+            menuStrip1 = new System.Windows.Forms.MenuStrip();
+            fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            loadProjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            saveProjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            cleanProjectsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)DGV_DatabaseResults).BeginInit();
             statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)NUD_MaxProjectsPerFile).BeginInit();
@@ -87,10 +93,15 @@
             splitContainer2.Panel1.SuspendLayout();
             splitContainer2.Panel2.SuspendLayout();
             splitContainer2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)splitContainer3).BeginInit();
+            splitContainer3.Panel1.SuspendLayout();
+            splitContainer3.Panel2.SuspendLayout();
+            splitContainer3.SuspendLayout();
             TB_Database.SuspendLayout();
             TP_Settings.SuspendLayout();
             groupBox3.SuspendLayout();
             groupBox4.SuspendLayout();
+            menuStrip1.SuspendLayout();
             SuspendLayout();
             // 
             // BT_FindProjects
@@ -128,7 +139,7 @@
             // 
             statusStrip1.GripStyle = System.Windows.Forms.ToolStripGripStyle.Visible;
             statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { TS_FoundProjects, TS_SearchProgress });
-            statusStrip1.Location = new System.Drawing.Point(0, 347);
+            statusStrip1.Location = new System.Drawing.Point(0, 371);
             statusStrip1.Name = "statusStrip1";
             statusStrip1.Size = new System.Drawing.Size(582, 24);
             statusStrip1.TabIndex = 105;
@@ -189,7 +200,7 @@
             tabControl1.Controls.Add(TB_Database);
             tabControl1.Controls.Add(TP_Settings);
             tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
-            tabControl1.Location = new System.Drawing.Point(0, 0);
+            tabControl1.Location = new System.Drawing.Point(0, 24);
             tabControl1.Name = "tabControl1";
             tabControl1.SelectedIndex = 0;
             tabControl1.Size = new System.Drawing.Size(582, 347);
@@ -244,7 +255,6 @@
             // GB_Projects
             // 
             GB_Projects.Controls.Add(BT_MergeSelected);
-            GB_Projects.Controls.Add(BT_CleanAllProjects);
             GB_Projects.Controls.Add(LB_Projects);
             GB_Projects.Dock = System.Windows.Forms.DockStyle.Fill;
             GB_Projects.Location = new System.Drawing.Point(0, 0);
@@ -256,27 +266,15 @@
             // 
             // BT_MergeSelected
             // 
-            BT_MergeSelected.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
+            BT_MergeSelected.Dock = System.Windows.Forms.DockStyle.Bottom;
             BT_MergeSelected.Enabled = false;
-            BT_MergeSelected.Location = new System.Drawing.Point(97, 250);
+            BT_MergeSelected.Location = new System.Drawing.Point(3, 253);
             BT_MergeSelected.Name = "BT_MergeSelected";
-            BT_MergeSelected.Size = new System.Drawing.Size(97, 23);
+            BT_MergeSelected.Size = new System.Drawing.Size(194, 23);
             BT_MergeSelected.TabIndex = 2;
             BT_MergeSelected.Text = "Merge selected";
             BT_MergeSelected.UseVisualStyleBackColor = true;
             BT_MergeSelected.Click += BT_MergeSelected_Click;
-            // 
-            // BT_CleanAllProjects
-            // 
-            BT_CleanAllProjects.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
-            BT_CleanAllProjects.Enabled = false;
-            BT_CleanAllProjects.Location = new System.Drawing.Point(6, 251);
-            BT_CleanAllProjects.Name = "BT_CleanAllProjects";
-            BT_CleanAllProjects.Size = new System.Drawing.Size(85, 23);
-            BT_CleanAllProjects.TabIndex = 1;
-            BT_CleanAllProjects.Text = "Clean all";
-            BT_CleanAllProjects.UseVisualStyleBackColor = true;
-            BT_CleanAllProjects.Click += BT_CleanAllProjects_Click;
             // 
             // LB_Projects
             // 
@@ -286,7 +284,8 @@
             LB_Projects.Location = new System.Drawing.Point(6, 22);
             LB_Projects.Name = "LB_Projects";
             LB_Projects.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-            LB_Projects.Size = new System.Drawing.Size(188, 214);
+            LB_Projects.Size = new System.Drawing.Size(188, 229);
+            LB_Projects.Sorted = true;
             LB_Projects.TabIndex = 0;
             LB_Projects.SelectedIndexChanged += LB_Projects_SelectedIndexChanged;
             // 
@@ -319,7 +318,7 @@
             // 
             // splitContainer2.Panel2
             // 
-            splitContainer2.Panel2.Controls.Add(RTB_ProjectDescription);
+            splitContainer2.Panel2.Controls.Add(splitContainer3);
             splitContainer2.Panel2MinSize = 48;
             splitContainer2.Size = new System.Drawing.Size(354, 257);
             splitContainer2.SplitterDistance = 205;
@@ -352,11 +351,10 @@
             // LV_DuplicateProjects
             // 
             LV_DuplicateProjects.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-            LV_DuplicateProjects.CheckBoxes = true;
             LV_DuplicateProjects.FullRowSelect = true;
             LV_DuplicateProjects.Location = new System.Drawing.Point(3, 32);
             LV_DuplicateProjects.Name = "LV_DuplicateProjects";
-            LV_DuplicateProjects.Size = new System.Drawing.Size(348, 170);
+            LV_DuplicateProjects.Size = new System.Drawing.Size(348, 167);
             LV_DuplicateProjects.TabIndex = 2;
             LV_DuplicateProjects.UseCompatibleStateImageBehavior = false;
             LV_DuplicateProjects.View = System.Windows.Forms.View.List;
@@ -380,6 +378,23 @@
             label6.TabIndex = 0;
             label6.Text = "Possible Duplicates:";
             // 
+            // splitContainer3
+            // 
+            splitContainer3.Dock = System.Windows.Forms.DockStyle.Fill;
+            splitContainer3.Location = new System.Drawing.Point(0, 0);
+            splitContainer3.Name = "splitContainer3";
+            // 
+            // splitContainer3.Panel1
+            // 
+            splitContainer3.Panel1.Controls.Add(RTB_ProjectDescription);
+            // 
+            // splitContainer3.Panel2
+            // 
+            splitContainer3.Panel2.Controls.Add(RTB_DuplicateDescription);
+            splitContainer3.Size = new System.Drawing.Size(354, 48);
+            splitContainer3.SplitterDistance = 177;
+            splitContainer3.TabIndex = 0;
+            // 
             // RTB_ProjectDescription
             // 
             RTB_ProjectDescription.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -387,9 +402,20 @@
             RTB_ProjectDescription.Name = "RTB_ProjectDescription";
             RTB_ProjectDescription.ReadOnly = true;
             RTB_ProjectDescription.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-            RTB_ProjectDescription.Size = new System.Drawing.Size(354, 48);
+            RTB_ProjectDescription.Size = new System.Drawing.Size(177, 48);
             RTB_ProjectDescription.TabIndex = 0;
             RTB_ProjectDescription.Text = "";
+            // 
+            // RTB_DuplicateDescription
+            // 
+            RTB_DuplicateDescription.Dock = System.Windows.Forms.DockStyle.Fill;
+            RTB_DuplicateDescription.Location = new System.Drawing.Point(0, 0);
+            RTB_DuplicateDescription.Name = "RTB_DuplicateDescription";
+            RTB_DuplicateDescription.ReadOnly = true;
+            RTB_DuplicateDescription.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
+            RTB_DuplicateDescription.Size = new System.Drawing.Size(173, 48);
+            RTB_DuplicateDescription.TabIndex = 1;
+            RTB_DuplicateDescription.Text = "";
             // 
             // BT_BrowseProjectsFolder
             // 
@@ -592,17 +618,58 @@
             BT_SaveSettings.UseVisualStyleBackColor = true;
             BT_SaveSettings.Click += BT_SaveSettings_Click;
             // 
+            // menuStrip1
+            // 
+            menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { fileToolStripMenuItem });
+            menuStrip1.Location = new System.Drawing.Point(0, 0);
+            menuStrip1.Name = "menuStrip1";
+            menuStrip1.Size = new System.Drawing.Size(582, 24);
+            menuStrip1.TabIndex = 108;
+            menuStrip1.Text = "menuStrip1";
+            // 
+            // fileToolStripMenuItem
+            // 
+            fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { loadProjectToolStripMenuItem, saveProjectToolStripMenuItem, cleanProjectsToolStripMenuItem });
+            fileToolStripMenuItem.Name = "fileToolStripMenuItem";
+            fileToolStripMenuItem.Size = new System.Drawing.Size(56, 20);
+            fileToolStripMenuItem.Text = "Project";
+            // 
+            // loadProjectToolStripMenuItem
+            // 
+            loadProjectToolStripMenuItem.Name = "loadProjectToolStripMenuItem";
+            loadProjectToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
+            loadProjectToolStripMenuItem.Text = "Load Project";
+            loadProjectToolStripMenuItem.Click += loadProjectToolStripMenuItem_Click;
+            // 
+            // saveProjectToolStripMenuItem
+            // 
+            saveProjectToolStripMenuItem.Name = "saveProjectToolStripMenuItem";
+            saveProjectToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
+            saveProjectToolStripMenuItem.Text = "Save Project";
+            saveProjectToolStripMenuItem.Click += saveProjectToolStripMenuItem_Click;
+            // 
+            // cleanProjectsToolStripMenuItem
+            // 
+            cleanProjectsToolStripMenuItem.Enabled = false;
+            cleanProjectsToolStripMenuItem.Name = "cleanProjectsToolStripMenuItem";
+            cleanProjectsToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
+            cleanProjectsToolStripMenuItem.Text = "Clean Projects";
+            cleanProjectsToolStripMenuItem.Click += cleanProjectsToolStripMenuItem_Click;
+            // 
             // CleanerForm
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            ClientSize = new System.Drawing.Size(582, 371);
+            ClientSize = new System.Drawing.Size(582, 395);
             Controls.Add(tabControl1);
             Controls.Add(statusStrip1);
-            MinimumSize = new System.Drawing.Size(598, 410);
+            Controls.Add(menuStrip1);
+            MainMenuStrip = menuStrip1;
+            MinimumSize = new System.Drawing.Size(598, 434);
             Name = "CleanerForm";
             StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             Text = "Access database cleaner";
+            FormClosing += CleanerForm_FormClosing;
             ((System.ComponentModel.ISupportInitialize)DGV_DatabaseResults).EndInit();
             statusStrip1.ResumeLayout(false);
             statusStrip1.PerformLayout();
@@ -621,6 +688,10 @@
             splitContainer2.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)splitContainer2).EndInit();
             splitContainer2.ResumeLayout(false);
+            splitContainer3.Panel1.ResumeLayout(false);
+            splitContainer3.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)splitContainer3).EndInit();
+            splitContainer3.ResumeLayout(false);
             TB_Database.ResumeLayout(false);
             TB_Database.PerformLayout();
             TP_Settings.ResumeLayout(false);
@@ -628,6 +699,8 @@
             groupBox3.PerformLayout();
             groupBox4.ResumeLayout(false);
             groupBox4.PerformLayout();
+            menuStrip1.ResumeLayout(false);
+            menuStrip1.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -669,7 +742,6 @@
         private System.Windows.Forms.ListView LV_DuplicateProjects;
         private System.Windows.Forms.Label LB_DuplicateCount;
         private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.Button BT_CleanAllProjects;
         private System.Windows.Forms.Button BT_MarkUnique;
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.Button BT_MergeSelected;
@@ -677,5 +749,12 @@
         private System.Windows.Forms.RichTextBox RTB_ProjectDescription;
         private System.Windows.Forms.Button BT_FindDuplicates;
         private System.Windows.Forms.Button BT_PreviewCleaned;
+        private System.Windows.Forms.SplitContainer splitContainer3;
+        private System.Windows.Forms.RichTextBox RTB_DuplicateDescription;
+        private System.Windows.Forms.MenuStrip menuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem loadProjectToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveProjectToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem cleanProjectsToolStripMenuItem;
     }
 }

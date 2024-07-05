@@ -11,16 +11,16 @@ namespace ProjectExtractor.Extractors.Detail
     {
         private bool _stripEmpties;
 
-        protected override ExitCode ExtractRevisionOneDetails(string file, string extractPath, string[] keywords, string chapters, string stopChapters, string totalHoursKeyword, bool writeTotalHoursToFile, bool writeKeywordsToFile, BackgroundWorker worker, WorkerStates workerState)
+        protected override ExitCode ExtractRevisionOneDetails(string file, string extractPath, string[] keywords, string chapters, string stopChapters, string totalHoursKeyword, bool writeTotalHoursToFile, bool writeKeywordsToFile,bool writePhaseDate ,BackgroundWorker worker, WorkerStates workerState)
         {
             return ExtractEverything(file, extractPath, worker, workerState);
         }
 
-        protected override ExitCode ExtractRevisionTwoDetails(string file, string extractPath, string[] keywords, string chapters, string stopChapters, string totalHoursKeyword, bool writeTotalHoursToFile, bool writeKeywordsToFile, BackgroundWorker worker, WorkerStates workerState)
+        protected override ExitCode ExtractRevisionTwoDetails(string file, string extractPath, string[] keywords, string chapters, string stopChapters, string totalHoursKeyword, bool writeTotalHoursToFile, bool writeKeywordsToFile, bool writePhaseDate, BackgroundWorker worker, WorkerStates workerState)
         {
             return ExtractEverything(file, extractPath, worker, workerState);
         }
-        protected override ExitCode ExtractRevisionThreeDetails(string file, string extractPath, string[] Keywords, string chapters, string stopChapters, string totalHoursKeyword, bool WriteTotalHoursToFile, bool WriteKeywordsToFile, BackgroundWorker Worker, WorkerStates workerState)
+        protected override ExitCode ExtractRevisionThreeDetails(string file, string extractPath, string[] Keywords, string chapters, string stopChapters, string totalHoursKeyword, bool WriteTotalHoursToFile, bool WriteKeywordsToFile, bool writePhaseDate, BackgroundWorker Worker, WorkerStates workerState)
         {
             return ExtractEverything(file, extractPath, Worker, workerState);
         }

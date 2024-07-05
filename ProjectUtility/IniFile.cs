@@ -174,10 +174,10 @@ namespace ProjectUtility
         /// <param name="Key">The key to look for</param>
         /// <param name="Section">The section to look in</param>
         /// <returns>a parsed integer value. If unable to find or parse, returns int.MinValue</returns>
-        public int ReadIntIfExists(string Key, string Section = null)
+        public int ReadIntIfExists(string Key, string Section = null, int fallback = int.MinValue)
         {
             if (KeyExists(Key, Section) == false)
-            { return int.MinValue; }
+            { return fallback; }
             return ReadInt(Key, Section);
         }
         /// <summary>Writes the integer value to key in section</summary>
