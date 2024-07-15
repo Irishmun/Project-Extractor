@@ -401,3 +401,6 @@ FodyWeavers.xsd
 [Tt]estData/
 [Tt]estDocs/
 ProjectExtractor/Extractors/FullProject/example.txt
+
+#sensitive data
+CompanyNameLut.txt

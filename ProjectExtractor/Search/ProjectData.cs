@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 
 
@@ -12,56 +13,19 @@ namespace ProjectExtractor.Search
     {
         private string _path;
         private string _id;
-        private string _description;
+        private string _content;
         private string _customer;
         private int _numberInDocument;
-        private Dictionary<DateTime, string> _projectPhases;
-        private string _latestUpdate;
-        private string[] _technical;
-        private bool _cooperation;
-        private bool _softwareDeveloped;
 
-        private bool _projectCost;
-        private decimal _totalCost;
-        private string _costDescription;
 
-        private bool _projectExpense;
-        private decimal _totalExpense;
-        private string _expenseDescription;
-
-        public ProjectData(string path, string id, string customer, int numberInDocument, string description)
+        public ProjectData(string path, string id, string customer, int numberInDocument, string content)
         {
             _path = path;
             _id = id;
+            _content = content;
             _customer = customer;
             _numberInDocument = numberInDocument;
-            _description = description;
-            _cooperation = false;
-            _projectPhases = null;
-            _latestUpdate = String.Empty;
-            _technical = null;
-            _softwareDeveloped = false;
-            _projectCost = false;
-            _totalCost = 0;
-            _costDescription = String.Empty;
-            _projectExpense = false;
-            _totalExpense = 0;
-            _expenseDescription = String.Empty;
-        }
 
-        public ProjectData(string path, string id, string customer, int numberInDocument, string description, bool cooperation, Dictionary<DateTime, string> projectPhases, string latestUpdate, string[] technical, bool softwareDeveloped = default, bool projectCost = default, decimal totalCost = default, string costDescription = default, bool projectExpense = default, decimal totalExpense = default, string expenseDescription = default) : this(path, id, customer, numberInDocument, description)
-        {
-            _cooperation = cooperation;
-            _projectPhases = projectPhases;
-            _latestUpdate = latestUpdate;
-            _technical = technical;
-            _softwareDeveloped = softwareDeveloped;
-            _projectCost = projectCost;
-            _totalCost = totalCost;
-            _costDescription = costDescription;
-            _projectExpense = projectExpense;
-            _totalExpense = totalExpense;
-            _expenseDescription = expenseDescription;
         }
 
         /// <summary>Tries to convert given text to a <see cref="ProjectData"/></summary>
@@ -83,34 +47,15 @@ namespace ProjectExtractor.Search
             project.Id = lines[startIndex];
             for (int i = startIndex + 1; i < endIndex; i++)
             {
-
                 if (lines[i].StartsWith("Omschrijving:"))
                 {
-                    project.Description = lines[i + 1];
-                    i += 1;
-                    continue;
-                }
-                if (lines[i].StartsWith("Samenwerking?:"))
-                {
-                    project.Cooperation = lines[i + 1].Contains("Ja") ? true : false;
-                    i += 1;
-                    continue;
-                }
-                if (lines[i].StartsWith("Fasering Werkzaamheden:"))
-                {
-                    project.ProjectPhases = GetDates(lines, i, endIndex, "Update Project:", out i);
-                    continue;
-                }
-                if (lines[i].StartsWith("- Technische knelpunten:"))
-                {
-                    project.Technical = GetTechnical(lines, i, endIndex, out i, "Wordt er mede programmatuur ontwikkeld?:", "Omschrijving kosten:");
-                    continue;
-                }
-                if (lines[i].StartsWith("Wordt er mede programmatuur ontwikkeld?:"))
-                {
-                    project.SoftwareDeveloped = lines[i + 1].Contains("Ja") ? true : false;
-                    i += 1;
-                    continue;
+                    StringBuilder str = new StringBuilder();
+                    for (int l = i + 1; l < endIndex; l++)
+                    {
+                        str.Append(lines[l]);
+                    }
+                    project.Content = str.ToString();
+                    break;
                 }
             }
             //end of project found, check if a project was found
@@ -178,21 +123,10 @@ namespace ProjectExtractor.Search
             return name;
         }
 
-        public bool Cooperation { get => _cooperation; set => _cooperation = value; }
-        public bool ProjectCost { get => _projectCost; set => _projectCost = value; }
-        public bool ProjectExpense { get => _projectExpense; set => _projectExpense = value; }
-        public bool SoftwareDeveloped { get => _softwareDeveloped; set => _softwareDeveloped = value; }
-        public decimal TotalCost { get => _totalCost; set => _totalCost = value; }
-        public decimal TotalExpense { get => _totalExpense; set => _totalExpense = value; }
-        public Dictionary<DateTime, string> ProjectPhases { get => _projectPhases; set => _projectPhases = value; }
-        public int NumberInDocument { get => _numberInDocument; set => _numberInDocument = value; }
-        public string CostDescription { get => _costDescription; set => _costDescription = value; }
-        public string Description { get => _description; set => _description = value; }
-        public string ExpenseDescription { get => _expenseDescription; set => _expenseDescription = value; }
+        public string Content { get => _content; set => _content = value; }
         public string Id { get => _id; set => _id = value; }
-        public string LatestUpdate { get => _latestUpdate; set => _latestUpdate = value; }
         public string Path { get => _path; set => _path = value; }
-        public string[] Technical { get => _technical; set => _technical = value; }
         public string Customer { get => _customer; set => _customer = value; }
+        public int NumberInDocument { get => _numberInDocument; set => _numberInDocument = value; }
     }
 }

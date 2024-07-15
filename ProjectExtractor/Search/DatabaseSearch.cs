@@ -128,12 +128,11 @@ namespace ProjectExtractor.Search
                     continue;
                 }
                 //check if query is in project description
-                if (_projects[i].Description != null)
+                if (_projects[i].Content != null)
                 {
-                    lines = _projects[i].Description.SplitNewLines(StringSplitOptions.RemoveEmptyEntries);
+                    lines = _projects[i].Content.SplitNewLines(StringSplitOptions.RemoveEmptyEntries);
                     for (int j = 0; j < lines.Length; j++)
                     {
-
                         //if (matches.Count > 0)
                         if (isMatch(lines[j], _projects[i], ref grid))
                         {
@@ -141,23 +140,14 @@ namespace ProjectExtractor.Search
                         }
                     }
                 }
-                if (_projects[i].Technical == null)
-                { continue; }
-                lines = _projects[i].Technical;
-                for (int j = 0; j < lines.Length; j++)
-                {
-                    if (isMatch(lines[j], _projects[i], ref grid))
-                    {
-                        break;
-                    }
-                }
             }
             //search through misc documents
             foreach (KeyValuePair<string, string> doc in _miscDocuments)
             {
-                if (doc.Value.ToLower().RegexMatch(reg, out Match match))
+                if (doc.Value.ToLower().RegexMatch(reg, out Match match) == true)
                 {
-                    addValueToGridView($"[?]{ProjectData.GetCustomerFromPath(doc.Key)} - bad extraction\n    {match.Value.TruncateForDisplay(SEARCH_RESULT_TRUNCATE, StringSearch.CreateSearchRegex(query, exact))}", doc.Key, ref grid);
+                    string value = doc.Value.Substring(match.Index, match.Length);
+                    addValueToGridView($"[?]{ProjectData.GetCustomerFromPath(doc.Key)}\n    {value.TruncateForDisplay(SEARCH_RESULT_TRUNCATE, StringSearch.CreateSearchRegex(query, exact))}", doc.Key, ref grid);
                 }
             }
 
@@ -166,7 +156,7 @@ namespace ProjectExtractor.Search
                 if (text.ToLower().RegexMatch(reg, out Match match) == true)
                 {
                     string value = text.Substring(match.Index, match.Length);
-                    addValueToGridView($"[{project.NumberInDocument}] {project.Customer} - {project.Id}\n    {value/*match.Value.TruncateForDisplay(SEARCH_RESULT_TRUNCATE, StringSearch.CreateSearchRegex(query, exact))*/}", project.Path, ref grid);
+                    addValueToGridView($"[{project.NumberInDocument}] {project.Customer} - {project.Id}\n    {value}", project.Path, ref grid);
                     return true;
                 }
                 return false;
@@ -198,7 +188,7 @@ namespace ProjectExtractor.Search
                     {
                         if (lines[j].Equals("=========[PROJECTS]==========="))
                         {
-                            prevProjectIndex = j+1;
+                            prevProjectIndex = j + 1;
                             i = j;
                             break;
                         }

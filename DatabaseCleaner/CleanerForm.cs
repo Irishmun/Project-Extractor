@@ -20,6 +20,7 @@ namespace DatabaseCleaner
         private DuplicateCleaner _duplicateCleaner;
         private Extractor _extractor;
         private int _totalProjects = 0;
+        private ProjectListDisplayMode _previousComboBoxValue = ProjectListDisplayMode.DISPLAY_ALL;
         private ProjectData _selectedProject;
         private List<int> _selectedIndexes;
         private DateTime _lastSaved = DateTime.MinValue;
@@ -34,6 +35,7 @@ namespace DatabaseCleaner
             this.Text = "Access Database Cleaner - V" + AssemblyVersion();
             SetValuesFromSettings();
             Settings.Instance.IsStarting = false;
+            CbB_ProjectDisplay.SelectedIndex = 0;
             loadProjectToolStripMenuItem.Enabled = File.Exists(SaveFile.SAVE_FILE);
             saveProjectToolStripMenuItem.Enabled = LB_Projects.Items.Count > 0;
             _selectedIndexes = new List<int>();
@@ -49,6 +51,82 @@ namespace DatabaseCleaner
             CB_TrustServerCertificateSetting.Checked = Settings.Instance.DbTrustServerCertificate;
             LB_ProjectsPerFileSetting.Text = Settings.Instance.MaxProjectsPerFile.ToString();
         }
+
+        #region ToolStrip events
+        #region File
+        private void loadProjectToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //TODO: load project file from program folder
+            if (File.Exists(SaveFile.SAVE_FILE) == false)
+            {
+                MessageBox.Show("No project file found...");
+                return;
+            }
+            if (_save == null)//save file exists
+            { _save = new SaveFile(); }
+            if (_duplicateCleaner == null)
+            { _duplicateCleaner = new DuplicateCleaner(); }
+            _duplicateCleaner.Projects = _save.GetSaveData(out string folder, out ProjectListDisplayMode displayMode);
+            TB_ProjectsFolder.Text = folder;
+            _previousComboBoxValue = displayMode;
+            CbB_ProjectDisplay.SelectedIndex = (int)displayMode;
+            FillProjectListBox(null, displayMode);
+            _lastSaved = File.GetLastWriteTime(SaveFile.SAVE_FILE);
+            TS_FoundProjects.Text = "Project loaded";
+        }
+        private void saveProjectToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //TODO: save project file to program folder
+            if (string.IsNullOrWhiteSpace(TB_ProjectsFolder.Text) == true || _duplicateCleaner == null)
+            { return; }
+            SaveProject();
+            loadProjectToolStripMenuItem.Enabled = File.Exists(SaveFile.SAVE_FILE);
+            MessageBox.Show("Saved Project.");
+            TS_FoundProjects.Text = "Saved project";
+            _lastSaved = DateTime.Now;
+        }
+
+        private void cleanProjectsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //go through all projects in the list, merging duplicate entries into top entry
+            //do the same as clean all but with only one item in the listview that have been checked (manual controlling)
+            if (LB_Projects.Items.Count == 0)
+            { return; }
+            backgroundWorker.RunWorkerAsync(UtilMethods.CreateBackgroundWorkerArgs(WorkerStates.BATCH_CLEAN_DUPLICATES));
+        }
+        #endregion
+        #region edit
+        private void changeProjectDataToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ProjectData projectToEdit = LastSelectedProject();
+            EditProjectPopUp edit = new EditProjectPopUp(projectToEdit);
+            if (edit.ShowDialog() == DialogResult.OK)
+            {
+                _duplicateCleaner.ReplaceKey(projectToEdit, edit.Data);
+                FillProjectListBox(edit.Data, (ProjectListDisplayMode)CbB_ProjectDisplay.SelectedIndex);
+            }
+        }
+        private void copyOriginalTitleToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (_selectedIndexes.Count == 0)
+            {
+                copyOriginalTitleToolStripMenuItem.Enabled = _selectedIndexes.Count > 0;
+                return; 
+            }
+            Clipboard.SetText(LastSelectedProject().Title);
+        }
+
+        private void copyDuplicateTitleToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (LV_DuplicateProjects.SelectedIndices.Count == 0)
+            {
+                copyDuplicateTitleToolStripMenuItem.Enabled = false;
+                return;
+            }
+            Clipboard.SetText(((ProjectData)LV_DuplicateProjects.SelectedItems[0].Tag).Title);
+        }
+        #endregion
+        #endregion
 
         #region Duplicate cleaner tab
         #region button events
@@ -67,7 +145,7 @@ namespace DatabaseCleaner
             }
         }
         private void BT_MarkUnique_Click(object sender, EventArgs e)
-        {
+        {//TODO: fix markunique (doesn't add to main list for some reason)
             //do the same as clean all but with only one item in the listview that have been checked (manual controlling)
             if (_selectedIndexes.Count == 0)
             { return; }
@@ -75,16 +153,34 @@ namespace DatabaseCleaner
             { return; }
             ProjectData last = LastSelectedProject();
             _duplicateCleaner.MakeUnique(last, LV_DuplicateProjects.SelectedIndices);
-            FillProjectListBox(last);
+            if (LB_Projects.Items.Count == 0 ||
+                (_duplicateCleaner.Projects[last].Length == 0 && (ProjectListDisplayMode)CbB_ProjectDisplay.SelectedIndex == ProjectListDisplayMode.DISPLAY_WITH_DUPLICATES))
+            {//edge case where (with duplicates) becomes empty from making unique
+                FillProjectListBox(null, (ProjectListDisplayMode)CbB_ProjectDisplay.SelectedIndex);
+            }
+            else
+            {
+                FillProjectListBox(last, (ProjectListDisplayMode)CbB_ProjectDisplay.SelectedIndex);
+            }
             FillDuplicateListView();
         }
         private void BT_PreviewCleaned_Click(object sender, EventArgs e)
         {
-            if (_selectedIndexes.Count == 0)
+            if (LV_DuplicateProjects.SelectedIndices.Count == 0)
             { return; }
-            backgroundWorker.RunWorkerAsync(UtilMethods.CreateBackgroundWorkerArgs(WorkerStates.PREVIEW_CLEANED, LastSelectedProject()));
+            if (LV_DuplicateProjects.SelectedIndices.Count >= 10)
+            {
+                if (MessageBox.Show($"Are you sure you want to view {LV_DuplicateProjects.SelectedIndices.Count} projects? This may cause the program to hang.",
+                    "Large project count", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) == DialogResult.Cancel)
+                {
+                    return;
+                }
+            }
+            for (int i = 0; i < LV_DuplicateProjects.SelectedIndices.Count; i++)
+            {
+                ViewSelectedProject((ProjectData)LV_DuplicateProjects.Items[LV_DuplicateProjects.SelectedIndices[i]].Tag);
+            }
         }
-
         private void BT_MergeSelected_Click(object sender, EventArgs e)
         {
             if (_selectedIndexes.Count <= 1)
@@ -103,10 +199,16 @@ namespace DatabaseCleaner
                 _duplicateCleaner.MergeProjects(_selectedProject, (ProjectData)LB_Projects.Items[item]);
             }
             _selectedIndexes.Clear();
-            FillProjectListBox(_selectedProject);
+            FillProjectListBox(_selectedProject, (ProjectListDisplayMode)CbB_ProjectDisplay.SelectedIndex);
             FillDuplicateListView();
         }
-
+        private void BT_DeleteSelected_Click(object sender, EventArgs e)
+        {//remove selected project from listbox AND from dictionary
+            ProjectData toRemove = LastSelectedProject();
+            _duplicateCleaner.Projects.Remove(toRemove);
+            LB_Projects.Items.Remove(toRemove);
+            FillDuplicateListView();
+        }
         private void BT_FindDuplicates_Click(object sender, EventArgs e)
         {
             if (Directory.Exists(TB_ProjectsFolder.Text) == false)
@@ -130,19 +232,28 @@ namespace DatabaseCleaner
         private void LB_Projects_SelectedIndexChanged(object sender, EventArgs e)
         {
             TrackSelectionChange((ListBox)sender, _selectedIndexes);
-            RTB_DuplicateDescription.Text = string.Empty;
             FillDuplicateListView();
         }
         private void LV_DuplicateProjects_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (LV_DuplicateProjects.SelectedItems.Count == 0)
-            { return; }
-#if DEBUG
-            Debug.WriteLine("selected: " + _duplicateCleaner.DuplicateProjects[_selectedProject][LV_DuplicateProjects.SelectedIndices[0]]);
-#endif
-            RTB_DuplicateDescription.Text = _duplicateCleaner.DuplicateProjects[_selectedProject][LV_DuplicateProjects.SelectedIndices[0]].Description;
+            copyDuplicateTitleToolStripMenuItem.Enabled = LV_DuplicateProjects.SelectedIndices.Count > 0;
+
         }
 
+        #endregion
+        #region ComboBox events
+        private void CbB_ProjectDisplay_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (_duplicateCleaner == null)
+            { return; }
+            ProjectListDisplayMode currentValue = (ProjectListDisplayMode)((ComboBox)sender).SelectedIndex;
+            if (currentValue == _previousComboBoxValue)
+            { return; }
+            _previousComboBoxValue = currentValue;
+            FillProjectListBox(null, currentValue);
+            FillDuplicateListView();
+
+        }
         #endregion
         #endregion
         #region Database searches tab
@@ -219,51 +330,6 @@ namespace DatabaseCleaner
         }
         #endregion
         #endregion
-        #region ToolStrip
-        private void loadProjectToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            //TODO: load project file from program folder
-            if (File.Exists(SaveFile.SAVE_FILE) == false)
-            {
-                MessageBox.Show("No project file found...");
-                return;
-            }
-            if (_save == null)//save file exists
-            { _save = new SaveFile(); }
-            if (_duplicateCleaner == null)
-            { _duplicateCleaner = new DuplicateCleaner(); }
-            _duplicateCleaner.DuplicateProjects = _save.GetSaveData(out string folder);
-            TB_ProjectsFolder.Text = folder;
-            FillProjectListBox(null);
-            _lastSaved = File.GetLastWriteTime(SaveFile.SAVE_FILE);
-            TS_FoundProjects.Text = "Project loaded";
-        }
-        private void saveProjectToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            //TODO: save project file to program folder
-            if (string.IsNullOrWhiteSpace(TB_ProjectsFolder.Text) == true || _duplicateCleaner == null)
-            { return; }
-            SaveProject();
-            loadProjectToolStripMenuItem.Enabled = File.Exists(SaveFile.SAVE_FILE);
-            MessageBox.Show("Saved Project.");
-            TS_FoundProjects.Text = "Saved project";
-            _lastSaved = DateTime.Now;
-        }
-
-        private void cleanProjectsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            //go through all projects in the list, merging duplicate entries into top entry
-            //do the same as clean all but with only one item in the listview that have been checked (manual controlling)
-            if (LB_Projects.Items.Count == 0)
-            { return; }
-            string cleanedPath = Path.Combine(TB_ProjectsFolder.Text, "Cleaned");
-            if (Directory.Exists(cleanedPath) == false)
-            {
-                Directory.CreateDirectory(cleanedPath);
-            }
-            backgroundWorker.RunWorkerAsync(UtilMethods.CreateBackgroundWorkerArgs(WorkerStates.BATCH_CLEAN_DUPLICATES, cleanedPath));
-        }
-        #endregion
         #region Background Worker
 
         private void backgroundWorker1_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
@@ -289,14 +355,14 @@ namespace DatabaseCleaner
                     _duplicateCleaner.MakePossibleDuplicatesDictionary(backgroundWorker, (string)args[0]);
                     break;
                 case WorkerStates.CLEAN_DUPLICATES:
-                    e.Result = args[1];
-                    _duplicateCleaner.CleanDuplicatesAndWriteToFile((ProjectData)args[0], (string)args[1], backgroundWorker);
+                    e.Result = DuplicateCleaner.CLEANED_PATH;
+                    _duplicateCleaner.CleanDuplicatesAndWriteToFile((ProjectData)args[0], backgroundWorker);
                     break;
                 case WorkerStates.BATCH_CLEAN_DUPLICATES:
-                    e.Result = args[0];
-                    foreach (KeyValuePair<ProjectData, ProjectData[]> project in _duplicateCleaner.DuplicateProjects)
+                    e.Result = DuplicateCleaner.CLEANED_PATH;
+                    foreach (KeyValuePair<ProjectData, ProjectData[]> project in _duplicateCleaner.Projects)
                     {
-                        _duplicateCleaner.CleanDuplicatesAndWriteToFile(project.Key, (string)args[0], backgroundWorker);
+                        _duplicateCleaner.CleanDuplicatesAndWriteToFile(project.Key, backgroundWorker);
                     }
                     break;
                 case WorkerStates.PREVIEW_CLEANED:
@@ -354,17 +420,10 @@ namespace DatabaseCleaner
                         Process.Start("explorer.exe", (string)e.Result);
                     }
                 }
-                else if (statusType.Equals(typeof(StringBuilder)))
-                {
-                    ProjectPreviewPopUp popUp = new ProjectPreviewPopUp(LastSelectedProject(), _duplicateCleaner.DuplicateProjects[LastSelectedProject()], ((StringBuilder)e.Result).ToString());
-                    popUp.Show(this);
-                    popUp.Focus();
-                    //MessageBox.Show(((StringBuilder)e.Result).ToString(), "Preview", MessageBoxButtons.OK);
-                }
             }
             else
             {
-                FillProjectListBox(null);
+                FillProjectListBox(null, (ProjectListDisplayMode)CbB_ProjectDisplay.SelectedIndex);
             }
             this.Cursor = Cursors.Default;
             SetEnabledInputFields(true);
@@ -372,13 +431,18 @@ namespace DatabaseCleaner
         #endregion
 
         #region methods
+        private void ViewSelectedProject(ProjectData projectData)
+        {
+            ProjectPreviewPopUp popUp = new ProjectPreviewPopUp(projectData);
+            popUp.Show(this);
+            popUp.Focus();
+        }
         private void SetEnabledInputFields(bool enabled)
         {
             BT_FindProjects.Enabled = enabled;
             NUD_MaxProjectsPerFile.Enabled = enabled;
             BT_BrowseProjectsFolder.Enabled = enabled;
         }
-
         private void TrackSelectionChange(ListBox sender, List<int> selection)
         {//keep track of last selected index
             ListBox.SelectedIndexCollection sic = sender.SelectedIndices;
@@ -389,15 +453,33 @@ namespace DatabaseCleaner
                 if (!sic.Contains(index)) selection.Remove(index);
         }
 
-        private void FillProjectListBox(ProjectData? selected)
+        private void FillProjectListBox(ProjectData? selected, ProjectListDisplayMode displayMode)
         {//TODO: find better way to display projects ([duplicate count]project name) but what if project had no name?
          //perhaps a readonly textbox containing the main project's description
             LB_Projects.Items.Clear();
-            foreach (KeyValuePair<ProjectData, ProjectData[]> item in _duplicateCleaner.DuplicateProjects)
+            foreach (KeyValuePair<ProjectData, ProjectData[]> item in _duplicateCleaner.Projects)
             {
-                LB_Projects.Items.Add(item.Key);
+                switch (displayMode)
+                {
+                    case ProjectListDisplayMode.DISPLAY_ALL:
+                    default:
+                        LB_Projects.Items.Add(item.Key);
+                        break;
+                    case ProjectListDisplayMode.DISPLAY_WITH_DUPLICATES:
+                        if (item.Value.Length > 0)
+                        {
+                            LB_Projects.Items.Add(item.Key);
+                        }
+                        break;
+                    case ProjectListDisplayMode.DISPLAY_NO_DUPLICATES:
+                        if (item.Value.Length == 0)
+                        {
+                            LB_Projects.Items.Add(item.Key);
+                        }
+                        break;
+                }
             }
-            GB_Projects.Text = _duplicateCleaner.DuplicateProjects.Count + " Projects";
+            GB_Projects.Text = $"{LB_Projects.Items.Count}/{_duplicateCleaner.Projects.Count} Projects";
             cleanProjectsToolStripMenuItem.Enabled = LB_Projects.Items.Count > 0;
             saveProjectToolStripMenuItem.Enabled = LB_Projects.Items.Count > 0;
             if (selected != null)
@@ -417,8 +499,12 @@ namespace DatabaseCleaner
         private void FillDuplicateListView()
         {
             LV_DuplicateProjects.Items.Clear();
-            RTB_ProjectDescription.Text = string.Empty;
-            BT_PreviewCleaned.Enabled = _selectedIndexes.Count > 0;
+            RTB_CleanedPreview.Text = string.Empty;
+            BT_ViewSelectedDuplicate.Enabled = _selectedIndexes.Count > 0;
+            BT_MergeSelected.Enabled = _selectedIndexes.Count > 1;
+            BT_DeleteSelected.Enabled = _selectedIndexes.Count > 0;
+            changeProjectDataToolStripMenuItem.Enabled = _selectedIndexes.Count > 0;
+            copyOriginalTitleToolStripMenuItem.Enabled = _selectedIndexes.Count > 0;
             if (_selectedIndexes.Count == 0)
             {
                 LB_DuplicateCount.Text = "0";
@@ -426,21 +512,23 @@ namespace DatabaseCleaner
                 return;
             }
             _selectedProject = LastSelectedProject();
-            BT_MergeSelected.Enabled = _selectedIndexes.Count > 1;
+            RTB_CleanedPreview.Text = _duplicateCleaner.CleanDuplicates(LastSelectedProject(), null).ToString();
             //list all "duplicate" items in listview
-            if (_duplicateCleaner.DuplicateProjects.ContainsKey(_selectedProject) == true)
+            if (_duplicateCleaner.Projects.ContainsKey(_selectedProject) == true)
             {//this should always happen, but it doesn't sometimes
 
-                for (int i = 0; i < _duplicateCleaner.DuplicateProjects[_selectedProject].Length; i++)
+                for (int i = 0; i < _duplicateCleaner.Projects[_selectedProject].Length; i++)
                 {
-                    LV_DuplicateProjects.Items.Add(_duplicateCleaner.DuplicateProjects[_selectedProject][i].ToString());
+                    ListViewItem item = new ListViewItem(_duplicateCleaner.Projects[_selectedProject][i].ToString());
+                    item.Tag = _duplicateCleaner.Projects[_selectedProject][i];
+                    LV_DuplicateProjects.Items.Add(item);
                     LV_DuplicateProjects.Items[i].Checked = true;
                 }
                 //enable or disable clean selected button depending on if the selected project has duplicates or not
-                BT_MarkUnique.Enabled = _duplicateCleaner.DuplicateProjects[_selectedProject].Length > 0;
+                BT_MarkUnique.Enabled = _duplicateCleaner.Projects[_selectedProject].Length > 0;
+
                 //set duplicate count label
-                LB_DuplicateCount.Text = _duplicateCleaner.DuplicateProjects[_selectedProject].Length.ToString();
-                RTB_ProjectDescription.Text = _selectedProject.Description;
+                LB_DuplicateCount.Text = _duplicateCleaner.Projects[_selectedProject].Length.ToString();
                 return;
             }
             //if project does not exist, disable button and reset label
@@ -449,6 +537,8 @@ namespace DatabaseCleaner
 
         }
 
+        /// <summary>Gets last selected item from selected indexes</summary>
+        /// <exception cref="IndexOutOfRangeException">Throws if list contents were changed before being called</exception>        
         private ProjectData LastSelectedProject()
         {
             return (ProjectData)LB_Projects.Items[_selectedIndexes[_selectedIndexes.Count - 1]];
@@ -463,7 +553,7 @@ namespace DatabaseCleaner
         private void SaveProject()
         {
             _save = new SaveFile(TB_ProjectsFolder.Text);
-            _save.CreateSave(_duplicateCleaner.DuplicateProjects);
+            _save.CreateSave(_duplicateCleaner.Projects, (ProjectListDisplayMode)CbB_ProjectDisplay.SelectedIndex);
 #if DEBUG
             Debug.WriteLine("Saved project...");
 #endif
