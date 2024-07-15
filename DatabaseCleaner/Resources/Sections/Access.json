@@ -24,6 +24,13 @@
     "IsFileName": false,
     "IsBoolValue": false,
     "AppendNewLine": true,
+    "ContentString": "ID: {0}",
+    "Columns": [ "ID" ]
+  },
+  {
+    "IsFileName": false,
+    "IsBoolValue": false,
+    "AppendNewLine": true,
     "ContentString": "Bedrijf: {0}",
     "Columns": [ "CompanyName" ]
   },
@@ -56,6 +63,13 @@
   },
   {
     "IsFileName": false,
+    "IsBoolValue": false,
+    "AppendNewLine": true,
+    "ContentString": "Ontwerp: {0}",
+    "Columns": [ "ONTW" ]
+  },
+  {
+    "IsFileName": false,
     "IsBoolValue": true,
     "AppendNewLine": true,
     "ContentString": "Afgewezen?: {0}",
@@ -70,10 +84,52 @@
   },
   {
     "IsFileName": false,
+    "IsBooLValue": false,
+    "AppendNewLine": true,
+    "ContentString": "Fasering Werkzaamheden:\n{0}",
+    "Columns": [ "FASE" ]
+  },
+  {
+    "IsFileName": false,
     "IsBoolValue": false,
     "AppendNewLine": true,
     "ContentString": "Opmerkingen:\n{0}",
     "Columns": [ "Opmerkingen" ]
+  },
+  {
+    "IsFileName": false,
+    "IsBoolValue": false,
+    "AppendNewLine": true,
+    "ContentString": "Toelichting:\n{0}",
+    "Columns": [ "TOEL" ]
+  },
+  {
+    "IsFileName": false,
+    "IsBoolValue": false,
+    "AppendNewLine": true,
+    "ContentString": "Functionaliteit:\n{0}",
+    "Columns": [ "FUNC" ]
+  },
+  {
+    "IsFileName": false,
+    "IsBoolValue": false,
+    "AppendNewLine": true,
+    "ContentString": "Toepassing:\n{0}",
+    "Columns": [ "TOEP" ]
+  },
+  {
+    "IsFileName": false,
+    "IsBoolValue": false,
+    "AppendNewLine": true,
+    "ContentString": "Kennisinstelling:\n{0}",
+    "Columns": [ "KENN" ]
+  },
+  {
+    "IsFileName": false,
+    "IsBoolValue": false,
+    "AppendNewLine": true,
+    "ContentString": "Doelgroep:\n{0}",
+    "Columns": [ "DOEL" ]
   },
   {
     "IsFileName": false,

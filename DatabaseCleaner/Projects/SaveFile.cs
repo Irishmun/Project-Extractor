@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using DatabaseCleaner.Util;
+using Newtonsoft.Json;
 using ProjectUtility;
 using System;
 using System.Collections.Generic;
@@ -43,18 +44,19 @@ namespace DatabaseCleaner.Projects
             _hash = new FileHash(content.Folder, content.FolderHash);
         }
 
-        public void CreateSave(Dictionary<ProjectData, ProjectData[]> data)
+        public void CreateSave(Dictionary<ProjectData, ProjectData[]> data, ProjectListDisplayMode displayMode = ProjectListDisplayMode.DISPLAY_ALL)
         {
             _hash.SetHash();
-            SaveFileContent cont = new SaveFileContent(_hash.Hash, _folderToSave, data.ToList());
+            SaveFileContent cont = new SaveFileContent(displayMode, _hash.Hash, _folderToSave, data.ToList());
             string json = JsonConvert.SerializeObject(cont);
             File.WriteAllText(SAVE_FILE, json);
         }
 
-        public Dictionary<ProjectData, ProjectData[]> GetSaveData(out string folder)
+        public Dictionary<ProjectData, ProjectData[]> GetSaveData(out string folder, out ProjectListDisplayMode displayMode)
         {
             SaveFileContent cont = ReadSaveContent();
             folder = cont.Folder;
+            displayMode = cont.DisplayMode;
             return cont.Data.ToDictionary(x => x.Key, x => x.Value);
         }
 
@@ -82,17 +84,27 @@ namespace DatabaseCleaner.Projects
 
         internal struct SaveFileContent
         {
+            private ProjectListDisplayMode _displayMode;
             private string _folder;
             private string _folderHash;
             private List<KeyValuePair<ProjectData, ProjectData[]>> _data;
 
             public SaveFileContent(string folderHash, string folder, List<KeyValuePair<ProjectData, ProjectData[]>> data)
             {
+                this._displayMode = 0;
                 this._folderHash = folderHash;
                 this._folder = folder;
                 this._data = data;
             }
 
+            public SaveFileContent(ProjectListDisplayMode displayMode, string folderHash, string folder, List<KeyValuePair<ProjectData, ProjectData[]>> data)
+            {
+                this._displayMode = displayMode;
+                this._folderHash = folderHash;
+                this._folder = folder;
+                this._data = data;
+            }
+            public ProjectListDisplayMode DisplayMode { get => _displayMode; set => _displayMode = value; }
             public string Folder { get => _folder; set => _folder = value; }
             public string FolderHash { get => _folderHash; set => _folderHash = value; }
             public List<KeyValuePair<ProjectData, ProjectData[]>> Data { get => _data; set => _data = value; }

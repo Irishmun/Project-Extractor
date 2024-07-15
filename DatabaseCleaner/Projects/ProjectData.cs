@@ -9,10 +9,11 @@ namespace DatabaseCleaner.Projects
         private string _title;//Period TITLE PROJECT
         private string _description;//DESC
         private string _customer;//companyName
+        private string _modernCustomer;//companyName based on Look up table
 
         private DateTime _startDate;//STARTDATE
         private DateTime _endDate;//ENDDATE
-        private string _phase;//Period
+        private string _period;//Period
 
         private int _hours;//HOURS
 
@@ -33,14 +34,25 @@ namespace DatabaseCleaner.Projects
         private string _declined;//Afgewezen
         private string _softwareMade;//SOFTWARE
 
+        private string _design;// ONTW
+        private string _phase;// FASE
+        private string _explanation;// TOEL
+        private string _functionality;// FUNC
+        private string _application;// TOEP
+        private string _target;// DOEL
+        private string _institution;// KENN
+        private int _id;// ID
+
+
         public ProjectData()
         {
             this._title = string.Empty;
             this._description = string.Empty;
             this._customer = string.Empty;
+            this._modernCustomer = string.Empty;
             this._startDate = DateTime.MaxValue;
             this._endDate = DateTime.MinValue;
-            this._phase = string.Empty;
+            this._period = string.Empty;
             this._hours = -1;
             this._projectType = string.Empty;
             this._comment = string.Empty;
@@ -54,6 +66,14 @@ namespace DatabaseCleaner.Projects
             this._prin = string.Empty;
             this._declined = string.Empty;
             this._softwareMade = string.Empty;
+            this._design = string.Empty;
+            this._phase = string.Empty;
+            this._explanation = string.Empty;
+            this._functionality = string.Empty;
+            this._application = string.Empty;
+            this._target = string.Empty;
+            this._institution = string.Empty;
+            this._id = -1;
         }
 
         public ProjectData(string title, string description) : this()
@@ -62,25 +82,34 @@ namespace DatabaseCleaner.Projects
             this._description = description;
         }
 
-        public ProjectData(string title, string description, string customer, DateTime startDate, DateTime endDate, string phase, int hours, string projectType, string comment, string method, string techProblem, string techSolution, string techNew, string techResearch, string questionSenter, string self, string prin, string declined, string softwareMade) : this(title, description)
+        public ProjectData(string title, string description, string customer, string modernCustomer, DateTime startDate, DateTime endDate, string period, int hours, string projectType, string comment, string method, string techProblem, string techSolution, string techNew, string techResearch, string questionSenter, string self, string prin, string declined, string softwareMade, int id, string insitution, string target, string application, string functionality, string explanation, string phase, string design) : this(title, description)
         {
-            _customer = customer;
-            _startDate = startDate;
-            _endDate = endDate;
-            _phase = phase;
-            _hours = hours;
-            _projectType = projectType;
-            _comment = comment;
-            _method = method;
-            _techProblem = techProblem;
-            _techSolution = techSolution;
-            _techNew = techNew;
-            _techResearch = techResearch;
-            _questionSenter = questionSenter;
-            _self = self;
-            _prin = prin;
-            _declined = declined;
-            _softwareMade = softwareMade;
+            this._customer = customer;
+            this._modernCustomer = modernCustomer;
+            this._startDate = startDate;
+            this._endDate = endDate;
+            this._period = period;
+            this._hours = hours;
+            this._projectType = projectType;
+            this._comment = comment;
+            this._method = method;
+            this._techProblem = techProblem;
+            this._techSolution = techSolution;
+            this._techNew = techNew;
+            this._techResearch = techResearch;
+            this._questionSenter = questionSenter;
+            this._self = self;
+            this._prin = prin;
+            this._declined = declined;
+            this._softwareMade = softwareMade;
+            this._design = design;
+            this._phase = phase;
+            this._explanation = explanation;
+            this._functionality = functionality;
+            this._application = application;
+            this._target = target;
+            this._institution = insitution;
+            this._id = id;
         }
 
         public static bool TextToProject(string[] lines, int startIndex, int endIndex, out ProjectData project)
@@ -105,11 +134,12 @@ namespace DatabaseCleaner.Projects
                     if (tempString.Contains(':'))
                     {//also set phase, it's in here
                         //this._phase = DateTime.MinValue;
-                        project.Phase = tempString.Substring(0, tempString.IndexOf(':'));
+                        project.Period = tempString.Substring(0, tempString.IndexOf(':'));
+                        project.Title = tempString.Substring(tempString.IndexOf(':') + 1).Trim();
                     }
                     continue;
                 }
-                if (SetMultiStringIfTrue(out tempString, i, endIndex, "Omschrijving:", "Opmerkingen:", out i))
+                if (SetMultiStringIfTrue(out tempString, i, endIndex, "Omschrijving:", "Fasering Werkzaamheden:", out i))
                 {
                     project.Description = tempString;
                     continue;
@@ -139,7 +169,7 @@ namespace DatabaseCleaner.Projects
                     project.ProjectType = tempString;
                     continue;
                 }
-                if (SetMultiStringIfTrue(out tempString, i, endIndex, "Opmerkingen:", "Methode:", out i))
+                if (SetMultiStringIfTrue(out tempString, i, endIndex, "Opmerkingen:", "Toelichting:", out i))
                 {
                     project.Comment = tempString;
                     continue;
@@ -194,6 +224,56 @@ namespace DatabaseCleaner.Projects
                     project.Prin = tempString;
                     continue;
                 }
+                //TODO: check if this works (and check if mark unique works in batch)
+                //this._design = design;
+                if (SetStringIfTrue(out tempString, i, "Ontwerp:"))
+                {
+                    project.Prin = tempString;
+                    continue;
+                }
+                //this._phase = phase;
+                if (SetStringIfTrue(out tempString, i, "Fasering Werkzaamheden::", true))
+                {
+                    project.Phase = tempString;
+                    continue;
+                }
+                //this._explanation = explanation;
+                if (SetStringIfTrue(out tempString, i, "Toelichting:", true))
+                {
+                    project.Explanation = tempString;
+                    continue;
+                }
+                //this._functionality = functionality;
+                if (SetStringIfTrue(out tempString, i, "Functionaliteit:", true))
+                {
+                    project.Functionality = tempString;
+                    continue;
+                }
+                //this._application = application;
+                if (SetStringIfTrue(out tempString, i, "Toepassing:", true))
+                {
+                    project.Application = tempString;
+                    continue;
+                }
+                //this._target = target;
+                if (SetStringIfTrue(out tempString, i, "Doelgroep:", true))
+                {
+                    project.Audience = tempString;
+                    continue;
+                }
+                //this._institution = insitution;
+                if (SetStringIfTrue(out tempString, i, "Kennisinstelling:", true))
+                {
+                    project.Knowledge = tempString;
+                    continue;
+                }
+                //this._id = id;
+                if (SetIntIfTrue(out tempInt, i, "ID:"))
+                {
+                    project.Id = tempInt;
+                    continue;
+                }
+
             }
 
             return true;
@@ -208,6 +288,7 @@ namespace DatabaseCleaner.Projects
                     if (nextLine == true)
                     { index += 1; }
                     val = val.Trim('\0');//clear out terminator characters
+                    val = val.Replace("&nbsp", " ");
                     return true;
                 }
                 return false;
@@ -223,7 +304,9 @@ namespace DatabaseCleaner.Projects
                 {
                     if (lines[newIndex].StartsWith(terminator, StringComparison.OrdinalIgnoreCase) || lines[newIndex].Equals(DatabaseSection.PROJECT_SEPARATOR))
                     { break; }
-                    str.Append(lines[newIndex].Trim('\0'));
+                    lines[newIndex] = lines[newIndex].Trim('\0');
+                    lines[newIndex] = lines[newIndex].Replace("&nbsp", " ");
+                    str.Append(lines[newIndex]);
                 }
                 newIndex -= 1;
                 val = str.ToString().Trim('\0');
@@ -274,14 +357,15 @@ namespace DatabaseCleaner.Projects
         }
 
 
-        public override string ToString() => $"({_customer}) {_title}";
+        public override string ToString() => $"({_modernCustomer}) {_period}: {_title}";
 
         public string Title { get => _title; set => _title = value; }
         public string Description { get => _description; set => _description = value; }
         public string Customer { get => _customer; set => _customer = value; }
+        public string ModernCustomer { get => _modernCustomer; set => _modernCustomer = value; }
         public DateTime StartDate { get => _startDate; set => _startDate = value; }
         public DateTime EndDate { get => _endDate; set => _endDate = value; }
-        public string Phase { get => _phase; set => _phase = value; }
+        public string Period { get => _period; set => _period = value; }
         public int Hours { get => _hours; set => _hours = value; }
         public string ProjectType { get => _projectType; set => _projectType = value; }
         public string Comment { get => _comment; set => _comment = value; }
@@ -295,5 +379,13 @@ namespace DatabaseCleaner.Projects
         public string Prin { get => _prin; set => _prin = value; }
         public string Declined { get => _declined; set => _declined = value; }
         public string SoftwareMade { get => _softwareMade; set => _softwareMade = value; }
+        public string Design { get => _design; set => _design = value; }
+        public string Phase { get => _phase; set => _phase = value; }
+        public string Explanation { get => _explanation; set => _explanation = value; }
+        public string Functionality { get => _functionality; set => _functionality = value; }
+        public string Application { get => _application; set => _application = value; }
+        public string Audience { get => _target; set => _target = value; }
+        public string Knowledge { get => _institution; set => _institution = value; }
+        public int Id { get => _id; set => _id = value; }
     }
 }
