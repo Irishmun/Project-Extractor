@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CleanerForm));
             BT_FindProjects = new System.Windows.Forms.Button();
             DGV_DatabaseResults = new System.Windows.Forms.DataGridView();
             backgroundWorker = new System.ComponentModel.BackgroundWorker();
@@ -49,17 +50,23 @@
             LB_Projects = new System.Windows.Forms.ListBox();
             groupBox1 = new System.Windows.Forms.GroupBox();
             splitContainer2 = new System.Windows.Forms.SplitContainer();
+            splitContainer4 = new System.Windows.Forms.SplitContainer();
+            label6 = new System.Windows.Forms.Label();
+            LB_DuplicateCount = new System.Windows.Forms.Label();
+            splitContainer5 = new System.Windows.Forms.SplitContainer();
             BT_ViewSelectedDuplicate = new System.Windows.Forms.Button();
             BT_MarkUnique = new System.Windows.Forms.Button();
             LV_DuplicateProjects = new System.Windows.Forms.ListView();
-            LB_DuplicateCount = new System.Windows.Forms.Label();
-            label6 = new System.Windows.Forms.Label();
             RTB_CleanedPreview = new System.Windows.Forms.RichTextBox();
             BT_BrowseProjectsFolder = new System.Windows.Forms.Button();
             TB_ProjectsFolder = new System.Windows.Forms.TextBox();
             label3 = new System.Windows.Forms.Label();
             TB_Database = new System.Windows.Forms.TabPage();
             TP_Settings = new System.Windows.Forms.TabPage();
+            groupBox2 = new System.Windows.Forms.GroupBox();
+            RTB_FontSizeSetting = new System.Windows.Forms.RichTextBox();
+            TrB_FontSizeSetting = new System.Windows.Forms.TrackBar();
+            LB_FontSizeSetting = new System.Windows.Forms.Label();
             groupBox3 = new System.Windows.Forms.GroupBox();
             TB_ProjectsFolderSetting = new System.Windows.Forms.TextBox();
             Project = new System.Windows.Forms.Label();
@@ -71,9 +78,9 @@
             TB_InitialCatalogSetting = new System.Windows.Forms.TextBox();
             TB_DataSourceSetting = new System.Windows.Forms.TextBox();
             label5 = new System.Windows.Forms.Label();
-            BT_CancelSettings = new System.Windows.Forms.Button();
             label1 = new System.Windows.Forms.Label();
             BT_SaveSettings = new System.Windows.Forms.Button();
+            BT_CancelSettings = new System.Windows.Forms.Button();
             menuStrip1 = new System.Windows.Forms.MenuStrip();
             fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             loadProjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -102,8 +109,18 @@
             splitContainer2.Panel1.SuspendLayout();
             splitContainer2.Panel2.SuspendLayout();
             splitContainer2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)splitContainer4).BeginInit();
+            splitContainer4.Panel1.SuspendLayout();
+            splitContainer4.Panel2.SuspendLayout();
+            splitContainer4.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)splitContainer5).BeginInit();
+            splitContainer5.Panel1.SuspendLayout();
+            splitContainer5.Panel2.SuspendLayout();
+            splitContainer5.SuspendLayout();
             TB_Database.SuspendLayout();
             TP_Settings.SuspendLayout();
+            groupBox2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)TrB_FontSizeSetting).BeginInit();
             groupBox3.SuspendLayout();
             groupBox4.SuspendLayout();
             menuStrip1.SuspendLayout();
@@ -210,6 +227,7 @@
             tabControl1.SelectedIndex = 0;
             tabControl1.Size = new System.Drawing.Size(582, 347);
             tabControl1.TabIndex = 107;
+            tabControl1.SelectedIndexChanged += tabControl1_SelectedIndexChanged;
             // 
             // TP_Cleaner
             // 
@@ -230,6 +248,7 @@
             // BT_FindDuplicates
             // 
             BT_FindDuplicates.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+            BT_FindDuplicates.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             BT_FindDuplicates.Location = new System.Drawing.Point(451, 7);
             BT_FindDuplicates.Name = "BT_FindDuplicates";
             BT_FindDuplicates.Size = new System.Drawing.Size(116, 23);
@@ -274,7 +293,7 @@
             // 
             splitContainer3.Dock = System.Windows.Forms.DockStyle.Bottom;
             splitContainer3.IsSplitterFixed = true;
-            splitContainer3.Location = new System.Drawing.Point(3, 252);
+            splitContainer3.Location = new System.Drawing.Point(3, 244);
             splitContainer3.Name = "splitContainer3";
             // 
             // splitContainer3.Panel1
@@ -284,7 +303,7 @@
             // splitContainer3.Panel2
             // 
             splitContainer3.Panel2.Controls.Add(BT_MergeSelected);
-            splitContainer3.Size = new System.Drawing.Size(194, 24);
+            splitContainer3.Size = new System.Drawing.Size(194, 32);
             splitContainer3.SplitterDistance = 95;
             splitContainer3.TabIndex = 4;
             // 
@@ -292,9 +311,10 @@
             // 
             BT_DeleteSelected.Dock = System.Windows.Forms.DockStyle.Fill;
             BT_DeleteSelected.Enabled = false;
+            BT_DeleteSelected.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             BT_DeleteSelected.Location = new System.Drawing.Point(0, 0);
             BT_DeleteSelected.Name = "BT_DeleteSelected";
-            BT_DeleteSelected.Size = new System.Drawing.Size(95, 24);
+            BT_DeleteSelected.Size = new System.Drawing.Size(95, 32);
             BT_DeleteSelected.TabIndex = 0;
             BT_DeleteSelected.Text = "Delete Selected";
             BT_DeleteSelected.UseVisualStyleBackColor = true;
@@ -304,9 +324,10 @@
             // 
             BT_MergeSelected.Dock = System.Windows.Forms.DockStyle.Fill;
             BT_MergeSelected.Enabled = false;
+            BT_MergeSelected.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             BT_MergeSelected.Location = new System.Drawing.Point(0, 0);
             BT_MergeSelected.Name = "BT_MergeSelected";
-            BT_MergeSelected.Size = new System.Drawing.Size(95, 24);
+            BT_MergeSelected.Size = new System.Drawing.Size(95, 32);
             BT_MergeSelected.TabIndex = 2;
             BT_MergeSelected.Text = "Merge selected";
             BT_MergeSelected.UseVisualStyleBackColor = true;
@@ -327,12 +348,13 @@
             // LB_Projects
             // 
             LB_Projects.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            LB_Projects.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             LB_Projects.FormattingEnabled = true;
-            LB_Projects.ItemHeight = 15;
+            LB_Projects.ItemHeight = 17;
             LB_Projects.Location = new System.Drawing.Point(6, 47);
             LB_Projects.Name = "LB_Projects";
             LB_Projects.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-            LB_Projects.Size = new System.Drawing.Size(188, 199);
+            LB_Projects.Size = new System.Drawing.Size(188, 191);
             LB_Projects.Sorted = true;
             LB_Projects.TabIndex = 0;
             LB_Projects.SelectedIndexChanged += LB_Projects_SelectedIndexChanged;
@@ -357,11 +379,8 @@
             // 
             // splitContainer2.Panel1
             // 
-            splitContainer2.Panel1.Controls.Add(BT_ViewSelectedDuplicate);
-            splitContainer2.Panel1.Controls.Add(BT_MarkUnique);
+            splitContainer2.Panel1.Controls.Add(splitContainer4);
             splitContainer2.Panel1.Controls.Add(LV_DuplicateProjects);
-            splitContainer2.Panel1.Controls.Add(LB_DuplicateCount);
-            splitContainer2.Panel1.Controls.Add(label6);
             splitContainer2.Panel1MinSize = 80;
             // 
             // splitContainer2.Panel2
@@ -372,13 +391,69 @@
             splitContainer2.SplitterDistance = 191;
             splitContainer2.TabIndex = 4;
             // 
+            // splitContainer4
+            // 
+            splitContainer4.Dock = System.Windows.Forms.DockStyle.Top;
+            splitContainer4.IsSplitterFixed = true;
+            splitContainer4.Location = new System.Drawing.Point(0, 0);
+            splitContainer4.Name = "splitContainer4";
+            // 
+            // splitContainer4.Panel1
+            // 
+            splitContainer4.Panel1.Controls.Add(label6);
+            splitContainer4.Panel1.Controls.Add(LB_DuplicateCount);
+            // 
+            // splitContainer4.Panel2
+            // 
+            splitContainer4.Panel2.Controls.Add(splitContainer5);
+            splitContainer4.Size = new System.Drawing.Size(354, 35);
+            splitContainer4.SplitterDistance = 162;
+            splitContainer4.TabIndex = 5;
+            // 
+            // label6
+            // 
+            label6.AutoSize = true;
+            label6.Location = new System.Drawing.Point(3, 8);
+            label6.Name = "label6";
+            label6.Size = new System.Drawing.Size(111, 15);
+            label6.TabIndex = 0;
+            label6.Text = "Possible Duplicates:";
+            // 
+            // LB_DuplicateCount
+            // 
+            LB_DuplicateCount.AutoSize = true;
+            LB_DuplicateCount.Location = new System.Drawing.Point(110, 8);
+            LB_DuplicateCount.Name = "LB_DuplicateCount";
+            LB_DuplicateCount.Size = new System.Drawing.Size(13, 15);
+            LB_DuplicateCount.TabIndex = 1;
+            LB_DuplicateCount.Text = "0";
+            // 
+            // splitContainer5
+            // 
+            splitContainer5.Dock = System.Windows.Forms.DockStyle.Fill;
+            splitContainer5.IsSplitterFixed = true;
+            splitContainer5.Location = new System.Drawing.Point(0, 0);
+            splitContainer5.Name = "splitContainer5";
+            // 
+            // splitContainer5.Panel1
+            // 
+            splitContainer5.Panel1.Controls.Add(BT_ViewSelectedDuplicate);
+            // 
+            // splitContainer5.Panel2
+            // 
+            splitContainer5.Panel2.Controls.Add(BT_MarkUnique);
+            splitContainer5.Size = new System.Drawing.Size(188, 35);
+            splitContainer5.SplitterDistance = 90;
+            splitContainer5.TabIndex = 0;
+            // 
             // BT_ViewSelectedDuplicate
             // 
-            BT_ViewSelectedDuplicate.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+            BT_ViewSelectedDuplicate.Dock = System.Windows.Forms.DockStyle.Fill;
             BT_ViewSelectedDuplicate.Enabled = false;
-            BT_ViewSelectedDuplicate.Location = new System.Drawing.Point(170, 3);
+            BT_ViewSelectedDuplicate.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            BT_ViewSelectedDuplicate.Location = new System.Drawing.Point(0, 0);
             BT_ViewSelectedDuplicate.Name = "BT_ViewSelectedDuplicate";
-            BT_ViewSelectedDuplicate.Size = new System.Drawing.Size(88, 23);
+            BT_ViewSelectedDuplicate.Size = new System.Drawing.Size(90, 35);
             BT_ViewSelectedDuplicate.TabIndex = 4;
             BT_ViewSelectedDuplicate.Text = "View Selected";
             BT_ViewSelectedDuplicate.UseVisualStyleBackColor = true;
@@ -386,11 +461,12 @@
             // 
             // BT_MarkUnique
             // 
-            BT_MarkUnique.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+            BT_MarkUnique.Dock = System.Windows.Forms.DockStyle.Fill;
             BT_MarkUnique.Enabled = false;
-            BT_MarkUnique.Location = new System.Drawing.Point(264, 3);
+            BT_MarkUnique.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            BT_MarkUnique.Location = new System.Drawing.Point(0, 0);
             BT_MarkUnique.Name = "BT_MarkUnique";
-            BT_MarkUnique.Size = new System.Drawing.Size(87, 23);
+            BT_MarkUnique.Size = new System.Drawing.Size(94, 35);
             BT_MarkUnique.TabIndex = 3;
             BT_MarkUnique.Text = "Mark Unique";
             BT_MarkUnique.UseVisualStyleBackColor = true;
@@ -399,36 +475,20 @@
             // LV_DuplicateProjects
             // 
             LV_DuplicateProjects.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            LV_DuplicateProjects.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             LV_DuplicateProjects.FullRowSelect = true;
-            LV_DuplicateProjects.Location = new System.Drawing.Point(3, 32);
+            LV_DuplicateProjects.Location = new System.Drawing.Point(3, 41);
             LV_DuplicateProjects.Name = "LV_DuplicateProjects";
-            LV_DuplicateProjects.Size = new System.Drawing.Size(348, 153);
+            LV_DuplicateProjects.Size = new System.Drawing.Size(348, 144);
             LV_DuplicateProjects.TabIndex = 2;
             LV_DuplicateProjects.UseCompatibleStateImageBehavior = false;
             LV_DuplicateProjects.View = System.Windows.Forms.View.List;
             LV_DuplicateProjects.SelectedIndexChanged += LV_DuplicateProjects_SelectedIndexChanged;
             // 
-            // LB_DuplicateCount
-            // 
-            LB_DuplicateCount.AutoSize = true;
-            LB_DuplicateCount.Location = new System.Drawing.Point(110, 7);
-            LB_DuplicateCount.Name = "LB_DuplicateCount";
-            LB_DuplicateCount.Size = new System.Drawing.Size(13, 15);
-            LB_DuplicateCount.TabIndex = 1;
-            LB_DuplicateCount.Text = "0";
-            // 
-            // label6
-            // 
-            label6.AutoSize = true;
-            label6.Location = new System.Drawing.Point(3, 7);
-            label6.Name = "label6";
-            label6.Size = new System.Drawing.Size(111, 15);
-            label6.TabIndex = 0;
-            label6.Text = "Possible Duplicates:";
-            // 
             // RTB_CleanedPreview
             // 
             RTB_CleanedPreview.Dock = System.Windows.Forms.DockStyle.Fill;
+            RTB_CleanedPreview.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             RTB_CleanedPreview.Location = new System.Drawing.Point(0, 0);
             RTB_CleanedPreview.Name = "RTB_CleanedPreview";
             RTB_CleanedPreview.ReadOnly = true;
@@ -486,8 +546,11 @@
             // TP_Settings
             // 
             TP_Settings.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            TP_Settings.Controls.Add(groupBox2);
             TP_Settings.Controls.Add(groupBox3);
             TP_Settings.Controls.Add(groupBox4);
+            TP_Settings.Controls.Add(BT_SaveSettings);
+            TP_Settings.Controls.Add(BT_CancelSettings);
             TP_Settings.Location = new System.Drawing.Point(4, 24);
             TP_Settings.Name = "TP_Settings";
             TP_Settings.Size = new System.Drawing.Size(574, 319);
@@ -495,13 +558,60 @@
             TP_Settings.Text = "Settings";
             TP_Settings.UseVisualStyleBackColor = true;
             // 
+            // groupBox2
+            // 
+            groupBox2.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            groupBox2.Controls.Add(RTB_FontSizeSetting);
+            groupBox2.Controls.Add(TrB_FontSizeSetting);
+            groupBox2.Controls.Add(LB_FontSizeSetting);
+            groupBox2.Location = new System.Drawing.Point(3, 180);
+            groupBox2.Name = "groupBox2";
+            groupBox2.Size = new System.Drawing.Size(561, 103);
+            groupBox2.TabIndex = 3;
+            groupBox2.TabStop = false;
+            groupBox2.Text = "Font Size";
+            // 
+            // RTB_FontSizeSetting
+            // 
+            RTB_FontSizeSetting.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
+            RTB_FontSizeSetting.Enabled = false;
+            RTB_FontSizeSetting.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            RTB_FontSizeSetting.Location = new System.Drawing.Point(371, 19);
+            RTB_FontSizeSetting.Name = "RTB_FontSizeSetting";
+            RTB_FontSizeSetting.Size = new System.Drawing.Size(174, 78);
+            RTB_FontSizeSetting.TabIndex = 3;
+            RTB_FontSizeSetting.Text = resources.GetString("RTB_FontSizeSetting.Text");
+            // 
+            // TrB_FontSizeSetting
+            // 
+            TrB_FontSizeSetting.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            TrB_FontSizeSetting.Location = new System.Drawing.Point(6, 52);
+            TrB_FontSizeSetting.Maximum = 36;
+            TrB_FontSizeSetting.Minimum = 1;
+            TrB_FontSizeSetting.Name = "TrB_FontSizeSetting";
+            TrB_FontSizeSetting.Size = new System.Drawing.Size(359, 45);
+            TrB_FontSizeSetting.TabIndex = 2;
+            TrB_FontSizeSetting.Value = 9;
+            TrB_FontSizeSetting.Scroll += TrB_FontSizeSetting_Scroll;
+            // 
+            // LB_FontSizeSetting
+            // 
+            LB_FontSizeSetting.AutoSize = true;
+            LB_FontSizeSetting.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            LB_FontSizeSetting.Location = new System.Drawing.Point(5, 22);
+            LB_FontSizeSetting.Name = "LB_FontSizeSetting";
+            LB_FontSizeSetting.Size = new System.Drawing.Size(74, 15);
+            LB_FontSizeSetting.TabIndex = 0;
+            LB_FontSizeSetting.Text = "Text Size: 9pt";
+            // 
             // groupBox3
             // 
+            groupBox3.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
             groupBox3.Controls.Add(TB_ProjectsFolderSetting);
             groupBox3.Controls.Add(Project);
             groupBox3.Location = new System.Drawing.Point(3, 3);
             groupBox3.Name = "groupBox3";
-            groupBox3.Size = new System.Drawing.Size(551, 98);
+            groupBox3.Size = new System.Drawing.Size(561, 57);
             groupBox3.TabIndex = 2;
             groupBox3.TabStop = false;
             groupBox3.Text = "Duplicate cleaner";
@@ -513,7 +623,7 @@
             TB_ProjectsFolderSetting.Location = new System.Drawing.Point(126, 22);
             TB_ProjectsFolderSetting.Name = "TB_ProjectsFolderSetting";
             TB_ProjectsFolderSetting.ScrollBars = System.Windows.Forms.ScrollBars.Horizontal;
-            TB_ProjectsFolderSetting.Size = new System.Drawing.Size(419, 23);
+            TB_ProjectsFolderSetting.Size = new System.Drawing.Size(429, 23);
             TB_ProjectsFolderSetting.TabIndex = 1;
             // 
             // Project
@@ -527,6 +637,7 @@
             // 
             // groupBox4
             // 
+            groupBox4.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
             groupBox4.Controls.Add(LB_ProjectsPerFileSetting);
             groupBox4.Controls.Add(label4);
             groupBox4.Controls.Add(CB_TrustServerCertificateSetting);
@@ -534,12 +645,10 @@
             groupBox4.Controls.Add(TB_InitialCatalogSetting);
             groupBox4.Controls.Add(TB_DataSourceSetting);
             groupBox4.Controls.Add(label5);
-            groupBox4.Controls.Add(BT_CancelSettings);
             groupBox4.Controls.Add(label1);
-            groupBox4.Controls.Add(BT_SaveSettings);
-            groupBox4.Location = new System.Drawing.Point(3, 107);
+            groupBox4.Location = new System.Drawing.Point(3, 66);
             groupBox4.Name = "groupBox4";
-            groupBox4.Size = new System.Drawing.Size(551, 206);
+            groupBox4.Size = new System.Drawing.Size(561, 108);
             groupBox4.TabIndex = 1;
             groupBox4.TabStop = false;
             groupBox4.Text = "Database searcher";
@@ -547,7 +656,7 @@
             // LB_ProjectsPerFileSetting
             // 
             LB_ProjectsPerFileSetting.AutoSize = true;
-            LB_ProjectsPerFileSetting.Location = new System.Drawing.Point(126, 141);
+            LB_ProjectsPerFileSetting.Location = new System.Drawing.Point(430, 81);
             LB_ProjectsPerFileSetting.Name = "LB_ProjectsPerFileSetting";
             LB_ProjectsPerFileSetting.Size = new System.Drawing.Size(19, 15);
             LB_ProjectsPerFileSetting.TabIndex = 11;
@@ -556,7 +665,7 @@
             // label4
             // 
             label4.AutoSize = true;
-            label4.Location = new System.Drawing.Point(6, 141);
+            label4.Location = new System.Drawing.Point(310, 81);
             label4.Name = "label4";
             label4.Size = new System.Drawing.Size(117, 15);
             label4.TabIndex = 10;
@@ -565,7 +674,7 @@
             // CB_TrustServerCertificateSetting
             // 
             CB_TrustServerCertificateSetting.AutoSize = true;
-            CB_TrustServerCertificateSetting.Location = new System.Drawing.Point(6, 105);
+            CB_TrustServerCertificateSetting.Location = new System.Drawing.Point(136, 80);
             CB_TrustServerCertificateSetting.Name = "CB_TrustServerCertificateSetting";
             CB_TrustServerCertificateSetting.Size = new System.Drawing.Size(145, 19);
             CB_TrustServerCertificateSetting.TabIndex = 9;
@@ -587,7 +696,7 @@
             TB_InitialCatalogSetting.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
             TB_InitialCatalogSetting.Location = new System.Drawing.Point(126, 51);
             TB_InitialCatalogSetting.Name = "TB_InitialCatalogSetting";
-            TB_InitialCatalogSetting.Size = new System.Drawing.Size(419, 23);
+            TB_InitialCatalogSetting.Size = new System.Drawing.Size(429, 23);
             TB_InitialCatalogSetting.TabIndex = 7;
             // 
             // TB_DataSourceSetting
@@ -595,7 +704,7 @@
             TB_DataSourceSetting.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
             TB_DataSourceSetting.Location = new System.Drawing.Point(126, 22);
             TB_DataSourceSetting.Name = "TB_DataSourceSetting";
-            TB_DataSourceSetting.Size = new System.Drawing.Size(419, 23);
+            TB_DataSourceSetting.Size = new System.Drawing.Size(429, 23);
             TB_DataSourceSetting.TabIndex = 6;
             // 
             // label5
@@ -606,17 +715,6 @@
             label5.Size = new System.Drawing.Size(82, 15);
             label5.TabIndex = 4;
             label5.Text = "catalog name:";
-            // 
-            // BT_CancelSettings
-            // 
-            BT_CancelSettings.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
-            BT_CancelSettings.Location = new System.Drawing.Point(283, 177);
-            BT_CancelSettings.Name = "BT_CancelSettings";
-            BT_CancelSettings.Size = new System.Drawing.Size(128, 23);
-            BT_CancelSettings.TabIndex = 2;
-            BT_CancelSettings.Text = "Cancel";
-            BT_CancelSettings.UseVisualStyleBackColor = true;
-            BT_CancelSettings.Click += BT_CancelSettings_Click;
             // 
             // label1
             // 
@@ -630,13 +728,24 @@
             // BT_SaveSettings
             // 
             BT_SaveSettings.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
-            BT_SaveSettings.Location = new System.Drawing.Point(417, 177);
+            BT_SaveSettings.Location = new System.Drawing.Point(436, 289);
             BT_SaveSettings.Name = "BT_SaveSettings";
             BT_SaveSettings.Size = new System.Drawing.Size(128, 23);
             BT_SaveSettings.TabIndex = 0;
             BT_SaveSettings.Text = " Save Settings";
             BT_SaveSettings.UseVisualStyleBackColor = true;
             BT_SaveSettings.Click += BT_SaveSettings_Click;
+            // 
+            // BT_CancelSettings
+            // 
+            BT_CancelSettings.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
+            BT_CancelSettings.Location = new System.Drawing.Point(302, 289);
+            BT_CancelSettings.Name = "BT_CancelSettings";
+            BT_CancelSettings.Size = new System.Drawing.Size(128, 23);
+            BT_CancelSettings.TabIndex = 2;
+            BT_CancelSettings.Text = "Cancel";
+            BT_CancelSettings.UseVisualStyleBackColor = true;
+            BT_CancelSettings.Click += BT_CancelSettings_Click;
             // 
             // menuStrip1
             // 
@@ -739,13 +848,24 @@
             splitContainer3.ResumeLayout(false);
             groupBox1.ResumeLayout(false);
             splitContainer2.Panel1.ResumeLayout(false);
-            splitContainer2.Panel1.PerformLayout();
             splitContainer2.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)splitContainer2).EndInit();
             splitContainer2.ResumeLayout(false);
+            splitContainer4.Panel1.ResumeLayout(false);
+            splitContainer4.Panel1.PerformLayout();
+            splitContainer4.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)splitContainer4).EndInit();
+            splitContainer4.ResumeLayout(false);
+            splitContainer5.Panel1.ResumeLayout(false);
+            splitContainer5.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)splitContainer5).EndInit();
+            splitContainer5.ResumeLayout(false);
             TB_Database.ResumeLayout(false);
             TB_Database.PerformLayout();
             TP_Settings.ResumeLayout(false);
+            groupBox2.ResumeLayout(false);
+            groupBox2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)TrB_FontSizeSetting).EndInit();
             groupBox3.ResumeLayout(false);
             groupBox3.PerformLayout();
             groupBox4.ResumeLayout(false);
@@ -812,5 +932,11 @@
         private System.Windows.Forms.ToolStripMenuItem changeProjectDataToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem copyOriginalTitleToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem copyDuplicateTitleToolStripMenuItem;
+        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.Label LB_FontSizeSetting;
+        private System.Windows.Forms.RichTextBox RTB_FontSizeSetting;
+        private System.Windows.Forms.TrackBar TrB_FontSizeSetting;
+        private System.Windows.Forms.SplitContainer splitContainer4;
+        private System.Windows.Forms.SplitContainer splitContainer5;
     }
 }

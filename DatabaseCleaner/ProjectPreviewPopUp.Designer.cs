@@ -37,10 +37,11 @@
             // RTB_CleanedPreview
             // 
             RTB_CleanedPreview.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            RTB_CleanedPreview.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             RTB_CleanedPreview.Location = new System.Drawing.Point(5, 5);
             RTB_CleanedPreview.Name = "RTB_CleanedPreview";
             RTB_CleanedPreview.ReadOnly = true;
-            RTB_CleanedPreview.Size = new System.Drawing.Size(486, 230);
+            RTB_CleanedPreview.Size = new System.Drawing.Size(757, 685);
             RTB_CleanedPreview.TabIndex = 1;
             RTB_CleanedPreview.TabStop = false;
             RTB_CleanedPreview.Text = "";
@@ -48,7 +49,7 @@
             // BT_ClosePreview
             // 
             BT_ClosePreview.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
-            BT_ClosePreview.Location = new System.Drawing.Point(358, 241);
+            BT_ClosePreview.Location = new System.Drawing.Point(629, 696);
             BT_ClosePreview.Name = "BT_ClosePreview";
             BT_ClosePreview.Size = new System.Drawing.Size(128, 23);
             BT_ClosePreview.TabIndex = 0;
@@ -60,7 +61,7 @@
             // 
             Label1.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
             Label1.AutoSize = true;
-            Label1.Location = new System.Drawing.Point(2, 245);
+            Label1.Location = new System.Drawing.Point(2, 700);
             Label1.Name = "Label1";
             Label1.Size = new System.Drawing.Size(104, 15);
             Label1.TabIndex = 2;
@@ -69,13 +70,13 @@
             // TB_ProjectTitle
             // 
             TB_ProjectTitle.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-            TB_ProjectTitle.Location = new System.Drawing.Point(111, 241);
+            TB_ProjectTitle.Location = new System.Drawing.Point(111, 696);
             TB_ProjectTitle.Multiline = true;
             TB_ProjectTitle.Name = "TB_ProjectTitle";
             TB_ProjectTitle.PlaceholderText = "ProjectTitle";
             TB_ProjectTitle.ReadOnly = true;
             TB_ProjectTitle.ScrollBars = System.Windows.Forms.ScrollBars.Horizontal;
-            TB_ProjectTitle.Size = new System.Drawing.Size(241, 36);
+            TB_ProjectTitle.Size = new System.Drawing.Size(512, 36);
             TB_ProjectTitle.TabIndex = 3;
             TB_ProjectTitle.WordWrap = false;
             // 
@@ -83,7 +84,7 @@
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            ClientSize = new System.Drawing.Size(496, 281);
+            ClientSize = new System.Drawing.Size(767, 736);
             Controls.Add(TB_ProjectTitle);
             Controls.Add(Label1);
             Controls.Add(RTB_CleanedPreview);

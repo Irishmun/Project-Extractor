@@ -1,4 +1,5 @@
 ﻿using DatabaseCleaner.Projects;
+using DatabaseCleaner.Util;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -17,6 +18,7 @@ namespace DatabaseCleaner
         {
             InitializeComponent();
             TB_ProjectTitle.Text = "Currently Viewing: " + project.ToString();
+            RTB_CleanedPreview.Font = RTB_CleanedPreview.Font.ChangeFontSize(Settings.Instance.FontSize);
             RTB_CleanedPreview.Text = CreatePreview(project);
         }
 

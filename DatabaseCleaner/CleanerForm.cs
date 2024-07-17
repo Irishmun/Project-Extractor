@@ -20,6 +20,7 @@ namespace DatabaseCleaner
         private DuplicateCleaner _duplicateCleaner;
         private Extractor _extractor;
         private int _totalProjects = 0;
+        private int _previousTab = 0;
         private ProjectListDisplayMode _previousComboBoxValue = ProjectListDisplayMode.DISPLAY_ALL;
         private ProjectData _selectedProject;
         private List<int> _selectedIndexes;
@@ -39,6 +40,7 @@ namespace DatabaseCleaner
             loadProjectToolStripMenuItem.Enabled = File.Exists(SaveFile.SAVE_FILE);
             saveProjectToolStripMenuItem.Enabled = LB_Projects.Items.Count > 0;
             _selectedIndexes = new List<int>();
+
         }
 
         private void SetValuesFromSettings()
@@ -50,6 +52,8 @@ namespace DatabaseCleaner
             CB_IntegratedSecuritySetting.Checked = Settings.Instance.DbIntegratedSecurity;
             CB_TrustServerCertificateSetting.Checked = Settings.Instance.DbTrustServerCertificate;
             LB_ProjectsPerFileSetting.Text = Settings.Instance.MaxProjectsPerFile.ToString();
+            TrB_FontSizeSetting.Value = Settings.Instance.FontSize;
+            SetFontSizes(Settings.Instance.FontSize);
         }
 
         #region ToolStrip events
@@ -111,7 +115,7 @@ namespace DatabaseCleaner
             if (_selectedIndexes.Count == 0)
             {
                 copyOriginalTitleToolStripMenuItem.Enabled = _selectedIndexes.Count > 0;
-                return; 
+                return;
             }
             Clipboard.SetText(LastSelectedProject().Title);
         }
@@ -127,7 +131,57 @@ namespace DatabaseCleaner
         }
         #endregion
         #endregion
+        #region form events
+        private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+#if DEBUG
+            Debug.WriteLine($"Switching to {tabControl1.SelectedIndex} from: " + tabControl1.TabPages[_previousTab].Text);
+#endif
+            if (tabControl1.SelectedIndex == _previousTab)
+            { return; }
+            if (_previousTab == 2)//settings tab
+            {
+                BT_SaveSettings_Click(sender, e);
+            }
+            _previousTab = tabControl1.SelectedIndex;
+        }
+        private void CleanerForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (_lastSaved.Equals(DateTime.MinValue))//no project loaded or saved
+            {
+                if (LB_Projects.Items.Count == 0)
+                {
+                    return;
+                }
+            }
 
+            StringBuilder message = new StringBuilder();
+            message.AppendLine("Do you want to save any made changes?");
+            message.Append("Last saved: ");
+            if (_lastSaved.Equals(DateTime.MinValue))
+            {//new project started
+                message.AppendLine("Not saved yet");
+            }
+            else
+            {//existing project loaded or project saved during this session
+                message.AppendLine(_lastSaved.ToString("U"));
+            }
+            switch (MessageBox.Show(message.ToString(), "Unsaved changes", MessageBoxButtons.YesNoCancel))
+            {
+                case DialogResult.Yes:
+                    SaveProject();
+                    break;
+                case DialogResult.Cancel:
+                    e.Cancel = true;
+                    break;
+                case DialogResult.No:
+                default:
+                    break;
+            }
+
+        }
+
+        #endregion
         #region Duplicate cleaner tab
         #region button events
         private void BT_BrowseProjectsFolder_Click(object sender, EventArgs e)
@@ -140,6 +194,8 @@ namespace DatabaseCleaner
                     Settings.Instance.ProjectsFolder = fbd.SelectedPath;
                     TB_ProjectsFolder.Text = fbd.SelectedPath;
                     TB_ProjectsFolderSetting.Text = fbd.SelectedPath;
+                    SetDuplicateViewEnabled(false);
+                    SetEnabledProjectInputFields(false);
                     backgroundWorker.RunWorkerAsync(UtilMethods.CreateBackgroundWorkerArgs(WorkerStates.GET_DUPLICATES, TB_ProjectsFolder.Text));
                 }
             }
@@ -213,6 +269,8 @@ namespace DatabaseCleaner
         {
             if (Directory.Exists(TB_ProjectsFolder.Text) == false)
             { return; }
+            SetDuplicateViewEnabled(false);
+            SetEnabledProjectInputFields(false);
             backgroundWorker.RunWorkerAsync(UtilMethods.CreateBackgroundWorkerArgs(WorkerStates.GET_DUPLICATES, TB_ProjectsFolder.Text));
 
         }
@@ -225,8 +283,12 @@ namespace DatabaseCleaner
             Settings.Instance.ProjectsFolder = TB_ProjectsFolder.Text;
             TB_ProjectsFolderSetting.Text = Settings.Instance.ProjectsFolder;
             //start search
+            SetDuplicateViewEnabled(false);
+            SetEnabledProjectInputFields(false);
             backgroundWorker.RunWorkerAsync(UtilMethods.CreateBackgroundWorkerArgs(WorkerStates.GET_DUPLICATES, TB_ProjectsFolder.Text));
         }
+
+
         #endregion
         #region List events
         private void LB_Projects_SelectedIndexChanged(object sender, EventArgs e)
@@ -264,7 +326,7 @@ namespace DatabaseCleaner
             {
                 this.Cursor = Cursors.AppStarting;
                 DGV_DatabaseResults.DataSource = null;
-                SetEnabledInputFields(false);
+                SetEnabledDatabaseInputFields(false);
 #if DEBUG
                 _watch.Reset();
                 _watch.Start();
@@ -319,6 +381,8 @@ namespace DatabaseCleaner
             TB_InitialCatalogSetting.Text = Settings.Instance.DbInitialCatalog;
             CB_IntegratedSecuritySetting.Checked = Settings.Instance.DbIntegratedSecurity;
             CB_TrustServerCertificateSetting.Checked = Settings.Instance.DbTrustServerCertificate;
+            TrB_FontSizeSetting.Value = Settings.Instance.FontSize;
+            SetFontSizes(Settings.Instance.FontSize);
         }
 
         private void BT_SaveSettings_Click(object sender, EventArgs e)
@@ -327,6 +391,15 @@ namespace DatabaseCleaner
             Settings.Instance.DbInitialCatalog = TB_InitialCatalogSetting.Text;
             Settings.Instance.DbIntegratedSecurity = CB_IntegratedSecuritySetting.Checked;
             Settings.Instance.DbTrustServerCertificate = CB_TrustServerCertificateSetting.Checked;
+            Settings.Instance.FontSize = TrB_FontSizeSetting.Value;
+            SetFontSizes(Settings.Instance.FontSize);
+        }
+        #endregion
+        #region Slider events
+        private void TrB_FontSizeSetting_Scroll(object sender, EventArgs e)
+        {
+            int newSize = TrB_FontSizeSetting.Value;
+            SetFontSizes(newSize);
         }
         #endregion
         #endregion
@@ -423,26 +496,66 @@ namespace DatabaseCleaner
             }
             else
             {
+                SetDuplicateViewEnabled(true);
+                SetEnabledProjectInputFields(true);
                 FillProjectListBox(null, (ProjectListDisplayMode)CbB_ProjectDisplay.SelectedIndex);
             }
             this.Cursor = Cursors.Default;
-            SetEnabledInputFields(true);
+            SetEnabledDatabaseInputFields(true);
         }
         #endregion
 
         #region methods
+        private void SetEnabledProjectInputFields(bool enabled)
+        {
+            TB_ProjectsFolder.Enabled = enabled;
+            BT_FindDuplicates.Enabled = enabled;
+            BT_BrowseProjectsFolder.Enabled = enabled;
+        }
+        private void SetEnabledDatabaseInputFields(bool enabled)
+        {
+            BT_FindProjects.Enabled = enabled;
+            NUD_MaxProjectsPerFile.Enabled = enabled;
+            BT_BrowseProjectsFolder.Enabled = enabled;
+        }
+        private void SetDuplicateViewEnabled(bool enabled)
+        {
+            CbB_ProjectDisplay.Enabled = enabled;
+            LB_Projects.Enabled = enabled;
+            LV_DuplicateProjects.Enabled = enabled;
+        }
+
+        private void SetFontSizes(int newSize)
+        {
+            System.Drawing.Font font = LB_FontSizeSetting.Font.ChangeFontSize(newSize);
+
+            LB_FontSizeSetting.Text = $"Text Size: {newSize}pt";
+            LB_FontSizeSetting.Font = font;
+            RTB_FontSizeSetting.Font = font;
+
+            LB_Projects.Font = font;
+            LV_DuplicateProjects.Font = font;
+            RTB_CleanedPreview.Font = font;
+
+            BT_MarkUnique.Font = font;
+            BT_ViewSelectedDuplicate.Font = font;
+            BT_DeleteSelected.Font = font;
+            BT_MergeSelected.Font = font;
+        }
+
         private void ViewSelectedProject(ProjectData projectData)
         {
             ProjectPreviewPopUp popUp = new ProjectPreviewPopUp(projectData);
             popUp.Show(this);
             popUp.Focus();
         }
-        private void SetEnabledInputFields(bool enabled)
+        /// <summary>Gets last selected item from selected indexes</summary>
+        /// <exception cref="IndexOutOfRangeException">Throws if list contents were changed before being called</exception>        
+        private ProjectData LastSelectedProject()
         {
-            BT_FindProjects.Enabled = enabled;
-            NUD_MaxProjectsPerFile.Enabled = enabled;
-            BT_BrowseProjectsFolder.Enabled = enabled;
+            return (ProjectData)LB_Projects.Items[_selectedIndexes[_selectedIndexes.Count - 1]];
         }
+
         private void TrackSelectionChange(ListBox sender, List<int> selection)
         {//keep track of last selected index
             ListBox.SelectedIndexCollection sic = sender.SelectedIndices;
@@ -452,7 +565,6 @@ namespace DatabaseCleaner
             foreach (int index in new List<int>(selection))
                 if (!sic.Contains(index)) selection.Remove(index);
         }
-
         private void FillProjectListBox(ProjectData? selected, ProjectListDisplayMode displayMode)
         {//TODO: find better way to display projects ([duplicate count]project name) but what if project had no name?
          //perhaps a readonly textbox containing the main project's description
@@ -495,7 +607,6 @@ namespace DatabaseCleaner
             }
             FillDuplicateListView();
         }
-
         private void FillDuplicateListView()
         {
             LV_DuplicateProjects.Items.Clear();
@@ -537,19 +648,11 @@ namespace DatabaseCleaner
 
         }
 
-        /// <summary>Gets last selected item from selected indexes</summary>
-        /// <exception cref="IndexOutOfRangeException">Throws if list contents were changed before being called</exception>        
-        private ProjectData LastSelectedProject()
-        {
-            return (ProjectData)LB_Projects.Items[_selectedIndexes[_selectedIndexes.Count - 1]];
-        }
-
         string AssemblyVersion()
         {
             Version ver = Assembly.GetExecutingAssembly().GetName().Version;
             return String.Format("{0}.{1}.{2}", ver.Major, ver.Minor, ver.Build);
         }
-
         private void SaveProject()
         {
             _save = new SaveFile(TB_ProjectsFolder.Text);
@@ -561,40 +664,9 @@ namespace DatabaseCleaner
 
         #endregion
 
-        private void CleanerForm_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            if (_lastSaved.Equals(DateTime.MinValue))//no project loaded or saved
-            {
-                if (LB_Projects.Items.Count == 0)
-                {
-                    return;
-                }
-            }
+        
+ 
 
-            StringBuilder message = new StringBuilder();
-            message.AppendLine("Do you want to save any made changes?");
-            message.Append("Last saved: ");
-            if (_lastSaved.Equals(DateTime.MinValue))
-            {//new project started
-                message.AppendLine("Not saved yet");
-            }
-            else
-            {//existing project loaded or project saved during this session
-                message.AppendLine(_lastSaved.ToString("U"));
-            }
-            switch (MessageBox.Show(message.ToString(), "Unsaved changes", MessageBoxButtons.YesNoCancel))
-            {
-                case DialogResult.Yes:
-                    SaveProject();
-                    break;
-                case DialogResult.Cancel:
-                    e.Cancel = true;
-                    break;
-                case DialogResult.No:
-                default:
-                    break;
-            }
-
-        }
+        
     }
 }

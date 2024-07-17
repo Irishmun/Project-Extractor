@@ -123,6 +123,9 @@
   <metadata name="statusStrip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>173, 17</value>
   </metadata>
+  <data name="RTB_FontSizeSetting.Text" xml:space="preserve">
+    <value>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam aliquet tellus dui. Sed eu fermentum est. Mauris efficitur mollis arcu et maximus. Vivamus mi tellus, molestie eget odio nec, ornare iaculis velit. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Vestibulum vitae dui dolor. Integer ultrices turpis ut fermentum aliquam. Praesent tincidunt erat enim, aliquet tristique mi aliquet sit amet. Proin orci sem, placerat at scelerisque nec, maximus nec ligula. Phasellus gravida neque dolor, at porttitor odio porta id. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam a elementum est, quis egestas est.</value>
+  </data>
   <metadata name="menuStrip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>288, 17</value>
   </metadata>

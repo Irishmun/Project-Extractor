@@ -131,6 +131,17 @@ namespace DatabaseCleaner.Database
 
         private void WriteToFile(StringBuilder content, string path, string filename)
         {
+            if (content.Length == 0)
+            {//no text, no write
+#if DEBUG
+                Debug.WriteLine($"File {filename} was empty, not writing...");
+#endif
+                return;
+            }
+            if (File.Exists(Path.Combine(path, filename)))
+            {//should've been fine but it isn't
+                filename = AdjustFileName(filename, path);
+            }
 #if DEBUG
             Debug.WriteLine("Writing content to file: " + Path.Combine(path, filename));
 #endif

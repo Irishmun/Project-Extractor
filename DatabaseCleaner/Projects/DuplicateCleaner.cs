@@ -372,6 +372,7 @@ namespace DatabaseCleaner.Projects
             { return; }
             //add both arrays and append the donor project as well
             ProjectData[] mergedArray = _duplicateProjects[source].Concat(_duplicateProjects[donor]).Append(donor).ToArray();
+            Array.Sort(mergedArray, (x, y) => x.ToString().CompareTo(y.ToString()));
             _duplicateProjects[source] = mergedArray;
             _duplicateProjects.Remove(donor);
         }
@@ -390,17 +391,15 @@ namespace DatabaseCleaner.Projects
                 _duplicateProjects[selectedProject] = UtilMethods.RemoveAt(_duplicateProjects[selectedProject], selectedIndices[0]);
                 return;
             }
-            List<ProjectData> removedProjects = new List<ProjectData>();
-            for (int i = 0; i < selectedIndices.Count; i++)
-            {
-                //add entry to list
-                removedProjects.Add(_duplicateProjects[selectedProject][selectedIndices[i]]);
-            }
             for (int i = 0; i < selectedIndices.Count; i++)
             {
                 //add entry to main dictionary
                 _duplicateProjects.Add(_duplicateProjects[selectedProject][selectedIndices[i]], new ProjectData[0]);
-                //remove entry from project list
+            }
+            //remove entry from project list
+            for (int i = 0; i < selectedIndices.Count; i++)
+            {
+                //add entry to main dictionary
                 _duplicateProjects[selectedProject] = UtilMethods.RemoveAt(_duplicateProjects[selectedProject], selectedIndices[i]);
             }
             //FindPossibleDuplicates(removedProjects.ToArray(), null);

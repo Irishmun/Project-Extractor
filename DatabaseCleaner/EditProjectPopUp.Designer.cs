@@ -37,23 +37,27 @@
             // label1
             // 
             label1.AutoSize = true;
+            label1.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             label1.Location = new System.Drawing.Point(12, 9);
             label1.Name = "label1";
-            label1.Size = new System.Drawing.Size(72, 15);
+            label1.Size = new System.Drawing.Size(83, 19);
             label1.TabIndex = 0;
             label1.Text = "Project Title:";
             // 
             // TB_ProjectName
             // 
             TB_ProjectName.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-            TB_ProjectName.Location = new System.Drawing.Point(90, 6);
+            TB_ProjectName.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            TB_ProjectName.Location = new System.Drawing.Point(101, 6);
             TB_ProjectName.Name = "TB_ProjectName";
-            TB_ProjectName.Size = new System.Drawing.Size(196, 23);
+            TB_ProjectName.PlaceholderText = "project title";
+            TB_ProjectName.Size = new System.Drawing.Size(224, 23);
             TB_ProjectName.TabIndex = 1;
             // 
             // BT_Save
             // 
-            BT_Save.Location = new System.Drawing.Point(130, 35);
+            BT_Save.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
+            BT_Save.Location = new System.Drawing.Point(169, 50);
             BT_Save.Name = "BT_Save";
             BT_Save.Size = new System.Drawing.Size(75, 23);
             BT_Save.TabIndex = 2;
@@ -64,7 +68,7 @@
             // BT_Exit
             // 
             BT_Exit.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
-            BT_Exit.Location = new System.Drawing.Point(211, 35);
+            BT_Exit.Location = new System.Drawing.Point(250, 50);
             BT_Exit.Name = "BT_Exit";
             BT_Exit.Size = new System.Drawing.Size(75, 23);
             BT_Exit.TabIndex = 3;
@@ -78,7 +82,7 @@
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             CancelButton = BT_Exit;
-            ClientSize = new System.Drawing.Size(298, 70);
+            ClientSize = new System.Drawing.Size(337, 85);
             ControlBox = false;
             Controls.Add(BT_Exit);
             Controls.Add(BT_Save);
