@@ -70,7 +70,7 @@
   },
   {
     "IsFileName": false,
-    "IsBoolValue": true,
+    "IsBoolValue": false,
     "AppendNewLine": true,
     "ContentString": "Afgewezen?: {0}",
     "Columns": [ "Afgewezen" ]

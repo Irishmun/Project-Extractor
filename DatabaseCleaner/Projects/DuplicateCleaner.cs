@@ -335,18 +335,33 @@ namespace DatabaseCleaner.Projects
         {
             if (_duplicateProjects.ContainsKey(project) == false)
             { return; }
-            if (Directory.Exists(CLEANED_PATH) == false)
-            {
-                Directory.CreateDirectory(CLEANED_PATH);
-            }
+            CreateCleanIfNotExist();
             string filename = string.Join("_", project.Title.Split(Path.GetInvalidFileNameChars()));
-            string path = Path.Combine(CLEANED_PATH, "Aanvraag WBSO " + filename + ".txt");
+            filename = UtilMethods.CreateUniqueFileName("Aanvraag WBSO " + filename + ".txt", CLEANED_PATH);
+            string path = Path.Combine(CLEANED_PATH, filename);
             using (StreamWriter sw = File.CreateText(path))
             {
                 //write the final result to a text document
                 sw.Write(CleanDuplicates(project, worker));
                 sw.Close();
             }
+        }
+        /// <summary>Writes the given text to file in <see cref="CLEANED_PATH"/>, then removes project from <see cref="Projects"/></summary>
+        /// <param name="projectToRemove">project to remove</param>
+        /// <param name="rawContent">content to write</param>
+        public void WriteRawToFile(ProjectData projectToRemove, string rawContent, out string filename)
+        {
+            CreateCleanIfNotExist();
+            filename = string.Join("_", projectToRemove.Title.Split(Path.GetInvalidFileNameChars()));
+            filename = UtilMethods.CreateUniqueFileName("Aanvraag WBSO " + filename + ".txt", CLEANED_PATH);
+            string path = Path.Combine(CLEANED_PATH, filename);
+            using (StreamWriter sw = File.CreateText(path))
+            {
+                //write the final result to a text document
+                sw.Write(rawContent);
+                sw.Close();
+            }
+            _duplicateProjects.Remove(projectToRemove);
         }
         /// <summary>Replaces old key with new key in dictionary</summary>
         /// <param name="oldKey">key to remove</param>
@@ -372,6 +387,7 @@ namespace DatabaseCleaner.Projects
             { return; }
             //add both arrays and append the donor project as well
             ProjectData[] mergedArray = _duplicateProjects[source].Concat(_duplicateProjects[donor]).Append(donor).ToArray();
+            Array.Sort(mergedArray, (x, y) => x.ToString().CompareTo(y.ToString()));
             _duplicateProjects[source] = mergedArray;
             _duplicateProjects.Remove(donor);
         }
@@ -390,17 +406,15 @@ namespace DatabaseCleaner.Projects
                 _duplicateProjects[selectedProject] = UtilMethods.RemoveAt(_duplicateProjects[selectedProject], selectedIndices[0]);
                 return;
             }
-            List<ProjectData> removedProjects = new List<ProjectData>();
-            for (int i = 0; i < selectedIndices.Count; i++)
-            {
-                //add entry to list
-                removedProjects.Add(_duplicateProjects[selectedProject][selectedIndices[i]]);
-            }
             for (int i = 0; i < selectedIndices.Count; i++)
             {
                 //add entry to main dictionary
                 _duplicateProjects.Add(_duplicateProjects[selectedProject][selectedIndices[i]], new ProjectData[0]);
-                //remove entry from project list
+            }
+            //remove entry from project list
+            for (int i = 0; i < selectedIndices.Count; i++)
+            {
+                //add entry to main dictionary
                 _duplicateProjects[selectedProject] = UtilMethods.RemoveAt(_duplicateProjects[selectedProject], selectedIndices[i]);
             }
             //FindPossibleDuplicates(removedProjects.ToArray(), null);
@@ -615,6 +629,14 @@ namespace DatabaseCleaner.Projects
             if (_companyNameLUT.Count == 0 || _companyNameLUT.ContainsKey(name) == false)
             { return name; }
             return _companyNameLUT[name];
+        }
+
+        private void CreateCleanIfNotExist()
+        {
+            if (Directory.Exists(CLEANED_PATH) == false)
+            {
+                Directory.CreateDirectory(CLEANED_PATH);
+            }
         }
 
         /// <summary>Projects with their found duplicates</summary>

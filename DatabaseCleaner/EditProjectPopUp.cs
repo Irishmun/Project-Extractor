@@ -1,4 +1,5 @@
 ﻿using DatabaseCleaner.Projects;
+using DatabaseCleaner.Util;
 using System;
 using System.Windows.Forms;
 
@@ -10,6 +11,7 @@ namespace DatabaseCleaner
         public EditProjectPopUp()
         {
             InitializeComponent();
+            TB_ProjectName.Font = TB_ProjectName.Font.ChangeFontSize(Settings.Instance.FontSize);
         }
         public EditProjectPopUp(ProjectData data)
         {

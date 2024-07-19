@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 
 namespace DatabaseCleaner.Util
 {
@@ -11,12 +12,10 @@ namespace DatabaseCleaner.Util
             //IntPtr size of 4 is 32 bit, 8 is 64 bit and more is something not present at this time
             return IntPtr.Size == 4;
         }
-
-        public static string YesNo(this bool val,string yes="ja",string no="nee")
+        public static string YesNo(this bool val, string yes = "ja", string no = "nee")
         {
             return val == true ? yes : no;
         }
-
         internal static object[] CreateBackgroundWorkerArgs(WorkerStates state, params object[] args)
         {
             object[] res = new object[args.Length + 1];
@@ -25,7 +24,6 @@ namespace DatabaseCleaner.Util
             args = null;
             return res;
         }
-
         internal static object[] ReadBackgroundWorkerArgs(object? arg, out WorkerStates state)
         {
 
@@ -45,7 +43,6 @@ namespace DatabaseCleaner.Util
             args = null;
             return res.ToArray();
         }
-
         public static T[] RemoveAt<T>(T[] arr, int index)
         {
             for (int a = index; a < arr.Length - 1; a++)
@@ -56,6 +53,33 @@ namespace DatabaseCleaner.Util
             //decrement Array's size by one
             Array.Resize(ref arr, arr.Length - 1);
             return arr;
+        }
+        public static System.Drawing.Font ChangeFontSize(this System.Drawing.Font basis, int size)
+        {
+            return new System.Drawing.Font(basis.Name, size);
+        }
+
+        public static string CreateUniqueFileName(string filename, string path)
+        {
+            //always sanitize file name
+            filename = string.Join("_", filename.Split(Path.GetInvalidFileNameChars()));
+            if (File.Exists(Path.Combine(path, filename)) == false)
+            { return filename; }
+            int dup = 1;
+            bool exists = true;
+            filename = Path.GetFileNameWithoutExtension(filename);
+            string name = $"{filename} ({dup}).txt";
+            while (exists)
+            {
+                exists = File.Exists(Path.Combine(path, name));
+                if (exists == true)
+                {
+                    dup += 1;
+                    name = $"{filename} ({dup}).txt";
+                    continue;
+                }
+            }
+            return name;
         }
     }
 }
