@@ -90,6 +90,8 @@
             changeProjectDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             copyOriginalTitleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             copyDuplicateTitleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            exportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            CleanAndExportSelectedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)DGV_DatabaseResults).BeginInit();
             statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)NUD_MaxProjectsPerFile).BeginInit();
@@ -749,7 +751,7 @@
             // 
             // menuStrip1
             // 
-            menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { fileToolStripMenuItem, editToolStripMenuItem });
+            menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { fileToolStripMenuItem, editToolStripMenuItem, exportToolStripMenuItem });
             menuStrip1.Location = new System.Drawing.Point(0, 0);
             menuStrip1.Name = "menuStrip1";
             menuStrip1.Size = new System.Drawing.Size(582, 24);
@@ -796,15 +798,15 @@
             // 
             changeProjectDataToolStripMenuItem.Enabled = false;
             changeProjectDataToolStripMenuItem.Name = "changeProjectDataToolStripMenuItem";
-            changeProjectDataToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
-            changeProjectDataToolStripMenuItem.Text = "Change Project Data";
+            changeProjectDataToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            changeProjectDataToolStripMenuItem.Text = "Change Project Title";
             changeProjectDataToolStripMenuItem.Click += changeProjectDataToolStripMenuItem_Click;
             // 
             // copyOriginalTitleToolStripMenuItem
             // 
             copyOriginalTitleToolStripMenuItem.Enabled = false;
             copyOriginalTitleToolStripMenuItem.Name = "copyOriginalTitleToolStripMenuItem";
-            copyOriginalTitleToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
+            copyOriginalTitleToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             copyOriginalTitleToolStripMenuItem.Text = "Copy Original Title";
             copyOriginalTitleToolStripMenuItem.Click += copyOriginalTitleToolStripMenuItem_Click;
             // 
@@ -812,9 +814,24 @@
             // 
             copyDuplicateTitleToolStripMenuItem.Enabled = false;
             copyDuplicateTitleToolStripMenuItem.Name = "copyDuplicateTitleToolStripMenuItem";
-            copyDuplicateTitleToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
+            copyDuplicateTitleToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             copyDuplicateTitleToolStripMenuItem.Text = "Copy Duplicate Title";
             copyDuplicateTitleToolStripMenuItem.Click += copyDuplicateTitleToolStripMenuItem_Click;
+            // 
+            // exportToolStripMenuItem
+            // 
+            exportToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { CleanAndExportSelectedToolStripMenuItem });
+            exportToolStripMenuItem.Name = "exportToolStripMenuItem";
+            exportToolStripMenuItem.Size = new System.Drawing.Size(53, 20);
+            exportToolStripMenuItem.Text = "Export";
+            // 
+            // CleanAndExportSelectedToolStripMenuItem
+            // 
+            CleanAndExportSelectedToolStripMenuItem.Enabled = false;
+            CleanAndExportSelectedToolStripMenuItem.Name = "CleanAndExportSelectedToolStripMenuItem";
+            CleanAndExportSelectedToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
+            CleanAndExportSelectedToolStripMenuItem.Text = "Clean and Export Selected";
+            CleanAndExportSelectedToolStripMenuItem.Click += CleanAndExportSelectedToolStripMenuItem_Click;
             // 
             // CleanerForm
             // 
@@ -938,5 +955,7 @@
         private System.Windows.Forms.TrackBar TrB_FontSizeSetting;
         private System.Windows.Forms.SplitContainer splitContainer4;
         private System.Windows.Forms.SplitContainer splitContainer5;
+        private System.Windows.Forms.ToolStripMenuItem exportToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem CleanAndExportSelectedToolStripMenuItem;
     }
 }

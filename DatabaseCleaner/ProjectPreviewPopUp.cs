@@ -17,7 +17,7 @@ namespace DatabaseCleaner
         internal ProjectPreviewPopUp(ProjectData project)
         {
             InitializeComponent();
-            TB_ProjectTitle.Text = "Currently Viewing: " + project.ToString();
+            TB_ProjectTitle.Text = project.ToString();
             RTB_CleanedPreview.Font = RTB_CleanedPreview.Font.ChangeFontSize(Settings.Instance.FontSize);
             RTB_CleanedPreview.Text = CreatePreview(project);
         }

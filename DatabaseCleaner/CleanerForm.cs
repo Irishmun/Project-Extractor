@@ -10,11 +10,14 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
+using System.Xml.Linq;
 
 namespace DatabaseCleaner
 {
     public partial class CleanerForm : Form
     {
+        //TODO: add "Clean and Export" option. Shows EDITABLE popup for file content,
+        //exports to cleaned folder. removes project from dictionary when done
         private SaveFile _save;
         private DatabaseReader _databaseReader;
         private DuplicateCleaner _duplicateCleaner;
@@ -66,6 +69,14 @@ namespace DatabaseCleaner
                 MessageBox.Show("No project file found...");
                 return;
             }
+            if (LB_Projects.Items.Count > 0)
+            {
+                if (MessageBox.Show("Are you sure you want to load project?\nAny unsaved changes will be lost",
+                    "Load Project", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) == DialogResult.Cancel)
+                {
+                    return;
+                }
+            }
             if (_save == null)//save file exists
             { _save = new SaveFile(); }
             if (_duplicateCleaner == null)
@@ -85,7 +96,7 @@ namespace DatabaseCleaner
             { return; }
             SaveProject();
             loadProjectToolStripMenuItem.Enabled = File.Exists(SaveFile.SAVE_FILE);
-            MessageBox.Show("Saved Project.");
+            MessageBox.Show("Saved Project.", "Saved", MessageBoxButtons.OK, MessageBoxIcon.Information);
             TS_FoundProjects.Text = "Saved project";
             _lastSaved = DateTime.Now;
         }
@@ -130,6 +141,24 @@ namespace DatabaseCleaner
             Clipboard.SetText(((ProjectData)LV_DuplicateProjects.SelectedItems[0].Tag).Title);
         }
         #endregion
+        #region Export
+        private void CleanAndExportSelectedToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (LB_Projects.Items.Count == 0 || _selectedIndexes.Count == 0)
+            {
+                CleanAndExportSelectedToolStripMenuItem.Enabled = false;
+            }
+            ProjectData proj = FirstSelectedProject();
+            ExportPreviewPopUp pop = new ExportPreviewPopUp(proj.Title, _duplicateCleaner.CleanDuplicates(proj, null).ToString());
+            if (pop.ShowDialog(this) == DialogResult.OK)
+            {
+                _duplicateCleaner.WriteRawToFile(proj, pop.DefinitiveText, out string name);
+                MessageBox.Show("Export file to: " + name, "Exported file", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                FillProjectListBox(null, (ProjectListDisplayMode)CbB_ProjectDisplay.SelectedIndex);
+                FillDuplicateListView();
+            }
+        }
+        #endregion
         #endregion
         #region form events
         private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
@@ -155,30 +184,42 @@ namespace DatabaseCleaner
                 }
             }
 
-            StringBuilder message = new StringBuilder();
-            message.AppendLine("Do you want to save any made changes?");
-            message.Append("Last saved: ");
-            if (_lastSaved.Equals(DateTime.MinValue))
-            {//new project started
-                message.AppendLine("Not saved yet");
-            }
-            else
-            {//existing project loaded or project saved during this session
-                message.AppendLine(_lastSaved.ToString("U"));
-            }
-            switch (MessageBox.Show(message.ToString(), "Unsaved changes", MessageBoxButtons.YesNoCancel))
+            if (_duplicateCleaner != null)
             {
-                case DialogResult.Yes:
-                    SaveProject();
-                    break;
-                case DialogResult.Cancel:
-                    e.Cancel = true;
-                    break;
-                case DialogResult.No:
-                default:
-                    break;
+                if (File.Exists(SaveFile.SAVE_FILE))
+                {
+                    if (_save == null)
+                    {
+                        _save = new SaveFile();
+                    }
+                    if (_save.HashChanged(_duplicateCleaner.Projects) == false)
+                    { return; }
+                }
+                //changes made since last save, ask if want to save
+                StringBuilder message = new StringBuilder();
+                message.AppendLine("Do you want to save any made changes?");
+                message.Append("Last saved: ");
+                if (_lastSaved.Equals(DateTime.MinValue))
+                {//new project started
+                    message.AppendLine("Not saved yet");
+                }
+                else
+                {//existing project loaded or project saved during this session
+                    message.AppendLine(_lastSaved.ToString("U"));
+                }
+                switch (MessageBox.Show(message.ToString(), "Unsaved changes", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning))
+                {
+                    case DialogResult.Yes:
+                        SaveProject();
+                        break;
+                    case DialogResult.Cancel:
+                        e.Cancel = true;
+                        break;
+                    case DialogResult.No:
+                    default:
+                        break;
+                }
             }
-
         }
 
         #endregion
@@ -241,8 +282,9 @@ namespace DatabaseCleaner
         {
             if (_selectedIndexes.Count <= 1)
             { return; }
+            ProjectData selected = FirstSelectedProject();
 #if DEBUG
-            Debug.WriteLine($"Mergin the following with {_selectedProject}:");
+            Debug.WriteLine($"Mergin the following with {selected}:");
             foreach (int item in _selectedIndexes)
             {
                 Debug.WriteLine((ProjectData)LB_Projects.Items[item]);
@@ -250,13 +292,14 @@ namespace DatabaseCleaner
 #endif
             foreach (int item in _selectedIndexes)
             {
-                if (_selectedProject.Equals((ProjectData)LB_Projects.Items[item]))
+                if (selected.Equals((ProjectData)LB_Projects.Items[item]))
                 { continue; }
-                _duplicateCleaner.MergeProjects(_selectedProject, (ProjectData)LB_Projects.Items[item]);
+                _duplicateCleaner.MergeProjects(selected, (ProjectData)LB_Projects.Items[item]);
             }
+            _selectedProject = selected;
             _selectedIndexes.Clear();
             FillProjectListBox(_selectedProject, (ProjectListDisplayMode)CbB_ProjectDisplay.SelectedIndex);
-            FillDuplicateListView();
+            FillDuplicateListView(_selectedProject);
         }
         private void BT_DeleteSelected_Click(object sender, EventArgs e)
         {//remove selected project from listbox AND from dictionary
@@ -555,6 +598,10 @@ namespace DatabaseCleaner
         {
             return (ProjectData)LB_Projects.Items[_selectedIndexes[_selectedIndexes.Count - 1]];
         }
+        private ProjectData FirstSelectedProject()
+        {
+            return (ProjectData)LB_Projects.Items[_selectedIndexes[0]];
+        }
 
         private void TrackSelectionChange(ListBox sender, List<int> selection)
         {//keep track of last selected index
@@ -605,9 +652,9 @@ namespace DatabaseCleaner
             {
                 _selectedIndexes.Clear();
             }
-            FillDuplicateListView();
+            FillDuplicateListView(selected);
         }
-        private void FillDuplicateListView()
+        private void FillDuplicateListView(ProjectData? selected = null)
         {
             LV_DuplicateProjects.Items.Clear();
             RTB_CleanedPreview.Text = string.Empty;
@@ -616,13 +663,14 @@ namespace DatabaseCleaner
             BT_DeleteSelected.Enabled = _selectedIndexes.Count > 0;
             changeProjectDataToolStripMenuItem.Enabled = _selectedIndexes.Count > 0;
             copyOriginalTitleToolStripMenuItem.Enabled = _selectedIndexes.Count > 0;
+            CleanAndExportSelectedToolStripMenuItem.Enabled = _selectedIndexes.Count > 0;
             if (_selectedIndexes.Count == 0)
             {
                 LB_DuplicateCount.Text = "0";
                 BT_MarkUnique.Enabled = false;
                 return;
             }
-            _selectedProject = LastSelectedProject();
+            _selectedProject = (ProjectData)(selected == null ? LastSelectedProject() : selected);
             RTB_CleanedPreview.Text = _duplicateCleaner.CleanDuplicates(LastSelectedProject(), null).ToString();
             //list all "duplicate" items in listview
             if (_duplicateCleaner.Projects.ContainsKey(_selectedProject) == true)
@@ -655,7 +703,7 @@ namespace DatabaseCleaner
         }
         private void SaveProject()
         {
-            _save = new SaveFile(TB_ProjectsFolder.Text);
+            _save = new SaveFile(TB_ProjectsFolder.Text, _duplicateCleaner.Projects);
             _save.CreateSave(_duplicateCleaner.Projects, (ProjectListDisplayMode)CbB_ProjectDisplay.SelectedIndex);
 #if DEBUG
             Debug.WriteLine("Saved project...");
@@ -664,9 +712,6 @@ namespace DatabaseCleaner
 
         #endregion
 
-        
- 
 
-        
     }
 }
