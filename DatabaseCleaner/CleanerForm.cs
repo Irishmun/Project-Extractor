@@ -146,16 +146,37 @@ namespace DatabaseCleaner
         {
             if (LB_Projects.Items.Count == 0 || _selectedIndexes.Count == 0)
             {
-                CleanAndExportSelectedToolStripMenuItem.Enabled = false;
+                exportToolStripMenuItem.Enabled = false;
             }
-            ProjectData proj = FirstSelectedProject();
-            ExportPreviewPopUp pop = new ExportPreviewPopUp(proj.Title, _duplicateCleaner.CleanDuplicates(proj, null).ToString());
-            if (pop.ShowDialog(this) == DialogResult.OK)
+            if (_selectedIndexes.Count == 1)
             {
-                _duplicateCleaner.WriteRawToFile(proj, pop.DefinitiveText, out string name);
-                MessageBox.Show("Export file to: " + name, "Exported file", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                FillProjectListBox(null, (ProjectListDisplayMode)CbB_ProjectDisplay.SelectedIndex);
-                FillDuplicateListView();
+                ProjectData proj = FirstSelectedProject();
+                ExportPreviewPopUp pop = new ExportPreviewPopUp(proj.Title, _duplicateCleaner.CleanDuplicates(proj, null, !CB_UseLDistance.Checked).ToString());
+                if (pop.ShowDialog(this) == DialogResult.OK)
+                {
+                    _duplicateCleaner.WriteRawToFile(proj, pop.DefinitiveText, out string name);
+                    MessageBox.Show("Export file to: " + name, "Exported file", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    FillProjectListBox(null, (ProjectListDisplayMode)CbB_ProjectDisplay.SelectedIndex);
+                    FillDuplicateListView();
+                }
+            }
+            else
+            {
+                if (MessageBox.Show($"You are about to export {_selectedIndexes.Count} projects, are you sure?\nYou will not be able to edit these before exporting.", "Batch export", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) == DialogResult.OK)
+                {
+                    List<ProjectData> projects = new List<ProjectData>(_selectedIndexes.Count);
+                    for (int i = 0; i < _selectedIndexes.Count; i++)
+                    {
+                        projects.Add((ProjectData)LB_Projects.Items[_selectedIndexes[i]]);
+                    }
+                    for (int i = 0; i < projects.Count; i++)
+                    {
+                        _duplicateCleaner.WriteRawToFile(projects[i], _duplicateCleaner.CleanDuplicates(projects[i], null, !CB_UseLDistance.Checked).ToString(), out _);
+                    }
+                    MessageBox.Show($"Exported {projects.Count} projects.", "Exported", MessageBoxButtons.OK);
+                    FillProjectListBox(null, (ProjectListDisplayMode)CbB_ProjectDisplay.SelectedIndex);
+                    FillDuplicateListView();
+                }
             }
         }
         #endregion
@@ -360,6 +381,14 @@ namespace DatabaseCleaner
 
         }
         #endregion
+        #region CheckBox Events
+        private void CB_UseLDistance_CheckedChanged(object sender, EventArgs e)
+        {
+            if (_selectedIndexes.Count == 0)//no project selected
+            { return; }
+            RTB_CleanedPreview.Text = _duplicateCleaner.CleanDuplicates(LastSelectedProject(), null, !CB_UseLDistance.Checked).ToString();
+        }
+        #endregion
         #endregion
         #region Database searches tab
         #region Button Events
@@ -472,17 +501,17 @@ namespace DatabaseCleaner
                     break;
                 case WorkerStates.CLEAN_DUPLICATES:
                     e.Result = DuplicateCleaner.CLEANED_PATH;
-                    _duplicateCleaner.CleanDuplicatesAndWriteToFile((ProjectData)args[0], backgroundWorker);
+                    _duplicateCleaner.CleanDuplicatesAndWriteToFile((ProjectData)args[0], backgroundWorker, !CB_UseLDistance.Checked);
                     break;
                 case WorkerStates.BATCH_CLEAN_DUPLICATES:
                     e.Result = DuplicateCleaner.CLEANED_PATH;
                     foreach (KeyValuePair<ProjectData, ProjectData[]> project in _duplicateCleaner.Projects)
                     {
-                        _duplicateCleaner.CleanDuplicatesAndWriteToFile(project.Key, backgroundWorker);
+                        _duplicateCleaner.CleanDuplicatesAndWriteToFile(project.Key, backgroundWorker, !CB_UseLDistance.Checked);
                     }
                     break;
                 case WorkerStates.PREVIEW_CLEANED:
-                    e.Result = _duplicateCleaner.CleanDuplicates((ProjectData)args[0], backgroundWorker);
+                    e.Result = _duplicateCleaner.CleanDuplicates((ProjectData)args[0], backgroundWorker, !CB_UseLDistance.Checked);
                     break;
                 case WorkerStates.NONE:
                 default:
@@ -636,6 +665,18 @@ namespace DatabaseCleaner
                             LB_Projects.Items.Add(item.Key);
                         }
                         break;
+                    case ProjectListDisplayMode.DISPLAY_ONE_DUPLICATES:
+                        if (item.Value.Length == 1)
+                        {
+                            LB_Projects.Items.Add(item.Key);
+                        }
+                        break;
+                    case ProjectListDisplayMode.DISPLAY_TWO_DUPLICATES:
+                        if (item.Value.Length == 2)
+                        {
+                            LB_Projects.Items.Add(item.Key);
+                        }
+                        break;
                 }
             }
             GB_Projects.Text = $"{LB_Projects.Items.Count}/{_duplicateCleaner.Projects.Count} Projects";
@@ -663,7 +704,7 @@ namespace DatabaseCleaner
             BT_DeleteSelected.Enabled = _selectedIndexes.Count > 0;
             changeProjectDataToolStripMenuItem.Enabled = _selectedIndexes.Count > 0;
             copyOriginalTitleToolStripMenuItem.Enabled = _selectedIndexes.Count > 0;
-            CleanAndExportSelectedToolStripMenuItem.Enabled = _selectedIndexes.Count > 0;
+            exportToolStripMenuItem.Enabled = _selectedIndexes.Count > 0;
             if (_selectedIndexes.Count == 0)
             {
                 LB_DuplicateCount.Text = "0";
@@ -671,7 +712,7 @@ namespace DatabaseCleaner
                 return;
             }
             _selectedProject = (ProjectData)(selected == null ? LastSelectedProject() : selected);
-            RTB_CleanedPreview.Text = _duplicateCleaner.CleanDuplicates(LastSelectedProject(), null).ToString();
+            RTB_CleanedPreview.Text = _duplicateCleaner.CleanDuplicates(LastSelectedProject(), null, !CB_UseLDistance.Checked).ToString();
             //list all "duplicate" items in listview
             if (_duplicateCleaner.Projects.ContainsKey(_selectedProject) == true)
             {//this should always happen, but it doesn't sometimes
@@ -711,7 +752,5 @@ namespace DatabaseCleaner
         }
 
         #endregion
-
-
     }
 }

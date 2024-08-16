@@ -1,21 +1,22 @@
 ﻿using DatabaseCleaner.Database;
-using DatabaseCleaner.Properties;
 using DatabaseCleaner.Util;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+#if DEBUG
+using System.Diagnostics;
+#endif
 
 namespace DatabaseCleaner.Projects
 {
     internal class DuplicateCleaner
     {
         private const int DUPLICATE_PROJECT_WORD_THRESHOLD = 20;
+        private const int MAX_LEVENSHTEIN = 2;
         private readonly string[] _newLineCharacters = new string[] { "\r\n", "\r", "\n" };
         private Dictionary<ProjectData, ProjectData[]> _duplicateProjects;
         private Dictionary<string, string> _companyNameLUT;
@@ -94,7 +95,7 @@ namespace DatabaseCleaner.Projects
         /// <summary>Merges duplicates with main project as stringbuilder</summary>
         /// <param name="project">project in <see cref="Projects"/> to clean</param>
         /// <returns>A stringbuilder containing the cleaned project</returns>
-        public StringBuilder CleanDuplicates(ProjectData project, BackgroundWorker? worker)
+        public StringBuilder CleanDuplicates(ProjectData project, BackgroundWorker? worker, bool useLevenshtein = false)
         {
             DateTime date;
             int duplicateLength = _duplicateProjects[project].Length;
@@ -308,7 +309,7 @@ namespace DatabaseCleaner.Projects
                         { continue; }//unique duplicates
                     }
                     //Need to figure out how to best show the changes in the output file
-                    string remove = MatchingLength(baseValue, compareValue, out _, true);
+                    string remove = MatchingLength(baseValue, compareValue, out _, useLevenshtein);
                     string[] removeWords = remove.Split(' ', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
                     string removePrefix;
                     if (removeWords.Length >= 5)
@@ -331,18 +332,17 @@ namespace DatabaseCleaner.Projects
         }
         /// <summary>Cleans given duplicate using <see cref="CleanDuplicates(ProjectData, BackgroundWorker?)"/> and puts it in <see cref="CLEANED_PATH"/></summary>
         /// <param name="project">project in <see cref="Projects"/> to clean</param>
-        public void CleanDuplicatesAndWriteToFile(ProjectData project, BackgroundWorker worker)
+        public void CleanDuplicatesAndWriteToFile(ProjectData project, BackgroundWorker worker, bool useLevenshtein = false)
         {
             if (_duplicateProjects.ContainsKey(project) == false)
             { return; }
             CreateCleanIfNotExist();
-            string filename = string.Join("_", project.Title.Split(Path.GetInvalidFileNameChars()));
-            filename = UtilMethods.CreateUniqueFileName("Aanvraag WBSO " + filename + ".txt", CLEANED_PATH);
+            string filename = UtilMethods.CreateUniqueFileName(CreateProjectFileName(project), CLEANED_PATH);
             string path = Path.Combine(CLEANED_PATH, filename);
             using (StreamWriter sw = File.CreateText(path))
             {
                 //write the final result to a text document
-                sw.Write(CleanDuplicates(project, worker));
+                sw.Write(CleanDuplicates(project, worker, useLevenshtein));
                 sw.Close();
             }
         }
@@ -352,8 +352,7 @@ namespace DatabaseCleaner.Projects
         public void WriteRawToFile(ProjectData projectToRemove, string rawContent, out string filename)
         {
             CreateCleanIfNotExist();
-            filename = string.Join("_", projectToRemove.Title.Split(Path.GetInvalidFileNameChars()));
-            filename = UtilMethods.CreateUniqueFileName("Aanvraag WBSO " + filename + ".txt", CLEANED_PATH);
+            filename = UtilMethods.CreateUniqueFileName(CreateProjectFileName(projectToRemove), CLEANED_PATH);
             string path = Path.Combine(CLEANED_PATH, filename);
             using (StreamWriter sw = File.CreateText(path))
             {
@@ -395,7 +394,7 @@ namespace DatabaseCleaner.Projects
         /// <param name="selectedProject">selected unique project</param>
         /// <param name="selectedIndices">projects to mark as unique</param>
         public void MakeUnique(ProjectData selectedProject, ListView.SelectedIndexCollection selectedIndices)
-        {
+        {//TODO: fix issue when key already exists
             if (selectedIndices.Count == 0)
             { return; }
             if (selectedIndices.Count == 1)
@@ -472,6 +471,7 @@ namespace DatabaseCleaner.Projects
                     ProjectData proj = _projects[j];
                     //if (j == i)//no need to check project against itself
                     //{ continue; }
+                    //check description
                     string diff = MatchingLength(_projects[i].Description, proj.Description, out int matched);
                     if (matched > DUPLICATE_PROJECT_WORD_THRESHOLD)
                     {//if more than (propably) two words, add it (maybe out an "matching words" value)
@@ -479,7 +479,7 @@ namespace DatabaseCleaner.Projects
                         processedProjects.Add(proj);
                         continue;
                     }
-                    //perhaps this might be better
+                    //if description doesn't match, check title just in case
                     if (!_projects[i].Title.Equals("()") && _projects[i].Title.Equals(proj.Title, StringComparison.OrdinalIgnoreCase))
                     {//if title is the same and not empty
                         //add project to THIS project's dictionary list
@@ -523,7 +523,7 @@ namespace DatabaseCleaner.Projects
             {
                 if (sourceWords[i].Equals(comparisonWords[i]) == false)
                 {
-                    if (matchExact == true || Levenshtein(sourceWords[i], comparisonWords[i]) > 2)
+                    if (matchExact == true || Levenshtein(sourceWords[i], comparisonWords[i]) > MAX_LEVENSHTEIN)
                     {//small change (such as quotes or something), assume they're the same still
                         break;
                     }
@@ -574,6 +574,9 @@ namespace DatabaseCleaner.Projects
                     }
                 }
             }
+#if DEBUG
+            Debug.WriteLine($"Distance between {source} and {target}: {distances[sourceLength, targetLength]}");
+#endif
             return distances[sourceLength, targetLength];
         }
         /// <summary>fills LUT(LookUpTable) with the non-empty, non-commented, values from the LUT file</summary>
@@ -637,6 +640,10 @@ namespace DatabaseCleaner.Projects
             {
                 Directory.CreateDirectory(CLEANED_PATH);
             }
+        }
+        private string CreateProjectFileName(ProjectData project)
+        {
+            return string.Join("_", ($"Aanvraag WBSO {project.Period} {project.Title}.txt").Split(Path.GetInvalidFileNameChars()));
         }
 
         /// <summary>Projects with their found duplicates</summary>

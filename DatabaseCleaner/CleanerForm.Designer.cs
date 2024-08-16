@@ -57,6 +57,7 @@
             BT_ViewSelectedDuplicate = new System.Windows.Forms.Button();
             BT_MarkUnique = new System.Windows.Forms.Button();
             LV_DuplicateProjects = new System.Windows.Forms.ListView();
+            CB_UseLDistance = new System.Windows.Forms.CheckBox();
             RTB_CleanedPreview = new System.Windows.Forms.RichTextBox();
             BT_BrowseProjectsFolder = new System.Windows.Forms.Button();
             TB_ProjectsFolder = new System.Windows.Forms.TextBox();
@@ -91,7 +92,6 @@
             copyOriginalTitleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             copyDuplicateTitleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             exportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            CleanAndExportSelectedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)DGV_DatabaseResults).BeginInit();
             statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)NUD_MaxProjectsPerFile).BeginInit();
@@ -306,7 +306,7 @@
             // 
             splitContainer3.Panel2.Controls.Add(BT_MergeSelected);
             splitContainer3.Size = new System.Drawing.Size(194, 32);
-            splitContainer3.SplitterDistance = 95;
+            splitContainer3.SplitterDistance = 94;
             splitContainer3.TabIndex = 4;
             // 
             // BT_DeleteSelected
@@ -316,7 +316,7 @@
             BT_DeleteSelected.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             BT_DeleteSelected.Location = new System.Drawing.Point(0, 0);
             BT_DeleteSelected.Name = "BT_DeleteSelected";
-            BT_DeleteSelected.Size = new System.Drawing.Size(95, 32);
+            BT_DeleteSelected.Size = new System.Drawing.Size(94, 32);
             BT_DeleteSelected.TabIndex = 0;
             BT_DeleteSelected.Text = "Delete Selected";
             BT_DeleteSelected.UseVisualStyleBackColor = true;
@@ -329,7 +329,7 @@
             BT_MergeSelected.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             BT_MergeSelected.Location = new System.Drawing.Point(0, 0);
             BT_MergeSelected.Name = "BT_MergeSelected";
-            BT_MergeSelected.Size = new System.Drawing.Size(95, 32);
+            BT_MergeSelected.Size = new System.Drawing.Size(96, 32);
             BT_MergeSelected.TabIndex = 2;
             BT_MergeSelected.Text = "Merge selected";
             BT_MergeSelected.UseVisualStyleBackColor = true;
@@ -340,7 +340,7 @@
             CbB_ProjectDisplay.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
             CbB_ProjectDisplay.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             CbB_ProjectDisplay.FormattingEnabled = true;
-            CbB_ProjectDisplay.Items.AddRange(new object[] { "Display All Projects", "Display With Duplicates", "Display No Duplicates" });
+            CbB_ProjectDisplay.Items.AddRange(new object[] { "Display All Projects", "Display With Duplicates", "Display No Duplicates", "Display One Duplicates", "Display Two Duplicates" });
             CbB_ProjectDisplay.Location = new System.Drawing.Point(6, 18);
             CbB_ProjectDisplay.Name = "CbB_ProjectDisplay";
             CbB_ProjectDisplay.Size = new System.Drawing.Size(188, 23);
@@ -356,7 +356,7 @@
             LB_Projects.Location = new System.Drawing.Point(6, 47);
             LB_Projects.Name = "LB_Projects";
             LB_Projects.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-            LB_Projects.Size = new System.Drawing.Size(188, 191);
+            LB_Projects.Size = new System.Drawing.Size(188, 174);
             LB_Projects.Sorted = true;
             LB_Projects.TabIndex = 0;
             LB_Projects.SelectedIndexChanged += LB_Projects_SelectedIndexChanged;
@@ -387,10 +387,11 @@
             // 
             // splitContainer2.Panel2
             // 
+            splitContainer2.Panel2.Controls.Add(CB_UseLDistance);
             splitContainer2.Panel2.Controls.Add(RTB_CleanedPreview);
             splitContainer2.Panel2MinSize = 48;
             splitContainer2.Size = new System.Drawing.Size(354, 257);
-            splitContainer2.SplitterDistance = 191;
+            splitContainer2.SplitterDistance = 183;
             splitContainer2.TabIndex = 4;
             // 
             // splitContainer4
@@ -409,7 +410,7 @@
             // 
             splitContainer4.Panel2.Controls.Add(splitContainer5);
             splitContainer4.Size = new System.Drawing.Size(354, 35);
-            splitContainer4.SplitterDistance = 162;
+            splitContainer4.SplitterDistance = 161;
             splitContainer4.TabIndex = 5;
             // 
             // label6
@@ -444,8 +445,8 @@
             // splitContainer5.Panel2
             // 
             splitContainer5.Panel2.Controls.Add(BT_MarkUnique);
-            splitContainer5.Size = new System.Drawing.Size(188, 35);
-            splitContainer5.SplitterDistance = 90;
+            splitContainer5.Size = new System.Drawing.Size(189, 35);
+            splitContainer5.SplitterDistance = 89;
             splitContainer5.TabIndex = 0;
             // 
             // BT_ViewSelectedDuplicate
@@ -455,7 +456,7 @@
             BT_ViewSelectedDuplicate.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             BT_ViewSelectedDuplicate.Location = new System.Drawing.Point(0, 0);
             BT_ViewSelectedDuplicate.Name = "BT_ViewSelectedDuplicate";
-            BT_ViewSelectedDuplicate.Size = new System.Drawing.Size(90, 35);
+            BT_ViewSelectedDuplicate.Size = new System.Drawing.Size(89, 35);
             BT_ViewSelectedDuplicate.TabIndex = 4;
             BT_ViewSelectedDuplicate.Text = "View Selected";
             BT_ViewSelectedDuplicate.UseVisualStyleBackColor = true;
@@ -468,7 +469,7 @@
             BT_MarkUnique.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             BT_MarkUnique.Location = new System.Drawing.Point(0, 0);
             BT_MarkUnique.Name = "BT_MarkUnique";
-            BT_MarkUnique.Size = new System.Drawing.Size(94, 35);
+            BT_MarkUnique.Size = new System.Drawing.Size(96, 35);
             BT_MarkUnique.TabIndex = 3;
             BT_MarkUnique.Text = "Mark Unique";
             BT_MarkUnique.UseVisualStyleBackColor = true;
@@ -481,21 +482,34 @@
             LV_DuplicateProjects.FullRowSelect = true;
             LV_DuplicateProjects.Location = new System.Drawing.Point(3, 41);
             LV_DuplicateProjects.Name = "LV_DuplicateProjects";
-            LV_DuplicateProjects.Size = new System.Drawing.Size(348, 144);
+            LV_DuplicateProjects.Size = new System.Drawing.Size(348, 136);
             LV_DuplicateProjects.TabIndex = 2;
             LV_DuplicateProjects.UseCompatibleStateImageBehavior = false;
             LV_DuplicateProjects.View = System.Windows.Forms.View.List;
             LV_DuplicateProjects.SelectedIndexChanged += LV_DuplicateProjects_SelectedIndexChanged;
             // 
+            // CB_UseLDistance
+            // 
+            CB_UseLDistance.AutoSize = true;
+            CB_UseLDistance.Checked = true;
+            CB_UseLDistance.CheckState = System.Windows.Forms.CheckState.Checked;
+            CB_UseLDistance.Location = new System.Drawing.Point(3, 3);
+            CB_UseLDistance.Name = "CB_UseLDistance";
+            CB_UseLDistance.Size = new System.Drawing.Size(137, 19);
+            CB_UseLDistance.TabIndex = 1;
+            CB_UseLDistance.Text = "Use Rough Matching";
+            CB_UseLDistance.UseVisualStyleBackColor = true;
+            CB_UseLDistance.CheckedChanged += CB_UseLDistance_CheckedChanged;
+            // 
             // RTB_CleanedPreview
             // 
-            RTB_CleanedPreview.Dock = System.Windows.Forms.DockStyle.Fill;
+            RTB_CleanedPreview.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
             RTB_CleanedPreview.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            RTB_CleanedPreview.Location = new System.Drawing.Point(0, 0);
+            RTB_CleanedPreview.Location = new System.Drawing.Point(0, 23);
             RTB_CleanedPreview.Name = "RTB_CleanedPreview";
             RTB_CleanedPreview.ReadOnly = true;
             RTB_CleanedPreview.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-            RTB_CleanedPreview.Size = new System.Drawing.Size(354, 62);
+            RTB_CleanedPreview.Size = new System.Drawing.Size(354, 47);
             RTB_CleanedPreview.TabIndex = 0;
             RTB_CleanedPreview.Text = "";
             // 
@@ -820,18 +834,11 @@
             // 
             // exportToolStripMenuItem
             // 
-            exportToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { CleanAndExportSelectedToolStripMenuItem });
+            exportToolStripMenuItem.Enabled = false;
             exportToolStripMenuItem.Name = "exportToolStripMenuItem";
-            exportToolStripMenuItem.Size = new System.Drawing.Size(53, 20);
-            exportToolStripMenuItem.Text = "Export";
-            // 
-            // CleanAndExportSelectedToolStripMenuItem
-            // 
-            CleanAndExportSelectedToolStripMenuItem.Enabled = false;
-            CleanAndExportSelectedToolStripMenuItem.Name = "CleanAndExportSelectedToolStripMenuItem";
-            CleanAndExportSelectedToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
-            CleanAndExportSelectedToolStripMenuItem.Text = "Clean and Export Selected";
-            CleanAndExportSelectedToolStripMenuItem.Click += CleanAndExportSelectedToolStripMenuItem_Click;
+            exportToolStripMenuItem.Size = new System.Drawing.Size(156, 20);
+            exportToolStripMenuItem.Text = "Clean and Export Selected";
+            exportToolStripMenuItem.Click += CleanAndExportSelectedToolStripMenuItem_Click;
             // 
             // CleanerForm
             // 
@@ -866,6 +873,7 @@
             groupBox1.ResumeLayout(false);
             splitContainer2.Panel1.ResumeLayout(false);
             splitContainer2.Panel2.ResumeLayout(false);
+            splitContainer2.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)splitContainer2).EndInit();
             splitContainer2.ResumeLayout(false);
             splitContainer4.Panel1.ResumeLayout(false);
@@ -956,6 +964,6 @@
         private System.Windows.Forms.SplitContainer splitContainer4;
         private System.Windows.Forms.SplitContainer splitContainer5;
         private System.Windows.Forms.ToolStripMenuItem exportToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem CleanAndExportSelectedToolStripMenuItem;
+        private System.Windows.Forms.CheckBox CB_UseLDistance;
     }
 }
