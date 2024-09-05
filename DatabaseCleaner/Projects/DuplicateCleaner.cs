@@ -579,6 +579,23 @@ namespace DatabaseCleaner.Projects
 #endif
             return distances[sourceLength, targetLength];
         }
+
+        private int HasCompare(string source, string target)
+        {
+            HashSet<string> sourceSet = new HashSet<string>(source.Split(' ', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries));
+            string[] targetSet = target.Split(' ', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries); //new HashSet<string>(target.Split(' ', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries));
+            bool flag = false;
+            for (int i = 0; i < targetSet.Length; i++)
+            {
+                flag = sourceSet.Add(targetSet[i]);
+                if (flag == false)
+                {
+
+                }
+            }
+            return 1;
+        }
+
         /// <summary>fills LUT(LookUpTable) with the non-empty, non-commented, values from the LUT file</summary>
         /// <returns>true if a table could be made and filled with at least one entry</returns>
         private bool SetCompanyLUT()

@@ -11,11 +11,14 @@ namespace ConfluenceExtractor
     internal class Extractor
     {
         //\\TN-FS01\Users$\steef\Documents\WBSO-lokaal\confluence\WR-170722-1226.txt
+        private const string DEFAULT_FILE = @"\\TN-FS01\Users$\steef\Documents\WBSO-lokaal\confluence\WR-170722-1226.txt";
         private const char removeChar = '\f';
         internal bool ExtractFull(string output)
         {
             Console.WriteLine("Path to confluence extract:");
             string path = Console.ReadLine();
+            if (string.IsNullOrWhiteSpace(path))
+            { path = DEFAULT_FILE; }
             if (!fileExists(path))
             {
                 Console.WriteLine("File does not exist at path " + path);
@@ -44,6 +47,8 @@ namespace ConfluenceExtractor
         {
             Console.WriteLine("Path to confluence extract:");
             string path = Console.ReadLine();
+            if (string.IsNullOrWhiteSpace(path))
+            { path = DEFAULT_FILE; }
             if (!fileExists(path))
             {
                 Console.WriteLine("File does not exist at path " + path);
@@ -110,7 +115,7 @@ namespace ConfluenceExtractor
                     if (lines[i].StartsWith(lastQuestion))
                     {//new project
                         str.AppendLine(lines[i]);
-                        end = i + 1;                        
+                        end = i + 1;
 #if DEBUG
                         System.Diagnostics.Debug.WriteLine("found: " + $"{name} {projnum} {projtitle}.txt");
 #endif

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 
 namespace ConfluenceExtractor
@@ -15,7 +17,7 @@ namespace ConfluenceExtractor
             void ChooseAction()
             {
                 Console.WriteLine("The following actions are available:");
-                Console.WriteLine("[1]: Extract everything.\n[2]: Extract only first found project.\n[3]: Quit program.");
+                Console.WriteLine(GetCommands());
                 Console.Write("Which action: ");
                 ConsoleKeyInfo command = Console.ReadKey();
                 Console.WriteLine();
@@ -84,6 +86,14 @@ namespace ConfluenceExtractor
                     Console.WriteLine("=============================");
                     ChooseAction();
                 }
+            }
+
+
+            string GetCommands()
+            {
+                return "[1]: Extract everything." +
+                       "\n[2]: Extract only first found project." +
+                       "\n[3]: Quit program.";
             }
         }
     }
