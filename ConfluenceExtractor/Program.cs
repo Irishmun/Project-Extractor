@@ -31,6 +31,9 @@ namespace ConfluenceExtractor
                         break;
                     case '3'://quit
                         return;
+                    case '4':
+                        CreateDebug();
+                        break;
                     default:
                         Console.WriteLine($"Command [{command.KeyChar}] not recognized...");
                         Console.WriteLine("=============================");
@@ -88,6 +91,23 @@ namespace ConfluenceExtractor
                 }
             }
 
+            void CreateDebug()
+            {
+                if (extract == null)
+                { extract = new Extractor(); }
+                if(extract.ExtractDebug(outputDir))
+                {
+                    Console.WriteLine("Extract succesful, output in " + outputDir);
+                    Console.WriteLine("=============================");
+                    ChooseAction();
+                }
+                else
+                {
+                    Console.WriteLine("Failed to extract, method only available in debug mode...");
+                    Console.WriteLine("=============================");
+                    ChooseAction();
+                }
+            }
 
             string GetCommands()
             {

@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace ConfluenceExtractor
 {
@@ -18,7 +16,10 @@ namespace ConfluenceExtractor
             Console.WriteLine("Path to confluence extract:");
             string path = Console.ReadLine();
             if (string.IsNullOrWhiteSpace(path))
-            { path = DEFAULT_FILE; }
+            {
+                Console.WriteLine("Using default file path...");
+                path = DEFAULT_FILE;
+            }
             if (!fileExists(path))
             {
                 Console.WriteLine("File does not exist at path " + path);
@@ -48,7 +49,10 @@ namespace ConfluenceExtractor
             Console.WriteLine("Path to confluence extract:");
             string path = Console.ReadLine();
             if (string.IsNullOrWhiteSpace(path))
-            { path = DEFAULT_FILE; }
+            {
+                Console.WriteLine("Using default file path...");
+                path = DEFAULT_FILE;
+            }
             if (!fileExists(path))
             {
                 Console.WriteLine("File does not exist at path " + path);
@@ -60,50 +64,84 @@ namespace ConfluenceExtractor
             return true;
         }
 
+        internal bool ExtractDebug(string output)
+        {
+#if DEBUG
+            Console.WriteLine("Creating debug extract...");
+            ConfluenceProject proj = new ConfluenceProject("title", "1970.1", "company",
+                DateTime.UnixEpoch, DateTime.MaxValue, "periode", -1, "project type", true,
+                "a description", "no trouble", "a planning", "no changes", "no specifics",
+                false, "no problems", "many solutions", "nothing new", "no reason", int.MaxValue);
+            string full = proj.CreateText();
+            //write to file
+            System.Diagnostics.Debug.WriteLine($"saving as \"[Debug]Aanvraag WBSO {proj.ProjectNumber} {proj.Title}.txt\"");
+            WriteToFile(full, output, $"[Debug]Aanvraag WBSO {proj.ProjectNumber} {proj.Title}.txt");
+            return true;
+#endif
+            return false;
+        }
+
         private int FindFirstProject()
         {
             return 4307;//notepad result
         }
 
+        private int FindNextProject(string[] lines, int startIndex)
+        {
+            string nextProjectPrefix = "PROJECT - ";//two lines before this, always*
+            for (int i = startIndex + 1; i < lines.Length; i++)
+            {
+                if (lines[i].StartsWith(nextProjectPrefix, StringComparison.OrdinalIgnoreCase))
+                {
+                    return i - 2;
+                }
+            }
+            return lines.Length - 1;
+        }
+
         private bool ExtractProject(string[] lines, int index, string output, out int endIndex, bool useProgress = false)
         {
             string projectPrefix = "PROJECT - ";
-            string lastQuestion = "Mede programmatuur ontw.?";
-            string name = "Aanvraag WBSO ";
-            string projnum = "0", numPrefix = "projectnummer";
-            string projtitle = "project", titlePrefix = "projecttitel";
-
-            endIndex = index;
 
             for (int i = index; i < lines.Length; i++)
-            {
+            {//find if given start is actually the start
                 if (lines[i].StartsWith(projectPrefix))
                 {
                     index = i;
                     break;
                 }
             }
+            endIndex = FindNextProject(lines, index);
             if (useProgress)
-            {
+            {//extract project WITH progress bar
                 using (ProgressBar bar = new ProgressBar())
                 {
-                    return ExtractContents(bar, out endIndex);
+                    return TryExtractContents(lines, index, endIndex, output, out endIndex, bar);
                 }
             }
-            return ExtractContents(null, out endIndex);
+            return TryExtractContents(lines, index, endIndex, output, out endIndex, null);
+        }
 
-            bool ExtractContents(ProgressBar? bar, out int end)
+        private bool TryExtractContents(string[] lines, int startIndex, int desiredEndIndex, string output, out int actualEndIndex, ProgressBar? bar)
+        {
+            //TODO: fix issue where wrong filename
+            string name = "Aanvraag WBSO ";
+            string projnum = string.Empty, numPrefix = "projectnummer";
+            string projtitle = string.Empty, titlePrefix = "projecttitel";
+            bool titleMade = false;
+
+            StringBuilder str = new StringBuilder();
+            str.AppendLine(lines[startIndex]);
+            actualEndIndex = desiredEndIndex;
+            ConfluenceProject proj = new ConfluenceProject();
+            for (int i = startIndex + 1; i < desiredEndIndex; i++)
             {
-                //TODO: fix issue where wrong filename
-                StringBuilder str = new StringBuilder();
-                str.AppendLine(lines[index]);
-                end = index;
-                for (int i = index + 1; i < lines.Length; i++)
+                if (lines[i].Contains(removeChar))
+                {//remove form feeds/page breaks
+                    continue;
+                }
+                if (titleMade == false)
                 {
-                    if (lines[i].Contains(removeChar))
-                    {
-                        continue;
-                    }
                     if (lines[i].StartsWith(numPrefix, StringComparison.OrdinalIgnoreCase))
                     {
                         projnum = lines[i].Substring(numPrefix.Length).Trim();
@@ -112,33 +150,53 @@ namespace ConfluenceExtractor
                     {
                         projtitle = lines[i].Substring(titlePrefix.Length).Trim();
                     }
-                    if (lines[i].StartsWith(lastQuestion))
-                    {//new project
-                        str.AppendLine(lines[i]);
-                        end = i + 1;
-#if DEBUG
-                        System.Diagnostics.Debug.WriteLine("found: " + $"{name} {projnum} {projtitle}.txt");
-#endif
-                        WriteToFile(str, output, $"{name} {projnum} {projtitle}.txt");
-                        if (useProgress)
-                        {
-                            bar?.Report(1d);
-                        }
-                        return true;
-                    }
-                    str.AppendLine(lines[i]);
-                    if (useProgress)
-                    {
-                        bar?.Report((double)i / lines.Length);
-                    }
+                    titleMade = !string.IsNullOrEmpty(projtitle) && !string.IsNullOrEmpty(projnum);
                 }
-                return false;
+
+                //get all values from project
+
+                str.AppendLine(lines[i]);
+                if (bar != null)
+                {//report progress
+                    bar.Report((double)i / lines.Length);
+                }
             }
+            //combine all values from project
+            string full = proj.CreateText();
+            //write to file
+            System.Diagnostics.Debug.WriteLine("\\/" + (desiredEndIndex - startIndex + 1).ToString());
+            WriteToFile(full, output, $"{name} {projnum} {projtitle}.txt");
+            if (bar != null)
+            {
+                bar.Report(1d);
+            }
+            return true;
+
+            StringBuilder GetAllUntil(string prefixLine, int projEnd, string endLine, int start, out int end)
+            {
+                StringBuilder builder = new StringBuilder();
+                end = start;
+                builder.AppendLine(prefixLine);
+                for (int i = start; i < projEnd; i++)
+                {
+                    if (lines[i].StartsWith(endLine))
+                    {
+                        end = i;
+                        break;
+                    }
+                    builder.AppendLine(lines[i]);
+                }
+                return builder;
+            }
+
         }
 
-        private void WriteToFile(StringBuilder str, string outpath, string filename)
+
+        #region I/O
+        private void WriteToFile(string str, string outpath, string filename)
         {
             string fullPath = CreateUniqueFileName(filename, outpath);
+            System.Diagnostics.Debug.WriteLine(Path.GetFileNameWithoutExtension(fullPath));
             using (StreamWriter sw = File.CreateText(fullPath))
             {
                 //write the final result to a text document
@@ -173,5 +231,8 @@ namespace ConfluenceExtractor
             }
             return Path.Combine(path, name);
         }
+
+
+        #endregion
     }
 }
