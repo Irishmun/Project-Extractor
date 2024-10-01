@@ -5,7 +5,7 @@ namespace ProjectExtractor
 {
     internal class Settings : SettingsBase<Settings>
     {
-        private const string INI_SECTION_CHAPTERS = "Chapters", INI_SECTION_EXPORT = "Export", INI_SECTION_HOURS = "Hours", INI_SECTION_PATHS = "Paths";
+        private const string INI_SECTION_CHAPTERS = "Chapters", INI_SECTION_EXPORT = "Export", INI_SECTION_HOURS = "Hours", INI_SECTION_PATHS = "Paths", INI_SECTION_FORM = "Form";
         private const string INI_KEY_CHAPTER_START = "ChapterStart", INI_KEY_CHAPTER_END = "ChapterEnd", INI_KEY_WRITE_CHAPTER_DATE = "DateOnly";
         private const string INI_KEY_WRITE_KEYWORDS = "Write_Keywords_To_File", INI_KEY_VERSION = "Project_Version", INI_KEY_EXTENSION = "ExportExtension";
         private const string INI_KEY_END_PROJECT = "Sections_Project_End", INI_KEY_KEYWORDS = "Keywords", INI_KEY_SECTIONS = "Sections";
@@ -13,10 +13,12 @@ namespace ProjectExtractor
         private const string INI_KEY_SAVE_PDF = "Save_PDF_Path", INI_KEY_SAVE_EXTRACT = "Save_Extract_Path", INI_KEY_DISABLE_EXTRACT = "DisableExtractionPath";
         private const string INI_KEY_PDF_PATH = "PDF_Path", INI_KEY_EXTRACT_PATH = "Extract_Path";
         private const string INI_KEY_DATABASE = "Database_Path";
+        private const string INI_KEY_FONT_SIZE = "font_size";
 
         private bool _savePDFPath, _saveExtractPath, _disableExtractionPath;
         private bool _writeKeywordsToFile, _writeTotalHours, _writeDateOnly;
         private int _selectedFileVersionIndex;
+        private int _fontSize;
         private string _exportFileExtension;
         private string _sectionsEndProject;
         private string _chapterStart, _chapterEnd, _totalHoursKeyword;
@@ -44,6 +46,7 @@ namespace ProjectExtractor
             _totalHoursKeyword = ini.ReadIfExists(INI_KEY_TOTAL_HOURS, INI_SECTION_HOURS);//get keyword for total hours
             _disableExtractionPath = ini.ReadBoolIfExists(INI_KEY_DISABLE_EXTRACT, INI_SECTION_PATHS);//get disable extraction path
             _databasePath = ini.ReadIfExists(INI_KEY_DATABASE, INI_SECTION_PATHS);
+            _fontSize = ini.ReadIntIfExists(INI_KEY_FONT_SIZE, INI_SECTION_FORM);
             //get extraction path setting if needed
             _saveExtractPath = ini.ReadBoolIfExists(INI_KEY_SAVE_EXTRACT, INI_SECTION_PATHS);
             if (_saveExtractPath == true)
@@ -85,6 +88,7 @@ namespace ProjectExtractor
         public bool WriteKeywordsToFile { get => _writeKeywordsToFile; set => UpdateSettingIfNotStarting(ref _writeKeywordsToFile, value, INI_KEY_WRITE_KEYWORDS, INI_SECTION_EXPORT, isStarting); }
         public bool WriteTotalHours { get => _writeTotalHours; set => UpdateSettingIfNotStarting(ref _writeTotalHours, value, INI_KEY_WRITE_HOURS, INI_SECTION_HOURS, isStarting); }
         public int SelectedFileVersionIndex { get => _selectedFileVersionIndex; set => UpdateSettingIfNotStarting(ref _selectedFileVersionIndex, value, INI_KEY_VERSION, INI_SECTION_EXPORT, isStarting); }
+        public int FontSize { get => DefaultIfNotExists(INI_KEY_FONT_SIZE,9,INI_SECTION_FORM); set => UpdateSettingIfNotStarting(ref _fontSize, value, INI_KEY_FONT_SIZE, INI_SECTION_FORM, isStarting); }
         public string ExportFileExtension { get => _exportFileExtension; set => UpdateSettingIfNotStarting(ref _exportFileExtension, value, INI_KEY_EXTENSION, INI_SECTION_EXPORT, isStarting); }
         public string SectionsEndProject { get => _sectionsEndProject; set => UpdateSettingIfNotStarting(ref _sectionsEndProject, value, INI_KEY_END_PROJECT, INI_SECTION_EXPORT, isStarting); }
         public string ChapterStart { get => _chapterStart; set => UpdateSettingIfNotStarting(ref _chapterStart, value, INI_KEY_CHAPTER_START, INI_SECTION_CHAPTERS, isStarting); }

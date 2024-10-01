@@ -1,16 +1,12 @@
-﻿using Octokit;
-using ProjectExtractor.Extractors;
-using ProjectExtractor.Util;
+﻿using ProjectExtractor.Util;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
-using System.Windows.Forms.Design.Behavior;
 
 namespace ProjectExtractor.Search
 {//TODO: add files to search if they aren't part of the projects array
@@ -22,11 +18,13 @@ namespace ProjectExtractor.Search
         private string[] _projectPaths;//paths to possible project files
         private Dictionary<string, string> _miscDocuments;//<path,text>documents in the folder that could not be turned into a project
         private ProjectData[] _projects;//found projects
+        private int _indexedProjects;
 
         public void PopulateTreeView(TreeView tree, string path, BackgroundWorker worker, WorkerStates workerState)
         {//fill treeview with project documents, with subnodes of the projects in that document
             List<string> files = new List<string>();
             _miscDocuments = new Dictionary<string, string>();
+            _indexedProjects = 0;
             //tree.Nodes.Clear();
             List<TreeNode> projectNodes = new List<TreeNode>();
             Stack<TreeNode> stack = new Stack<TreeNode>();
@@ -36,6 +34,8 @@ namespace ProjectExtractor.Search
 
             while (stack.Count > 0)
             {
+                if (worker.CancellationPending == true)
+                { break; }
                 //search all subfolders
                 TreeNode currentNode = stack.Pop();
                 DirectoryInfo info = (DirectoryInfo)currentNode.Tag;
@@ -67,6 +67,9 @@ namespace ProjectExtractor.Search
             List<ProjectData> proj = new List<ProjectData>();
             for (int i = 0; i < files.Count; i++)
             {
+                if (worker.CancellationPending == true)
+                { break; }
+                //make all projects into nodes
                 ProjectData[] res = TextToProjects(files[i], File.ReadAllText(files[i]), worker, workerState);
                 if (res == null)
                 {
@@ -78,6 +81,7 @@ namespace ProjectExtractor.Search
                 worker.ReportProgress((int)progress, workerState);
             }
             _projects = proj.ToArray();
+            _indexedProjects = _projects.Length;
             proj = null;
 #if DEBUG
             memoryUsage = GC.GetTotalMemory(false) - memoryUsage;
@@ -86,6 +90,8 @@ namespace ProjectExtractor.Search
             //add found projects as subnodes
             for (int i = 0; i < _projects.Length; i++)
             {
+                if (worker.CancellationPending == true)
+                { break; }
                 foreach (TreeNode item in projectNodes)
                 {
                     if (item.Tag == null)
@@ -103,7 +109,6 @@ namespace ProjectExtractor.Search
 
         public void PopulateRowsWithResults(ref DataGridView grid, string query, TreeView tree, BackgroundWorker worker, WorkerStates workerState)
         {
-
             SearchDatabase(query, ref grid, worker, workerState);
         }
 
@@ -121,12 +126,10 @@ namespace ProjectExtractor.Search
             //search through propper projects
             for (int i = 0; i < _projects.Length; i++)
             {//look through each project
+                if (worker.CancellationPending == true)
+                { break; }
                 string[] lines;
-                //check if project name is correct
-                if (isMatch(_projects[i].Id, _projects[i], ref grid))
-                {
-                    continue;
-                }
+                bool foundInContent = false;
                 //check if query is in project description
                 if (_projects[i].Content != null)
                 {
@@ -136,18 +139,34 @@ namespace ProjectExtractor.Search
                         //if (matches.Count > 0)
                         if (isMatch(lines[j], _projects[i], ref grid))
                         {
+                            foundInContent = true;
                             break;
                         }
                     }
+                    if (foundInContent == true)
+                    { continue; }
+                }
+                //otherwise, check if project name is correct
+                if (isMatch(_projects[i].Id, _projects[i], ref grid))
+                {
+                    continue;
                 }
             }
             //search through misc documents
             foreach (KeyValuePair<string, string> doc in _miscDocuments)
             {
-                if (doc.Value.ToLower().RegexMatch(reg, out Match match) == true)
+                if (worker.CancellationPending == true)
+                { break; }
+                string[] lines = doc.Value.SplitNewLines(StringSplitOptions.RemoveEmptyEntries);
+                for (int i = 0; i < lines.Length; i++)
                 {
-                    string value = doc.Value.Substring(match.Index, match.Length);
-                    addValueToGridView($"[?]{ProjectData.GetCustomerFromPath(doc.Key)}\n    {value.TruncateForDisplay(SEARCH_RESULT_TRUNCATE, StringSearch.CreateSearchRegex(query, exact))}", doc.Key, ref grid);
+                    if (lines[i].ToLower().RegexMatch(reg, out Match match) == true)
+                    {
+                        string value = lines[i].Substring(match.Index, match.Length);
+                        addValueToGridView($"[?]{ProjectData.GetCustomerFromPath(doc.Key)}\n    {lines.TruncateForDisplay(i, SEARCH_RESULT_TRUNCATE, StringSearch.CreateSearchRegex(query, exact))}", doc.Key, ref grid);
+                        //addValueToGridView($"[?]{ProjectData.GetCustomerFromPath(doc.Key)}\n    {value.ShowPreviousLines(SEARCH_RESULT_TRUNCATE, StringSearch.CreateSearchRegex(query, exact))}", doc.Key, ref grid);
+                        break;
+                    }
                 }
             }
 
@@ -182,6 +201,8 @@ namespace ProjectExtractor.Search
             int projIndex = 0;
             for (int i = 0; i < lines.Length; i++)
             {
+                if (worker.CancellationPending == true)
+                { break; }
                 if (lines[i].Equals("========[PROJECTINDEX]========="))
                 {//revision two with project index found, search for start project before continuing
                     for (int j = i; j < lines.Length; j++)
@@ -219,16 +240,19 @@ namespace ProjectExtractor.Search
                 }
             }
 #if DEBUG
-            Debug.WriteLine("found " + projects.Count + " projects in text.");
+            //Debug.WriteLine("found " + projects.Count + " projects in text.");
 #endif
             if (projects.Count == 0)
             {
 #if DEBUG            
-                Debug.WriteLine("check file for errors");
-                Debug.WriteLine(path);
+                //Debug.WriteLine("check file for errors");
+                //Debug.WriteLine(path);
 #endif
                 //add to misc documents to still allow for searching
-                _miscDocuments.Add(path, text);
+                //_miscDocuments.Add(path, text);
+                ProjectData.MiscTextToProject(path, text.SplitNewLines(StringSplitOptions.None), out currentProject);
+                projects.Add(currentProject);
+                _indexedProjects += 1;
             }
             return projects.ToArray();
 
@@ -246,6 +270,6 @@ namespace ProjectExtractor.Search
         }
 
         public string[] ProjectFiles => _projectPaths;
-        public int IndexedProjectCount => _projects.Length;
+        public int IndexedProjectCount => _indexedProjects;
     }
 }

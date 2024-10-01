@@ -1,8 +1,6 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Xml.Linq;
 
 namespace ConfluenceExtractor
 {
@@ -28,7 +26,7 @@ namespace ConfluenceExtractor
             Console.WriteLine("Extracting all projects...");
             string[] lines = File.ReadAllLines(path);
 
-            using (ProgressBar progress = new ProgressBar())
+            using (ProgressBar progress = new ProgressBar(20))
             {
                 for (int i = FindFirstProject(); i < lines.Length; i++)
                 {
@@ -114,7 +112,7 @@ namespace ConfluenceExtractor
             endIndex = FindNextProject(lines, index);
             if (useProgress)
             {//extract project WITH progress bar
-                using (ProgressBar bar = new ProgressBar())
+                using (ProgressBar bar = new ProgressBar(20))
                 {
                     return TryExtractContents(lines, index, endIndex, output, out endIndex, bar);
                 }
@@ -126,9 +124,9 @@ namespace ConfluenceExtractor
         {
             //TODO: fix issue where wrong filename
             string name = "Aanvraag WBSO ";
-            string projnum = string.Empty, numPrefix = "projectnummer";
-            string projtitle = string.Empty, titlePrefix = "projecttitel";
-            bool titleMade = false;
+            string numPrefix = "projectnummer";
+            string titlePrefix = "projecttitel";
+            bool titleMade = false, filedEarlierSet = false, softwareMadeSet = false;
 
             StringBuilder str = new StringBuilder();
             str.AppendLine(lines[startIndex]);
@@ -144,17 +142,59 @@ namespace ConfluenceExtractor
                 {
                     if (lines[i].StartsWith(numPrefix, StringComparison.OrdinalIgnoreCase))
                     {
-                        projnum = lines[i].Substring(numPrefix.Length).Trim();
+                        proj.ProjectNumber = lines[i].Substring(numPrefix.Length).Trim();
                     }
                     else if (lines[i].StartsWith(titlePrefix, StringComparison.OrdinalIgnoreCase))
                     {
-                        projtitle = lines[i].Substring(titlePrefix.Length).Trim();
+                        proj.Title = lines[i].Substring(titlePrefix.Length).Trim();
                     }
-                    titleMade = !string.IsNullOrEmpty(projtitle) && !string.IsNullOrEmpty(projnum);
+                    titleMade = !string.IsNullOrEmpty(proj.Title) && !string.IsNullOrEmpty(proj.ProjectNumber);
                 }
 
                 //get all values from project
-
+                if (string.IsNullOrEmpty(proj.Company) && lines[i].ToLower().StartsWith("naam (statutair)"))
+                {//company name
+                    proj.Company = lines[i].Substring("Naam (statutair)".Length).Trim();
+                    continue;
+                }
+                if (proj.StartDate.Equals(DateTime.UnixEpoch) && lines[i].ToLower().StartsWith("start/einddatum"))
+                {//start & end date
+                    string dateA, dateB;
+                    int midIndex = lines[i].IndexOf("t/m"), startLength = "start/einddatum".Length;
+                    System.Globalization.CultureInfo cul = new System.Globalization.CultureInfo("nl-NL");
+                    dateA = lines[i].Substring(startLength, midIndex - startLength);
+                    dateB = lines[i].Substring(midIndex);
+                    proj.StartDate = DateTime.Parse(dateA, cul);
+                    proj.EndDate = DateTime.Parse(dateB, cul);
+                    continue;
+                }
+                if (string.IsNullOrEmpty(proj.Period) && lines[i].ToLower().StartsWith("periode"))
+                {//period
+                    proj.Period = lines[i].Substring("Periode".Length).Trim();
+                    continue;
+                }
+                if (proj.Hours < 0 && lines[i].ToLower().StartsWith("s&o uren"))
+                {//total hours
+                    string hours = lines[i].Substring("S&O Uren".Length).Trim();
+                    proj.Hours = int.Parse(hours);
+                    continue;
+                }
+                if (string.IsNullOrEmpty(proj.ProjectType) && lines[i].ToLower().StartsWith("type project"))
+                {//project type
+                    proj.ProjectType = lines[i].Substring("Type project".Length).Trim();
+                    continue;
+                }
+                if (filedEarlierSet == false && lines[i].ToLower().StartsWith("eerder ingediend"))
+                {//filed earlier
+                    proj.FiledEarlier = lines[i].Substring("Eerder ingediend".Length).Trim().Equals("ja", StringComparison.OrdinalIgnoreCase) ? true : false;
+                    filedEarlierSet = true;
+                    continue;
+                }
+                if (string.IsNullOrEmpty(proj.Description) && lines[i].ToLower().StartsWith("omschrijving:"))
+                {//project description lines
+                    proj.Description = GetAllUntil(desiredEndIndex, "Fasering:", i, out i).ToString();
+                    continue;
+                }
                 str.AppendLine(lines[i]);
                 if (bar != null)
                 {//report progress
@@ -165,21 +205,20 @@ namespace ConfluenceExtractor
             string full = proj.CreateText();
             //write to file
             System.Diagnostics.Debug.WriteLine("\\/" + (desiredEndIndex - startIndex + 1).ToString());
-            WriteToFile(full, output, $"{name} {projnum} {projtitle}.txt");
+            WriteToFile(full, output, $"{name} {proj.ProjectNumber} {proj.Title}.txt");
             if (bar != null)
             {
                 bar.Report(1d);
             }
             return true;
 
-            StringBuilder GetAllUntil(string prefixLine, int projEnd, string endLine, int start, out int end)
+            StringBuilder GetAllUntil(int projEnd, string endLine, int start, out int end)
             {
                 StringBuilder builder = new StringBuilder();
                 end = start;
-                builder.AppendLine(prefixLine);
                 for (int i = start; i < projEnd; i++)
                 {
-                    if (lines[i].StartsWith(endLine))
+                    if (lines[i].StartsWith(endLine, StringComparison.OrdinalIgnoreCase))
                     {
                         end = i;
                         break;
@@ -188,21 +227,19 @@ namespace ConfluenceExtractor
                 }
                 return builder;
             }
-
         }
-
 
         #region I/O
         private void WriteToFile(string str, string outpath, string filename)
         {
             string fullPath = CreateUniqueFileName(filename, outpath);
             System.Diagnostics.Debug.WriteLine(Path.GetFileNameWithoutExtension(fullPath));
-            using (StreamWriter sw = File.CreateText(fullPath))
+            /*using (StreamWriter sw = File.CreateText(fullPath))
             {
                 //write the final result to a text document
                 sw.Write(str.ToString().Trim());
                 sw.Close();
-            }
+            }*/
         }
 
         private bool fileExists(string path)

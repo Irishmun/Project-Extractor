@@ -1,8 +1,9 @@
 ﻿using ProjectExtractor.Util;
 using System;
 using System.Collections.Generic;
+#if DEBUG
 using System.Diagnostics;
-using System.Linq;
+#endif
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -15,23 +16,25 @@ namespace ProjectExtractor.Search
         private string _id;
         private string _content;
         private string _customer;
+        private string _title;
         private int _numberInDocument;
 
 
-        public ProjectData(string path, string id, string customer, int numberInDocument, string content)
+        public ProjectData(string path, string id, string customer, string title, int numberInDocument, string content)
         {
             _path = path;
             _id = id;
             _content = content;
             _customer = customer;
+            _title = title;
             _numberInDocument = numberInDocument;
 
         }
 
         /// <summary>Tries to convert given text to a <see cref="ProjectData"/></summary>
         /// <param name="path">path to project file</param>
-        /// <param name="text">text to convert</param>
-        /// <returns></returns>
+        /// <param name="lines">text to convert</param>
+        /// <returns>Whether it could make a project out of the text</returns>
         public static bool TextToProject(string path, string[] lines, int startIndex, int endIndex, int projIndex, out ProjectData project)
         {
             project = new ProjectData();
@@ -116,11 +119,53 @@ namespace ProjectExtractor.Search
 
         }
 
+        /// <summary>Tries to convert non project file to projectData</summary>
+        /// <param name="path">path to project file</param>
+        /// <param name="lines">text to convert</param>
+        /// <param name="project">created project</param>
+        /// <param name="containsSingleProject">Whether the file should contain a single project</param>
+        /// <returns>Whether it could make a project out of the text</returns>
+        public static bool MiscTextToProject(string path, string[] lines, out ProjectData project, bool containsSingleProject = true)
+        {
+            project = new ProjectData();
+            if (lines.Length < 2)//can't contain a project
+            { return false; }
+            project.Id = GetCustomerFromPath(path);
+            project.Path = path;
+            project.Title = lines[0];
+            project.NumberInDocument = 0;
+            int compIndex = 1;
+            for (int i = 1; i < lines.Length; i++)
+            {
+                if (lines[i].StartsWith("bedrijf:", StringComparison.OrdinalIgnoreCase))
+                {
+                    project.Customer = lines[i].Substring(8).Trim();
+                    compIndex = i;
+                    continue;
+                }
+                if (lines[i].StartsWith("bedrijf nieuw:", StringComparison.OrdinalIgnoreCase))
+                {//always take newest company name
+                    project.Customer = lines[i].Substring(14).Trim();
+                    continue;
+                }
+                if (lines[i].StartsWith("omschrijving:", StringComparison.OrdinalIgnoreCase))
+                {
+                    project.Content = string.Join(Environment.NewLine, lines, compIndex, lines.Length - (compIndex)).Trim();
+                    break;
+                }
+            }
+            return true;
+        }
+
         public static string GetCustomerFromPath(string path)
         {
             string name = System.IO.Path.GetFileNameWithoutExtension(path);
             name = name.TrimExtractionData();
             return name;
+        }
+        public string GetProjectTitle()
+        {
+            return $"[{_customer}] - {_title}";
         }
 
         public string Content { get => _content; set => _content = value; }
@@ -128,5 +173,6 @@ namespace ProjectExtractor.Search
         public string Path { get => _path; set => _path = value; }
         public string Customer { get => _customer; set => _customer = value; }
         public int NumberInDocument { get => _numberInDocument; set => _numberInDocument = value; }
+        public string Title { get => _title; set => _title = value; }
     }
 }

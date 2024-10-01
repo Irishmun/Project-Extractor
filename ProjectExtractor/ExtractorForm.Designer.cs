@@ -75,13 +75,18 @@ namespace ProjectExtractor
             TV_Database = new System.Windows.Forms.TreeView();
             IL_DatabaseTree = new System.Windows.Forms.ImageList(components);
             BT_BrowseDatabase = new System.Windows.Forms.Button();
-            label10 = new System.Windows.Forms.Label();
+            splitContainer2 = new System.Windows.Forms.SplitContainer();
+            BT_CancelSearch = new System.Windows.Forms.Button();
+            BT_SearchDatabase = new System.Windows.Forms.Button();
             DGV_DatabaseResults = new System.Windows.Forms.DataGridView();
             Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            BT_SearchDatabase = new System.Windows.Forms.Button();
             TB_DatabaseSearch = new System.Windows.Forms.TextBox();
             label9 = new System.Windows.Forms.Label();
             TabPage_Settings = new System.Windows.Forms.TabPage();
+            groupBox9 = new System.Windows.Forms.GroupBox();
+            RTB_FontSizeSetting = new System.Windows.Forms.RichTextBox();
+            TrB_FontSizeSetting = new System.Windows.Forms.TrackBar();
+            LB_FontSizeSetting = new System.Windows.Forms.Label();
             groupBox3 = new System.Windows.Forms.GroupBox();
             CB_SaveExtractionPath = new System.Windows.Forms.CheckBox();
             CB_SavePDFPath = new System.Windows.Forms.CheckBox();
@@ -141,8 +146,14 @@ namespace ProjectExtractor
             splitContainer1.Panel1.SuspendLayout();
             splitContainer1.Panel2.SuspendLayout();
             splitContainer1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)splitContainer2).BeginInit();
+            splitContainer2.Panel1.SuspendLayout();
+            splitContainer2.Panel2.SuspendLayout();
+            splitContainer2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)DGV_DatabaseResults).BeginInit();
             TabPage_Settings.SuspendLayout();
+            groupBox9.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)TrB_FontSizeSetting).BeginInit();
             groupBox3.SuspendLayout();
             GB_ExportSettings.SuspendLayout();
             TabPage_DetailSettings.SuspendLayout();
@@ -502,9 +513,8 @@ namespace ProjectExtractor
             // 
             // splitContainer1.Panel2
             // 
-            splitContainer1.Panel2.Controls.Add(label10);
+            splitContainer1.Panel2.Controls.Add(splitContainer2);
             splitContainer1.Panel2.Controls.Add(DGV_DatabaseResults);
-            splitContainer1.Panel2.Controls.Add(BT_SearchDatabase);
             splitContainer1.Panel2.Controls.Add(TB_DatabaseSearch);
             splitContainer1.Panel2.Controls.Add(label9);
             splitContainer1.Size = new System.Drawing.Size(564, 319);
@@ -566,14 +576,46 @@ namespace ProjectExtractor
             BT_BrowseDatabase.UseVisualStyleBackColor = true;
             BT_BrowseDatabase.Click += BT_BrowseDatabase_Click;
             // 
-            // label10
+            // splitContainer2
             // 
-            label10.AutoSize = true;
-            label10.Location = new System.Drawing.Point(54, 34);
-            label10.Name = "label10";
-            label10.Size = new System.Drawing.Size(150, 15);
-            label10.TabIndex = 5;
-            label10.Text = "Use '~' for rough searching";
+            splitContainer2.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            splitContainer2.IsSplitterFixed = true;
+            splitContainer2.Location = new System.Drawing.Point(54, 30);
+            splitContainer2.Name = "splitContainer2";
+            // 
+            // splitContainer2.Panel1
+            // 
+            splitContainer2.Panel1.Controls.Add(BT_CancelSearch);
+            // 
+            // splitContainer2.Panel2
+            // 
+            splitContainer2.Panel2.Controls.Add(BT_SearchDatabase);
+            splitContainer2.Size = new System.Drawing.Size(308, 23);
+            splitContainer2.SplitterDistance = 149;
+            splitContainer2.TabIndex = 5;
+            // 
+            // BT_CancelSearch
+            // 
+            BT_CancelSearch.Dock = System.Windows.Forms.DockStyle.Fill;
+            BT_CancelSearch.Enabled = false;
+            BT_CancelSearch.Location = new System.Drawing.Point(0, 0);
+            BT_CancelSearch.Name = "BT_CancelSearch";
+            BT_CancelSearch.Size = new System.Drawing.Size(149, 23);
+            BT_CancelSearch.TabIndex = 6;
+            BT_CancelSearch.Text = "Cancel Search";
+            BT_CancelSearch.UseVisualStyleBackColor = true;
+            BT_CancelSearch.Click += BT_CancelSearch_Click;
+            // 
+            // BT_SearchDatabase
+            // 
+            BT_SearchDatabase.Dock = System.Windows.Forms.DockStyle.Fill;
+            BT_SearchDatabase.Location = new System.Drawing.Point(0, 0);
+            BT_SearchDatabase.Name = "BT_SearchDatabase";
+            BT_SearchDatabase.Size = new System.Drawing.Size(155, 23);
+            BT_SearchDatabase.TabIndex = 3;
+            BT_SearchDatabase.Text = "Search Database";
+            BT_SearchDatabase.UseVisualStyleBackColor = true;
+            BT_SearchDatabase.Click += BT_SearchDatabase_Click;
             // 
             // DGV_DatabaseResults
             // 
@@ -605,23 +647,12 @@ namespace ProjectExtractor
             Column1.Name = "Column1";
             Column1.ReadOnly = true;
             // 
-            // BT_SearchDatabase
-            // 
-            BT_SearchDatabase.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
-            BT_SearchDatabase.Location = new System.Drawing.Point(221, 30);
-            BT_SearchDatabase.Name = "BT_SearchDatabase";
-            BT_SearchDatabase.Size = new System.Drawing.Size(141, 23);
-            BT_SearchDatabase.TabIndex = 3;
-            BT_SearchDatabase.Text = "Search Database";
-            BT_SearchDatabase.UseVisualStyleBackColor = true;
-            BT_SearchDatabase.Click += BT_SearchDatabase_Click;
-            // 
             // TB_DatabaseSearch
             // 
             TB_DatabaseSearch.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
             TB_DatabaseSearch.Location = new System.Drawing.Point(54, 5);
             TB_DatabaseSearch.Name = "TB_DatabaseSearch";
-            TB_DatabaseSearch.PlaceholderText = "Enter Search Query";
+            TB_DatabaseSearch.PlaceholderText = "Enter Search Query (use '~' for rough searching)";
             TB_DatabaseSearch.Size = new System.Drawing.Size(308, 23);
             TB_DatabaseSearch.TabIndex = 1;
             TB_DatabaseSearch.KeyPress += TB_DatabaseSearch_KeyPress;
@@ -637,6 +668,7 @@ namespace ProjectExtractor
             // 
             // TabPage_Settings
             // 
+            TabPage_Settings.Controls.Add(groupBox9);
             TabPage_Settings.Controls.Add(groupBox3);
             TabPage_Settings.Controls.Add(GB_ExportSettings);
             TabPage_Settings.Location = new System.Drawing.Point(4, 24);
@@ -646,6 +678,52 @@ namespace ProjectExtractor
             TabPage_Settings.Text = "Settings";
             TabPage_Settings.ToolTipText = "General settings";
             TabPage_Settings.UseVisualStyleBackColor = true;
+            // 
+            // groupBox9
+            // 
+            groupBox9.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            groupBox9.Controls.Add(RTB_FontSizeSetting);
+            groupBox9.Controls.Add(TrB_FontSizeSetting);
+            groupBox9.Controls.Add(LB_FontSizeSetting);
+            groupBox9.Location = new System.Drawing.Point(8, 201);
+            groupBox9.Name = "groupBox9";
+            groupBox9.Size = new System.Drawing.Size(548, 103);
+            groupBox9.TabIndex = 8;
+            groupBox9.TabStop = false;
+            groupBox9.Text = "Font Size";
+            // 
+            // RTB_FontSizeSetting
+            // 
+            RTB_FontSizeSetting.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
+            RTB_FontSizeSetting.Enabled = false;
+            RTB_FontSizeSetting.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            RTB_FontSizeSetting.Location = new System.Drawing.Point(368, 16);
+            RTB_FontSizeSetting.Name = "RTB_FontSizeSetting";
+            RTB_FontSizeSetting.Size = new System.Drawing.Size(174, 81);
+            RTB_FontSizeSetting.TabIndex = 3;
+            RTB_FontSizeSetting.Text = resources.GetString("RTB_FontSizeSetting.Text");
+            // 
+            // TrB_FontSizeSetting
+            // 
+            TrB_FontSizeSetting.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            TrB_FontSizeSetting.Location = new System.Drawing.Point(6, 52);
+            TrB_FontSizeSetting.Maximum = 36;
+            TrB_FontSizeSetting.Minimum = 1;
+            TrB_FontSizeSetting.Name = "TrB_FontSizeSetting";
+            TrB_FontSizeSetting.Size = new System.Drawing.Size(356, 45);
+            TrB_FontSizeSetting.TabIndex = 2;
+            TrB_FontSizeSetting.Value = 9;
+            TrB_FontSizeSetting.Scroll += TrB_FontSizeSetting_Scroll;
+            // 
+            // LB_FontSizeSetting
+            // 
+            LB_FontSizeSetting.AutoSize = true;
+            LB_FontSizeSetting.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            LB_FontSizeSetting.Location = new System.Drawing.Point(5, 22);
+            LB_FontSizeSetting.Name = "LB_FontSizeSetting";
+            LB_FontSizeSetting.Size = new System.Drawing.Size(74, 15);
+            LB_FontSizeSetting.TabIndex = 0;
+            LB_FontSizeSetting.Text = "Text Size: 9pt";
             // 
             // groupBox3
             // 
@@ -1242,14 +1320,15 @@ namespace ProjectExtractor
             // backgroundWorker
             // 
             backgroundWorker.WorkerReportsProgress = true;
+            backgroundWorker.WorkerSupportsCancellation = true;
             backgroundWorker.DoWork += backgroundWorker_DoWork;
             backgroundWorker.ProgressChanged += backgroundWorker_ProgressChanged;
             backgroundWorker.RunWorkerCompleted += backgroundWorker_RunWorkerCompleted;
             // 
             // ExtractorForm
             // 
-            AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
-            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             ClientSize = new System.Drawing.Size(572, 371);
             Controls.Add(TC_MainView);
             Controls.Add(statusStrip1);
@@ -1258,6 +1337,7 @@ namespace ProjectExtractor
             Name = "ExtractorForm";
             StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             Text = "PDF Extractor";
+            FormClosing += ExtractorForm_FormClosing;
             statusStrip1.ResumeLayout(false);
             statusStrip1.PerformLayout();
             TC_MainView.ResumeLayout(false);
@@ -1272,8 +1352,15 @@ namespace ProjectExtractor
             splitContainer1.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)splitContainer1).EndInit();
             splitContainer1.ResumeLayout(false);
+            splitContainer2.Panel1.ResumeLayout(false);
+            splitContainer2.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)splitContainer2).EndInit();
+            splitContainer2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)DGV_DatabaseResults).EndInit();
             TabPage_Settings.ResumeLayout(false);
+            groupBox9.ResumeLayout(false);
+            groupBox9.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)TrB_FontSizeSetting).EndInit();
             groupBox3.ResumeLayout(false);
             groupBox3.PerformLayout();
             GB_ExportSettings.ResumeLayout(false);
@@ -1387,11 +1474,16 @@ namespace ProjectExtractor
         private System.Windows.Forms.DataGridView DGV_DatabaseResults;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
         private System.Windows.Forms.ImageList IL_DatabaseTree;
-        private System.Windows.Forms.Label label10;
         private System.Windows.Forms.PictureBox logoPictureBox;
         private System.Windows.Forms.CheckBox CB_BatchRecursive;
         private System.Windows.Forms.CheckBox CB_SkipExisting;
         private System.Windows.Forms.CheckBox CB_WritePhaseDateOnly;
+        private System.Windows.Forms.SplitContainer splitContainer2;
+        private System.Windows.Forms.Button BT_CancelSearch;
+        private System.Windows.Forms.GroupBox groupBox9;
+        private System.Windows.Forms.RichTextBox RTB_FontSizeSetting;
+        private System.Windows.Forms.TrackBar TrB_FontSizeSetting;
+        private System.Windows.Forms.Label LB_FontSizeSetting;
     }
 }
 

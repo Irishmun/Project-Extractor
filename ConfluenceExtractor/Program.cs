@@ -11,6 +11,7 @@ namespace ConfluenceExtractor
         {
             string outputDir = Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "Extracted Projects"); ;
             Extractor extract = null;
+            ProjectFiler filer = null;
             CreateDirIfNeeded();
             ChooseAction();
 
@@ -33,6 +34,9 @@ namespace ConfluenceExtractor
                         return;
                     case '4':
                         CreateDebug();
+                        break;
+                    case '5':
+                        MoveProjectsToCompanyFolder();
                         break;
                     default:
                         Console.WriteLine($"Command [{command.KeyChar}] not recognized...");
@@ -62,15 +66,14 @@ namespace ConfluenceExtractor
                 if (extract.ExtractFull(outputDir))
                 {
                     Console.WriteLine("Extract successful, output in " + outputDir);
-                    Console.WriteLine("=============================");
-                    ChooseAction();
                 }
                 else
                 {
                     Console.WriteLine("Failed to extract all. check output for sucessful extractions...\n" + outputDir);
-                    Console.WriteLine("=============================");
-                    ChooseAction();
                 }
+
+                Console.WriteLine("=============================");
+                ChooseAction();
             }
 
             void ExtractFirst()
@@ -80,33 +83,47 @@ namespace ConfluenceExtractor
                 if (extract.ExtractFirst(outputDir))
                 {
                     Console.WriteLine("Extract succesful, output in " + outputDir);
-                    Console.WriteLine("=============================");
-                    ChooseAction();
                 }
                 else
                 {
                     Console.WriteLine("Failed to extract...");
-                    Console.WriteLine("=============================");
-                    ChooseAction();
                 }
+                Console.WriteLine("=============================");
+                ChooseAction();
             }
 
             void CreateDebug()
             {
                 if (extract == null)
                 { extract = new Extractor(); }
-                if(extract.ExtractDebug(outputDir))
+                if (extract.ExtractDebug(outputDir))
                 {
                     Console.WriteLine("Extract succesful, output in " + outputDir);
-                    Console.WriteLine("=============================");
-                    ChooseAction();
                 }
                 else
                 {
                     Console.WriteLine("Failed to extract, method only available in debug mode...");
-                    Console.WriteLine("=============================");
-                    ChooseAction();
                 }
+                Console.WriteLine("=============================");
+                ChooseAction();
+            }
+
+            void MoveProjectsToCompanyFolder()
+            {
+                if (filer == null)
+                { filer = new ProjectFiler(); }
+                if (filer.FileProjectsByCompany())
+                {
+                    Console.WriteLine("Succesfully filed projects...");
+                }
+                else
+                {
+                    Console.WriteLine("Failed to file projects...");
+                }
+
+                Console.WriteLine("=============================");
+                ChooseAction();
+
             }
 
             string GetCommands()

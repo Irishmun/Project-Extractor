@@ -9,7 +9,7 @@ namespace ConfluenceExtractor
     /// </summary>
     public class ProgressBar : IDisposable, IProgress<double>
     {
-        private const int blockCount = 10;
+        private int blockCount = 10;
         private readonly TimeSpan animationInterval = TimeSpan.FromSeconds(1.0 / 8);
         private const string animation = @"|/-\";
 
@@ -31,6 +31,11 @@ namespace ConfluenceExtractor
             {
                 ResetTimer();
             }
+        }
+
+        public ProgressBar(int blockCount) : this()
+        {
+            this.blockCount = blockCount;
         }
 
         public void Report(double value)

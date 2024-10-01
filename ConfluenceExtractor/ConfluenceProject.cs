@@ -25,6 +25,30 @@ namespace ConfluenceExtractor
         private string _techReasoning;//Geef aan waarom de hiervoor beschreven S&O-werkzaamheden...
         private int _code;//Code x //gebruiken?
 
+        public ConfluenceProject()
+        {
+            _title = string.Empty;
+            _projectNumber = string.Empty;
+            _company = string.Empty;
+            _startDate = DateTime.UnixEpoch;
+            _endDate = DateTime.MaxValue;
+            _period = string.Empty;
+            _hours = -1;
+            _projectType = string.Empty;
+            _filedEarlier = false;
+            _description = string.Empty;
+            _trouble = string.Empty;
+            _planning = string.Empty;
+            _changesProject = string.Empty;
+            _specifics = string.Empty;
+            _additionalSoftware = false;
+            _techProblems = string.Empty;
+            _techSolutions = string.Empty;
+            _techNew = string.Empty;
+            _techReasoning = string.Empty;
+            _code = -1;
+        }
+
         public ConfluenceProject(string title, string project, string company, DateTime startDate, DateTime endDate, string period, int hours, string projectType, bool filedEarlier, string description, string trouble, string planning, string changesProject, string specifics, bool additionalSoftware, string techProblems, string techSolutions, string techNew, string techReasoning, int code)
         {
             _title = title;
@@ -101,3 +125,17 @@ namespace ConfluenceExtractor
         public int Code { get => _code; set => _code = value; }
     }
 }
+
+
+/*
+ string _trouble;//zwaartepunt v/d ontwikkeling x
+ string _planning;//Planning:\n x
+ string _changesProject;//Wijziging project... \n
+ string _specifics;//specifieke informatie
+ bool _additionalSoftware;//Mede programmatuur ontwikkeld? x
+ string _techProblems;//Geef aan welke concrete technische problemen (knelpunten)...
+ string _techSolutions;//Geef aan wat u in de komende WBSO-aanvraagperiode...
+ string _techNew;//Geef aan wat de technisch nieuwe werkingsprincipes zijn...
+ string _techReasoning;//Geef aan waarom de hiervoor beschreven S&O-werkzaamheden...
+ int _code;//Code x //gebruiken?
+ */
