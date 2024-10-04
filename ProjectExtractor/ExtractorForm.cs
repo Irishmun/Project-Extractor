@@ -44,6 +44,7 @@ namespace ProjectExtractor
             _sectionsFolder = new SectionsFolder(@"Resources\Sections");
             InitializeComponent();
             InitializeAbout();
+            this.Text = $"{this.Text} - V{AssemblyVersion()}";
 #if !DEBUG
             BT_DebugExtract.Visible = false;
             CB_DebugIncludeWhiteSpace.Visible = false;
@@ -1136,29 +1137,7 @@ namespace ProjectExtractor
                 }
                 return ((AssemblyProductAttribute)attributes[0]).Product;
             }*/
-            string AssemblyVersion()
-            {
-                Version ver = Assembly.GetExecutingAssembly().GetName().Version;
-                return String.Format("{0}.{1}.{2}", ver.Major, ver.Minor, ver.Build);
-            }
-            string AssemblyCopyright()
-            {
-                object[] attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyCopyrightAttribute), false);
-                if (attributes.Length == 0)
-                {
-                    return "";
-                }
-                return ((AssemblyCopyrightAttribute)attributes[0]).Copyright;
-            }
-            string AssemblyCompany()
-            {
-                object[] attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyCompanyAttribute), false);
-                if (attributes.Length == 0)
-                {
-                    return "";
-                }
-                return ((AssemblyCompanyAttribute)attributes[0]).Company;
-            }
+
             /*
             string AssemblyDescription()
             {
@@ -1169,6 +1148,29 @@ namespace ProjectExtractor
                 }
                 return ((AssemblyDescriptionAttribute)attributes[0]).Description;
             }*/
+        }
+        private string AssemblyVersion()
+        {
+            Version ver = Assembly.GetExecutingAssembly().GetName().Version;
+            return String.Format("{0}.{1}.{2}", ver.Major, ver.Minor, ver.Build);
+        }
+        private string AssemblyCopyright()
+        {
+            object[] attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyCopyrightAttribute), false);
+            if (attributes.Length == 0)
+            {
+                return "";
+            }
+            return ((AssemblyCopyrightAttribute)attributes[0]).Copyright;
+        }
+        private string AssemblyCompany()
+        {
+            object[] attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyCompanyAttribute), false);
+            if (attributes.Length == 0)
+            {
+                return "";
+            }
+            return ((AssemblyCompanyAttribute)attributes[0]).Company;
         }
         private async Task SetChangelogTextBox()
         {

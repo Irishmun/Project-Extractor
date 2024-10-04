@@ -80,7 +80,7 @@ namespace ProjectExtractor.Search
                 double progress = (double)((i + 1d) * 100d / files.Count);
                 worker.ReportProgress((int)progress, workerState);
             }
-            _projects = proj.ToArray();
+            _projects = proj.OrderBy(x => x.Customer).ToArray();
             _indexedProjects = _projects.Length;
             proj = null;
 #if DEBUG
@@ -172,7 +172,14 @@ namespace ProjectExtractor.Search
 
             bool isMatch(string text, ProjectData project, ref DataGridView grid)
             {
-                if (text.ToLower().RegexMatch(reg, out Match match) == true)
+                if (exact == true && text.Contains(query, StringComparison.OrdinalIgnoreCase) == true)
+                {
+                    text.ToLower().RegexMatch(reg, out Match match);
+                    string value = text.Substring(match.Index, match.Length);
+                    addValueToGridView($"[{project.NumberInDocument}] {project.Customer} - {project.Id}\n    {value}", project.Path, ref grid);
+                    return true;
+                }
+                else if (exact == false && text.ToLower().RegexMatch(reg, out Match match) == true)
                 {
                     string value = text.Substring(match.Index, match.Length);
                     addValueToGridView($"[{project.NumberInDocument}] {project.Customer} - {project.Id}\n    {value}", project.Path, ref grid);

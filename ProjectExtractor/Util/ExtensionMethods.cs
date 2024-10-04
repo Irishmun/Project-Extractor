@@ -166,6 +166,12 @@ namespace ProjectExtractor.Util
                 name = name.Substring(13);
             }
             name = name.Trim();
+            Match m = Regex.Match(name, @"^(\d+[ .-])*");
+            if (m.Success)
+            {
+                name = name.Substring(m.Length);
+            }
+            name = name.Trim();
             return name;
         }
 

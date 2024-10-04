@@ -23,6 +23,7 @@ namespace ConfluenceExtractor
         private string _techSolutions;//Geef aan wat u in de komende WBSO-aanvraagperiode...
         private string _techNew;//Geef aan wat de technisch nieuwe werkingsprincipes zijn...
         private string _techReasoning;//Geef aan waarom de hiervoor beschreven S&O-werkzaamheden...
+        private string _costs;//Kosten en uitgaven
         private int _code;//Code x //gebruiken?
 
         public ConfluenceProject()
@@ -46,10 +47,11 @@ namespace ConfluenceExtractor
             _techSolutions = string.Empty;
             _techNew = string.Empty;
             _techReasoning = string.Empty;
+            _costs = string.Empty;
             _code = -1;
         }
 
-        public ConfluenceProject(string title, string project, string company, DateTime startDate, DateTime endDate, string period, int hours, string projectType, bool filedEarlier, string description, string trouble, string planning, string changesProject, string specifics, bool additionalSoftware, string techProblems, string techSolutions, string techNew, string techReasoning, int code)
+        public ConfluenceProject(string title, string project, string company, DateTime startDate, DateTime endDate, string period, int hours, string projectType, bool filedEarlier, string description, string trouble, string planning, string changesProject, string specifics, bool additionalSoftware, string techProblems, string techSolutions, string techNew, string techReasoning, string costs, int code)
         {
             _title = title;
             _projectNumber = project;
@@ -70,6 +72,7 @@ namespace ConfluenceExtractor
             _techSolutions = techSolutions;
             _techNew = techNew;
             _techReasoning = techReasoning;
+            _costs = costs;
             _code = code;
         }
 
@@ -93,6 +96,7 @@ namespace ConfluenceExtractor
                    $"- Technische oplossingsrichtingen:\n{_techSolutions}\n\n" +
                    $"- Technische nieuwheid:\n{_techNew}\n\n" +
                    $"- Uitleg:\n{_techReasoning}\n\n" +
+                   $"Kosten:\n{_costs}\n\n" +
                    $"Wordt er mede programmatuur ontwikkeld?:{YesNo(_additionalSoftware)}\n\n" +
                    $"Code: {_code}";
 
@@ -122,20 +126,7 @@ namespace ConfluenceExtractor
         public string TechSolutions { get => _techSolutions; set => _techSolutions = value; }
         public string TechNew { get => _techNew; set => _techNew = value; }
         public string TechReasoning { get => _techReasoning; set => _techReasoning = value; }
+        public string Costs { get => _costs; set => _costs = value; }
         public int Code { get => _code; set => _code = value; }
     }
 }
-
-
-/*
- string _trouble;//zwaartepunt v/d ontwikkeling x
- string _planning;//Planning:\n x
- string _changesProject;//Wijziging project... \n
- string _specifics;//specifieke informatie
- bool _additionalSoftware;//Mede programmatuur ontwikkeld? x
- string _techProblems;//Geef aan welke concrete technische problemen (knelpunten)...
- string _techSolutions;//Geef aan wat u in de komende WBSO-aanvraagperiode...
- string _techNew;//Geef aan wat de technisch nieuwe werkingsprincipes zijn...
- string _techReasoning;//Geef aan waarom de hiervoor beschreven S&O-werkzaamheden...
- int _code;//Code x //gebruiken?
- */
