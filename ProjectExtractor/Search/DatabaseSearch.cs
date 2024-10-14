@@ -20,7 +20,7 @@ namespace ProjectExtractor.Search
         private ProjectData[] _projects;//found projects
         private int _indexedProjects;
 
-        public void PopulateTreeView(TreeView tree, string path, BackgroundWorker worker, WorkerStates workerState)
+        public void PopulateTreeView(TreeView tree, string path, BackgroundWorker worker, WorkerStates workerState, bool removePeriod)
         {//fill treeview with project documents, with subnodes of the projects in that document
             List<string> files = new List<string>();
             _miscDocuments = new Dictionary<string, string>();
@@ -53,7 +53,7 @@ namespace ProjectExtractor.Search
                     if (file.Name.Contains("WBSO") && _projectFileTypes.Contains(file.Extension))
                     {//if WBSO and of a permitted filetype, add to tree
                         files.Add(file.FullName);
-                        TreeNode subnode = new TreeNode(file.Name.TrimExtractionData()) { Tag = file.FullName, ImageIndex = 2, SelectedImageIndex = 2 };
+                        TreeNode subnode = new TreeNode(file.Name.TrimExtractionData(removePeriod)) { Tag = file.FullName, ImageIndex = 2, SelectedImageIndex = 2 };
                         projectNodes.Add(subnode);
                         currentNode.Nodes.Add(subnode);
                     }

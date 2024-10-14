@@ -141,7 +141,7 @@ namespace ProjectExtractor.Util
         /// <summary>Trims extraction suffixes and prefixes from given string</summary>
         /// <returns>a substring stripped of text added by the extraction process</returns>
         /// <remarks>should only be used on extracted document filenames</remarks>
-        public static string TrimExtractionData(this string name)
+        public static string TrimExtractionData(this string name, bool removePeriod = false)
         {
             name = Path.GetFileNameWithoutExtension(name);
             if (name.EndsWith(ExtractorBase.DETAIL_SUFFIX))
@@ -152,13 +152,13 @@ namespace ProjectExtractor.Util
             {
                 name = name.Substring(0, name.Length - ExtractorBase.PROJECT_SUFFIX.Length);
             }
-            //legacy names
+
             if (name.StartsWith("Extracted Projects -"))
-            {
+            {//legacy name project
                 name = name.Substring(20);//20 is the length of this legacy prefix
             }
             else if (name.StartsWith("Extracted Details -"))
-            {
+            {//legacy name details
                 name = name.Substring(19);
             }
             if (name.StartsWith("Aanvraag WBSO"))
@@ -166,12 +166,16 @@ namespace ProjectExtractor.Util
                 name = name.Substring(13);
             }
             name = name.Trim();
-            Match m = Regex.Match(name, @"^(\d+[ .-])*");
-            if (m.Success)
+            if (removePeriod == true)
             {
-                name = name.Substring(m.Length);
+                //Remove period from name
+                Match m = Regex.Match(name, @"^(\d+[ .-])*");
+                if (m.Success)
+                {
+                    name = name.Substring(m.Length);
+                }
+                name = name.Trim();
             }
-            name = name.Trim();
             return name;
         }
 

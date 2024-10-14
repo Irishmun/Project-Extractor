@@ -13,7 +13,7 @@
     </PackageProjectUrl>
     <RepositoryUrl>https://github.com/Irishmun/Project-Extractor</RepositoryUrl>
     <NeutralLanguage>en-US</NeutralLanguage>
-    <AssemblyVersion>3.1.3</AssemblyVersion>
+    <AssemblyVersion>3.1.4</AssemblyVersion>
     <Platforms>AnyCPU;x86</Platforms>
   </PropertyGroup>
   <ItemGroup>
@@ -24,10 +24,10 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\Sections\Rev_2.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\Sections\Rev_3.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <ItemGroup>

@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 
 namespace ConfluenceExtractor
@@ -30,12 +28,15 @@ namespace ConfluenceExtractor
                     case '2'://first extract
                         ExtractFirst();
                         break;
-                    case '3'://quit
+                    case '3'://extract next after line
+                        ExtractAtIndex();
+                        break;
+                    case '4'://quit
                         return;
-                    case '4':
+                    case '5'://create debug project
                         CreateDebug();
                         break;
-                    case '5':
+                    case '6'://move projects to company folder
                         MoveProjectsToCompanyFolder();
                         break;
                     default:
@@ -63,14 +64,11 @@ namespace ConfluenceExtractor
             {
                 if (extract == null)
                 { extract = new Extractor(); }
+                ClearAndWrite("[1]: Extract everything.");
                 if (extract.ExtractFull(outputDir))
-                {
-                    Console.WriteLine("Extract successful, output in " + outputDir);
-                }
+                { Console.WriteLine("Extract successful, output in " + outputDir); }
                 else
-                {
-                    Console.WriteLine("Failed to extract all. check output for sucessful extractions...\n" + outputDir);
-                }
+                { Console.WriteLine("Failed to extract all. check output for sucessful extractions...\n" + outputDir); }
 
                 Console.WriteLine("=============================");
                 ChooseAction();
@@ -80,7 +78,21 @@ namespace ConfluenceExtractor
             {
                 if (extract == null)
                 { extract = new Extractor(); }
+                ClearAndWrite("[2]: Extract only first found project.");
                 if (extract.ExtractFirst(outputDir))
+                { Console.WriteLine("Extract succesful, output in " + outputDir); }
+                else
+                { Console.WriteLine("Failed to extract..."); }
+                Console.WriteLine("=============================");
+                ChooseAction();
+            }
+
+            void ExtractAtIndex()
+            {
+                if (extract == null)
+                { extract = new Extractor(); }
+                ClearAndWrite("[3]: Extract next project after line.");
+                if (extract.ExtractAtIndex(outputDir))
                 {
                     Console.WriteLine("Extract succesful, output in " + outputDir);
                 }
@@ -96,14 +108,11 @@ namespace ConfluenceExtractor
             {
                 if (extract == null)
                 { extract = new Extractor(); }
+                ClearAndWrite("[5]: Create Debug project.");
                 if (extract.ExtractDebug(outputDir))
-                {
-                    Console.WriteLine("Extract succesful, output in " + outputDir);
-                }
+                { Console.WriteLine("Extract succesful, output in " + outputDir); }
                 else
-                {
-                    Console.WriteLine("Failed to extract, method only available in debug mode...");
-                }
+                { Console.WriteLine("Failed to extract, method only available in debug mode..."); }
                 Console.WriteLine("=============================");
                 ChooseAction();
             }
@@ -112,14 +121,11 @@ namespace ConfluenceExtractor
             {
                 if (filer == null)
                 { filer = new ProjectFiler(); }
+                ClearAndWrite("[6]: Move projects to their company's folder.");
                 if (filer.FileProjectsByCompany())
-                {
-                    Console.WriteLine("Succesfully filed projects...");
-                }
+                { Console.WriteLine("Succesfully filed projects..."); }
                 else
-                {
-                    Console.WriteLine("Failed to file projects...");
-                }
+                { Console.WriteLine("Failed to file projects..."); }
 
                 Console.WriteLine("=============================");
                 ChooseAction();
@@ -130,7 +136,17 @@ namespace ConfluenceExtractor
             {
                 return "[1]: Extract everything." +
                        "\n[2]: Extract only first found project." +
-                       "\n[3]: Quit program.";
+                       "\n[3]: Extract next project after line." +
+                       "\n[4]: Quit program." +
+                       "\n[DEBUG]" +
+                       "\n[5]: Create Debug project." +
+                       "\n[6]: Move projects to their company's folder.";
+            }
+
+            void ClearAndWrite(string text)
+            {
+                Console.Clear();
+                Console.WriteLine(text);
             }
         }
     }

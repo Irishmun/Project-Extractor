@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 
 namespace ConfluenceExtractor
 {
@@ -7,6 +8,7 @@ namespace ConfluenceExtractor
         private string _title;//projectitel x
         private string _projectNumber;//Projectnummer x
         private string _company;//Naam (statutair) x
+        private string _newCompany;//Naam vanuit CompanyNameLut
         private DateTime _startDate;
         private DateTime _endDate;//^Start/einddatum x t/m y
         private string _period;//Periode x t/m y
@@ -31,6 +33,7 @@ namespace ConfluenceExtractor
             _title = string.Empty;
             _projectNumber = string.Empty;
             _company = string.Empty;
+            _newCompany = string.Empty;
             _startDate = DateTime.UnixEpoch;
             _endDate = DateTime.MaxValue;
             _period = string.Empty;
@@ -51,11 +54,12 @@ namespace ConfluenceExtractor
             _code = -1;
         }
 
-        public ConfluenceProject(string title, string project, string company, DateTime startDate, DateTime endDate, string period, int hours, string projectType, bool filedEarlier, string description, string trouble, string planning, string changesProject, string specifics, bool additionalSoftware, string techProblems, string techSolutions, string techNew, string techReasoning, string costs, int code)
+        public ConfluenceProject(string title, string project, string company, string newCompany, DateTime startDate, DateTime endDate, string period, int hours, string projectType, bool filedEarlier, string description, string trouble, string planning, string changesProject, string specifics, bool additionalSoftware, string techProblems, string techSolutions, string techNew, string techReasoning, string costs, int code)
         {
             _title = title;
             _projectNumber = project;
             _company = company;
+            _newCompany = newCompany;
             _startDate = startDate;
             _endDate = endDate;
             _period = period;
@@ -79,30 +83,57 @@ namespace ConfluenceExtractor
         /// <summary>Creates final text contents of project file.</summary>
         public string CreateText()
         {//TODO: put all stuff in here            
-            return $"{_projectNumber} - {_title}\n" +
-                   $"Bedrijf: {_company}\n\n" +
-                   $"Start datum: {_startDate}\n" +
-                   $"Eind datum: {_endDate}\n" +
-                   $"Periode: {_period}\n" +
-                   $"Uren: {_hours}\n" +
-                   $"Project type: {_projectType}\n" +
-                   $"Eerder ingediend: {YesNo(_filedEarlier)}\n" +
-                   $"Omschrijving:\n{_description}\n\n" +
-                   $"knelpunten:\n{_trouble}\n\n" +
-                   $"Planning:\n{_planning}\n\n" +
-                   $"Wijziging in projectplanning:\n{_changesProject}\n\n" +
-                   $"Specifieke informatie afhankelijk van het type project:\n{_specifics}\n\n" +
-                   $"- Technische knelpunten:\n{_techProblems}\n\n" +
-                   $"- Technische oplossingsrichtingen:\n{_techSolutions}\n\n" +
-                   $"- Technische nieuwheid:\n{_techNew}\n\n" +
-                   $"- Uitleg:\n{_techReasoning}\n\n" +
-                   $"Kosten:\n{_costs}\n\n" +
-                   $"Wordt er mede programmatuur ontwikkeld?:{YesNo(_additionalSoftware)}\n\n" +
-                   $"Code: {_code}";
+            StringBuilder str = new StringBuilder();
+            str.AppendLine($"{_projectNumber} - {_title}");
+            str.Append(AddStringIfNotDefault("Bedrijf: ", _company, false));
+            str.Append(AddStringIfNotDefault("Bedrijf Nieuw: ", _newCompany));
+            str.Append(AddDateIfNotDefault("Start datum: ", _startDate, false));
+            str.Append(AddDateIfNotDefault("Eind datum: ", _endDate, false));
+            str.Append(AddStringIfNotDefault("Periode: ", _period, false));
+            str.Append(AddIntIfNotDefault("Uren: ", _hours, false));
+            str.Append(AddStringIfNotDefault("Project type: ", _projectType, false));
+            str.AppendLine($"Eerder ingediend: {YesNo(_filedEarlier)}\n");
+            str.Append(AddStringIfNotDefault("Omschrijving:\n", _description));
+            str.Append(AddStringIfNotDefault("Knelpunten:\n", _trouble));
+            str.Append(AddStringIfNotDefault("Planning:\n", _planning));
+            str.Append(AddStringIfNotDefault("Wijziging in projectplanning:\n", _changesProject));
+            str.Append(AddStringIfNotDefault("Specifieke informatie afhankelijk van het type project:\n", _specifics));
+            str.Append(AddStringIfNotDefault("- Technische knelpunten:\n", _techProblems));
+            str.Append(AddStringIfNotDefault("- Technische oplossingsrichtingen:\n", _techSolutions));
+            str.Append(AddStringIfNotDefault("- Technische nieuwheid:\n", _techNew));
+            str.Append(AddStringIfNotDefault("- Uitleg:\n", _techReasoning));
+            str.Append(AddStringIfNotDefault("Kosten:\n", _costs));
+            str.AppendLine($"Wordt er mede programmatuur ontwikkeld?:{YesNo(_additionalSoftware)}\n");
+            str.Append(AddIntIfNotDefault("Code: ", _code, false));
+            return str.ToString().Trim();
 
             string YesNo(bool val)
             {
                 return val == true ? "ja" : "nee";
+            }
+            string AddDateIfNotDefault(string prefix, DateTime value, bool doubleNewline = true)
+            {
+                if (value.Equals(DateTime.UnixEpoch) || value.Equals(DateTime.MaxValue))
+                { return string.Empty; }
+                return AddText(prefix, value.ToString("dd-MM-yyyy"), doubleNewline);
+            }
+            string AddStringIfNotDefault(string prefix, string value, bool doubleNewline = true)
+            {
+                if (string.IsNullOrEmpty(value))
+                { return string.Empty; }
+                return AddText(prefix, value.ToString(), doubleNewline);
+            }
+            string AddIntIfNotDefault(string prefix, int value, bool doubleNewline = true)
+            {
+                if (value < 0)
+                { return string.Empty; }
+                return AddText(prefix, value.ToString(), doubleNewline);
+            }
+            string AddText(string prefix, string value, bool doubleNewline = true)
+            {
+                if (doubleNewline == true)
+                { return $"{prefix}{value}\n\n"; }
+                return $"{prefix}{value}\n";
             }
         }
 
@@ -110,6 +141,7 @@ namespace ConfluenceExtractor
         public string Title { get => _title; set => _title = value; }
         public string ProjectNumber { get => _projectNumber; set => _projectNumber = value; }
         public string Company { get => _company; set => _company = value; }
+        public string NewCompany { get => _newCompany; set => _newCompany = value; }
         public DateTime StartDate { get => _startDate; set => _startDate = value; }
         public DateTime EndDate { get => _endDate; set => _endDate = value; }
         public string Period { get => _period; set => _period = value; }
@@ -128,5 +160,7 @@ namespace ConfluenceExtractor
         public string TechReasoning { get => _techReasoning; set => _techReasoning = value; }
         public string Costs { get => _costs; set => _costs = value; }
         public int Code { get => _code; set => _code = value; }
+
+        public string FileName => $"{_startDate.Year} {_title}";
     }
 }

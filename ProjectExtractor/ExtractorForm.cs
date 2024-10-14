@@ -41,7 +41,7 @@ namespace ProjectExtractor
             _settings.IsStarting = true;
             _updateHandler = new UpdateHandler();
             _databaseSearch = new DatabaseSearch();
-            _sectionsFolder = new SectionsFolder(@"Resources\Sections");
+            _sectionsFolder = new SectionsFolder(Path.Combine(AppContext.BaseDirectory));
             InitializeComponent();
             InitializeAbout();
             this.Text = $"{this.Text} - V{AssemblyVersion()}";
@@ -168,6 +168,8 @@ namespace ProjectExtractor
                 //set database path
                 TB_DatabasePath.Text = _settings.DatabasePath;
                 SetFontSizes(_settings.FontSize);
+                //remove period from projects
+                CB_RemovePeriod.Checked = _settings.RemovePeriod;
             }
         }
         private async void CheckForUpdateThenSetAbout()
@@ -277,7 +279,23 @@ namespace ProjectExtractor
         {//extract details from pdf file based on preferences
             if (backgroundWorker.IsBusy)
             { return; }
-            if (BothPathsExists())
+            if (CB_ToggleBatch.Checked)
+            {
+                _batchFolder = string.Empty;
+                using (FolderBrowserDialog folder = new FolderBrowserDialog())
+                {
+                    if (folder.ShowDialog() != DialogResult.OK)
+                    { return; }
+
+                    _batchFolder = folder.SelectedPath;
+                }
+                if (_batchFolder.IsPathValid() == false || TB_ExtractLocation.Text.IsPathValid() == false)
+                { return; }
+                PrepExtract();
+                backgroundWorker.RunWorkerAsync(WorkerStates.EXTRACT_BATCH_DETAIL);
+
+            }
+            else if (BothPathsExists())
             {
                 if (string.IsNullOrWhiteSpace(TB_StopChapter.Text) == true || string.IsNullOrWhiteSpace(TB_Chapter.Text) == true)
                 {
@@ -285,23 +303,47 @@ namespace ProjectExtractor
                         "[default values: \"Fasering werkzaamheden\" & \"Update project\"]", "Empty Chapter box(es)", MessageBoxButtons.OK, MessageBoxIcon.Stop);
                     return;
                 }
-                _keywords = ConvertCheckedListViewItemsToArray(LV_Keywords);
-                _extractor = GetDetailExportSetting();
-                SetButtonsEnabled(false);
+                PrepExtract();
                 backgroundWorker.RunWorkerAsync(WorkerStates.EXTRACT_DETAIL);
             }
 
+            void PrepExtract()
+            {
+                _keywords = ConvertCheckedListViewItemsToArray(LV_Keywords);
+                _extractor = GetDetailExportSetting();
+                SetButtonsEnabled(false);
+            }
         }
         private void BT_ExtractFullProject_Click(object sender, EventArgs e)
         {
             if (backgroundWorker.IsBusy)
             { return; }
-            if (BothPathsExists())
+            if (CB_ToggleBatch.Checked)
+            {
+                _batchFolder = string.Empty;
+                using (FolderBrowserDialog folder = new FolderBrowserDialog())
+                {
+                    if (folder.ShowDialog() != DialogResult.OK)
+                    { return; }
+
+                    _batchFolder = folder.SelectedPath;
+                }
+                if (_batchFolder.IsPathValid() == false || TB_ExtractLocation.Text.IsPathValid() == false)
+                { return; }
+                PrepExtract();
+                backgroundWorker.RunWorkerAsync(WorkerStates.EXTRACT_BATCH_PROJECT);
+            }
+            else if (BothPathsExists())
+            {
+                PrepExtract();
+                backgroundWorker.RunWorkerAsync(WorkerStates.EXTRACT_PROJECT);
+            }
+
+            void PrepExtract()
             {
                 _sections = ConvertListViewItemsToArray(LV_Sections);
                 _extractor = GetProjectExtractorSetting();
                 SetButtonsEnabled(false);
-                backgroundWorker.RunWorkerAsync(WorkerStates.EXTRACT_PROJECT);
             }
         }
         private void BT_BatchExtract_Click(object sender, EventArgs e)
@@ -322,7 +364,7 @@ namespace ProjectExtractor
             _sections = ConvertListViewItemsToArray(LV_Sections);
             _extractor = GetProjectExtractorSetting();
             SetButtonsEnabled(false);
-            backgroundWorker.RunWorkerAsync(WorkerStates.EXTRACT_BATCH);
+            backgroundWorker.RunWorkerAsync(WorkerStates.EXTRACT_BATCH_PROJECT);
         }
         #endregion
         #region Textbox events
@@ -345,6 +387,11 @@ namespace ProjectExtractor
         }
         #endregion
         #region CheckBox events
+        private void CB_ToggleBatch_CheckedChanged(object sender, EventArgs e)
+        {
+            CB_SkipExisting.Enabled = CB_ToggleBatch.Checked;
+            CB_BatchRecursive.Enabled = CB_ToggleBatch.Checked;
+        }
         private void CB_DisableExtractionPath_CheckedChanged(object sender, EventArgs e)
         {
             _settings.DisableExtractionPath = CB_DisableExtractionPath.Checked;
@@ -467,6 +514,10 @@ namespace ProjectExtractor
         private void CB_SaveExtractionPath_CheckedChanged(object sender, EventArgs e)
         {
             _settings.SaveExtractPath = CB_SavePDFPath.Checked;
+        }
+        private void CB_RemovePeriod_CheckedChanged(object sender, EventArgs e)
+        {
+            _settings.RemovePeriod = CB_RemovePeriod.Checked;
         }
         #endregion
         #region TrackBar events
@@ -681,12 +732,12 @@ namespace ProjectExtractor
             }
             if (workArgument.Equals(WorkerStates.DATABASE_INDEX))
             {
-                _databaseSearch.PopulateTreeView(TV_Database, TB_DatabasePath.Text, sender as System.ComponentModel.BackgroundWorker, workArgument);
+                _databaseSearch.PopulateTreeView(TV_Database, TB_DatabasePath.Text, sender as System.ComponentModel.BackgroundWorker, workArgument, CB_RemovePeriod.Checked);
                 return;
             }
             #endregion
             #region extraction
-            if (workArgument.Equals(WorkerStates.EXTRACT_BATCH))
+            if (workArgument.Equals(WorkerStates.EXTRACT_BATCH_PROJECT) || workArgument.Equals(WorkerStates.EXTRACT_BATCH_DETAIL))
             {
                 if (string.IsNullOrWhiteSpace(TB_ExtractLocation.Text))
                 {
@@ -724,8 +775,11 @@ namespace ProjectExtractor
                     _extractionResult = (_extractor as DetailExtractorBase).ExtractDetails(ProjectRevisionUtil.GetProjectRevision(_currentRevision), TB_PDFLocation.Text, _exportFile, _keywords, TB_Chapter.Text, TB_StopChapter.Text, TB_TotalHours.Text, CB_TotalHoursEnabled.Checked, CB_WriteKeywordsToFile.Checked, CB_WritePhaseDateOnly.Checked, sender as System.ComponentModel.BackgroundWorker, workArgument);
                     break;
 #endif
-                case WorkerStates.EXTRACT_BATCH:
+                case WorkerStates.EXTRACT_BATCH_PROJECT:
                     _extractionResult = (_extractor as ProjectExtractorBase).BatchExtractProjects(ProjectRevisionUtil.GetProjectRevision(_currentRevision), _batchFolder, TB_ExtractLocation.Text, _extractor.FileExtension, _sections, TB_SectionsEndProject.Text, CB_SkipExisting.Checked, CB_BatchRecursive.Checked, sender as System.ComponentModel.BackgroundWorker, workArgument);
+                    break;
+                case WorkerStates.EXTRACT_BATCH_DETAIL:
+                    _extractionResult = (_extractor as DetailExtractorBase).BatchExtractDetails(ProjectRevisionUtil.GetProjectRevision(_currentRevision), _batchFolder, TB_ExtractLocation.Text, _keywords, TB_Chapter.Text, TB_StopChapter.Text, TB_TotalHours.Text, CB_TotalHoursEnabled.Checked, CB_WriteKeywordsToFile.Checked, CB_WritePhaseDateOnly.Checked,CB_SkipExisting.Checked, CB_BatchRecursive.Checked, sender as System.ComponentModel.BackgroundWorker, workArgument);
                     break;
                 default:
                     UpdateStatus("ERROR extracting: unknown extractor given.");
@@ -748,7 +802,7 @@ namespace ProjectExtractor
         {
             if (_isClosing == true)
             { return; }
-            Type statusType = e.UserState.GetType();
+            Type statusType = e.UserState?.GetType();
             WorkerStates state;
             if (statusType.IsArray)
             {
@@ -770,7 +824,7 @@ namespace ProjectExtractor
                     break;
                 case WorkerStates.NONE:
                 case WorkerStates.DATABASE_INDEX:
-                case WorkerStates.EXTRACT_BATCH:
+                case WorkerStates.EXTRACT_BATCH_PROJECT:
                 case WorkerStates.EXTRACT_DETAIL:
                 case WorkerStates.EXTRACT_PROJECT:
 #if DEBUG
@@ -990,7 +1044,6 @@ namespace ProjectExtractor
         {
             BT_Extract.Enabled = enabled;
             BT_ExtractFullProject.Enabled = enabled;
-            BT_BatchExtract.Enabled = enabled;
 #if DEBUG
             BT_DebugExtract.Enabled = enabled;
 #endif
@@ -1073,7 +1126,6 @@ namespace ProjectExtractor
             DGV_DatabaseResults.DefaultCellStyle = cellStyle;
             //main
             BT_Extract.Font = font;
-            BT_BatchExtract.Font = font;
             BT_ExtractFullProject.Font = font;
             //about
         }
@@ -1237,7 +1289,5 @@ namespace ProjectExtractor
         }
 
         #endregion
-
-
     }
 }

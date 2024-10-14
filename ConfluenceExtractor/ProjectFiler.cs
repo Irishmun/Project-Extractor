@@ -104,7 +104,7 @@ namespace ConfluenceExtractor
 
         private string CreateFolderIfNotExist(string path, string folderName)
         {
-            string fullPath = Path.Combine(path, folderName);
+            string fullPath = Util.CreateUniqueFileName(folderName, path);
             if (Directory.Exists(fullPath) == false)
             {
                 Directory.CreateDirectory(fullPath);

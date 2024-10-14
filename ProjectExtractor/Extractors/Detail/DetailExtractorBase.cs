@@ -30,10 +30,32 @@ namespace ProjectExtractor.Extractors.Detail
                     return ExitCode.NOT_IMPLEMENTED;
             }
         }
+        public ExitCode BatchExtractDetails(ProjectLayoutRevision revision, string batchPath, string extractPath, string[] Keywords, string chapters, string stopChapters, string totalHoursKeyword, bool WriteTotalHoursToFile, bool WriteKeywordsToFile, bool writePhaseDate, bool skipExisting, bool recursive, System.ComponentModel.BackgroundWorker Worker, WorkerStates workerState)
+        {
+            switch (revision)
+            {
+                case ProjectLayoutRevision.REVISION_ONE:
+                    return BatchExtractRevisionOneDetails(batchPath, extractPath, Keywords, chapters, stopChapters, totalHoursKeyword, WriteTotalHoursToFile, WriteKeywordsToFile, writePhaseDate, skipExisting, recursive, Worker, workerState);
+                case ProjectLayoutRevision.REVISION_TWO:
+                    return BatchExtractRevisionTwoDetails(batchPath, extractPath, Keywords, chapters, stopChapters, totalHoursKeyword, WriteTotalHoursToFile, WriteKeywordsToFile, writePhaseDate, skipExisting, recursive, Worker, workerState);
+                case ProjectLayoutRevision.REVISION_THREE:
+                    return BatchExtractRevisionThreeDetails(batchPath, extractPath, Keywords, chapters, stopChapters, totalHoursKeyword, WriteTotalHoursToFile, WriteKeywordsToFile, writePhaseDate, skipExisting, recursive, Worker, workerState);
+                case ProjectLayoutRevision.UNKNOWN_REVISION:
+                default:
+#if DEBUG
+                    System.Diagnostics.Debug.WriteLine("[ProjectExtractorBase]Unknown revision given...");
+#endif
+                    return ExitCode.NOT_IMPLEMENTED;
+            }
+        }
 
         protected abstract ExitCode ExtractRevisionOneDetails(string file, string extractPath, string[] keywords, string chapters, string stopChapters, string totalHoursKeyword, bool writeTotalHoursToFile, bool writeKeywordsToFile, bool writePhaseDate, BackgroundWorker worker, WorkerStates workerState);
         protected abstract ExitCode ExtractRevisionTwoDetails(string file, string extractPath, string[] keywords, string chapters, string stopChapters, string totalHoursKeyword, bool writeTotalHoursToFile, bool writeKeywordsToFile, bool writePhaseDate, BackgroundWorker worker, WorkerStates workerState);
         protected abstract ExitCode ExtractRevisionThreeDetails(string file, string extractPath, string[] Keywords, string chapters, string stopChapters, string totalHoursKeyword, bool WriteTotalHoursToFile, bool WriteKeywordsToFile, bool writePhaseDate, BackgroundWorker Worker, WorkerStates workerState);
+
+        protected abstract ExitCode BatchExtractRevisionOneDetails(string folder, string extractPath, string[] keywords, string chapters, string stropChapters, string totalHoursKeyword, bool writeTotalHoursToFile, bool writeKeywordsToFile, bool writePhaseDate, bool skipExisting, bool recursive, BackgroundWorker worker, WorkerStates workerState);
+        protected abstract ExitCode BatchExtractRevisionTwoDetails(string folder, string extractPath, string[] keywords, string chapters, string stropChapters, string totalHoursKeyword, bool writeTotalHoursToFile, bool writeKeywordsToFile, bool writePhaseDate, bool skipExisting, bool recursive, BackgroundWorker worker, WorkerStates workerState);
+        protected abstract ExitCode BatchExtractRevisionThreeDetails(string folder, string extractPath, string[] keywords, string chapters, string stropChapters, string totalHoursKeyword, bool writeTotalHoursToFile, bool writeKeywordsToFile, bool writePhaseDate, bool skipExisting, bool recursive, BackgroundWorker worker, WorkerStates workerState);
 
         /// <summary>Returns the hours from the string, if present. The hours should be at the end of the string in revision two</summary>
         /// <param name="line">line to get the hours from</param>
