@@ -3,12 +3,15 @@ using ProjectExtractor.Extractors;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace ProjectExtractor.Util
 {
     public static class ExtensionMethods
     {
+        private static readonly string[] NEWLINES = new string[] { "\r\n", "\r", "\n" };
+
         /// <summary>returns the KeyValue pair from the dictionary key</summary>
         public static KeyValuePair<TKey, TValue> GetEntry<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key)
         {
@@ -81,7 +84,7 @@ namespace ProjectExtractor.Util
         /// <returns>An array whose elements contain the substring delimited by newlines.</returns>
         public static string[] SplitNewLines(this string val, StringSplitOptions options)
         {
-            return val.Split(new string[] { "\r\n", "\r", "\n" }, options);
+            return val.Split(NEWLINES, options);
         }
 
         /// <summary>Truncates the string to the given length if needed, adding ellipsis AFTER the word where the limit was exceeded</summary>
@@ -92,6 +95,7 @@ namespace ProjectExtractor.Util
             if (string.IsNullOrEmpty(value)) return string.Empty;
             string returnValue = value.Trim();
             string val = Regex.Match(value, regex).Value;
+            value = value.ReplaceLineEndings(" ");
             int subStart = value.IndexOf(val, StringComparison.OrdinalIgnoreCase);
 
             if (value.Length > length)
@@ -102,7 +106,32 @@ namespace ProjectExtractor.Util
                     subStart = value.LastIndexOf(' ', value.Length - length);
                 }
 
+                subStart = subStart < 0 ? 0 : subStart;
                 string tmp = value.Substring(subStart, length);
+                if (tmp.LastIndexOf(' ') > 0)
+                    returnValue = "…" + tmp.Substring(0, tmp.LastIndexOf(' ')).Trim() + "…";
+            }
+            return returnValue;
+        }
+        //value.ShowPreviousLines(SEARCH_RESULT_TRUNCATE, StringSearch.CreateSearchRegex(query, exact))}", doc.Key, ref grid
+        public static string TruncateForDisplay(this string[] value, int index, int length, string regex)
+        {//TODO: rework this to search for the previous sentence (period or enter)
+            if (string.IsNullOrEmpty(value[index])) return string.Empty;
+            string returnValue = value[index].Trim();
+            string val = Regex.Match(value[index], regex).Value;
+            value[index] = value[index].ReplaceLineEndings(" ");
+            int subStart = value[index].IndexOf(val, StringComparison.OrdinalIgnoreCase);
+
+            if (value[index].Length > length)
+            {
+                subStart = value[index].LastIndexOf(' ', subStart);//change to first space before found text
+                if (subStart + length >= value[index].Length)
+                {//move it further if it would exceed string length
+                    subStart = value[index].LastIndexOf(' ', value[index].Length - length);
+                }
+
+                subStart = subStart < 0 ? 0 : subStart;
+                string tmp = value[index].Substring(subStart, length);
                 if (tmp.LastIndexOf(' ') > 0)
                     returnValue = "…" + tmp.Substring(0, tmp.LastIndexOf(' ')).Trim() + "…";
             }
@@ -112,7 +141,7 @@ namespace ProjectExtractor.Util
         /// <summary>Trims extraction suffixes and prefixes from given string</summary>
         /// <returns>a substring stripped of text added by the extraction process</returns>
         /// <remarks>should only be used on extracted document filenames</remarks>
-        public static string TrimExtractionData(this string name)
+        public static string TrimExtractionData(this string name, bool removePeriod = false)
         {
             name = Path.GetFileNameWithoutExtension(name);
             if (name.EndsWith(ExtractorBase.DETAIL_SUFFIX))
@@ -123,13 +152,13 @@ namespace ProjectExtractor.Util
             {
                 name = name.Substring(0, name.Length - ExtractorBase.PROJECT_SUFFIX.Length);
             }
-            //legacy names
+
             if (name.StartsWith("Extracted Projects -"))
-            {
+            {//legacy name project
                 name = name.Substring(20);//20 is the length of this legacy prefix
             }
             else if (name.StartsWith("Extracted Details -"))
-            {
+            {//legacy name details
                 name = name.Substring(19);
             }
             if (name.StartsWith("Aanvraag WBSO"))
@@ -137,9 +166,22 @@ namespace ProjectExtractor.Util
                 name = name.Substring(13);
             }
             name = name.Trim();
+            if (removePeriod == true)
+            {
+                //Remove period from name
+                Match m = Regex.Match(name, @"^(\d+[ .-])*");
+                if (m.Success)
+                {
+                    name = name.Substring(m.Length);
+                }
+                name = name.Trim();
+            }
             return name;
         }
 
-
+        public static System.Drawing.Font ChangeFontSize(this System.Drawing.Font basis, int size)
+        {
+            return new System.Drawing.Font(basis.Name, size);
+        }
     }
 }

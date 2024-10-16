@@ -1,4 +1,5 @@
-﻿using ProjectUtility;
+﻿using DatabaseCleaner.Util;
+using ProjectUtility;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -69,7 +70,7 @@ namespace DatabaseCleaner.Database
                             }
                             columnValues.Add(table.Rows[i][col]?.ToString());
                         }
-                        filename = AdjustFileName(_sections[s].Format(columnValues.ToArray()), path);
+                        filename = UtilMethods.CreateUniqueFileName(_sections[s].Format(columnValues.ToArray()), path);
                         continue;
                     }
                     foreach (string col in _sections[s].Columns)
@@ -106,31 +107,19 @@ namespace DatabaseCleaner.Database
             }
         }
 
-        private string AdjustFileName(string filename, string path)
-        {
-            //always sanitize file name
-            filename = string.Join("_", filename.Split(Path.GetInvalidFileNameChars()));
-            if (File.Exists(Path.Combine(path, filename)) == false)
-            { return filename; }
-            int dup = 1;
-            bool exists = true;
-            filename = Path.GetFileNameWithoutExtension(filename);
-            string name = $"{filename} ({dup}).txt";
-            while (exists)
-            {
-                exists = File.Exists(Path.Combine(path, name));
-                if (exists == true)
-                {
-                    dup += 1;
-                    name = $"{filename} ({dup}).txt";
-                    continue;
-                }
-            }
-            return name;
-        }
-
         private void WriteToFile(StringBuilder content, string path, string filename)
         {
+            if (content.Length == 0)
+            {//no text, no write
+#if DEBUG
+                Debug.WriteLine($"File {filename} was empty, not writing...");
+#endif
+                return;
+            }
+            if (File.Exists(Path.Combine(path, filename)))
+            {//should've been fine but it isn't
+                filename = UtilMethods.CreateUniqueFileName(filename, path);
+            }
 #if DEBUG
             Debug.WriteLine("Writing content to file: " + Path.Combine(path, filename));
 #endif

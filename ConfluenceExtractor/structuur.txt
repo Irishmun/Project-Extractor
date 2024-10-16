@@ -1,0 +1,73 @@
+PROJECT - x z 			--> (-) [Project x: z]
+Naam (statutair) x 		--> (2) Bedrijf: x
+Periode x t/m y 		--> (4) periode (x-y)
+Code x 					--> (-) ?
+projectitel x 			--> (1) bestandsnaam & bovenaan bestand
+type project x 			--> (6) Project type: x
+zwaartepunt v/d Ontw. x --> (9) hetzelfde [nieuwe toevoeging]
+Projectnummer x 		--> (1) Project x
+Start/einddatum x t/m y --> (2/3) Start datum: x \n Eind datum: y
+Eerder ingediend x		--> (7) hetzelfde [nieuwe toevoeging]
+S&O Uren x				--> (5) Uren: x
+Omschrijving:\n x 		--> (8) Omschrijving: \n x
+Planning: \n x ...		--> (10) Planning: \n
+ontwikkelings-/...		--> niks [opmaak [pagina]
+onderzoeksactiviteit...	--> ^
+t/m Wijziging projec...	--> (11) <planning> <datum>
+Wijziging... 	...\n x	--> (12) Wijziging projectplanning: x
+specifieke inform...	--> (13) Specifieke informatie afhankelijk van het project:\n x
+Mede programmatuur... x	--> (15) Mede programmatuur ontwikkeld? x
+
+
+
+
+Geef aan welke concrete technische problemen (knelpunten) u en/of uw S&O-
+medewerkers tijdens het ontwikkelingsproces moeten oplossen om het gewenste 
+projectresultaat te bereiken (maximaal 500 tekens). Uit uw antwoord moet 
+blijken welke concrete technische problemen u de komende WBSO-aanvraagperiode 
+zelf wilt oplossen. Vermeld geen algemene projectbeschrijving of de functionele 
+eisen van het project. 
+
+
+ 
+Geef aan wat u in de komende WBSO-aanvraagperiode specifiek zelf gaat 
+ontwikkelen om de hiervoor genoemde technische problemen op te lossen (maximaal 
+500 tekens). Uit uw antwoord moet blijken welke technische oplossingsrichtingen 
+u voor ogen heeft om uw technische problemen op te lossen en welke technische 
+risicos en onzekerheden hierbij aanwezig zijn. 
+
+
+
+Geef aan wat de technisch nieuwe werkingsprincipes zijn die u wilt aantonen bij 
+de hiervoor genoemde technische oplossingsrichtingen (maximaal 500 tekens). Uit 
+uw antwoord moet concreet blijken wanneer deze technisch nieuwe 
+werkingsprincipes zijn bewezen en uw S&O-werkzaamheden zijn afgerond. 
+
+
+
+Geef aan waarom de hiervoor beschreven S&O-werkzaamheden voor u leiden tot een 
+technisch nieuw fysiek product of productieproces (maximaal 500 tekens). Uit uw 
+antwoord moet blijken dat uw onderneming technisch nieuwe principes, methodes 
+of technieken onderzoekt of bestaande technologie verder ontwikkelt. 
+Routinematige ontwikkeling is geen S&O. 
+
+
+[]_title;
+[]_period;
+[]_code;?
+[]_projectType; 
+[]_trouble;
+[]_project;
+[]_startDate;
+[]_endDate;
+[]_filedEarlier;
+[]_hours;
+[]_description;
+[]_planning;
+[]_changesProject;
+[]_specifics;
+[]_additionalSoftware;
+[]_techProblems;
+[]_techSolutions;
+[]_techNew;
+[]_techReasoning;

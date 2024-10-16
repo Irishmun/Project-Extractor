@@ -168,17 +168,7 @@ namespace DatabaseCleaner.Projects
                 {
                     project.ProjectType = tempString;
                     continue;
-                }
-                if (SetMultiStringIfTrue(out tempString, i, endIndex, "Opmerkingen:", "Toelichting:", out i))
-                {
-                    project.Comment = tempString;
-                    continue;
-                }
-                if (SetStringIfTrue(out tempString, i, "Methode:", true))
-                {
-                    project.Method = tempString;
-                    continue;
-                }
+                }             
                 if (SetMultiStringIfTrue(out tempString, i, endIndex, "- Technische knelpunten:", "- Technische oplossingsrichtingen:", out i))
                 {
                     project.TechProblem = tempString;
@@ -224,50 +214,51 @@ namespace DatabaseCleaner.Projects
                     project.Prin = tempString;
                     continue;
                 }
-                //TODO: check if this works (and check if mark unique works in batch)
-                //this._design = design;
                 if (SetStringIfTrue(out tempString, i, "Ontwerp:"))
                 {
                     project.Prin = tempString;
                     continue;
                 }
-                //this._phase = phase;
                 if (SetStringIfTrue(out tempString, i, "Fasering Werkzaamheden::", true))
                 {
                     project.Phase = tempString;
                     continue;
                 }
-                //this._explanation = explanation;
-                if (SetStringIfTrue(out tempString, i, "Toelichting:", true))
+                if (SetMultiStringIfTrue(out tempString, i, endIndex, "Opmerkingen:", "Toelichting:", out i))
+                {
+                    project.Comment = tempString;
+                    continue;
+                }
+                if (SetMultiStringIfTrue(out tempString, i, endIndex, "Toelichting:", "Functionaliteit:", out i))
                 {
                     project.Explanation = tempString;
                     continue;
                 }
-                //this._functionality = functionality;
-                if (SetStringIfTrue(out tempString, i, "Functionaliteit:", true))
+                if (SetMultiStringIfTrue(out tempString, i, endIndex, "Functionaliteit:", "Toepassing:", out i))
                 {
                     project.Functionality = tempString;
                     continue;
                 }
-                //this._application = application;
-                if (SetStringIfTrue(out tempString, i, "Toepassing:", true))
+                if (SetMultiStringIfTrue(out tempString, i, endIndex, "Toepassing:", "Kennisinstelling:", out i))
                 {
                     project.Application = tempString;
                     continue;
                 }
-                //this._target = target;
-                if (SetStringIfTrue(out tempString, i, "Doelgroep:", true))
-                {
-                    project.Audience = tempString;
-                    continue;
-                }
-                //this._institution = insitution;
                 if (SetStringIfTrue(out tempString, i, "Kennisinstelling:", true))
                 {
                     project.Knowledge = tempString;
                     continue;
                 }
-                //this._id = id;
+                if (SetMultiStringIfTrue(out tempString, i, endIndex, "Doelgroep:", "Methode:", out i))
+                {
+                    project.Audience = tempString;
+                    continue;
+                }
+                if (SetMultiStringIfTrue(out tempString, i, endIndex, "Methode:", "- Technische knelpunten:", out i))
+                {
+                    project.Method = tempString;
+                    continue;
+                }
                 if (SetIntIfTrue(out tempInt, i, "ID:"))
                 {
                     project.Id = tempInt;

@@ -3,8 +3,10 @@ using Newtonsoft.Json;
 using ProjectUtility;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Threading.Tasks;
 
 namespace DatabaseCleaner.Projects
@@ -12,24 +14,16 @@ namespace DatabaseCleaner.Projects
     internal class SaveFile
     {
         private const string PROJECT_FILE = "database.cln"; //database . clean
-        private FileHash _hash;
+        private FileHash _hash;//hash for duplicatecleaner dictionary
         public static readonly string SAVE_FILE = Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), PROJECT_FILE);
-        private string _folderToSave;
+        private string _projectFolder;
 
 
-        public SaveFile(string path)
+        public SaveFile(string path, Dictionary<ProjectData, ProjectData[]> hashObject)
         {
-            _folderToSave = path;
-            if (SaveFileExists())
-            {
-                SaveFileContent content = ReadSaveContent();
-                _folderToSave = content.Folder;
-                _hash = new FileHash(content.Folder, content.FolderHash);
-            }
-            else
-            {
-                _hash = new FileHash(path);
-            }
+            _projectFolder = path;
+            string json = JsonConvert.SerializeObject(hashObject.ToList());
+            _hash = new FileHash(json);
         }
         /// <summary>Constructor, assuming a savefile exists</summary>
         /// <exception cref="FileNotFoundException">save file does not exist, use constructor with path</exception>
@@ -37,17 +31,20 @@ namespace DatabaseCleaner.Projects
         {
             if (SaveFileExists() == false)
             {
+#if DEBUG
+                System.Diagnostics.Debug.WriteLine($"No save file found at \"{SAVE_FILE}\". Throwing...");
+#endif
                 throw new FileNotFoundException();
             }
             SaveFileContent content = ReadSaveContent();
-            _folderToSave = content.Folder;
-            _hash = new FileHash(content.Folder, content.FolderHash);
+            _projectFolder = content.Folder;
+            _hash = new FileHash(JsonConvert.SerializeObject(content.Data), content.DataHash);
         }
 
         public void CreateSave(Dictionary<ProjectData, ProjectData[]> data, ProjectListDisplayMode displayMode = ProjectListDisplayMode.DISPLAY_ALL)
         {
-            _hash.SetHash();
-            SaveFileContent cont = new SaveFileContent(displayMode, _hash.Hash, _folderToSave, data.ToList());
+            _hash.SetHash(JsonConvert.SerializeObject(data.ToList()));
+            SaveFileContent cont = new SaveFileContent(displayMode, _hash.Hash, _projectFolder, data.ToList());
             string json = JsonConvert.SerializeObject(cont);
             File.WriteAllText(SAVE_FILE, json);
         }
@@ -72,9 +69,10 @@ namespace DatabaseCleaner.Projects
             return JsonConvert.DeserializeObject<SaveFileContent>(json);
         }
 
-        public bool HashChanged()
+        public bool HashChanged(Dictionary<ProjectData, ProjectData[]> hashObject)
         {
-            return _hash.IsHashDifferent();
+            string json = JsonConvert.SerializeObject(hashObject.ToList());
+            return _hash.IsHashDifferent(json);
         }
 
         public bool SaveFileExists()
@@ -86,27 +84,27 @@ namespace DatabaseCleaner.Projects
         {
             private ProjectListDisplayMode _displayMode;
             private string _folder;
-            private string _folderHash;
+            private string _dataHash;
             private List<KeyValuePair<ProjectData, ProjectData[]>> _data;
 
-            public SaveFileContent(string folderHash, string folder, List<KeyValuePair<ProjectData, ProjectData[]>> data)
+            public SaveFileContent(string dataHash, string folder, List<KeyValuePair<ProjectData, ProjectData[]>> data)
             {
                 this._displayMode = 0;
-                this._folderHash = folderHash;
+                this._dataHash = dataHash;
                 this._folder = folder;
                 this._data = data;
             }
 
-            public SaveFileContent(ProjectListDisplayMode displayMode, string folderHash, string folder, List<KeyValuePair<ProjectData, ProjectData[]>> data)
+            public SaveFileContent(ProjectListDisplayMode displayMode, string dataHash, string folder, List<KeyValuePair<ProjectData, ProjectData[]>> data)
             {
                 this._displayMode = displayMode;
-                this._folderHash = folderHash;
+                this._dataHash = dataHash;
                 this._folder = folder;
                 this._data = data;
             }
             public ProjectListDisplayMode DisplayMode { get => _displayMode; set => _displayMode = value; }
             public string Folder { get => _folder; set => _folder = value; }
-            public string FolderHash { get => _folderHash; set => _folderHash = value; }
+            public string DataHash { get => _dataHash; set => _dataHash = value; }
             public List<KeyValuePair<ProjectData, ProjectData[]>> Data { get => _data; set => _data = value; }
         }
     }
