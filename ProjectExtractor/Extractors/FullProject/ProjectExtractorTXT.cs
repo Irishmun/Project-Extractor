@@ -14,7 +14,7 @@ namespace ProjectExtractor.Extractors.FullProject
     {
         public ProjectExtractorTXT(SectionsFolder sections) : base(sections)
         {//TODO: get project revision, only instantiate that one
-            if (Sections.IsHashDifferent())
+            if (Sections.IsHashDifferent() || (RevTwoSectionDescriptions == null && RevThreeSectionDescriptions == null))
             {
                 Sections.SetFolderHash();
                 RevTwoSectionDescriptions = SectionsArrayFromJson(Sections.ReadSectionFile(RevTwoFileName));
@@ -231,7 +231,7 @@ namespace ProjectExtractor.Extractors.FullProject
             }
 
             string final = TrimEmpties(str);
-            Worker.ReportProgress(100);
+            Worker.ReportProgress(100,workerState);
             return final;
 
 
@@ -409,7 +409,7 @@ namespace ProjectExtractor.Extractors.FullProject
                 }
             }
             string final = TrimEmpties(str);
-            Worker.ReportProgress(100);
+            Worker.ReportProgress(100, workerState);
             return final;
         }
 
