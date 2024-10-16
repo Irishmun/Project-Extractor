@@ -49,7 +49,6 @@ namespace ProjectExtractor
             BT_DebugExtract.Visible = false;
             CB_DebugIncludeWhiteSpace.Visible = false;
             BT_DebugJson.Visible = false;
-            BT_DebugComputeHash.Visible = false;
 #endif
             CheckForUpdateThenSetAbout();
             UpdateFromSettings();//do this before changing back from isStarting to prevent a change loop
@@ -1276,18 +1275,6 @@ namespace ProjectExtractor
                     break;
             }
             OpenFile(exportFile);
-#endif
-        }
-
-        private void BT_DebugComputeHash_Click(object sender, EventArgs e)
-        {
-#if DEBUG
-            if (_sectionsFolder.IsHashDifferent() == true)
-            {
-                MessageBox.Show("Hash has changed");
-            }
-            _sectionsFolder.SetFolderHash();
-            UpdateStatus("hash: " + _sectionsFolder.CurrentFolderHash);
 #endif
         }
 
