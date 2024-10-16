@@ -132,7 +132,7 @@ namespace ConfluenceExtractor
         private bool TryExtractContents(string[] lines, int startIndex, int desiredEndIndex, string output, out int actualEndIndex, ProgressBar? bar)
         {
             //TODO: fix issue where wrong filename
-            string wbso = "Aanvraag WBSO ";
+            string wbso = "Aanvraag WBSO";
             string numPrefix = "projectnummer";
             string titlePrefix = "projecttitel";
             bool titleMade = false, filedEarlierSet = false, softwareMadeSet = false;

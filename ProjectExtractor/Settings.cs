@@ -6,6 +6,7 @@ namespace ProjectExtractor
     internal class Settings : SettingsBase<Settings>
     {
         private const string INI_SECTION_CHAPTERS = "Chapters", INI_SECTION_EXPORT = "Export", INI_SECTION_HOURS = "Hours", INI_SECTION_PATHS = "Paths", INI_SECTION_FORM = "Form", INI_SECTION_SEARCH = "Search";
+
         private const string INI_KEY_CHAPTER_START = "ChapterStart", INI_KEY_CHAPTER_END = "ChapterEnd", INI_KEY_WRITE_CHAPTER_DATE = "DateOnly";
         private const string INI_KEY_WRITE_KEYWORDS = "Write_Keywords_To_File", INI_KEY_VERSION = "Project_Version", INI_KEY_EXTENSION = "ExportExtension";
         private const string INI_KEY_END_PROJECT = "Sections_Project_End", INI_KEY_KEYWORDS = "Keywords", INI_KEY_SECTIONS = "Sections";
@@ -13,11 +14,12 @@ namespace ProjectExtractor
         private const string INI_KEY_SAVE_PDF = "Save_PDF_Path", INI_KEY_SAVE_EXTRACT = "Save_Extract_Path", INI_KEY_DISABLE_EXTRACT = "DisableExtractionPath";
         private const string INI_KEY_PDF_PATH = "PDF_Path", INI_KEY_EXTRACT_PATH = "Extract_Path";
         private const string INI_KEY_DATABASE = "Database_Path", INI_KEY_REMOVE_PERIOD = "Remove_Period";
-        private const string INI_KEY_FONT_SIZE = "font_size";
+        private const string INI_KEY_FONT_SIZE = "font_size", INI_KEY_BAR_BEFORE_UPDATE = "bar_before_update", INI_KEY_PROJECTS_TO_UNIQUE = "save_projects_to_separate_files";
 
         private bool _savePDFPath, _saveExtractPath, _disableExtractionPath;
         private bool _writeKeywordsToFile, _writeTotalHours, _writeDateOnly;
         private bool _removePeriod;
+        private bool _barBeforeUpdate, _projectsToSeparateFiles;
         private int _selectedFileVersionIndex;
         private int _fontSize;
         private string _exportFileExtension;
@@ -49,6 +51,8 @@ namespace ProjectExtractor
             _databasePath = ini.ReadIfExists(INI_KEY_DATABASE, INI_SECTION_PATHS);
             _fontSize = ini.ReadIntIfExists(INI_KEY_FONT_SIZE, INI_SECTION_FORM);
             _removePeriod = ini.ReadBoolIfExists(INI_KEY_REMOVE_PERIOD, INI_SECTION_SEARCH);
+            _barBeforeUpdate = ini.ReadBoolIfExists(INI_KEY_BAR_BEFORE_UPDATE, INI_SECTION_EXPORT);
+            _projectsToSeparateFiles = ini.ReadBoolIfExists(INI_KEY_PROJECTS_TO_UNIQUE, INI_SECTION_EXPORT);
             //get extraction path setting if needed
             _saveExtractPath = ini.ReadBoolIfExists(INI_KEY_SAVE_EXTRACT, INI_SECTION_PATHS);
             if (_saveExtractPath == true)
@@ -105,5 +109,9 @@ namespace ProjectExtractor
         public string DatabasePath { get => _databasePath; set => UpdateSettingIfNotStarting(ref _databasePath, value, INI_KEY_DATABASE, INI_SECTION_PATHS, isStarting); }
         public bool WriteDateOnly { get => _writeDateOnly; set => UpdateSettingIfNotStarting(ref _writeDateOnly, value, INI_KEY_WRITE_CHAPTER_DATE, INI_SECTION_CHAPTERS); }
         public bool RemovePeriod { get => _removePeriod; set => UpdateSettingIfNotStarting(ref _removePeriod, value, INI_KEY_REMOVE_PERIOD, INI_SECTION_SEARCH); }
+        public bool BarBeforeUpdate { get => _barBeforeUpdate; set => UpdateSettingIfNotStarting(ref _barBeforeUpdate, value, INI_KEY_BAR_BEFORE_UPDATE, INI_SECTION_EXPORT); }
+        public bool ProjectsToSeparateFiles { get => _projectsToSeparateFiles; set => UpdateSettingIfNotStarting(ref _projectsToSeparateFiles, value, INI_KEY_PROJECTS_TO_UNIQUE, INI_SECTION_EXPORT); }
+
+
     }
 }

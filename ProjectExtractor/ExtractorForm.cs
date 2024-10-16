@@ -170,6 +170,10 @@ namespace ProjectExtractor
                 SetFontSizes(_settings.FontSize);
                 //remove period from projects
                 CB_RemovePeriod.Checked = _settings.RemovePeriod;
+                //bar before update in details
+                CB_BarBeforeUpdate.Checked = _settings.BarBeforeUpdate;
+                //save projects to separate files
+                CB_ProjectsToSeparateFiles.Checked = _settings.ProjectsToSeparateFiles;
             }
         }
         private async void CheckForUpdateThenSetAbout()
@@ -390,7 +394,6 @@ namespace ProjectExtractor
         private void CB_ToggleBatch_CheckedChanged(object sender, EventArgs e)
         {
             CB_SkipExisting.Enabled = CB_ToggleBatch.Checked;
-            CB_BatchRecursive.Enabled = CB_ToggleBatch.Checked;
         }
         private void CB_DisableExtractionPath_CheckedChanged(object sender, EventArgs e)
         {
@@ -763,7 +766,7 @@ namespace ProjectExtractor
             {
                 case WorkerStates.EXTRACT_DETAIL:
                     _exportFile = $"{TB_ExtractLocation.Text}{Path.GetFileNameWithoutExtension(fileName)}{ExtractorBase.DETAIL_SUFFIX}.{_extractor.FileExtension}";//add path and file extension
-                    _extractionResult = (_extractor as DetailExtractorBase).ExtractDetails(ProjectRevisionUtil.GetProjectRevision(_currentRevision), TB_PDFLocation.Text, _exportFile, _keywords, TB_Chapter.Text, TB_StopChapter.Text, TB_TotalHours.Text, CB_TotalHoursEnabled.Checked, CB_WriteKeywordsToFile.Checked, CB_WritePhaseDateOnly.Checked, sender as System.ComponentModel.BackgroundWorker, workArgument);
+                    _extractionResult = (_extractor as DetailExtractorBase).ExtractDetails(ProjectRevisionUtil.GetProjectRevision(_currentRevision), TB_PDFLocation.Text, _exportFile, _keywords, TB_Chapter.Text, TB_StopChapter.Text, TB_TotalHours.Text, CB_TotalHoursEnabled.Checked, CB_WriteKeywordsToFile.Checked, CB_WritePhaseDateOnly.Checked, CB_BarBeforeUpdate.Checked, sender as System.ComponentModel.BackgroundWorker, workArgument);
                     break;
                 case WorkerStates.EXTRACT_PROJECT:
                     _exportFile = $"{TB_ExtractLocation.Text}{Path.GetFileNameWithoutExtension(fileName)}{ExtractorBase.PROJECT_SUFFIX}.{_extractor.FileExtension}";//add path and file extension
@@ -772,14 +775,14 @@ namespace ProjectExtractor
 #if DEBUG
                 case WorkerStates.EXTRACT_DEBUG:
                     _exportFile = $"{TB_ExtractLocation.Text}\\DEBUG {Path.GetFileNameWithoutExtension(fileName)}{ExtractorBase.DETAIL_SUFFIX}.{_extractor.FileExtension}";//add path and file extension
-                    _extractionResult = (_extractor as DetailExtractorBase).ExtractDetails(ProjectRevisionUtil.GetProjectRevision(_currentRevision), TB_PDFLocation.Text, _exportFile, _keywords, TB_Chapter.Text, TB_StopChapter.Text, TB_TotalHours.Text, CB_TotalHoursEnabled.Checked, CB_WriteKeywordsToFile.Checked, CB_WritePhaseDateOnly.Checked, sender as System.ComponentModel.BackgroundWorker, workArgument);
+                    _extractionResult = (_extractor as DetailExtractorBase).ExtractDetails(ProjectRevisionUtil.GetProjectRevision(_currentRevision), TB_PDFLocation.Text, _exportFile, _keywords, TB_Chapter.Text, TB_StopChapter.Text, TB_TotalHours.Text, CB_TotalHoursEnabled.Checked, CB_WriteKeywordsToFile.Checked, CB_WritePhaseDateOnly.Checked, CB_BarBeforeUpdate.Checked, sender as System.ComponentModel.BackgroundWorker, workArgument);
                     break;
 #endif
                 case WorkerStates.EXTRACT_BATCH_PROJECT:
-                    _extractionResult = (_extractor as ProjectExtractorBase).BatchExtractProjects(ProjectRevisionUtil.GetProjectRevision(_currentRevision), _batchFolder, TB_ExtractLocation.Text, _extractor.FileExtension, _sections, TB_SectionsEndProject.Text, CB_SkipExisting.Checked, CB_BatchRecursive.Checked, sender as System.ComponentModel.BackgroundWorker, workArgument);
+                    _extractionResult = (_extractor as ProjectExtractorBase).BatchExtractProjects(ProjectRevisionUtil.GetProjectRevision(_currentRevision), _batchFolder, TB_ExtractLocation.Text, _extractor.FileExtension, _sections, TB_SectionsEndProject.Text, CB_SkipExisting.Checked, false, sender as System.ComponentModel.BackgroundWorker, workArgument);
                     break;
                 case WorkerStates.EXTRACT_BATCH_DETAIL:
-                    _extractionResult = (_extractor as DetailExtractorBase).BatchExtractDetails(ProjectRevisionUtil.GetProjectRevision(_currentRevision), _batchFolder, TB_ExtractLocation.Text, _keywords, TB_Chapter.Text, TB_StopChapter.Text, TB_TotalHours.Text, CB_TotalHoursEnabled.Checked, CB_WriteKeywordsToFile.Checked, CB_WritePhaseDateOnly.Checked,CB_SkipExisting.Checked, CB_BatchRecursive.Checked, sender as System.ComponentModel.BackgroundWorker, workArgument);
+                    _extractionResult = (_extractor as DetailExtractorBase).BatchExtractDetails(ProjectRevisionUtil.GetProjectRevision(_currentRevision), _batchFolder, TB_ExtractLocation.Text, _keywords, TB_Chapter.Text, TB_StopChapter.Text, TB_TotalHours.Text, CB_TotalHoursEnabled.Checked, CB_WriteKeywordsToFile.Checked, CB_WritePhaseDateOnly.Checked, CB_SkipExisting.Checked, CB_BarBeforeUpdate.Checked, sender as System.ComponentModel.BackgroundWorker, workArgument);
                     break;
                 default:
                     UpdateStatus("ERROR extracting: unknown extractor given.");

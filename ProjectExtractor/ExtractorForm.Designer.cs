@@ -31,16 +31,16 @@ namespace ProjectExtractor
         {
             components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ExtractorForm));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.ListViewItem listViewItem10 = new System.Windows.Forms.ListViewItem("Projectnummer");
-            System.Windows.Forms.ListViewItem listViewItem11 = new System.Windows.Forms.ListViewItem("Projecttitel");
-            System.Windows.Forms.ListViewItem listViewItem12 = new System.Windows.Forms.ListViewItem("Aantal uren werknemers");
-            System.Windows.Forms.ListViewItem listViewItem13 = new System.Windows.Forms.ListViewItem("Het project wordt/is gestart op");
-            System.Windows.Forms.ListViewItem listViewItem14 = new System.Windows.Forms.ListViewItem("Geef een algemene omschrijving van het");
-            System.Windows.Forms.ListViewItem listViewItem15 = new System.Windows.Forms.ListViewItem("project. Heeft u eerder WBSO");
-            System.Windows.Forms.ListViewItem listViewItem16 = new System.Windows.Forms.ListViewItem("aangevraagd voor dit project? Beschrijf");
-            System.Windows.Forms.ListViewItem listViewItem17 = new System.Windows.Forms.ListViewItem("dan de stand van zaken bij de vraag");
-            System.Windows.Forms.ListViewItem listViewItem18 = new System.Windows.Forms.ListViewItem("“Update project”.");
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("Projectnummer");
+            System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("Projecttitel");
+            System.Windows.Forms.ListViewItem listViewItem3 = new System.Windows.Forms.ListViewItem("Aantal uren werknemers");
+            System.Windows.Forms.ListViewItem listViewItem4 = new System.Windows.Forms.ListViewItem("Het project wordt/is gestart op");
+            System.Windows.Forms.ListViewItem listViewItem5 = new System.Windows.Forms.ListViewItem("Geef een algemene omschrijving van het");
+            System.Windows.Forms.ListViewItem listViewItem6 = new System.Windows.Forms.ListViewItem("project. Heeft u eerder WBSO");
+            System.Windows.Forms.ListViewItem listViewItem7 = new System.Windows.Forms.ListViewItem("aangevraagd voor dit project? Beschrijf");
+            System.Windows.Forms.ListViewItem listViewItem8 = new System.Windows.Forms.ListViewItem("dan de stand van zaken bij de vraag");
+            System.Windows.Forms.ListViewItem listViewItem9 = new System.Windows.Forms.ListViewItem("“Update project”.");
             statusStrip1 = new System.Windows.Forms.StatusStrip();
             toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             TSSL_ExtractionProgress = new System.Windows.Forms.ToolStripStatusLabel();
@@ -48,11 +48,12 @@ namespace ProjectExtractor
             TC_MainView = new System.Windows.Forms.TabControl();
             TabPage_Extractor = new System.Windows.Forms.TabPage();
             panel2 = new System.Windows.Forms.Panel();
+            CB_BarBeforeUpdate = new System.Windows.Forms.CheckBox();
+            CB_ProjectsToSeparateFiles = new System.Windows.Forms.CheckBox();
             CB_SkipExisting = new System.Windows.Forms.CheckBox();
             CB_ToggleBatch = new System.Windows.Forms.CheckBox();
             BT_Extract = new System.Windows.Forms.Button();
             BT_ExtractFullProject = new System.Windows.Forms.Button();
-            BT_DebugComputeHash = new System.Windows.Forms.Button();
             BT_DebugJson = new System.Windows.Forms.Button();
             label8 = new System.Windows.Forms.Label();
             CbB_FileVersion = new System.Windows.Forms.ComboBox();
@@ -61,7 +62,6 @@ namespace ProjectExtractor
             label5 = new System.Windows.Forms.Label();
             TB_FullPath = new System.Windows.Forms.TextBox();
             BT_DebugExtract = new System.Windows.Forms.Button();
-            CB_BatchRecursive = new System.Windows.Forms.CheckBox();
             label2 = new System.Windows.Forms.Label();
             TB_ExtractLocation = new System.Windows.Forms.TextBox();
             BT_BrowseExtract = new System.Windows.Forms.Button();
@@ -231,7 +231,6 @@ namespace ProjectExtractor
             // TabPage_Extractor
             // 
             TabPage_Extractor.Controls.Add(panel2);
-            TabPage_Extractor.Controls.Add(BT_DebugComputeHash);
             TabPage_Extractor.Controls.Add(BT_DebugJson);
             TabPage_Extractor.Controls.Add(label8);
             TabPage_Extractor.Controls.Add(CbB_FileVersion);
@@ -258,16 +257,38 @@ namespace ProjectExtractor
             // panel2
             // 
             panel2.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            panel2.Controls.Add(CB_BatchRecursive);
+            panel2.Controls.Add(CB_BarBeforeUpdate);
+            panel2.Controls.Add(CB_ProjectsToSeparateFiles);
             panel2.Controls.Add(CB_SkipExisting);
             panel2.Controls.Add(CB_ToggleBatch);
             panel2.Controls.Add(BT_Extract);
             panel2.Controls.Add(BT_ExtractFullProject);
             panel2.Dock = System.Windows.Forms.DockStyle.Bottom;
-            panel2.Location = new System.Drawing.Point(3, 222);
+            panel2.Location = new System.Drawing.Point(3, 226);
             panel2.Name = "panel2";
-            panel2.Size = new System.Drawing.Size(558, 94);
+            panel2.Size = new System.Drawing.Size(558, 90);
             panel2.TabIndex = 106;
+            // 
+            // CB_BarBeforeUpdate
+            // 
+            CB_BarBeforeUpdate.AutoSize = true;
+            CB_BarBeforeUpdate.Location = new System.Drawing.Point(404, 6);
+            CB_BarBeforeUpdate.Name = "CB_BarBeforeUpdate";
+            CB_BarBeforeUpdate.Size = new System.Drawing.Size(145, 19);
+            CB_BarBeforeUpdate.TabIndex = 109;
+            CB_BarBeforeUpdate.Text = "Add bar before update";
+            CB_BarBeforeUpdate.UseVisualStyleBackColor = true;
+            // 
+            // CB_ProjectsToSeparateFiles
+            // 
+            CB_ProjectsToSeparateFiles.AutoSize = true;
+            CB_ProjectsToSeparateFiles.Location = new System.Drawing.Point(1, 56);
+            CB_ProjectsToSeparateFiles.Name = "CB_ProjectsToSeparateFiles";
+            CB_ProjectsToSeparateFiles.Size = new System.Drawing.Size(192, 19);
+            CB_ProjectsToSeparateFiles.TabIndex = 108;
+            CB_ProjectsToSeparateFiles.Text = "Extract projects to separate files";
+            CB_ProjectsToSeparateFiles.UseVisualStyleBackColor = true;
+            CB_ProjectsToSeparateFiles.Visible = false;
             // 
             // CB_SkipExisting
             // 
@@ -295,7 +316,7 @@ namespace ProjectExtractor
             // BT_Extract
             // 
             BT_Extract.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
-            BT_Extract.Location = new System.Drawing.Point(404, 31);
+            BT_Extract.Location = new System.Drawing.Point(404, 27);
             BT_Extract.Name = "BT_Extract";
             BT_Extract.Size = new System.Drawing.Size(147, 55);
             BT_Extract.TabIndex = 5;
@@ -306,7 +327,7 @@ namespace ProjectExtractor
             // BT_ExtractFullProject
             // 
             BT_ExtractFullProject.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
-            BT_ExtractFullProject.Location = new System.Drawing.Point(251, 31);
+            BT_ExtractFullProject.Location = new System.Drawing.Point(251, 27);
             BT_ExtractFullProject.Name = "BT_ExtractFullProject";
             BT_ExtractFullProject.Size = new System.Drawing.Size(147, 55);
             BT_ExtractFullProject.TabIndex = 6;
@@ -314,23 +335,12 @@ namespace ProjectExtractor
             BT_ExtractFullProject.UseVisualStyleBackColor = true;
             BT_ExtractFullProject.Click += BT_ExtractFullProject_Click;
             // 
-            // BT_DebugComputeHash
-            // 
-            BT_DebugComputeHash.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
-            BT_DebugComputeHash.Location = new System.Drawing.Point(175, 174);
-            BT_DebugComputeHash.Name = "BT_DebugComputeHash";
-            BT_DebugComputeHash.Size = new System.Drawing.Size(161, 25);
-            BT_DebugComputeHash.TabIndex = 105;
-            BT_DebugComputeHash.Text = "[DEBUG] &Compute Hash";
-            BT_DebugComputeHash.UseVisualStyleBackColor = true;
-            BT_DebugComputeHash.Click += BT_DebugComputeHash_Click;
-            // 
             // BT_DebugJson
             // 
             BT_DebugJson.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
             BT_DebugJson.Location = new System.Drawing.Point(8, 174);
             BT_DebugJson.Name = "BT_DebugJson";
-            BT_DebugJson.Size = new System.Drawing.Size(161, 25);
+            BT_DebugJson.Size = new System.Drawing.Size(123, 25);
             BT_DebugJson.TabIndex = 104;
             BT_DebugJson.Text = "[DEBUG] &Export Json";
             BT_DebugJson.UseVisualStyleBackColor = true;
@@ -374,7 +384,7 @@ namespace ProjectExtractor
             // 
             CB_DebugIncludeWhiteSpace.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
             CB_DebugIncludeWhiteSpace.AutoSize = true;
-            CB_DebugIncludeWhiteSpace.Location = new System.Drawing.Point(399, 200);
+            CB_DebugIncludeWhiteSpace.Location = new System.Drawing.Point(318, 178);
             CB_DebugIncludeWhiteSpace.Name = "CB_DebugIncludeWhiteSpace";
             CB_DebugIncludeWhiteSpace.Size = new System.Drawing.Size(129, 19);
             CB_DebugIncludeWhiteSpace.TabIndex = 100;
@@ -406,25 +416,13 @@ namespace ProjectExtractor
             // BT_DebugExtract
             // 
             BT_DebugExtract.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
-            BT_DebugExtract.Location = new System.Drawing.Point(342, 174);
+            BT_DebugExtract.Location = new System.Drawing.Point(137, 174);
             BT_DebugExtract.Name = "BT_DebugExtract";
             BT_DebugExtract.Size = new System.Drawing.Size(161, 25);
             BT_DebugExtract.TabIndex = 80;
             BT_DebugExtract.Text = "[DEBUG] &Extract Everything";
             BT_DebugExtract.UseVisualStyleBackColor = true;
             BT_DebugExtract.Click += BT_DebugExtract_Click;
-            // 
-            // CB_BatchRecursive
-            // 
-            CB_BatchRecursive.AutoSize = true;
-            CB_BatchRecursive.Enabled = false;
-            CB_BatchRecursive.Location = new System.Drawing.Point(1, 56);
-            CB_BatchRecursive.Name = "CB_BatchRecursive";
-            CB_BatchRecursive.Size = new System.Drawing.Size(76, 19);
-            CB_BatchRecursive.TabIndex = 106;
-            CB_BatchRecursive.Text = "Recursive";
-            CB_BatchRecursive.UseVisualStyleBackColor = true;
-            CB_BatchRecursive.Visible = false;
             // 
             // label2
             // 
@@ -628,14 +626,14 @@ namespace ProjectExtractor
             DGV_DatabaseResults.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.Sunken;
             DGV_DatabaseResults.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             DGV_DatabaseResults.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] { Column1 });
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            DGV_DatabaseResults.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            DGV_DatabaseResults.DefaultCellStyle = dataGridViewCellStyle1;
             DGV_DatabaseResults.Location = new System.Drawing.Point(3, 59);
             DGV_DatabaseResults.Name = "DGV_DatabaseResults";
             DGV_DatabaseResults.RowTemplate.Height = 25;
@@ -1066,11 +1064,11 @@ namespace ProjectExtractor
             // 
             LV_Keywords.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
             LV_Keywords.CheckBoxes = true;
-            listViewItem10.StateImageIndex = 0;
-            listViewItem11.StateImageIndex = 0;
-            listViewItem12.StateImageIndex = 0;
-            listViewItem13.StateImageIndex = 0;
-            LV_Keywords.Items.AddRange(new System.Windows.Forms.ListViewItem[] { listViewItem10, listViewItem11, listViewItem12, listViewItem13 });
+            listViewItem1.StateImageIndex = 0;
+            listViewItem2.StateImageIndex = 0;
+            listViewItem3.StateImageIndex = 0;
+            listViewItem4.StateImageIndex = 0;
+            LV_Keywords.Items.AddRange(new System.Windows.Forms.ListViewItem[] { listViewItem1, listViewItem2, listViewItem3, listViewItem4 });
             LV_Keywords.LabelEdit = true;
             LV_Keywords.Location = new System.Drawing.Point(6, 22);
             LV_Keywords.MultiSelect = false;
@@ -1180,7 +1178,7 @@ namespace ProjectExtractor
             // LV_Sections
             // 
             LV_Sections.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-            LV_Sections.Items.AddRange(new System.Windows.Forms.ListViewItem[] { listViewItem14, listViewItem15, listViewItem16, listViewItem17, listViewItem18 });
+            LV_Sections.Items.AddRange(new System.Windows.Forms.ListViewItem[] { listViewItem5, listViewItem6, listViewItem7, listViewItem8, listViewItem9 });
             LV_Sections.LabelEdit = true;
             LV_Sections.Location = new System.Drawing.Point(6, 22);
             LV_Sections.MultiSelect = false;
@@ -1484,7 +1482,6 @@ namespace ProjectExtractor
         private System.Windows.Forms.Button BT_UpdateProgram;
         private System.Windows.Forms.LinkLabel LL_GitHubLink;
         private System.Windows.Forms.Button BT_DebugJson;
-        private System.Windows.Forms.Button BT_DebugComputeHash;
         private System.Windows.Forms.TabPage TabPage_Database;
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.TreeView TV_Database;
@@ -1499,7 +1496,6 @@ namespace ProjectExtractor
         private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
         private System.Windows.Forms.ImageList IL_DatabaseTree;
         private System.Windows.Forms.PictureBox logoPictureBox;
-        private System.Windows.Forms.CheckBox CB_BatchRecursive;
         private System.Windows.Forms.CheckBox CB_SkipExisting;
         private System.Windows.Forms.CheckBox CB_WritePhaseDateOnly;
         private System.Windows.Forms.SplitContainer splitContainer2;
@@ -1512,6 +1508,8 @@ namespace ProjectExtractor
         private System.Windows.Forms.CheckBox CB_RemovePeriod;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.CheckBox CB_ToggleBatch;
+        private System.Windows.Forms.CheckBox CB_ProjectsToSeparateFiles;
+        private System.Windows.Forms.CheckBox CB_BarBeforeUpdate;
     }
 }
 

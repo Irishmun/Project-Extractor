@@ -15,35 +15,35 @@ namespace ProjectExtractor.Extractors.Detail
     /// <summary>Used for extracting pdf details to TXT file format. intended as ASCII plain text</summary>
     class DetailExtractorTXT : DetailExtractorBase
     {
-        protected override ExitCode ExtractRevisionOneDetails(string file, string extractPath, string[] keywords, string chapters, string stopChapters, string totalHoursKeyword, bool writeTotalHoursToFile, bool writeKeywordsToFile, bool writePhaseDate, BackgroundWorker worker, WorkerStates workerState)
+        protected override ExitCode ExtractRevisionOneDetails(string file, string extractPath, string[] keywords, string chapters, string stopChapters, string totalHoursKeyword, bool writeTotalHoursToFile, bool writeKeywordsToFile, bool writePhaseDate, bool barBeforeUpdate, BackgroundWorker worker, WorkerStates workerState)
         {
 #if DEBUG
             System.Diagnostics.Debug.WriteLine("[DetailExtractorTXT]\"ExtractRevisionOneDetails\" not implemented.");
 #endif
             return ExitCode.NOT_IMPLEMENTED;
         }
-        protected override ExitCode ExtractRevisionTwoDetails(string file, string extractPath, string[] keywords, string chapters, string stopChapters, string totalHoursKeyword, bool writeTotalHoursToFile, bool writeKeywordsToFile, bool writePhaseDate, BackgroundWorker worker, WorkerStates workerState)
+        protected override ExitCode ExtractRevisionTwoDetails(string file, string extractPath, string[] keywords, string chapters, string stopChapters, string totalHoursKeyword, bool writeTotalHoursToFile, bool writeKeywordsToFile, bool writePhaseDate, bool barBeforeUpdate, BackgroundWorker worker, WorkerStates workerState)
         {
-            StringBuilder res = ExtractRevisonTwoDetailString(file, chapters, stopChapters, writePhaseDate, worker, workerState, out ExitCode returnCode);
+            StringBuilder res = ExtractRevisonTwoDetailString(file, chapters, stopChapters, writePhaseDate, barBeforeUpdate, worker, workerState, out ExitCode returnCode);
             WriteToFile(res, extractPath);
             return returnCode;
         }
-        protected override ExitCode ExtractRevisionThreeDetails(string file, string extractPath, string[] Keywords, string chapters, string stopChapters, string totalHoursKeyword, bool WriteTotalHoursToFile, bool WriteKeywordsToFile, bool writePhaseDate, BackgroundWorker Worker, WorkerStates workerState)
+        protected override ExitCode ExtractRevisionThreeDetails(string file, string extractPath, string[] Keywords, string chapters, string stopChapters, string totalHoursKeyword, bool WriteTotalHoursToFile, bool WriteKeywordsToFile, bool writePhaseDate, bool barBeforeUpdate, BackgroundWorker Worker, WorkerStates workerState)
         {
-            StringBuilder res = ExtractRevisionThreeDetailString(file, Keywords, chapters, stopChapters, totalHoursKeyword, WriteTotalHoursToFile, WriteKeywordsToFile, writePhaseDate, Worker, workerState, out ExitCode returnCode);
+            StringBuilder res = ExtractRevisionThreeDetailString(file, Keywords, chapters, stopChapters, totalHoursKeyword, WriteTotalHoursToFile, WriteKeywordsToFile, writePhaseDate, barBeforeUpdate, Worker, workerState, out ExitCode returnCode);
             WriteToFile(res, extractPath);
             return returnCode;
         }
 
 
-        protected override ExitCode BatchExtractRevisionOneDetails(string folder, string extractPath, string[] keywords, string chapters, string stopChapters, string totalHoursKeyword, bool writeTotalHoursToFile, bool writeKeywordsToFile, bool writePhaseDate, bool skipExisting, bool recursive, BackgroundWorker worker, WorkerStates workerState)
+        protected override ExitCode BatchExtractRevisionOneDetails(string folder, string extractPath, string[] keywords, string chapters, string stopChapters, string totalHoursKeyword, bool writeTotalHoursToFile, bool writeKeywordsToFile, bool writePhaseDate, bool skipExisting, bool barBeforeUpdate, BackgroundWorker worker, WorkerStates workerState)
         {
 #if DEBUG
             System.Diagnostics.Debug.WriteLine("[DetailExtractorTXT]\"BatchExtractRevisionOneDetails\" not implemented.");
 #endif
             return ExitCode.NOT_IMPLEMENTED;
         }
-        protected override ExitCode BatchExtractRevisionTwoDetails(string folder, string extractPath, string[] keywords, string chapters, string stopChapters, string totalHoursKeyword, bool writeTotalHoursToFile, bool writeKeywordsToFile, bool writePhaseDate, bool skipExisting, bool recursive, BackgroundWorker worker, WorkerStates workerState)
+        protected override ExitCode BatchExtractRevisionTwoDetails(string folder, string extractPath, string[] keywords, string chapters, string stopChapters, string totalHoursKeyword, bool writeTotalHoursToFile, bool writeKeywordsToFile, bool writePhaseDate, bool skipExisting, bool barBeforeUpdate, BackgroundWorker worker, WorkerStates workerState)
         {
             string[] documentPaths = Directory.GetFiles(folder, "*.pdf");
             ExitCode code = ExitCode.BATCH;
@@ -56,7 +56,7 @@ namespace ProjectExtractor.Extractors.Detail
                 {//skip existing
                     continue;
                 }
-                StringBuilder result = ExtractRevisonTwoDetailString(documentPaths[i], chapters, stopChapters, writePhaseDate, worker, workerState, out ExitCode returnCode);
+                StringBuilder result = ExtractRevisonTwoDetailString(documentPaths[i], chapters, stopChapters, writePhaseDate, barBeforeUpdate, worker, workerState, out ExitCode returnCode);
                 if (returnCode == ExitCode.ERROR)
                 {
                     code = ExitCode.BATCH_FLAWED;
@@ -72,7 +72,7 @@ namespace ProjectExtractor.Extractors.Detail
             }
             return code;
         }
-        protected override ExitCode BatchExtractRevisionThreeDetails(string folder, string extractPath, string[] keywords, string chapters, string stopChapters, string totalHoursKeyword, bool writeTotalHoursToFile, bool writeKeywordsToFile, bool writePhaseDate, bool skipExisting, bool recursive, BackgroundWorker worker, WorkerStates workerState)
+        protected override ExitCode BatchExtractRevisionThreeDetails(string folder, string extractPath, string[] keywords, string chapters, string stopChapters, string totalHoursKeyword, bool writeTotalHoursToFile, bool writeKeywordsToFile, bool writePhaseDate, bool skipExisting, bool barBeforeUpdate, BackgroundWorker worker, WorkerStates workerState)
         {
             string[] documentPaths = Directory.GetFiles(folder, "*.pdf");
             ExitCode code = ExitCode.BATCH;
@@ -85,7 +85,7 @@ namespace ProjectExtractor.Extractors.Detail
                 {//skip existing
                     continue;
                 }
-                StringBuilder result = ExtractRevisionThreeDetailString(documentPaths[i], keywords, chapters, stopChapters, totalHoursKeyword, writeTotalHoursToFile, writeKeywordsToFile, writePhaseDate, worker, workerState, out ExitCode returnCode);
+                StringBuilder result = ExtractRevisionThreeDetailString(documentPaths[i], keywords, chapters, stopChapters, totalHoursKeyword, writeTotalHoursToFile, writeKeywordsToFile, writePhaseDate, barBeforeUpdate, worker, workerState, out ExitCode returnCode);
                 if (returnCode == ExitCode.ERROR)
                 {
                     code = ExitCode.BATCH_FLAWED;
@@ -101,7 +101,8 @@ namespace ProjectExtractor.Extractors.Detail
             }
             return code;
         }
-        private StringBuilder ExtractRevisonTwoDetailString(string file, string chapters, string stopChapters, bool writePhaseDate, BackgroundWorker worker, WorkerStates workerState, out ExitCode returnCode)
+        
+        private StringBuilder ExtractRevisonTwoDetailString(string file, string chapters, string stopChapters, bool writePhaseDate, bool barBeforeUpdate, BackgroundWorker worker, WorkerStates workerState, out ExitCode returnCode)
         {
             string titleRegex = @"WBSO[ ][0-9]{1,4}";
             returnCode = ExitCode.NONE;
@@ -169,7 +170,7 @@ namespace ProjectExtractor.Extractors.Detail
             {
                 int lastIndex = 0;
                 bool foundProjectCode = false;
-                string lastUpdate = string.Empty;
+                string lastUpdate = string.Empty, lastUpdateContent = string.Empty;
                 string startedDate = string.Empty;
                 string result = string.Empty;
                 for (int i = ProjectStrings.Count - 1; i >= 0; i--)
@@ -192,7 +193,7 @@ namespace ProjectExtractor.Extractors.Detail
                         }
                         if (foundProjectCode == true && Lines[line].Contains(chapters))
                         {//BUG: date that is ended by page will be parsed correctly, but WILL show page number if it is the latest
-                            int skipTo = GetLatestDate(Lines, line, stopChapters, out lastUpdate, writePhaseDate);
+                            int skipTo = GetLatestDate(Lines, line, stopChapters, out lastUpdate, out lastUpdateContent, writePhaseDate);
                             line = skipTo;
                             lastIndex = line + 1;
                             foundProjectCode = false;
@@ -206,7 +207,14 @@ namespace ProjectExtractor.Extractors.Detail
                     }
                     if (string.IsNullOrWhiteSpace(lastUpdate) == false)
                     {
-                        result += " | " + lastUpdate;
+                        if (barBeforeUpdate)
+                        {
+                            result += $" | {lastUpdateContent}| {lastUpdate}";
+                        }
+                        else
+                        {
+                            result += $" | {lastUpdateContent} {lastUpdate}";
+                        }
                     }
                     str.AppendLine(result);
                 }
@@ -223,7 +231,7 @@ namespace ProjectExtractor.Extractors.Detail
                 return str;
             }
         }
-        private StringBuilder ExtractRevisionThreeDetailString(string file, string[] Keywords, string chapters, string stopChapters, string totalHoursKeyword, bool WriteTotalHoursToFile, bool WriteKeywordsToFile, bool writePhaseDate, BackgroundWorker Worker, WorkerStates workerState, out ExitCode returnCode)
+        private StringBuilder ExtractRevisionThreeDetailString(string file, string[] Keywords, string chapters, string stopChapters, string totalHoursKeyword, bool WriteTotalHoursToFile, bool WriteKeywordsToFile, bool writePhaseDate, bool barBeforeUpdate, BackgroundWorker Worker, WorkerStates workerState, out ExitCode returnCode)
         {
             StringBuilder str;
             //TODO: figure out way to handle different file structure versions
@@ -272,7 +280,7 @@ namespace ProjectExtractor.Extractors.Detail
                     keywordValuePairs.Clear();
 
                     //get the latest date and put it's line in there, skip to past that point as the data on the preceded lines is not needed
-                    int skipTo = GetLatestDate(Lines, lineIndex, stopChapters, out string date, writePhaseDate);
+                    int skipTo = GetLatestDate(Lines, lineIndex, stopChapters, out string date, out string content, writePhaseDate);
                     lineIndex = skipTo;
                     if (writePhaseDate == true)
                     {
@@ -280,7 +288,14 @@ namespace ProjectExtractor.Extractors.Detail
                     }
                     else
                     {
-                        str.Append(Lines[lineIndex]);
+                        if (barBeforeUpdate)
+                        {
+                            str.Append($"{content}| {date}");
+                        }
+                        else
+                        {
+                            str.Append(Lines[lineIndex]);
+                        }
                     }
                     str.Append(Environment.NewLine);
                 }
