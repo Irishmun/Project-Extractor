@@ -119,6 +119,10 @@ namespace ProjectExtractor
             BT_KeywordsDelete = new System.Windows.Forms.Button();
             BT_KeywordsNew = new System.Windows.Forms.Button();
             TabPage_ProjectSettings = new System.Windows.Forms.TabPage();
+            groupBox1 = new System.Windows.Forms.GroupBox();
+            TB_CompanyLUTPath = new System.Windows.Forms.TextBox();
+            BT_BrowseCompanyLUT = new System.Windows.Forms.Button();
+            label10 = new System.Windows.Forms.Label();
             groupBox8 = new System.Windows.Forms.GroupBox();
             label7 = new System.Windows.Forms.Label();
             TB_SectionsEndProject = new System.Windows.Forms.TextBox();
@@ -165,6 +169,7 @@ namespace ProjectExtractor
             groupBox4.SuspendLayout();
             groupBox2.SuspendLayout();
             TabPage_ProjectSettings.SuspendLayout();
+            groupBox1.SuspendLayout();
             groupBox8.SuspendLayout();
             groupBox7.SuspendLayout();
             TabPage_About.SuspendLayout();
@@ -256,6 +261,7 @@ namespace ProjectExtractor
             // 
             // panel2
             // 
+            panel2.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
             panel2.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             panel2.Controls.Add(CB_BarBeforeUpdate);
             panel2.Controls.Add(CB_ProjectsToSeparateFiles);
@@ -263,16 +269,16 @@ namespace ProjectExtractor
             panel2.Controls.Add(CB_ToggleBatch);
             panel2.Controls.Add(BT_Extract);
             panel2.Controls.Add(BT_ExtractFullProject);
-            panel2.Dock = System.Windows.Forms.DockStyle.Bottom;
-            panel2.Location = new System.Drawing.Point(3, 226);
+            panel2.Location = new System.Drawing.Point(0, 226);
             panel2.Name = "panel2";
-            panel2.Size = new System.Drawing.Size(558, 90);
+            panel2.Size = new System.Drawing.Size(564, 90);
             panel2.TabIndex = 106;
             // 
             // CB_BarBeforeUpdate
             // 
+            CB_BarBeforeUpdate.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
             CB_BarBeforeUpdate.AutoSize = true;
-            CB_BarBeforeUpdate.Location = new System.Drawing.Point(404, 6);
+            CB_BarBeforeUpdate.Location = new System.Drawing.Point(410, 6);
             CB_BarBeforeUpdate.Name = "CB_BarBeforeUpdate";
             CB_BarBeforeUpdate.Size = new System.Drawing.Size(145, 19);
             CB_BarBeforeUpdate.TabIndex = 109;
@@ -288,7 +294,7 @@ namespace ProjectExtractor
             CB_ProjectsToSeparateFiles.TabIndex = 108;
             CB_ProjectsToSeparateFiles.Text = "Extract projects to separate files";
             CB_ProjectsToSeparateFiles.UseVisualStyleBackColor = true;
-            CB_ProjectsToSeparateFiles.Visible = false;
+            CB_ProjectsToSeparateFiles.CheckedChanged += CB_ProjectsToSeparateFiles_CheckedChanged;
             // 
             // CB_SkipExisting
             // 
@@ -316,7 +322,7 @@ namespace ProjectExtractor
             // BT_Extract
             // 
             BT_Extract.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
-            BT_Extract.Location = new System.Drawing.Point(404, 27);
+            BT_Extract.Location = new System.Drawing.Point(410, 27);
             BT_Extract.Name = "BT_Extract";
             BT_Extract.Size = new System.Drawing.Size(147, 55);
             BT_Extract.TabIndex = 5;
@@ -327,7 +333,7 @@ namespace ProjectExtractor
             // BT_ExtractFullProject
             // 
             BT_ExtractFullProject.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
-            BT_ExtractFullProject.Location = new System.Drawing.Point(251, 27);
+            BT_ExtractFullProject.Location = new System.Drawing.Point(257, 27);
             BT_ExtractFullProject.Name = "BT_ExtractFullProject";
             BT_ExtractFullProject.Size = new System.Drawing.Size(147, 55);
             BT_ExtractFullProject.TabIndex = 6;
@@ -685,7 +691,7 @@ namespace ProjectExtractor
             groupBox10.Controls.Add(CB_RemovePeriod);
             groupBox10.Location = new System.Drawing.Point(251, 9);
             groupBox10.Name = "groupBox10";
-            groupBox10.Size = new System.Drawing.Size(266, 77);
+            groupBox10.Size = new System.Drawing.Size(266, 51);
             groupBox10.TabIndex = 8;
             groupBox10.TabStop = false;
             groupBox10.Text = "Search Settings";
@@ -1107,6 +1113,7 @@ namespace ProjectExtractor
             // 
             // TabPage_ProjectSettings
             // 
+            TabPage_ProjectSettings.Controls.Add(groupBox1);
             TabPage_ProjectSettings.Controls.Add(groupBox8);
             TabPage_ProjectSettings.Controls.Add(groupBox7);
             TabPage_ProjectSettings.Location = new System.Drawing.Point(4, 24);
@@ -1117,6 +1124,49 @@ namespace ProjectExtractor
             TabPage_ProjectSettings.ToolTipText = "Settings for entire project extraction";
             TabPage_ProjectSettings.UseVisualStyleBackColor = true;
             // 
+            // groupBox1
+            // 
+            groupBox1.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
+            groupBox1.Controls.Add(TB_CompanyLUTPath);
+            groupBox1.Controls.Add(BT_BrowseCompanyLUT);
+            groupBox1.Controls.Add(label10);
+            groupBox1.Location = new System.Drawing.Point(210, 175);
+            groupBox1.Name = "groupBox1";
+            groupBox1.Size = new System.Drawing.Size(348, 61);
+            groupBox1.TabIndex = 4;
+            groupBox1.TabStop = false;
+            groupBox1.Text = "Keywords";
+            // 
+            // TB_CompanyLUTPath
+            // 
+            TB_CompanyLUTPath.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            TB_CompanyLUTPath.Location = new System.Drawing.Point(6, 32);
+            TB_CompanyLUTPath.Name = "TB_CompanyLUTPath";
+            TB_CompanyLUTPath.PlaceholderText = "Path to Company LookUpTable file";
+            TB_CompanyLUTPath.Size = new System.Drawing.Size(312, 23);
+            TB_CompanyLUTPath.TabIndex = 5;
+            TB_CompanyLUTPath.Text = "\\\\TN-FS01\\Users$\\steef\\Documents\\resources\\CompanyNameLut.txt";
+            TB_CompanyLUTPath.TextChanged += TB_CompanyLUTPath_TextChanged;
+            // 
+            // BT_BrowseCompanyLUT
+            // 
+            BT_BrowseCompanyLUT.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+            BT_BrowseCompanyLUT.Location = new System.Drawing.Point(316, 31);
+            BT_BrowseCompanyLUT.Name = "BT_BrowseCompanyLUT";
+            BT_BrowseCompanyLUT.Size = new System.Drawing.Size(25, 25);
+            BT_BrowseCompanyLUT.TabIndex = 4;
+            BT_BrowseCompanyLUT.Text = "...";
+            BT_BrowseCompanyLUT.UseVisualStyleBackColor = true;
+            BT_BrowseCompanyLUT.Click += BT_BrowseCompanyLUT_Click;
+            // 
+            // label10
+            // 
+            label10.Location = new System.Drawing.Point(6, 14);
+            label10.Name = "label10";
+            label10.Size = new System.Drawing.Size(335, 15);
+            label10.TabIndex = 0;
+            label10.Text = "Company Look Up Table";
+            // 
             // groupBox8
             // 
             groupBox8.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
@@ -1124,14 +1174,13 @@ namespace ProjectExtractor
             groupBox8.Controls.Add(TB_SectionsEndProject);
             groupBox8.Location = new System.Drawing.Point(6, 175);
             groupBox8.Name = "groupBox8";
-            groupBox8.Size = new System.Drawing.Size(274, 61);
+            groupBox8.Size = new System.Drawing.Size(198, 61);
             groupBox8.TabIndex = 2;
             groupBox8.TabStop = false;
             groupBox8.Text = "Keywords";
             // 
             // label7
             // 
-            label7.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
             label7.AutoSize = true;
             label7.Location = new System.Drawing.Point(6, 14);
             label7.Name = "label7";
@@ -1145,7 +1194,7 @@ namespace ProjectExtractor
             TB_SectionsEndProject.Location = new System.Drawing.Point(6, 32);
             TB_SectionsEndProject.Name = "TB_SectionsEndProject";
             TB_SectionsEndProject.PlaceholderText = "Samenwerking";
-            TB_SectionsEndProject.Size = new System.Drawing.Size(262, 23);
+            TB_SectionsEndProject.Size = new System.Drawing.Size(186, 23);
             TB_SectionsEndProject.TabIndex = 3;
             TB_SectionsEndProject.Text = "Samenwerking";
             // 
@@ -1398,6 +1447,8 @@ namespace ProjectExtractor
             groupBox4.PerformLayout();
             groupBox2.ResumeLayout(false);
             TabPage_ProjectSettings.ResumeLayout(false);
+            groupBox1.ResumeLayout(false);
+            groupBox1.PerformLayout();
             groupBox8.ResumeLayout(false);
             groupBox8.PerformLayout();
             groupBox7.ResumeLayout(false);
@@ -1510,6 +1561,10 @@ namespace ProjectExtractor
         private System.Windows.Forms.CheckBox CB_ToggleBatch;
         private System.Windows.Forms.CheckBox CB_ProjectsToSeparateFiles;
         private System.Windows.Forms.CheckBox CB_BarBeforeUpdate;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.TextBox TB_CompanyLUTPath;
+        private System.Windows.Forms.Button BT_BrowseCompanyLUT;
     }
 }
 

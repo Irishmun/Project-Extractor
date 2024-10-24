@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using ProjectUtility;
 
 namespace ConfluenceExtractor
 {
@@ -11,7 +12,7 @@ namespace ConfluenceExtractor
         /// <param name="filename">name for the file</param>
         internal static void WriteToFile(string str, string outpath, string filename)
         {
-            string fullPath = CreateUniqueFileName(filename, outpath);
+            string fullPath = FileUtil.CreateUniqueFileName(filename, outpath);
             System.Diagnostics.Debug.WriteLine("Writing to: " + fullPath);// Path.GetFileNameWithoutExtension(fullPath));
             using (StreamWriter sw = File.CreateText(fullPath))
             {
@@ -26,32 +27,7 @@ namespace ConfluenceExtractor
         {
             return System.IO.File.Exists(path);
         }
-        /// <summary>Creates a unique, valid, file name if needed</summary>
-        /// <param name="filename">original name to use if possible</param>
-        /// <param name="path">path for the name</param>
-        /// <returns>full destination path</returns>
-        internal static string CreateUniqueFileName(string filename, string path)
-        {
-            //always sanitize file name
-            filename = string.Join("_", filename.Split(Path.GetInvalidFileNameChars())).Trim();
-            if (File.Exists(Path.Combine(path, filename)) == false)
-            { return Path.Combine(path, filename); }
-            int dup = 1;
-            bool exists = true;
-            filename = Path.GetFileNameWithoutExtension(filename);
-            string name = $"{filename} ({dup}).txt";
-            while (exists)
-            {
-                exists = File.Exists(Path.Combine(path, name));
-                if (exists == true)
-                {
-                    dup += 1;
-                    name = $"{filename} ({dup}).txt";
-                    continue;
-                }
-            }
-            return Path.Combine(path, name);
-        }
+        
         #endregion
     }
 }

@@ -12,7 +12,7 @@ namespace ProjectExtractor
         private const string INI_KEY_END_PROJECT = "Sections_Project_End", INI_KEY_KEYWORDS = "Keywords", INI_KEY_SECTIONS = "Sections";
         private const string INI_KEY_WRITE_HOURS = "WriteTotalHours", INI_KEY_TOTAL_HOURS = "TotalHoursKeyword";
         private const string INI_KEY_SAVE_PDF = "Save_PDF_Path", INI_KEY_SAVE_EXTRACT = "Save_Extract_Path", INI_KEY_DISABLE_EXTRACT = "DisableExtractionPath";
-        private const string INI_KEY_PDF_PATH = "PDF_Path", INI_KEY_EXTRACT_PATH = "Extract_Path";
+        private const string INI_KEY_PDF_PATH = "PDF_Path", INI_KEY_EXTRACT_PATH = "Extract_Path", INI_KEY_COMPANY_LUT="company_lut";
         private const string INI_KEY_DATABASE = "Database_Path", INI_KEY_REMOVE_PERIOD = "Remove_Period";
         private const string INI_KEY_FONT_SIZE = "font_size", INI_KEY_BAR_BEFORE_UPDATE = "bar_before_update", INI_KEY_PROJECTS_TO_UNIQUE = "save_projects_to_separate_files";
 
@@ -25,7 +25,7 @@ namespace ProjectExtractor
         private string _exportFileExtension;
         private string _sectionsEndProject;
         private string _chapterStart, _chapterEnd, _totalHoursKeyword;
-        private string _PDFPath, _ExtractionPath;
+        private string _PDFPath, _ExtractionPath, _companyLUTPath;
         private string _databasePath;
         private Dictionary<string, bool> _keywords, _sections;
 
@@ -111,7 +111,6 @@ namespace ProjectExtractor
         public bool RemovePeriod { get => _removePeriod; set => UpdateSettingIfNotStarting(ref _removePeriod, value, INI_KEY_REMOVE_PERIOD, INI_SECTION_SEARCH); }
         public bool BarBeforeUpdate { get => _barBeforeUpdate; set => UpdateSettingIfNotStarting(ref _barBeforeUpdate, value, INI_KEY_BAR_BEFORE_UPDATE, INI_SECTION_EXPORT); }
         public bool ProjectsToSeparateFiles { get => _projectsToSeparateFiles; set => UpdateSettingIfNotStarting(ref _projectsToSeparateFiles, value, INI_KEY_PROJECTS_TO_UNIQUE, INI_SECTION_EXPORT); }
-
-
+        public string CompanyLUTPath { get => _companyLUTPath; set => UpdateSettingIfNotStarting(ref _companyLUTPath, value,INI_KEY_COMPANY_LUT,INI_SECTION_PATHS); }
     }
 }

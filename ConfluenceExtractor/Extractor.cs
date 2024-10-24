@@ -12,6 +12,8 @@ namespace ConfluenceExtractor
         //\\TN-FS01\Users$\steef\Documents\resources\CompanyNameLut.txt
         //\\TN-FS01\Users$\steef\Documents\WBSO-lokaal\confluence\WR-170722-1226.txt
         private const string DEFAULT_FILE = @"\\TN-FS01\Users$\steef\Documents\WBSO-lokaal\confluence\WR-170722-1226.txt";
+        private const string DEFAULT_LUT = @"\\TN-FS01\Users$\steef\Documents\resources\CompanyNameLut.txt";
+        private const string SOFTWARE_QUESTION = "Mede programmatuur ontw.?";
         private const char removeChar = '\f';
 
         private Dictionary<string, string> _companyNameLUT;
@@ -222,8 +224,8 @@ namespace ConfluenceExtractor
                 }
                 if (string.IsNullOrEmpty(proj.ChangesProject) && lines[i].StartsWith("Wijziging in projectplanning:", StringComparison.OrdinalIgnoreCase))
                 {//project change on next line
-                    i += 1;
-                    proj.ChangesProject = lines[i];
+                    //i += 1;
+                    proj.ChangesProject = GetAllUntil(desiredEndIndex, "Technisch probleem bij de ontwikkeling van de programmatuur:", i, out i, true).ToString().Trim();//lines[i];
                     continue;
                 }
                 if (string.IsNullOrEmpty(proj.Specifics) && lines[i].StartsWith("Specifieke informatie afhankelijk van het type project.", StringComparison.OrdinalIgnoreCase))
@@ -237,25 +239,58 @@ namespace ConfluenceExtractor
                     softwareMadeSet = true;
                     continue;
                 }
-                if (string.IsNullOrEmpty(proj.TechProblems) && lines[i].StartsWith("Geef aan welke concrete technische problemen (knelpunten) u en/of uw S&O", StringComparison.OrdinalIgnoreCase))
-                {//project tech problems
-                    proj.TechProblems = GetAllUntil(desiredEndIndex, "Geef aan wat u in de komende WBSO-aanvraagperiode specifiek zelf gaat", SkipUntill(desiredEndIndex, "eisen van het project.", i), out i).ToString().Trim();
-                    continue;
+                if (string.IsNullOrEmpty(proj.TechProblems))
+                {
+                    if (lines[i].StartsWith("Geef aan welke concrete technische problemen (knelpunten) u en/of uw S&O", StringComparison.OrdinalIgnoreCase))
+                    {
+                        //project tech problems
+                        proj.TechProblems = GetAllUntil(desiredEndIndex, "Geef aan wat u in de komende WBSO-aanvraagperiode specifiek zelf gaat", SkipUntill(desiredEndIndex, "eisen van het project.", i), out i).ToString().Trim();
+                        continue;
+                    }
+                    else if (lines[i].StartsWith("Technisch probleem bij de ontwikkeling van de programmatuur:", StringComparison.OrdinalIgnoreCase))
+                    {
+                        proj.TechProblems = GetAllUntil(desiredEndIndex, "Gekozen oplossingsrichting:", i, out i).ToString().Trim();
+                        continue;
+                    }
                 }
-                if (string.IsNullOrEmpty(proj.TechSolutions) && lines[i].StartsWith("Geef aan wat u in de komende WBSO-aanvraagperiode specifiek zelf gaat", StringComparison.OrdinalIgnoreCase))
-                {//project tech problems
-                    proj.TechSolutions = GetAllUntil(desiredEndIndex, "Geef aan wat de technisch nieuwe werkingsprincipes zijn die u wilt aantonen bij", SkipUntill(desiredEndIndex, "risicos en onzekerheden hierbij aanwezig zijn.", i), out i).ToString().Trim();
-                    continue;
+                if (string.IsNullOrEmpty(proj.TechSolutions))
+                {
+                    if (lines[i].StartsWith("Geef aan wat u in de komende WBSO-aanvraagperiode specifiek zelf gaat", StringComparison.OrdinalIgnoreCase))
+                    { //project tech problems
+                        proj.TechSolutions = GetAllUntil(desiredEndIndex, "Geef aan wat de technisch nieuwe werkingsprincipes zijn die u wilt aantonen bij", SkipUntill(desiredEndIndex, "risicos en onzekerheden hierbij aanwezig zijn.", i), out i).ToString().Trim();
+                        continue;
+                    }
+                    else if (lines[i].StartsWith("Gekozen oplossingsrichting:", StringComparison.OrdinalIgnoreCase))
+                    { //project tech problems
+                        proj.TechSolutions = GetAllUntil(desiredEndIndex, "Bestaande methoden, technieken, tools en componenten:", i, out i).ToString().Trim();
+                        continue;
+                    }
                 }
-                if (string.IsNullOrEmpty(proj.TechNew) && lines[i].StartsWith("Geef aan wat de technisch nieuwe werkingsprincipes zijn die u wilt aantonen bij", StringComparison.OrdinalIgnoreCase))
+                if (string.IsNullOrEmpty(proj.TechNew) )
                 {//project tech problems
+                    if(lines[i].StartsWith("Geef aan wat de technisch nieuwe werkingsprincipes zijn die u wilt aantonen bij", StringComparison.OrdinalIgnoreCase))
+                    {
                     proj.TechNew = GetAllUntil(desiredEndIndex, "Geef aan waarom de hiervoor beschreven S&O-werkzaamheden voor u leiden tot een", SkipUntill(desiredEndIndex, "werkingsprincipes zijn bewezen en uw S&O-werkzaamheden zijn afgerond.", i), out i).ToString().Trim();
                     continue;
+                    }
+                    else if(lines[i].StartsWith("Bestaande methoden, technieken, tools en componenten:", StringComparison.OrdinalIgnoreCase))
+                    {
+                        proj.TechNew = GetAllUntil(desiredEndIndex, "functionaliteit:", i, out i).ToString().Trim();
+                        continue;
+                    }
                 }
-                if (string.IsNullOrEmpty(proj.TechReasoning) && lines[i].StartsWith("Geef aan waarom de hiervoor beschreven S&O-werkzaamheden voor u leiden tot een", StringComparison.OrdinalIgnoreCase))
+                if (string.IsNullOrEmpty(proj.TechReasoning) )
                 {//project tech problems
+                    if( lines[i].StartsWith("Geef aan waarom de hiervoor beschreven S&O-werkzaamheden voor u leiden tot een", StringComparison.OrdinalIgnoreCase))
+                    {
                     proj.TechReasoning = GetAllUntil(desiredEndIndex, "Kosten en uitgaven", SkipUntill(desiredEndIndex, "Routinematige ontwikkeling is geen S&O.", i), out i).ToString().Trim();
                     continue;
+                    }
+                    else if (lines[i].StartsWith("functionaliteit:", StringComparison.OrdinalIgnoreCase))
+                    {
+                        proj.TechReasoning = GetAllUntil(desiredEndIndex, "Kosten en uitgaven", i, out i).ToString().Trim();
+                        continue;
+                    }
                 }
                 if (proj.Code < 0 && lines[i].StartsWith("Code", StringComparison.OrdinalIgnoreCase))
                 {
@@ -283,7 +318,7 @@ namespace ConfluenceExtractor
             }
             return true;
 
-            StringBuilder GetAllUntil(int projEnd, string endLine, int start, out int end)
+            StringBuilder GetAllUntil(int projEnd, string endLine, int start, out int end, bool orSoftware = false)
             {
                 StringBuilder builder = new StringBuilder();
                 end = start + 1;//skip current line (where start phrase was found)
@@ -294,6 +329,11 @@ namespace ConfluenceExtractor
                         continue;
                     }
                     if (lines[i].StartsWith(endLine, StringComparison.OrdinalIgnoreCase))
+                    {
+                        end = i - 1;
+                        break;
+                    }
+                    if (orSoftware == true && lines[i].StartsWith(SOFTWARE_QUESTION, StringComparison.OrdinalIgnoreCase))
                     {
                         end = i - 1;
                         break;
@@ -344,7 +384,8 @@ namespace ConfluenceExtractor
             string path = Console.ReadLine();
             if (string.IsNullOrWhiteSpace(path))
             {
-                Console.WriteLine("no path provided...");
+                Console.WriteLine("Using default LUT path...");
+                path = DEFAULT_LUT;
             }
             if (string.IsNullOrEmpty(path) || !Util.FileExists(path))
             {

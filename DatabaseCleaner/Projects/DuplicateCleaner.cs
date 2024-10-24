@@ -1,5 +1,6 @@
 ﻿using DatabaseCleaner.Database;
 using DatabaseCleaner.Util;
+using ProjectUtility;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -337,7 +338,7 @@ namespace DatabaseCleaner.Projects
             if (_duplicateProjects.ContainsKey(project) == false)
             { return; }
             CreateCleanIfNotExist();
-            string filename = UtilMethods.CreateUniqueFileName(CreateProjectFileName(project), CLEANED_PATH);
+            string filename = FileUtil.CreateUniqueFileName(CreateProjectFileName(project), CLEANED_PATH);
             string path = Path.Combine(CLEANED_PATH, filename);
             using (StreamWriter sw = File.CreateText(path))
             {
@@ -352,7 +353,7 @@ namespace DatabaseCleaner.Projects
         public void WriteRawToFile(ProjectData projectToRemove, string rawContent, out string filename)
         {
             CreateCleanIfNotExist();
-            filename = UtilMethods.CreateUniqueFileName(CreateProjectFileName(projectToRemove), CLEANED_PATH);
+            filename = FileUtil.CreateUniqueFileName(CreateProjectFileName(projectToRemove), CLEANED_PATH);
             string path = Path.Combine(CLEANED_PATH, filename);
             using (StreamWriter sw = File.CreateText(path))
             {
