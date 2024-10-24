@@ -24,42 +24,58 @@ namespace ProjectExtractor.Extractors.FullProject
 
         //iterate over text, per project, remove all these bits of text, do this per array, then once an array is complete, add corresponding title header
 
-        protected override ExitCode ExtractRevisionOneProject(string file, string extractPath, string[] Sections, string EndProject, BackgroundWorker Worker, WorkerStates workerState)
+        protected override ExitCode ExtractRevisionOneProject(string file, string extractPath, string[] Sections, string EndProject, bool extractToSeparateFiles, BackgroundWorker Worker, WorkerStates workerState)
         {
 #if DEBUG
             System.Diagnostics.Debug.WriteLine("[ProjectExtractorTXT]\"ExtractRevisionOneProject\" not implemented.");
 #endif
             return ExitCode.NOT_IMPLEMENTED;
         }
-        protected override ExitCode ExtractRevisionTwoProject(string file, string extractPath, string[] Sections, string EndProject, BackgroundWorker Worker, WorkerStates workerState)
+        protected override ExitCode ExtractRevisionTwoProject(string file, string extractPath, string[] Sections, string EndProject, bool extractToSeparateFiles, BackgroundWorker Worker, WorkerStates workerState)
         {
-            string res = ExtractRevisionTwoToString(file, Sections, EndProject, Worker, out ExitCode returnCode, workerState);
-            using (StreamWriter sw = File.CreateText(extractPath))
+            if (extractToSeparateFiles == false)
             {
-                sw.Write(res);
-                sw.Close();
+                string res = ExtractRevisionTwoToString(file, Sections, EndProject, Worker, out ExitCode returnCode, workerState);
+                using (StreamWriter sw = File.CreateText(extractPath))
+                {
+                    sw.Write(res);
+                    sw.Close();
+                }
+                return returnCode;
             }
-            return returnCode;
+            else
+            {
+                ExtractRevisionTwoToString(file, Sections, EndProject, Worker, out ExitCode returnCode, workerState, true, extractPath);
+                return ExitCode.NONE;
+            }
         }
-        protected override ExitCode ExtractRevisionThreeProject(string file, string extractPath, string[] Sections, string EndProject, BackgroundWorker Worker, WorkerStates workerState)
+        protected override ExitCode ExtractRevisionThreeProject(string file, string extractPath, string[] Sections, string EndProject, bool extractToSeparateFiles, BackgroundWorker Worker, WorkerStates workerState)
         {
-            string res = ExtractRevisionThreeToString(file, Sections, EndProject, Worker, out ExitCode returnCode, workerState);
-            using (StreamWriter sw = File.CreateText(extractPath))
+            if (extractToSeparateFiles == false)
             {
-                sw.Write(res);
-                sw.Close();
+                string res = ExtractRevisionThreeToString(file, Sections, EndProject, Worker, out ExitCode returnCode, workerState);
+                using (StreamWriter sw = File.CreateText(extractPath))
+                {
+                    sw.Write(res);
+                    sw.Close();
+                }
+                return returnCode;
             }
-            return returnCode;
+            else
+            {
+                ExtractRevisionThreeToString(file, Sections, EndProject, Worker, out ExitCode returnCode, workerState, extractToSeparateFiles, extractPath);
+                return returnCode;
+            }
         }
 
-        protected override ExitCode BatchExtractRevisionOneProject(string folder, string extractPath, string fileExtension, string[] Sections, string EndProject, bool skipExisting, bool recursive, BackgroundWorker Worker, WorkerStates workerState)
+        protected override ExitCode BatchExtractRevisionOneProject(string folder, string extractPath, string fileExtension, string[] Sections, string EndProject, bool skipExisting, bool extractToSeparateFiles, BackgroundWorker Worker, WorkerStates workerState)
         {
 #if DEBUG
             System.Diagnostics.Debug.WriteLine("[ProjectExtractorTXT]\"BatchExtractRevisionOneProject\" not implemented.");
 #endif
             return ExitCode.NOT_IMPLEMENTED;
         }
-        protected override ExitCode BatchExtractRevisionTwoProject(string folder, string extractPath, string fileExtension, string[] Sections, string EndProject, bool skipExisting, bool recursive, BackgroundWorker Worker, WorkerStates workerState)
+        protected override ExitCode BatchExtractRevisionTwoProject(string folder, string extractPath, string fileExtension, string[] Sections, string EndProject, bool skipExisting, bool extractToSeparateFiles, BackgroundWorker Worker, WorkerStates workerState)
         {
             string[] documentPaths = Directory.GetFiles(folder, "*.pdf");
             ExitCode code = ExitCode.BATCH;
@@ -67,28 +83,41 @@ namespace ProjectExtractor.Extractors.FullProject
             { return ExitCode.ERROR; }
             for (int i = 0; i < documentPaths.Length; i++)
             {
-                string exportFile = $"{extractPath}{Path.GetFileNameWithoutExtension(documentPaths[i])} - Projecten.{fileExtension}";//add path and file extension
-                if (skipExisting == true && File.Exists(exportFile))
-                {//skip existing
-                    continue;
-                }
-                string result = ExtractRevisionTwoToString(documentPaths[i], Sections, EndProject, Worker, out ExitCode returnCode, workerState);
-                if (returnCode == ExitCode.ERROR)
+                if (extractToSeparateFiles == false)
                 {
-                    code = ExitCode.BATCH_FLAWED;
-                    continue;
-                }
+                    string name = Path.GetFileNameWithoutExtension(documentPaths[i]);
+                    string exportFile = $"{extractPath}{name} - Projecten.{fileExtension}";//add path and file extension
+                    if (skipExisting == true && File.Exists(exportFile))
+                    {//skip existing
+                        continue;
+                    }
+                    string result = ExtractRevisionTwoToString(documentPaths[i], Sections, EndProject, Worker, out ExitCode returnCode, workerState);
+                    if (returnCode == ExitCode.ERROR)
+                    {
+                        code = ExitCode.BATCH_FLAWED;
+                        continue;
+                    }
 
-                using (StreamWriter sw = File.CreateText(exportFile))
+                    using (StreamWriter sw = File.CreateText(exportFile))
+                    {
+                        //write the final result to a text document
+                        sw.Write(result);
+                        sw.Close();
+                    }
+                }
+                else
                 {
-                    //write the final result to a text document
-                    sw.Write(result);
-                    sw.Close();
+                    ExtractRevisionTwoToString(documentPaths[i], Sections, EndProject, Worker, out ExitCode returnCode, workerState, true, extractPath);
+                    if (returnCode == ExitCode.ERROR)
+                    {
+                        code = ExitCode.BATCH_FLAWED;
+                        continue;
+                    }
                 }
             }
             return code;
         }
-        protected override ExitCode BatchExtractRevisionThreeProject(string folder, string extractPath, string fileExtension, string[] Sections, string EndProject, bool skipExisting, bool recursive, BackgroundWorker Worker, WorkerStates workerState)
+        protected override ExitCode BatchExtractRevisionThreeProject(string folder, string extractPath, string fileExtension, string[] Sections, string EndProject, bool skipExisting, bool extractToSeparateFiles, BackgroundWorker Worker, WorkerStates workerState)
         {
             string[] documentPaths = Directory.GetFiles(folder, "*.pdf");
             ExitCode code = ExitCode.BATCH;
@@ -96,41 +125,51 @@ namespace ProjectExtractor.Extractors.FullProject
             { return ExitCode.ERROR; }
             for (int i = 0; i < documentPaths.Length; i++)
             {
-                string exportFile = $"{extractPath}{Path.GetFileNameWithoutExtension(documentPaths[i])} - Projecten.{fileExtension}";//add path and file extension
-                if (skipExisting == true && File.Exists(exportFile))
-                {//skip existing
-                    continue;
-                }
-                string result = ExtractRevisionThreeToString(documentPaths[i], Sections, EndProject, Worker, out ExitCode returnCode, workerState);
-                if (returnCode == ExitCode.ERROR)
+                if (extractToSeparateFiles == false)
                 {
-                    code = ExitCode.BATCH_FLAWED;
-                    continue;
+                    string exportFile = $"{extractPath}{Path.GetFileNameWithoutExtension(documentPaths[i])} - Projecten.{fileExtension}";//add path and file extension
+                    if (skipExisting == true && File.Exists(exportFile))
+                    {//skip existing
+                        continue;
+                    }
+                    string result = ExtractRevisionThreeToString(documentPaths[i], Sections, EndProject, Worker, out ExitCode returnCode, workerState);
+                    if (returnCode == ExitCode.ERROR)
+                    {
+                        code = ExitCode.BATCH_FLAWED;
+                        continue;
+                    }
+                    using (StreamWriter sw = File.CreateText(exportFile))
+                    {
+                        //write the final result to a text document
+                        sw.Write(result);
+                        sw.Close();
+                    }
                 }
-
-                using (StreamWriter sw = File.CreateText(exportFile))
+                else
                 {
-                    //write the final result to a text document
-                    sw.Write(result);
-                    sw.Close();
+                    ExtractRevisionThreeToString(documentPaths[i], Sections, EndProject, Worker, out ExitCode returnCode, workerState, extractToSeparateFiles, extractPath);
+                    if (returnCode == ExitCode.ERROR)
+                    {
+                        code = ExitCode.BATCH_FLAWED;
+                        continue;
+                    }
                 }
             }
             return code;
         }
 
-
-        private string ExtractRevisionTwoToString(string file, string[] Sections, string EndProject, BackgroundWorker Worker, out ExitCode returnCode, WorkerStates workerState)
+        /// <summary>Extracts all projects from the given file in revision two format</summary>
+        /// <returns>string containing all projects and formatting</returns>
+        private string ExtractRevisionTwoToString(string file, string[] Sections, string EndProject, BackgroundWorker Worker, out ExitCode returnCode, WorkerStates workerState, bool extractToSeparate = false, string extractPath = "")
         {
             returnCode = ExitCode.NONE;
             ExtractTextFromPDF(file);
             StringBuilder str = new StringBuilder();
-
-            GetProjectIndexes();
+            GetProjectIndexes(extractToSeparate);
 
             int projectIndex = 0;
             List<int> ProjectStartIndexes = new List<int>();
             string[] sectionWords = Sections;
-            string possibleSection = string.Empty;
             string firstProjecTitle = RevTwoTryGetProjectTitle(Lines, 0, EndProject, out int titleIndex);
             ProjectStartIndexes.Add(titleIndex);
             titleIndex += 1;
@@ -138,7 +177,6 @@ namespace ProjectExtractor.Extractors.FullProject
             {
                 if (!string.IsNullOrWhiteSpace(Lines[titleIndex]))
                 {
-                    //   continue;
                     string nextProject = RevTwoTryGetProjectTitle(Lines, titleIndex, string.Empty, out projectIndex);
                     if (!string.IsNullOrEmpty(nextProject))
                     {
@@ -147,95 +185,52 @@ namespace ProjectExtractor.Extractors.FullProject
                     }
                 }
             }
-            bool preFirstSection;
-            bool searchNextSection;
-            string checkString = string.Empty;
-            bool appendNewLines = false;
-            string remaining = string.Empty;
-            string nextLine = string.Empty;
+
             //TODO: iterate per project (in try catch maybe?)
             for (int project = 0; project < ProjectStartIndexes.Count; project++)
             {
-                preFirstSection = false;
-                searchNextSection = true;
-
                 int nextIndex = project == (ProjectStartIndexes.Count - 1) ? Lines.Length - 1 : ProjectStartIndexes[project + 1];
-                for (int lineIndex = ProjectStartIndexes[project]; lineIndex < nextIndex; lineIndex++)
-                {//TODO: remove [before description]
-
-                    if (preFirstSection == false)
+                str.AppendLine(ExtractRevisionTwoSingle(file, ProjectStartIndexes[project], nextIndex, Sections, EndProject, projectIndex, ProjectStartIndexes, out bool isEndOfDocument, Worker, workerState).ToString());
+                if (isEndOfDocument == true)
+                {
+                    project = ProjectStartIndexes.Count - 1;
+                }
+                if (extractToSeparate == false)
+                {
+                    if (project < ProjectStartIndexes.Count - 1)
                     {
-                        str.Append(RevTwoTryGetProjectTitle(Lines, ProjectStartIndexes[project] - 1, string.Empty, out projectIndex));
                         str.AppendLine();
-                        RemoveLines(projectIndex + 1, nextIndex, ref str, _revTwoPageRegex, ref possibleSection, _revTwoToRemoveDetails, _revTwoRemoveDescription, out int detailEnd, true);
-                        lineIndex = detailEnd;
-                        preFirstSection = true;
-                    }
-                    RemovePageNumberFromString(ref Lines[lineIndex], _revTwoPageRegex);
-                    RemovePageNumberFromString(ref Lines[lineIndex], @"WBSO\s+[0-9]+");
-                    //TODO: fix issue where numbers are removed and returned with said number removed when they shouldn't
-                    //numbered list should have it removed, but years shouldn't be removed
-                    RemoveNumbersFromStringStart(ref Lines[lineIndex]);
-                    nextLine = lineIndex == Lines.Length - 1 ? string.Empty : Lines[lineIndex + 1];
-                    if (searchNextSection == true)
-                    {
-                        string res = TryFindSection(Lines[lineIndex], RevTwoSectionDescriptions, out string foundRemaining, out int foundSection, out bool isEndOfDocument, out bool isEndOfProject, appendNewLines, nextLine);
-                        if (isEndOfProject == true)
-                        {
-                            break;
-                        }
-                        if (isEndOfDocument == true)
-                        {
-                            project = ProjectStartIndexes.Count - 1;
-                            break;
-                        }
-                        if (!string.IsNullOrWhiteSpace(res))
-                        {
-                            str.Append(res + " ");
-                        }
-                        if (foundSection > -1)
-                        {
-                            searchNextSection = false;
-                            checkString = foundRemaining;
-                            remaining = checkString;
-                            appendNewLines = RevTwoSectionDescriptions[foundSection].AppendNewLines;
-                        }
+                        str.AppendLine();
+                        str.AppendLine("========[NEXT PROJECT]=========");
                     }
                     else
                     {
-                        string unique = RemoveMatching(Lines[lineIndex], checkString, out remaining, appendNewLines, nextLine);
-                        if (!string.IsNullOrWhiteSpace(unique))
-                        {
-                            str.Append(unique + " ");
-                        }
-                        checkString = remaining;
+                        str.Append("========[END PROJECTS]=========");
                     }
-
-                    if (string.IsNullOrWhiteSpace(remaining))
-                    {
-                        searchNextSection = true;
-                    }
-                    ReportProgessToWorker(lineIndex, Worker, workerState);
-                }
-                if (project < ProjectStartIndexes.Count - 1)
-                {
-                    str.AppendLine();
-                    str.AppendLine();
-                    str.AppendLine("========[NEXT PROJECT]=========");
                 }
                 else
                 {
-                    str.AppendLine();
+                    string companyName = Path.GetFileNameWithoutExtension(extractPath).TrimExtractionData(true);
+                    string projTitle = RevTwoTryGetProjectTitle(Lines, ProjectStartIndexes[project], EndProject, out _);
+                    string fileName = Path.GetFileNameWithoutExtension(extractPath).Replace(companyName + " - Projecten", projTitle).Trim();
+                    string path = FileUtil.CreateUniqueFileName(fileName + ".txt", Path.GetDirectoryName(extractPath));
+                    int secondLineIndex = str.IndexOf(Environment.NewLine) + Environment.NewLine.Length;
+                    str.Insert(secondLineIndex, $"Bedrijf: {companyName}{Environment.NewLine}");
                     str.Append("========[END PROJECTS]=========");
+                    using (StreamWriter sw = File.CreateText(path))
+                    {
+                        sw.Write(str);
+                        sw.Close();
+                    }
+                    str.Clear();
                 }
             }
 
             string final = TrimEmpties(str);
-            Worker.ReportProgress(100,workerState);
+            Worker.ReportProgress(100, workerState);
             return final;
 
-
-            void GetProjectIndexes()
+            void GetProjectIndexes(bool extractToSeparate)
             {
                 string titleRegex = @"WBSO[ ][0-9]{1,4}";
                 bool foundProjects = false;
@@ -285,7 +280,8 @@ namespace ProjectExtractor.Extractors.FullProject
                         }
                     }
                 }
-
+                if (extractToSeparate == true)
+                { return; }
                 str.AppendLine("========[PROJECTINDEX]=========");
                 for (int i = ProjectStrings.Count - 1; i >= 0; i--)
                 {
@@ -296,121 +292,209 @@ namespace ProjectExtractor.Extractors.FullProject
 
             }
         }
-
-        private string ExtractRevisionThreeToString(string file, string[] Sections, string EndProject, BackgroundWorker Worker, out ExitCode returnCode, WorkerStates workerState)
+        /// <summary>Extracts all projects from the given file in revision three format</summary>
+        /// <returns>string containing all projects and formatting</returns>
+        private string ExtractRevisionThreeToString(string file, string[] Sections, string EndProject, BackgroundWorker Worker, out ExitCode returnCode, WorkerStates workerState, bool extractToSeparate = false, string extractPath = "")
         {
             returnCode = ExitCode.NONE;
             ExtractTextFromPDF(file);
             StringBuilder str = new StringBuilder();
 
             int projectIndex = 0;
-
             List<int> ProjectStartIndexes = new List<int>();
-
-            string[] sectionWords = Sections;//ConvertSectionsToArray(Sections);
-            string possibleSection = string.Empty;
             string firstProjecTitle = RevThreeTryGetProjecTitle(Lines, 0, EndProject, out int titleIndex);
             ProjectStartIndexes.Add(titleIndex);
-            titleIndex += 1;
+            titleIndex += 10;
             for (int i = titleIndex; i < Lines.Length; i++)
             {
                 if (!string.IsNullOrWhiteSpace(Lines[titleIndex]))
                 {
-                    //   continue;
                     string nextProject = RevThreeTryGetProjecTitle(Lines, titleIndex, string.Empty, out projectIndex);
                     if (!string.IsNullOrEmpty(nextProject))
                     {
                         ProjectStartIndexes.Add(projectIndex);
-                        titleIndex = projectIndex + 1;
-                        //str.Append($"Omschrijving {nextProject}");
-                        //str.AppendLine();
+                        titleIndex = projectIndex + 10;
                     }
                 }
             }
-            bool continuationDone;
-            bool searchNextSection;
-            string checkString = string.Empty;
-            bool appendNewLines = false;
-            string remaining = string.Empty;
-            string nextLine = string.Empty;
+
             //TODO: iterate per project (in try catch maybe?)
             for (int project = 0; project < ProjectStartIndexes.Count; project++)
             {
-                continuationDone = false;
-                searchNextSection = true;
-
                 int nextIndex = project == (ProjectStartIndexes.Count - 1) ? Lines.Length - 1 : ProjectStartIndexes[project + 1];
-                for (int lineIndex = ProjectStartIndexes[project]; lineIndex < nextIndex; lineIndex++)
+                str.AppendLine(ExtractRevisionThreeSingle(file, ProjectStartIndexes[project], nextIndex, Sections, EndProject, projectIndex, ProjectStartIndexes, out bool isEndOfDocument, Worker, workerState).ToString());
+                if (isEndOfDocument == true)
+                { project = ProjectStartIndexes.Count - 1; }
+                if (extractToSeparate == false)
                 {
-                    if (continuationDone == false)
+                    if (project < ProjectStartIndexes.Count - 1)
                     {
-                        bool isContinuation = IsContinuation(ProjectStartIndexes[project], nextIndex);
-                        str.Append(RevThreeTryGetProjecTitle(Lines, ProjectStartIndexes[project] - 1, string.Empty, out projectIndex));
                         str.AppendLine();
-                        if (isContinuation)
-                        {
-                            str.Append("Voortzetting van een vorig project\n");
-                        }
-                        RemoveLines(projectIndex + 1, nextIndex, ref str, @"Pagina \d* van \d*", ref possibleSection, _revOneToRemoveDetails, _revOneToRemoveDescription[0], out int detailEnd);
-                        lineIndex = detailEnd;
-                        continuationDone = true;
-                    }
-                    RemovePageNumberFromString(ref Lines[lineIndex], @"Pagina \d* van \d*");
-                    RemoveNumbersFromStringStart(ref Lines[lineIndex]);
-                    RemoveIndexFromStringStart(ref Lines[lineIndex]);
-                    nextLine = lineIndex == Lines.Length - 1 ? string.Empty : Lines[lineIndex + 1];
-                    if (searchNextSection == true)
-                    {
-                        string res = TryFindSection(Lines[lineIndex], RevThreeSectionDescriptions, out string foundRemaining, out int foundSection, out bool isEndOfDocument, out bool isEndOfProject, appendNewLines, nextLine);
-                        if (isEndOfDocument == true)
-                        {
-                            project = ProjectStartIndexes.Count - 1;
-                            break;
-                        }
-                        if (!string.IsNullOrWhiteSpace(res))
-                        {
-                            str.Append(res + " ");
-                        }
-                        if (foundSection > -1)
-                        {
-                            searchNextSection = false;
-                            checkString = foundRemaining;
-                            remaining = checkString;
-                            appendNewLines = RevThreeSectionDescriptions[foundSection].AppendNewLines;
-                        }
+                        str.AppendLine();
+                        str.AppendLine("========[NEXT PROJECT]=========");
                     }
                     else
                     {
-                        string unique = RemoveMatching(Lines[lineIndex], checkString, out remaining, appendNewLines, nextLine);//RemoveMatching(Lines[lineIndex], checkstringA, _sentencesEither[sectionIndex].SectionTitle, searchNextSection, out bool a, out remaining, out searchNextSection);
-                        if (!string.IsNullOrWhiteSpace(unique))
-                        {
-                            str.Append(unique + " ");
-                        }
-                        checkString = remaining;
+                        str.Append("========[END PROJECTS]=========");
                     }
-
-                    if (string.IsNullOrWhiteSpace(remaining))
-                    {
-                        searchNextSection = true;
-                    }
-                    ReportProgessToWorker(lineIndex, Worker, workerState);
-                }
-                if (project < ProjectStartIndexes.Count - 1)
-                {
-                    str.AppendLine();
-                    str.AppendLine();
-                    str.Append("========[NEXT PROJECT]=========");
-                    str.AppendLine();
                 }
                 else
                 {
-                    str.AppendLine();
+                    string companyName = Path.GetFileNameWithoutExtension(file).TrimExtractionData(true);
+                    string projTitle = RevThreeTryGetProjecTitle(Lines, ProjectStartIndexes[project], EndProject, out _);
+                    string fileName = Path.GetFileNameWithoutExtension(file).Replace(companyName, projTitle).Trim();
+                    fileName = fileName.Replace(" - Projecten", string.Empty).Trim();
+                    Match m = Regex.Match(fileName, @"([Pp]roject)?( ISQ-)\d*(: )?");
+                    if (m.Success)
+                    {
+                        fileName = fileName.Replace(m.Value, string.Empty);
+                    }
+                    string path = FileUtil.CreateUniqueFileName(fileName + ".txt", Path.GetDirectoryName(extractPath));
+                    int secondLineIndex = str.IndexOf(Environment.NewLine) + Environment.NewLine.Length;
+                    str.Insert(secondLineIndex, $"Bedrijf: {companyName}{Environment.NewLine}");
                     str.Append("========[END PROJECTS]=========");
+                    using (StreamWriter sw = File.CreateText(path))
+                    {
+                        sw.Write(str);
+                        sw.Close();
+                    }
+                    str.Clear();
                 }
+
+
             }
             string final = TrimEmpties(str);
             Worker.ReportProgress(100, workerState);
             return final;
+        }
+
+        /// <summary>Extracts a single project from the given file in revision two format</summary>
+        /// <returns>Stringbuilder containing extracted project</returns>
+        private StringBuilder ExtractRevisionTwoSingle(string file, int start, int end, string[] Sections, string EndProject, int projectIndex, List<int> ProjectStartIndexes, out bool isEndOfDocument, BackgroundWorker Worker, WorkerStates workerState)
+        {
+            bool preFirstSection = false;
+            bool searchNextSection = true;
+            string possibleSection = string.Empty;
+            string remaining = string.Empty;
+            string nextLine = string.Empty;
+            string checkString = string.Empty;
+            bool appendNewLines = false;
+            isEndOfDocument = false;
+            StringBuilder str = new StringBuilder();
+            for (int lineIndex = start; lineIndex < end; lineIndex++)
+            {//TODO: remove [before description]
+                ReportProgessToWorker(lineIndex, Worker, workerState);
+
+                if (preFirstSection == false)
+                {
+                    str.Append(RevTwoTryGetProjectTitle(Lines, start - 1, string.Empty, out projectIndex));
+                    str.AppendLine();
+                    RemoveLines(projectIndex + 1, end, ref str, _revTwoPageRegex, ref possibleSection, _revTwoToRemoveDetails, _revTwoRemoveDescription, out int detailEnd, true);
+                    lineIndex = detailEnd;
+                    preFirstSection = true;
+                }
+                RemovePageNumberFromString(ref Lines[lineIndex], _revTwoPageRegex);
+                RemovePageNumberFromString(ref Lines[lineIndex], @"WBSO\s+[0-9]+");
+                //TODO: fix issue where numbers are removed and returned with said number removed when they shouldn't
+                //numbered list should have it removed, but years shouldn't be removed
+                RemoveNumbersFromStringStart(ref Lines[lineIndex]);
+                nextLine = lineIndex == Lines.Length - 1 ? string.Empty : Lines[lineIndex + 1];
+                if (searchNextSection == true)
+                {
+                    string res = TryFindSection(Lines[lineIndex], RevTwoSectionDescriptions, out string foundRemaining, out int foundSection, out isEndOfDocument, out bool isEndOfProject, appendNewLines, nextLine);
+                    if (isEndOfProject == true)
+                    { break; }
+                    if (isEndOfDocument == true)
+                    { break; }
+                    if (!string.IsNullOrWhiteSpace(res))
+                    { str.Append(res + " "); }
+                    if (foundSection > -1)
+                    {
+                        searchNextSection = false;
+                        checkString = foundRemaining;
+                        remaining = checkString;
+                        appendNewLines = RevTwoSectionDescriptions[foundSection].AppendNewLines;
+                    }
+                }
+                else
+                {
+                    string unique = RemoveMatching(Lines[lineIndex], checkString, out remaining, appendNewLines, nextLine);
+                    if (!string.IsNullOrWhiteSpace(unique))
+                    { str.Append(unique + " "); }
+                    checkString = remaining;
+                }
+
+                if (string.IsNullOrWhiteSpace(remaining))
+                { searchNextSection = true; }
+            }
+            return str;
+        }
+        /// <summary>Extracts a single project from the given file in revision three format</summary>
+        /// <returns>Stringbuilder containing extracted project</returns>
+        private StringBuilder ExtractRevisionThreeSingle(string file, int start, int end, string[] Sections, string EndProject, int projectIndex, List<int> ProjectStartIndexes, out bool isEndOfDocument, BackgroundWorker Worker, WorkerStates workerState)
+        {
+            isEndOfDocument = false;
+            bool continuationDone = false;
+            bool searchNextSection = true;
+            bool appendNewLines = false;
+            string checkString = string.Empty;
+            string possibleSection = string.Empty;
+            string remaining = string.Empty;
+            string nextLine = string.Empty;
+            string[] sectionWords = Sections;//ConvertSectionsToArray(Sections);
+            StringBuilder str = new StringBuilder();
+
+            for (int lineIndex = start; lineIndex < end; lineIndex++)
+            {
+                if (continuationDone == false)
+                {
+                    bool isContinuation = IsContinuation(start, end);
+                    str.Append(RevThreeTryGetProjecTitle(Lines, start - 1, string.Empty, out projectIndex));
+                    str.AppendLine();
+                    if (isContinuation)
+                    {
+                        str.Append("Voortzetting van een vorig project\n");
+                    }
+                    RemoveLines(projectIndex + 1, end, ref str, @"Pagina \d* van \d*", ref possibleSection, _revOneToRemoveDetails, _revOneToRemoveDescription[0], out int detailEnd);
+                    lineIndex = detailEnd;
+                    continuationDone = true;
+                }
+                RemovePageNumberFromString(ref Lines[lineIndex], @"Pagina \d* van \d*");
+                RemoveNumbersFromStringStart(ref Lines[lineIndex]);
+                RemoveIndexFromStringStart(ref Lines[lineIndex]);
+                nextLine = lineIndex == Lines.Length - 1 ? string.Empty : Lines[lineIndex + 1];
+                if (searchNextSection == true)
+                {
+                    string res = TryFindSection(Lines[lineIndex], RevThreeSectionDescriptions, out string foundRemaining, out int foundSection, out isEndOfDocument, out bool isEndOfProject, appendNewLines, nextLine);
+                    if (isEndOfDocument == true)
+                    { break; }
+                    if (!string.IsNullOrWhiteSpace(res))
+                    { str.Append(res + " "); }
+                    if (foundSection > -1)
+                    {
+                        searchNextSection = false;
+                        checkString = foundRemaining;
+                        remaining = checkString;
+                        appendNewLines = RevThreeSectionDescriptions[foundSection].AppendNewLines;
+                    }
+                }
+                else
+                {
+                    string unique = RemoveMatching(Lines[lineIndex], checkString, out remaining, appendNewLines, nextLine);//RemoveMatching(Lines[lineIndex], checkstringA, _sentencesEither[sectionIndex].SectionTitle, searchNextSection, out bool a, out remaining, out searchNextSection);
+                    if (!string.IsNullOrWhiteSpace(unique))
+                    {
+                        str.Append(unique + " ");
+                    }
+                    checkString = remaining;
+                }
+
+                if (string.IsNullOrWhiteSpace(remaining))
+                {
+                    searchNextSection = true;
+                }
+                ReportProgessToWorker(lineIndex, Worker, workerState);
+            }
+            return str;
         }
 
         string TryFindSection(string check, ProjectSection[] comparisons, out string foundRemaining, out int foundSection, out bool isEndOfDocument, out bool isEndOfProject, bool appendNewLines = false, string safetyCheck = "")
@@ -492,7 +576,6 @@ namespace ProjectExtractor.Extractors.FullProject
                 return currentDif;
             }
         }
-
         string RemoveMatching(string check, string comparison, out string remaining, bool appendNewLine = false, string safetyCheck = "")
         {
             remaining = string.Empty;
@@ -588,7 +671,6 @@ namespace ProjectExtractor.Extractors.FullProject
                 return lastCorrect;
             }
         }
-
         private void RemoveLines(int startIndex, int nextProjectIndex, ref StringBuilder str, string pageRegex, ref string possibleSection, string[] toRemove, string FollowingSectionString, out int nextSectionLine, bool removeInbetween = false)
         {
             nextSectionLine = nextProjectIndex;
@@ -614,7 +696,6 @@ namespace ProjectExtractor.Extractors.FullProject
                 }
             }
         }
-
         bool IsContinuation(int startIndex, int endIndex)
         {
             for (int i = startIndex; i < endIndex; i++)
@@ -636,8 +717,6 @@ namespace ProjectExtractor.Extractors.FullProject
                                 ,"Het project wordt/is gestart op"
                                 ,"Aantal uren werknemers"};
         private readonly string[] _revOneToRemoveDescription = { "Geef een algemene omschrijving van" };
-
-
         private readonly string[] _revTwoToRemoveDetails = {"Project"
                                 ,"Projectnummer"
                                 ,"Projecttitel"

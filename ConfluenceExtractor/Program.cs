@@ -138,9 +138,9 @@ namespace ConfluenceExtractor
                        "\n[2]: Extract only first found project." +
                        "\n[3]: Extract next project after line." +
                        "\n[4]: Quit program." +
+                       "\n[6]: Move projects to their company's folder." +
                        "\n[DEBUG]" +
-                       "\n[5]: Create Debug project." +
-                       "\n[6]: Move projects to their company's folder.";
+                       "\n[5]: Create Debug project.";
             }
 
             void ClearAndWrite(string text)

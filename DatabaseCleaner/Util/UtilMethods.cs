@@ -58,28 +58,5 @@ namespace DatabaseCleaner.Util
         {
             return new System.Drawing.Font(basis.Name, size);
         }
-
-        public static string CreateUniqueFileName(string filename, string path)
-        {
-            //always sanitize file name
-            filename = string.Join("_", filename.Split(Path.GetInvalidFileNameChars()));
-            if (File.Exists(Path.Combine(path, filename)) == false)
-            { return filename; }
-            int dup = 1;
-            bool exists = true;
-            filename = Path.GetFileNameWithoutExtension(filename);
-            string name = $"{filename} ({dup}).txt";
-            while (exists)
-            {
-                exists = File.Exists(Path.Combine(path, name));
-                if (exists == true)
-                {
-                    dup += 1;
-                    name = $"{filename} ({dup}).txt";
-                    continue;
-                }
-            }
-            return name;
-        }
     }
 }

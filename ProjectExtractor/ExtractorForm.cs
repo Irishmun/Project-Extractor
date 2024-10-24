@@ -19,7 +19,7 @@ namespace ProjectExtractor
 {
     //TODO: implement the following
     /*
-     * text scaling
+     * Projects to separate files extraction
      */
     public partial class ExtractorForm : Form
     {
@@ -166,13 +166,16 @@ namespace ProjectExtractor
                 TB_TotalHours.Text = _settings.TotalHoursKeyword;
                 //set database path
                 TB_DatabasePath.Text = _settings.DatabasePath;
-                SetFontSizes(_settings.FontSize);
                 //remove period from projects
                 CB_RemovePeriod.Checked = _settings.RemovePeriod;
                 //bar before update in details
                 CB_BarBeforeUpdate.Checked = _settings.BarBeforeUpdate;
                 //save projects to separate files
                 CB_ProjectsToSeparateFiles.Checked = _settings.ProjectsToSeparateFiles;
+                //company LUT path
+                TB_CompanyLUTPath.Text = _settings.CompanyLUTPath;
+
+                SetFontSizes(_settings.FontSize);
             }
         }
         private async void CheckForUpdateThenSetAbout()
@@ -407,6 +410,10 @@ namespace ProjectExtractor
                     TB_ExtractLocation.Text += "\\";
                 }
             }
+        }
+        private void CB_ProjectsToSeparateFiles_CheckedChanged(object sender, EventArgs e)
+        {
+            _settings.ProjectsToSeparateFiles = CB_ProjectsToSeparateFiles.Checked;
         }
         #endregion
         #endregion
@@ -698,6 +705,40 @@ namespace ProjectExtractor
             }
             _settings.KeywordsList = ConvertListViewItemsToDictionary(LV_Sections);
         }
+        private void BT_BrowseCompanyLUT_Click(object sender, EventArgs e)
+        {
+            string res = string.Empty;
+            DialogResult result;
+            //open file browser
+            using (OpenFileDialog fd = new OpenFileDialog())
+            {
+                fd.Filter = "Text file (*.txt)|*.Txt|All files (*.*)|*.*";
+                if (!string.IsNullOrEmpty(TB_CompanyLUTPath.Text))
+                {
+                    fd.FileName = TB_CompanyLUTPath.Text;
+                }
+                result = fd.ShowDialog();
+
+                if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(fd.FileName))
+                {
+                    res = fd.FileName;
+                }
+            }
+            //check if it has changed, else leave it as what it is.
+            res = string.IsNullOrWhiteSpace(res) ? TB_CompanyLUTPath.Text : res;
+
+            if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(res))
+            {
+                TB_CompanyLUTPath.Text = res;
+                _settings.CompanyLUTPath = res;
+            }
+        }
+        #endregion
+        #region TextBox events
+        private void TB_CompanyLUTPath_TextChanged(object sender, EventArgs e)
+        {
+            _settings.CompanyLUTPath = TB_CompanyLUTPath.Text;
+        }
         #endregion
         #endregion
         #region About Events
@@ -769,7 +810,7 @@ namespace ProjectExtractor
                     break;
                 case WorkerStates.EXTRACT_PROJECT:
                     _exportFile = $"{TB_ExtractLocation.Text}{Path.GetFileNameWithoutExtension(fileName)}{ExtractorBase.PROJECT_SUFFIX}.{_extractor.FileExtension}";//add path and file extension
-                    _extractionResult = (_extractor as ProjectExtractorBase).ExtractProjects(ProjectRevisionUtil.GetProjectRevision(_currentRevision), TB_PDFLocation.Text, _exportFile, _sections, TB_SectionsEndProject.Text, sender as System.ComponentModel.BackgroundWorker, workArgument);
+                    _extractionResult = (_extractor as ProjectExtractorBase).ExtractProjects(ProjectRevisionUtil.GetProjectRevision(_currentRevision), TB_PDFLocation.Text, _exportFile, _sections, TB_SectionsEndProject.Text, CB_ProjectsToSeparateFiles.Checked, sender as System.ComponentModel.BackgroundWorker, workArgument);
                     break;
 #if DEBUG
                 case WorkerStates.EXTRACT_DEBUG:
@@ -778,7 +819,7 @@ namespace ProjectExtractor
                     break;
 #endif
                 case WorkerStates.EXTRACT_BATCH_PROJECT:
-                    _extractionResult = (_extractor as ProjectExtractorBase).BatchExtractProjects(ProjectRevisionUtil.GetProjectRevision(_currentRevision), _batchFolder, TB_ExtractLocation.Text, _extractor.FileExtension, _sections, TB_SectionsEndProject.Text, CB_SkipExisting.Checked, false, sender as System.ComponentModel.BackgroundWorker, workArgument);
+                    _extractionResult = (_extractor as ProjectExtractorBase).BatchExtractProjects(ProjectRevisionUtil.GetProjectRevision(_currentRevision), _batchFolder, TB_ExtractLocation.Text, _extractor.FileExtension, _sections, TB_SectionsEndProject.Text, CB_SkipExisting.Checked, CB_ProjectsToSeparateFiles.Checked, sender as System.ComponentModel.BackgroundWorker, workArgument);
                     break;
                 case WorkerStates.EXTRACT_BATCH_DETAIL:
                     _extractionResult = (_extractor as DetailExtractorBase).BatchExtractDetails(ProjectRevisionUtil.GetProjectRevision(_currentRevision), _batchFolder, TB_ExtractLocation.Text, _keywords, TB_Chapter.Text, TB_StopChapter.Text, TB_TotalHours.Text, CB_TotalHoursEnabled.Checked, CB_WriteKeywordsToFile.Checked, CB_WritePhaseDateOnly.Checked, CB_SkipExisting.Checked, CB_BarBeforeUpdate.Checked, sender as System.ComponentModel.BackgroundWorker, workArgument);
@@ -868,11 +909,11 @@ namespace ProjectExtractor
             }
 
             //open the created file in its default application
-            if (_extractionResult == ExitCode.NONE || _extractionResult == ExitCode.FLAWED)//none error or flawed error
+            if (CB_ProjectsToSeparateFiles.Checked == false && (_extractionResult == ExitCode.NONE || _extractionResult == ExitCode.FLAWED))//none error or flawed error
             {
                 OpenFile(_exportFile);
             }
-            else if (_extractionResult == ExitCode.BATCH)
+            else if (_extractionResult == ExitCode.BATCH || CB_ProjectsToSeparateFiles.Checked == true)
             {
                 OpenFolder(TB_ExtractLocation.Text);
             }
@@ -1279,5 +1320,9 @@ namespace ProjectExtractor
         }
 
         #endregion
+
+
+
+
     }
 }

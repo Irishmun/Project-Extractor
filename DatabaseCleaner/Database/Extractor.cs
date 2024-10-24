@@ -70,7 +70,7 @@ namespace DatabaseCleaner.Database
                             }
                             columnValues.Add(table.Rows[i][col]?.ToString());
                         }
-                        filename = UtilMethods.CreateUniqueFileName(_sections[s].Format(columnValues.ToArray()), path);
+                        filename = FileUtil.CreateUniqueFileName(_sections[s].Format(columnValues.ToArray()), path);
                         continue;
                     }
                     foreach (string col in _sections[s].Columns)
@@ -118,7 +118,7 @@ namespace DatabaseCleaner.Database
             }
             if (File.Exists(Path.Combine(path, filename)))
             {//should've been fine but it isn't
-                filename = UtilMethods.CreateUniqueFileName(filename, path);
+                filename = FileUtil.CreateUniqueFileName(filename, path);
             }
 #if DEBUG
             Debug.WriteLine("Writing content to file: " + Path.Combine(path, filename));
