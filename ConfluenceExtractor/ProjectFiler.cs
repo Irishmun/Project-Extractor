@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ProjectUtility;
+using System;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -104,7 +105,7 @@ namespace ConfluenceExtractor
 
         private string CreateFolderIfNotExist(string path, string folderName)
         {
-            string fullPath = Util.CreateUniqueFileName(folderName, path);
+            string fullPath = FileUtil.CreateUniqueFileName(folderName, path);
             if (Directory.Exists(fullPath) == false)
             {
                 Directory.CreateDirectory(fullPath);

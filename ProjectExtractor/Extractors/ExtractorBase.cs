@@ -74,10 +74,16 @@ namespace ProjectExtractor.Extractors
                     string line = lines[i];
                     RemovePageNumberFromString(ref line, pageRegex);
                     Match match = Regex.Match(line, @"^(Project )([^:]{1,25})(\s*[:]).*");
-                    if (!string.IsNullOrWhiteSpace(match.Value))
+                    if (match.Success)
                     {//if a project title has been found, break out of loop
                         index = i;
                         res = match.Value;
+                        break;
+                    }
+                    else if (lines[i].StartsWith("Projectnummer ") && lines[i + 1].StartsWith("Projecttitel "))
+                    {
+                        index = i;//project number is on the line after "projecttitel", the title is on the line after that
+                        res = $"{lines[index].Substring("Projectnummer ".Length).Trim()} - {lines[index + 1].Substring("Projecttitel ".Length).Trim()}";
                         break;
                     }
                 }
