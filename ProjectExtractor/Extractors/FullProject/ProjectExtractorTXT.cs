@@ -46,7 +46,7 @@ namespace ProjectExtractor.Extractors.FullProject
             else
             {
                 ExtractRevisionTwoToString(file, Sections, EndProject, Worker, out ExitCode returnCode, workerState, true, extractPath);
-                return ExitCode.NONE;
+                return returnCode;
             }
         }
         protected override ExitCode ExtractRevisionThreeProject(string file, string extractPath, string[] Sections, string EndProject, bool extractToSeparateFiles, BackgroundWorker Worker, WorkerStates workerState)
@@ -210,9 +210,10 @@ namespace ProjectExtractor.Extractors.FullProject
                 }
                 else
                 {
-                    string companyName = Path.GetFileNameWithoutExtension(extractPath).TrimExtractionData(true);
+                    string companyName = Path.GetFileNameWithoutExtension(file).TrimExtractionData(true);
                     string projTitle = RevTwoTryGetProjectTitle(Lines, ProjectStartIndexes[project], EndProject, out _);
-                    string fileName = Path.GetFileNameWithoutExtension(extractPath).Replace(companyName + " - Projecten", projTitle).Trim();
+                    string fileName = Path.GetFileNameWithoutExtension(file).Replace(companyName, projTitle).Trim();
+                    fileName = fileName.Replace(" - Projecten", string.Empty).Trim();
                     string path = FileUtil.CreateUniqueFileName(fileName + ".txt", Path.GetDirectoryName(extractPath));
                     int secondLineIndex = str.IndexOf(Environment.NewLine) + Environment.NewLine.Length;
                     str.Insert(secondLineIndex, $"Bedrijf: {companyName}{Environment.NewLine}");

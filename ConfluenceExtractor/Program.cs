@@ -10,6 +10,7 @@ namespace ConfluenceExtractor
             string outputDir = Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "Extracted Projects"); ;
             Extractor extract = null;
             ProjectFiler filer = null;
+            Console.Clear();
             CreateDirIfNeeded();
             ChooseAction();
 
@@ -31,14 +32,16 @@ namespace ConfluenceExtractor
                     case '3'://extract next after line
                         ExtractAtIndex();
                         break;
-                    case '4'://quit
-                        return;
+                    case '4'://move projects to company folder
+                        MoveProjectsToCompanyFolder();
+                        break;
+#if DEBUG
                     case '5'://create debug project
                         CreateDebug();
                         break;
-                    case '6'://move projects to company folder
-                        MoveProjectsToCompanyFolder();
-                        break;
+#endif
+                    case '9'://quit
+                        return;
                     default:
                         Console.WriteLine($"Command [{command.KeyChar}] not recognized...");
                         Console.WriteLine("=============================");
@@ -121,7 +124,7 @@ namespace ConfluenceExtractor
             {
                 if (filer == null)
                 { filer = new ProjectFiler(); }
-                ClearAndWrite("[6]: Move projects to their company's folder.");
+                ClearAndWrite("[4]: Move projects to their company's folder.");
                 if (filer.FileProjectsByCompany())
                 { Console.WriteLine("Succesfully filed projects..."); }
                 else
@@ -137,10 +140,12 @@ namespace ConfluenceExtractor
                 return "[1]: Extract everything." +
                        "\n[2]: Extract only first found project." +
                        "\n[3]: Extract next project after line." +
-                       "\n[4]: Quit program." +
-                       "\n[6]: Move projects to their company's folder." +
+                       "\n[4]: Move projects to their company's folder." +
+#if DEBUG
                        "\n[DEBUG]" +
-                       "\n[5]: Create Debug project.";
+                       "\n[5]: Create Debug project." +
+#endif
+                       "\n[9]: Quit program.";
             }
 
             void ClearAndWrite(string text)

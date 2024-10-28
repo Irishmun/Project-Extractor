@@ -21,7 +21,7 @@ namespace ConfluenceExtractor
 
             string[] files = Directory.GetFiles(path, "*.txt");
 
-            Console.WriteLine("[1]PDF projects\n[2]confluence/access projects\n[3]both");
+            Console.WriteLine("[1]Multiple projects in a single file\n[2]single project per file\n[3]both");
             ConsoleKeyInfo command = Console.ReadKey();
             Console.WriteLine();
             switch (command.KeyChar)
