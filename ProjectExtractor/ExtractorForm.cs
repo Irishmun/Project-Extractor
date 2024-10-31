@@ -44,6 +44,7 @@ namespace ProjectExtractor
             _sectionsFolder = new SectionsFolder(Path.Combine(AppContext.BaseDirectory));
             InitializeComponent();
             InitializeAbout();
+            SC_DataGridPreview.Panel2Collapsed = true;
             this.Text = $"{this.Text} - V{AssemblyVersion()}";
 #if !DEBUG
             BT_DebugExtract.Visible = false;
@@ -421,8 +422,21 @@ namespace ProjectExtractor
         #region DataGridView Events
         private void DGV_DatabaseResults_CellContentDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
+
             DataGridViewCell cell = DGV_DatabaseResults.Rows[e.RowIndex].Cells[e.ColumnIndex];
             TryOpenFileByTag(cell.OwningRow.Tag);
+        }
+        private void DGV_DatabaseResults_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            try
+            {
+                DataGridViewCell cell = DGV_DatabaseResults.Rows[e.RowIndex].Cells[e.ColumnIndex];
+                DGV_DatabaseResults.FirstDisplayedCell = cell;
+                RTB_DataGridPreview.Text = File.ReadAllText(cell.OwningRow.Tag.ToString());
+                SC_DataGridPreview.Panel2Collapsed = false;
+            }
+            catch (Exception)
+            { return; }
         }
         #endregion
         #region TextBox events       
@@ -441,7 +455,27 @@ namespace ProjectExtractor
         #region TreeView Events
         private void TV_Database_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
         {
+            /*string path = e.Node.Tag.ToString();
+            FileAttributes attr = File.GetAttributes(path);
+            if ((attr & FileAttributes.Directory) != FileAttributes.Directory)
+            {
+                path = Path.GetDirectoryName(path);
+            }*/
             TryOpenFileByTag(e.Node.Tag);
+        }
+        private void TV_Database_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
+        {
+            string path = e.Node.Tag.ToString();
+            FileAttributes attr = File.GetAttributes(path);
+            if ((attr & FileAttributes.Directory) == FileAttributes.Directory)
+            { return; }//is directory
+            try
+            {
+                RTB_DataGridPreview.Text = File.ReadAllText(path);
+                SC_DataGridPreview.Panel2Collapsed = false;
+            }
+            catch (Exception)
+            { return; }
         }
         #endregion
         #region Button events
@@ -503,6 +537,11 @@ namespace ProjectExtractor
                 SetDatabaseControlsEnabled(true);
                 BT_CancelSearch.Enabled = false;
             }
+        }
+        private void BT_CloseDataGridPreview_Click(object sender, EventArgs e)
+        {
+            SC_DataGridPreview.Panel2Collapsed = true;
+            RTB_DataGridPreview.Text = string.Empty;
         }
         #endregion
         #endregion
@@ -1320,7 +1359,6 @@ namespace ProjectExtractor
         }
 
         #endregion
-
 
 
 
