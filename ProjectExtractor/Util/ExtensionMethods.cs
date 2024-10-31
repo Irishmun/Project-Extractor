@@ -3,6 +3,7 @@ using ProjectExtractor.Extractors;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -226,6 +227,21 @@ namespace ProjectExtractor.Util
             }
 
             return -1;
+        }
+        /// <summary>Returns whether string contains all given substrings</summary>
+        /// <param name="comparisonType">One of the enumeration values that specifies the rules for the search</param>
+        /// <param name="values">substrings to search for</param>
+        /// <returns>true if string contains all given substrings</returns>
+        public static bool ContainsAll(this string val, StringComparison comparisonType, params string[] values)
+        {
+            return values.All(x => val.IndexOf(x, comparisonType) > -1);
+        }
+        /// <summary>Returns whether string contains all given substrings</summary>
+        /// <param name="values">substrings to search for</param>
+        /// <returns>true if string contains all given substrings</returns>
+        public static bool ContainsAll(this string val, params string[] values)
+        {
+            return val.ContainsAll(StringComparison.Ordinal, values);
         }
     }
 }
