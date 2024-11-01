@@ -142,7 +142,14 @@ namespace ProjectExtractor.Search
                 //check if query is in project description
                 if (_projects[i].Content != null)
                 {
-                    lines = _projects[i].Content.SplitNewLines(StringSplitOptions.RemoveEmptyEntries);
+                    if (isMatch(_projects[i].Content, _projects[i], ref grid))
+                    {
+                        foundInContent = true;
+                        continue;
+                    }
+                    if (foundInContent == true)
+                    { continue; }
+                    /*lines = _projects[i].Content.SplitNewLines(StringSplitOptions.RemoveEmptyEntries);
                     for (int j = 0; j < lines.Length; j++)
                     {
                         //if (matches.Count > 0)
@@ -153,7 +160,7 @@ namespace ProjectExtractor.Search
                         }
                     }
                     if (foundInContent == true)
-                    { continue; }
+                    { continue; }*/
                 }
                 //otherwise, check if project name is correct
                 if (isMatch(_projects[i].Id, _projects[i], ref grid))
@@ -180,7 +187,7 @@ namespace ProjectExtractor.Search
             }
 
             bool isMatch(string text, ProjectData project, ref DataGridView grid)
-            {
+              {
                 if (exact == true)// && text.Contains(query, StringComparison.OrdinalIgnoreCase) == true)
                 {
                     if (moreThanOne == false && text.IndexOf(query, StringComparison.OrdinalIgnoreCase) < 0)
@@ -262,17 +269,8 @@ namespace ProjectExtractor.Search
                     currentProject.Path = path;
                 }
             }
-#if DEBUG
-            //Debug.WriteLine("found " + projects.Count + " projects in text.");
-#endif
             if (projects.Count == 0)
             {
-#if DEBUG            
-                //Debug.WriteLine("check file for errors");
-                //Debug.WriteLine(path);
-#endif
-                //add to misc documents to still allow for searching
-                //_miscDocuments.Add(path, text);
                 ProjectData.MiscTextToProject(path, text.SplitNewLines(StringSplitOptions.None), out currentProject);
                 projects.Add(currentProject);
                 _indexedProjects += 1;
