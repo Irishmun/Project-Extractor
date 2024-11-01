@@ -422,7 +422,6 @@ namespace ProjectExtractor
         #region DataGridView Events
         private void DGV_DatabaseResults_CellContentDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
-
             DataGridViewCell cell = DGV_DatabaseResults.Rows[e.RowIndex].Cells[e.ColumnIndex];
             TryOpenFileByTag(cell.OwningRow.Tag);
         }
@@ -431,7 +430,7 @@ namespace ProjectExtractor
             try
             {
                 DataGridViewCell cell = DGV_DatabaseResults.Rows[e.RowIndex].Cells[e.ColumnIndex];
-                DGV_DatabaseResults.FirstDisplayedCell = cell;
+                //DGV_DatabaseResults.FirstDisplayedCell = cell;
                 RTB_DataGridPreview.Text = File.ReadAllText(cell.OwningRow.Tag.ToString());
                 SC_DataGridPreview.Panel2Collapsed = false;
             }

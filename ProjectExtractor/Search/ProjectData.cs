@@ -1,10 +1,8 @@
 ﻿using ProjectExtractor.Util;
 using System;
 using System.Collections.Generic;
-#if DEBUG
-using System.Diagnostics;
-#endif
-using System.Text;
+using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 
@@ -48,7 +46,7 @@ namespace ProjectExtractor.Search
 
             //assume project id is always at startindex
             project.Id = lines[startIndex];
-            for (int i = startIndex + 1; i < endIndex; i++)
+            /*for (int i = startIndex + 1; i < endIndex; i++)
             {
                 if (lines[i].StartsWith("Omschrijving:"))
                 {
@@ -60,7 +58,9 @@ namespace ProjectExtractor.Search
                     project.Content = str.ToString();
                     break;
                 }
-            }
+            }*/
+            project.Content = string.Join(Environment.NewLine, lines, 1, lines.Length - 2).Trim();
+            //project.Content = File.ReadAllText(path);
             //end of project found, check if a project was found
             if (string.IsNullOrWhiteSpace(project._id))
             {//no project found :(
@@ -150,7 +150,7 @@ namespace ProjectExtractor.Search
                 }
                 if (lines[i].StartsWith("omschrijving:", StringComparison.OrdinalIgnoreCase))
                 {
-                    project.Content = string.Join(Environment.NewLine, lines, compIndex, lines.Length - (compIndex)).Trim();
+                    project.Content = string.Join(Environment.NewLine, lines, 0, lines.Length - 1).Trim();
                     break;
                 }
             }
