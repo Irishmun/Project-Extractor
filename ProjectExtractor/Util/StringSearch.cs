@@ -40,7 +40,6 @@ namespace ProjectExtractor.Util
 
             return res;
         }
-
         /// <summary>Matches string against given regex</summary>
         /// <param name="regex">expression to match against</param>
         /// <param name="matchingString">value of the matched regex</param>
@@ -49,13 +48,11 @@ namespace ProjectExtractor.Util
             match = Regex.Match(val, regex);
             return match.Success;
         }
-
         public static string CreateSearchSentenceRegex(string query, bool exactMatch = false)
         {
-            return "[^.!?;]*(" + CreateSearchRegex(query,exactMatch)+ ")[^.!?;]*";
+            return "[^.!?;]*(" + CreateSearchRegex(query, exactMatch) + ")[^.!?;]*";
         }
-
-        public static string CreateSearchRegex(string query, bool exactMatch =false) 
+        public static string CreateSearchRegex(string query, bool exactMatch = false)
         {
             StringBuilder regex = new StringBuilder();
             if (exactMatch == false)
@@ -71,7 +68,6 @@ namespace ProjectExtractor.Util
             }
             return regex.ToString();
         }
-
         private static int LevenshteinDistance(string startWord, string targetWord)
         {
             //exit if words are the same, or one is empty.
@@ -99,5 +95,6 @@ namespace ProjectExtractor.Util
             //return cost
             return distance[startWord.Length, targetWord.Length];
         }
+        
     }
 }

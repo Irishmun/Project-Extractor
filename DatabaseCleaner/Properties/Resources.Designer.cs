@@ -62,12 +62,12 @@ namespace DatabaseCleaner.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to SELECT
-        ///	COUNT(*) AS  duplicates ,[TITLE],[Period],[CompanyName],[PROJECT],[STARTDATE],[ENDDATE],[HOURS],[TYPE],[SOFTWARE],[DESC],[TECHNEW],[TECH],[PROB],[OPLO],[METH],[ZELF],[PRIN],[Opmerkingen],[Vragen Senter],[Afgewezen]
+        ///	COUNT(*) AS  duplicates ,[TITLE],[Period],[CompanyName],[PROJECT],[STARTDATE],[ENDDATE],[HOURS],[TYPE],[SOFTWARE],[DESC],[TECHNEW],[TECH],[PROB],[OPLO],[METH],[ZELF],[PRIN],[Opmerkingen],[Vragen Senter],[Afgewezen],[ONTW],[FASE],[TOEL],[FUNC],[TOEP],[DOEL],[KENN],[ID]
         ///FROM ((WBSO_P  
         ///	INNER JOIN [Periode] ON [WBSO_P].[Periode] = [Periode].[PeriodID])
         ///	INNER JOIN [Customers] ON [WBSO_P].[CustomerID] = [Customers].[CustomerID])
         ///GROUP BY 
-        ///	 [TITLE],[Period],[CompanyName],[STARTDATE],[ENDDATE],[PROJECT],[HOURS],[TYPE],[SOFTWARE],[DESC],[TECHNEW],[TEC [rest of string was truncated]&quot;;.
+        ///	 [TITLE],[Period],[CompanyName],[STARTDATE],[ENDDATE],[PR [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string GetProjects {
             get {
