@@ -1,0 +1,32 @@
+;;keyword|useInDocument|formKey|isNumberedForm|hasDateValue|dateKey
+Aanleiding|false
+- Aanleiding|false
+Beoogde uitkomsten|false
+- Beoogde uitkomsten|false
+Fasering Werkzaamheden|true|Ontwikkeling|true|true|DatumGereed
+Kosten en/of uitgaven per project|false
+Kosten opvoeren bij dit project|false
+Omschrijving kosten|false
+Omschrijving uitgaven|false
+Omschrijving|true|WbsoProjectomschrijving|false|false|
+Onderzoeksvragen|false
+Opzet en uitvoering|false
+Samenwerking?|false
+Specifieke vragen ontwikkeling|false
+Technische nieuwheid programmatuur|false
+Technologiegebied onderzoek|false
+Totale uitgaven|false
+Totatel kosten|false
+Update Project|false
+Wordt er mede programmatuur ontwikkeld?|false
+- Onderzoeksvragen|false
+- Oplossingsrichtingen programmatuur|false
+- Opzet en uitvoering|false
+- Probleemstelling en oplossingsrichting|true|WbsoGekozenOplossingsrichting|false|false|
+- Programmeertalen|false
+- Technische knelpunten|true|WbsoBeschrijvingTechnischProbleem|false|false|
+- Technische nieuwheid|false
+- Technische knelpunten programmatuur|true|WbsoBeschrijvingTechnischProbleem|false|false|
+- Technische nieuwheid programmatuur|false
+- Technische oplossingsrichtingen|true|WbsoGekozenOplossingsrichting|false|false|
+- Technologiegebied onderzoek|false
