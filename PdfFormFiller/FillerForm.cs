@@ -54,18 +54,24 @@ namespace PdfFormFiller
                 {
                     res = fd.FileName;
                 }
+                else
+                { return; }
             }
             //check if it has changed, else leave it as what it is.
             res = string.IsNullOrWhiteSpace(res) ? (string)CBB_PdfLocation.SelectedItem : res;//TB_PDFLocation.Text : res;
+            CBB_PdfLocation.DataSource = null;
             if (ContainsPath(res, out TemplatePath p))
             {//go to selected item
-                CBB_PdfLocation.SelectedIndex = _templatePaths.IndexOf(p);
+                CBB_PdfLocation.DataSource = _templatePaths;
+                CBB_PdfLocation.SelectedItem = p;
             }
             else
             {//add new item and select it
 
-                _templatePaths.Add(new TemplatePath(res));
-                CBB_PdfLocation.SelectedIndex = CBB_PdfLocation.Items.Count - 1;
+                TemplatePath template = new TemplatePath(res);
+                _templatePaths.Add(template);
+                CBB_PdfLocation.DataSource = _templatePaths;
+                CBB_PdfLocation.SelectedItem = template;
                 StringBuilder str = new StringBuilder();
                 foreach (TemplatePath item in _templatePaths)
                 {
@@ -173,13 +179,14 @@ namespace PdfFormFiller
         private void FillPdfHistory()
         {
             _templatePaths = new List<TemplatePath>();
-            string[] paths = Settings.Instance.TemplatePath1.Split('|');
+            string[] paths = Settings.Instance.TemplatePath1.Split('|', StringSplitOptions.RemoveEmptyEntries);
             for (int i = 0; i < paths.Length; i++)
             {
                 _templatePaths.Add(new TemplatePath(paths[i]));
             }
             CBB_PdfLocation.DataSource = _templatePaths;
-            CBB_PdfLocation.SelectedIndex = 0;
+            if (_templatePaths.Count > 0)
+            { CBB_PdfLocation.SelectedItem = _templatePaths[0]; }
         }
 
         private bool ContainsPath(string path, out TemplatePath p)

@@ -179,7 +179,6 @@
             CBB_PdfLocation.Name = "CBB_PdfLocation";
             CBB_PdfLocation.Size = new Size(485, 23);
             CBB_PdfLocation.TabIndex = 111;
-            CBB_PdfLocation.Text = "[Path to PDF file to use as template]";
             // 
             // FillerForm
             // 
