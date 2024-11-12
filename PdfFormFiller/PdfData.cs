@@ -10,6 +10,8 @@ namespace PdfFormFiller
 {
     internal class PdfData
     {
+        //TODO: add project name and number.
+        //TODO: fix missing keywords (belangrijke fields.txt)
         const string KEYWORD_FILE = @"Resources\Keywords.psv";
         static readonly string EXE_PATH = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
         static readonly string OUTPUT_DIRECTORY = Path.Combine(EXE_PATH, "Filled");
@@ -144,6 +146,7 @@ namespace PdfFormFiller
 #if DEBUG
                                 Debug.WriteLine($"filling \"{key.FormKey + num.ToString()}\" with: {lines[i]}");
 #endif
+                                
                                 form.GetField(key.FormKey).SetValue(lines[i].Trim());
                             }
                             i += 1;
@@ -166,7 +169,8 @@ namespace PdfFormFiller
 #if DEBUG
                         Debug.WriteLine($"filling \"{key.FormKey}\" with: {str.ToString().Trim()}");
 #endif
-                        form.GetField(key.FormKey).SetValue(str.ToString().Trim());
+                        string prevContent = form.GetField(key.FormKey).GetValue()?.ToString().Trim();
+                        form.GetField(key.FormKey).SetValue(prevContent + "\n" + str.ToString().Trim());
                         continue;
                     }
                 }

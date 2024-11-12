@@ -29,7 +29,6 @@
         private void InitializeComponent()
         {
             label1 = new Label();
-            TB_PDFLocation = new TextBox();
             BT_BrowsePDF = new Button();
             LB_FormContents = new ListBox();
             BT_CopyList = new Button();
@@ -40,6 +39,7 @@
             RTB_ProjectText = new RichTextBox();
             BT_FillForm = new Button();
             BT_GetPdfFields = new Button();
+            CBB_PdfLocation = new ComboBox();
             ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
             splitContainer1.Panel1.SuspendLayout();
             splitContainer1.Panel2.SuspendLayout();
@@ -54,15 +54,6 @@
             label1.Size = new Size(79, 15);
             label1.TabIndex = 102;
             label1.Text = "Template File:";
-            // 
-            // TB_PDFLocation
-            // 
-            TB_PDFLocation.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            TB_PDFLocation.Location = new Point(97, 13);
-            TB_PDFLocation.Name = "TB_PDFLocation";
-            TB_PDFLocation.PlaceholderText = "Path to PDF file to use as template";
-            TB_PDFLocation.Size = new Size(485, 23);
-            TB_PDFLocation.TabIndex = 101;
             // 
             // BT_BrowsePDF
             // 
@@ -179,11 +170,23 @@
             BT_GetPdfFields.Visible = false;
             BT_GetPdfFields.Click += BT_GetPdfFields_Click;
             // 
+            // CBB_PdfLocation
+            // 
+            CBB_PdfLocation.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            CBB_PdfLocation.Cursor = Cursors.IBeam;
+            CBB_PdfLocation.FormattingEnabled = true;
+            CBB_PdfLocation.Location = new Point(97, 13);
+            CBB_PdfLocation.Name = "CBB_PdfLocation";
+            CBB_PdfLocation.Size = new Size(485, 23);
+            CBB_PdfLocation.TabIndex = 111;
+            CBB_PdfLocation.Text = "[Path to PDF file to use as template]";
+            // 
             // FillerForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(617, 450);
+            Controls.Add(CBB_PdfLocation);
             Controls.Add(BT_GetPdfFields);
             Controls.Add(BT_FillForm);
             Controls.Add(splitContainer1);
@@ -192,7 +195,6 @@
             Controls.Add(BT_BrowseProjectFile);
             Controls.Add(BT_CopyList);
             Controls.Add(label1);
-            Controls.Add(TB_PDFLocation);
             Controls.Add(BT_BrowsePDF);
             Name = "FillerForm";
             Text = "Form Filler";
@@ -207,7 +209,6 @@
         #endregion
 
         private Label label1;
-        private TextBox TB_PDFLocation;
         private Button BT_BrowsePDF;
         private ListBox LB_FormContents;
         private Button BT_CopyList;
@@ -218,5 +219,6 @@
         private RichTextBox RTB_ProjectText;
         private Button BT_FillForm;
         private Button BT_GetPdfFields;
+        private ComboBox CBB_PdfLocation;
     }
 }

@@ -1,14 +1,14 @@
-;;keyword|useInDocument|formKey|isNumberedForm|hasDateValue|dateKey
+;;keyword|useInDocument|formKey|priority|isNumberedForm|hasDateValue|dateKey
 Aanleiding|false
 - Aanleiding|false
 Beoogde uitkomsten|false
 - Beoogde uitkomsten|false
-Fasering Werkzaamheden|true|Ontwikkeling|true|true|DatumGereed
+Fasering Werkzaamheden|true|Ontwikkeling|1|true|true|DatumGereed
 Kosten en/of uitgaven per project|false
 Kosten opvoeren bij dit project|false
 Omschrijving kosten|false
 Omschrijving uitgaven|false
-Omschrijving|true|WbsoProjectomschrijving|false|false|
+Omschrijving|true|WbsoProjectomschrijving|1|false|false|
 Onderzoeksvragen|false
 Opzet en uitvoering|false
 Samenwerking?|false
@@ -22,11 +22,11 @@ Wordt er mede programmatuur ontwikkeld?|false
 - Onderzoeksvragen|false
 - Oplossingsrichtingen programmatuur|false
 - Opzet en uitvoering|false
-- Probleemstelling en oplossingsrichting|true|WbsoGekozenOplossingsrichting|false|false|
+- Probleemstelling en oplossingsrichting|true|WbsoGekozenOplossingsrichting|1|false|false|
 - Programmeertalen|false
-- Technische knelpunten|true|WbsoBeschrijvingTechnischProbleem|false|false|
+- Technische knelpunten|true|WbsoBeschrijvingTechnischProbleem|1|false|false|
 - Technische nieuwheid|false
-- Technische knelpunten programmatuur|true|WbsoBeschrijvingTechnischProbleem|false|false|
+- Technische knelpunten programmatuur|true|WbsoBeschrijvingTechnischProbleem|1|false|false|
 - Technische nieuwheid programmatuur|false
-- Technische oplossingsrichtingen|true|WbsoGekozenOplossingsrichting|false|false|
+- Technische oplossingsrichtingen|true|WbsoGekozenOplossingsrichting|1|false|false|
 - Technologiegebied onderzoek|false

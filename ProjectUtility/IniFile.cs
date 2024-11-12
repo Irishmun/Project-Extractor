@@ -61,8 +61,8 @@ namespace ProjectUtility
         /// <returns>value associated with the given key in section. if it doesn't exist, returns an empty string</returns>
         public string Read(string Key, string Section = null)
         {
-            StringBuilder RetVal = new StringBuilder(255);
-            GetPrivateProfileString(Section ?? EXE, Key, "", RetVal, 255, _path);
+            StringBuilder RetVal = new StringBuilder(4095);
+            GetPrivateProfileString(Section ?? EXE, Key, "", RetVal, 4095, _path);
             return RetVal.ToString();
         }
         /// <summary>Return the value from the given key in section, if it exists.</summary>
