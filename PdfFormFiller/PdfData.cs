@@ -23,48 +23,8 @@ namespace PdfFormFiller
         {
             ParseKeywordFile();
         }
-
         /// <summary>Parses Project Keyword file</summary>
         /// <param name="path">path to file</param>
-        internal void ParseKeywordFile()
-        {
-            string path = Path.Combine(EXE_PATH, KEYWORD_FILE);
-            if (File.Exists(path) == false)
-            { return; }
-            string[] lines = File.ReadAllLines(path);
-            List<ProjectKeyword> keywords = new List<ProjectKeyword>();
-
-            for (int i = 0; i < lines.Length; i++)
-            {
-                if (lines[i].StartsWith(";;"))//comment
-                { continue; }
-                if (ProjectKeyword.TryParse(lines[i], out ProjectKeyword proj))
-                {
-                    keywords.Add(proj);
-                }
-            }
-            _projectKeywords = keywords.ToArray();
-        }
-        internal IDictionary<string, iText.Forms.Fields.PdfFormField> ReadFormFieldsDictionary(string path)
-        {
-            try
-            {
-                PdfDocument doc = OpenDoc(path, out PdfAcroForm form, out _, withWriter: false);
-                if (doc == null || form == null)
-                { return null; }
-                IDictionary<string, iText.Forms.Fields.PdfFormField> fields = form.GetFormFields();
-                doc.Close();
-                return fields;
-            }
-            catch (Exception)
-            { }
-            return null;
-        }
-        internal string[] ReadFormFields(string path)
-        {
-            return ReadFormFieldsDictionary(path).Keys.ToArray();
-        }
-
         public bool TryFillForm(string pdfPath, string projectPath, out string outputPath)
         {
             outputPath = string.Empty;
@@ -89,6 +49,12 @@ namespace PdfFormFiller
             if (doc == null)
             { return false; }
             string[] lines = File.ReadAllLines(projectPath);
+            string projectName = Path.GetFileNameWithoutExtension(projectPath).Replace("Aanvraag WBSO ", "").Trim();
+            if (TryGetProjectNumber(projectName, out string projectNum, out int index))
+            {
+                form.GetField("Projectnummer").SetValue(projectNum);
+                form.GetField("Projectnaam").SetValue(projectName.Substring(index));
+            }
             //TODO: fill form
             ProjectKeyword currentKey;
             for (int i = 0; i < lines.Length; i++)
@@ -146,7 +112,7 @@ namespace PdfFormFiller
 #if DEBUG
                                 Debug.WriteLine($"filling \"{key.FormKey + num.ToString()}\" with: {lines[i]}");
 #endif
-                                
+
                                 form.GetField(key.FormKey).SetValue(lines[i].Trim());
                             }
                             i += 1;
@@ -169,8 +135,12 @@ namespace PdfFormFiller
 #if DEBUG
                         Debug.WriteLine($"filling \"{key.FormKey}\" with: {str.ToString().Trim()}");
 #endif
-                        string prevContent = form.GetField(key.FormKey).GetValue()?.ToString().Trim();
-                        form.GetField(key.FormKey).SetValue(prevContent + "\n" + str.ToString().Trim());
+
+                        if (HasField(form, key.FormKey))
+                        {
+                            string prevContent = form.GetField(key.FormKey).GetValueAsString().Trim();
+                            form.GetField(key.FormKey).SetValue(prevContent + " " + str.ToString().Trim());
+                        }
                         continue;
                     }
                 }
@@ -180,17 +150,41 @@ namespace PdfFormFiller
 
             bool startsWithKeyword(string line, out ProjectKeyword key)
             {
-                key = _projectKeywords[0];
+                key = new ProjectKeyword();
+                bool found = false;
                 foreach (ProjectKeyword item in _projectKeywords)
                 {
                     if (line.StartsWith(item.Keyword, StringComparison.OrdinalIgnoreCase))
                     {
-                        key = item;
-                        return true;
+                        found = true;
+                        if (item.Keyword.Length > key.Keyword.Length)
+                        {
+                            key = item;
+                        }
                     }
                 }
+                if (found)
+                { return true; }
                 return false;
             }
+        }
+        public bool FillFormsWithNames(string pdfPath, out string outputPath)
+        {
+            outputPath = string.Empty;
+            if (File.Exists(pdfPath) == false)
+            { return false; }
+            string[] fields = ReadFormFields(pdfPath);
+            PdfDocument doc = OpenDoc(pdfPath, out PdfAcroForm form, out outputPath, Path.GetFileNameWithoutExtension(pdfPath) + "-fieldnames");
+            if (doc == null)
+            { return false; }
+            foreach (string field in fields)
+            {
+                form.GetField(field).SetValue(field);
+                //LB_FormContents.Items.Add($"{field.Key}   |   {field.Value.GetValueAsString()}");
+            }
+            doc.Close();
+            return true;
+
         }
         public static void CreateOutputDir()
         {
@@ -200,6 +194,57 @@ namespace PdfFormFiller
             }
         }
 
+        internal void ParseKeywordFile()
+        {
+            string path = Path.Combine(EXE_PATH, KEYWORD_FILE);
+            if (File.Exists(path) == false)
+            { return; }
+            string[] lines = File.ReadAllLines(path);
+            List<ProjectKeyword> keywords = new List<ProjectKeyword>();
+
+            for (int i = 0; i < lines.Length; i++)
+            {
+                if (lines[i].StartsWith(";;"))//comment
+                { continue; }
+                if (ProjectKeyword.TryParse(lines[i], out ProjectKeyword proj))
+                {
+                    keywords.Add(proj);
+                }
+            }
+            _projectKeywords = keywords.ToArray();
+        }
+        internal IDictionary<string, iText.Forms.Fields.PdfFormField> ReadFormFieldsDictionary(string path)
+        {
+            try
+            {
+                PdfDocument doc = OpenDoc(path, out PdfAcroForm form, out _, withWriter: false);
+                if (doc == null || form == null)
+                { return null; }
+                IDictionary<string, iText.Forms.Fields.PdfFormField> fields = form.GetFormFields();
+                doc.Close();
+                return fields;
+            }
+            catch (Exception)
+            { }
+            return null;
+        }
+        internal string[] ReadFormFields(string path)
+        {
+            return ReadFormFieldsDictionary(path).Keys.ToArray();
+        }
+
+        private bool TryGetProjectNumber(string line, out string number, out int longestLength)
+        {
+            longestLength = -1;
+            number = line;
+            Match m = Regex.Match(line, @"^(\d+[ .-])*");//get full length if needed
+            if (!m.Success)
+            { return false; }
+            number = Regex.Match(m.Value, @"^(\d+[ .-]){0,3}").Value;
+            longestLength = m.Length;
+            return true;
+        }
+        private bool HasField(PdfAcroForm form, string field) => form.GetField(field) != null;
         private PdfDocument OpenDoc(string path, out PdfAcroForm form, out string outputPath, string filledName = "filled", bool unethicalReading = true, bool withWriter = true)
         {
             try

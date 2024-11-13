@@ -1,15 +1,12 @@
 
+using ProjectUtility;
+using System.Diagnostics;
 using System.Text;
 
 namespace PdfFormFiller
 {
     public partial class FillerForm : Form
     {
-        /* toevoegen:
-         * -omschrijving
-         * -fasering
-         */
-
         private PdfData _pdf;
         private List<TemplatePath> _templatePaths;
 
@@ -24,6 +21,7 @@ namespace PdfFormFiller
             splitContainer1.Panel1Collapsed = false;
             BT_CopyList.Visible = true;
             BT_GetPdfFields.Visible = true;
+            BT_DebugFillFields.Visible = true;
 #endif
 
         }
@@ -80,7 +78,6 @@ namespace PdfFormFiller
                 Settings.Instance.TemplatePath1 = str.ToString().TrimEnd('|');
             }
         }
-
         private void BT_BrowseProjectFile_Click(object sender, EventArgs e)
         {
             string res = string.Empty;
@@ -106,8 +103,6 @@ namespace PdfFormFiller
             TB_ProjectLocation.Text = res;
             Settings.Instance.ProjectPath = res;
         }
-        #endregion
-
         private void BT_CopyList_Click(object sender, EventArgs e)
         {
             if (LB_FormContents.Items.Count == 0)
@@ -127,7 +122,6 @@ namespace PdfFormFiller
             Clipboard.SetText(str.ToString());
             MessageBox.Show("Copied listbox");
         }
-
         private void BT_FillForm_Click(object sender, EventArgs e)
         {
             if (PdfAndProjectEmpty() == true)
@@ -146,23 +140,25 @@ namespace PdfFormFiller
                 MessageBox.Show("Couldn't fill form...\nTry closing the template file if it's open.");
             }
         }
+        private void BT_DebugFillFields_Click(object sender, EventArgs e)
+        {
+            if (_pdf == null)
+            { _pdf = new PdfData(); }
+            if (_pdf.FillFormsWithNames(((TemplatePath)CBB_PdfLocation.SelectedItem).FilePath, out string output))
+            {
+                SelectFileInExplorer(output);
+            }
+            else
+            {
+                MessageBox.Show("Couldn't fill form...\nTry closing the template file if it's open.");
+            }
+        }
+        #endregion
 
         private bool PdfAndProjectEmpty()
         {
             return string.IsNullOrWhiteSpace(((TemplatePath)CBB_PdfLocation.SelectedItem).FilePath) && string.IsNullOrWhiteSpace(TB_ProjectLocation.Text);
         }
-
-        private void SelectFileInExplorer(string path)
-        {
-            if (!File.Exists(path))
-            {
-                MessageBox.Show("Can't find file at:\n" + path);
-                return;
-            }
-            string argument = $"/select, \"{path}\"";
-            System.Diagnostics.Process.Start("explorer.exe", argument);
-        }
-
         private void BT_GetPdfFields_Click(object sender, EventArgs e)
         {
             if (_pdf == null)
@@ -172,10 +168,9 @@ namespace PdfFormFiller
             LB_FormContents.Items.Clear();
             foreach (KeyValuePair<string, iText.Forms.Fields.PdfFormField> field in fields)
             {
-                LB_FormContents.Items.Add($"{field.Key}   |   {field.Value.GetType()}");
+                LB_FormContents.Items.Add($"{field.Key}   |   {field.Value.GetValueAsString()}");
             }
-        }
-
+        }        
         private void FillPdfHistory()
         {
             _templatePaths = new List<TemplatePath>();
@@ -188,7 +183,6 @@ namespace PdfFormFiller
             if (_templatePaths.Count > 0)
             { CBB_PdfLocation.SelectedItem = _templatePaths[0]; }
         }
-
         private bool ContainsPath(string path, out TemplatePath p)
         {
             p = new TemplatePath(string.Empty);
@@ -205,6 +199,16 @@ namespace PdfFormFiller
             return false;
         }
 
+        private void SelectFileInExplorer(string path)
+        {
+            if (!File.Exists(path))
+            {
+                MessageBox.Show("Can't find file at:\n" + path);
+                return;
+            }
+            string argument = $"/select, \"{path}\"";
+            System.Diagnostics.Process.Start("explorer.exe", argument);
+        }
 
         private struct TemplatePath
         {

@@ -40,6 +40,7 @@
             BT_FillForm = new Button();
             BT_GetPdfFields = new Button();
             CBB_PdfLocation = new ComboBox();
+            BT_DebugFillFields = new Button();
             ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
             splitContainer1.Panel1.SuspendLayout();
             splitContainer1.Panel2.SuspendLayout();
@@ -180,11 +181,24 @@
             CBB_PdfLocation.Size = new Size(485, 23);
             CBB_PdfLocation.TabIndex = 111;
             // 
+            // BT_DebugFillFields
+            // 
+            BT_DebugFillFields.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            BT_DebugFillFields.Location = new Point(449, 386);
+            BT_DebugFillFields.Name = "BT_DebugFillFields";
+            BT_DebugFillFields.Size = new Size(75, 23);
+            BT_DebugFillFields.TabIndex = 112;
+            BT_DebugFillFields.Text = "Fill";
+            BT_DebugFillFields.UseVisualStyleBackColor = true;
+            BT_DebugFillFields.Visible = false;
+            BT_DebugFillFields.Click += BT_DebugFillFields_Click;
+            // 
             // FillerForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(617, 450);
+            Controls.Add(BT_DebugFillFields);
             Controls.Add(CBB_PdfLocation);
             Controls.Add(BT_GetPdfFields);
             Controls.Add(BT_FillForm);
@@ -219,5 +233,6 @@
         private Button BT_FillForm;
         private Button BT_GetPdfFields;
         private ComboBox CBB_PdfLocation;
+        private Button BT_DebugFillFields;
     }
 }
