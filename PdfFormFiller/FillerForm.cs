@@ -1,7 +1,8 @@
-
-using ProjectUtility;
-using System.Diagnostics;
+using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Text;
+using System.Windows.Forms;
 
 namespace PdfFormFiller
 {
@@ -17,13 +18,13 @@ namespace PdfFormFiller
             PdfData.CreateOutputDir();
             SetValuesFromSettings();
             Settings.Instance.IsStarting = false;
-#if DEBUG
-            splitContainer1.Panel1Collapsed = false;
-            BT_CopyList.Visible = true;
-            BT_GetPdfFields.Visible = true;
-            BT_DebugFillFields.Visible = true;
-#endif
-
+            if (Settings.Instance.IsDebugMode)
+            {
+                splitContainer1.Panel1Collapsed = false;
+                BT_CopyList.Visible = true;
+                BT_GetPdfFields.Visible = true;
+                BT_DebugFillFields.Visible = true;
+            }
         }
 
         private void SetValuesFromSettings()
@@ -170,7 +171,7 @@ namespace PdfFormFiller
             {
                 LB_FormContents.Items.Add($"{field.Key}   |   {field.Value.GetValueAsString()}");
             }
-        }        
+        }
         private void FillPdfHistory()
         {
             _templatePaths = new List<TemplatePath>();
@@ -201,6 +202,7 @@ namespace PdfFormFiller
 
         private void SelectFileInExplorer(string path)
         {
+            //TODO: select in open instance of folder if possible
             if (!File.Exists(path))
             {
                 MessageBox.Show("Can't find file at:\n" + path);

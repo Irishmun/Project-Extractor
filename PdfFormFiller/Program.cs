@@ -1,3 +1,7 @@
+using System;
+using System.Linq;
+using System.Windows.Forms;
+
 namespace PdfFormFiller
 {
     internal static class Program
@@ -6,10 +10,21 @@ namespace PdfFormFiller
         ///  The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main()
+        static void Main(string[] args)
         {
-            // To customize application configuration such as set high DPI settings or default font,
-            // see https://aka.ms/applicationconfiguration.
+#if DEBUG
+            Settings.Instance.IsDebugMode = true;
+#else
+            if (args != null && args.Length > 0)
+            {
+                if (args.Contains("--debugmode"))
+                {
+                    Settings.Instance.IsDebugMode = true;
+                }
+            }
+#endif
+            Application.SetHighDpiMode(HighDpiMode.SystemAware);
+            Application.EnableVisualStyles();
             ApplicationConfiguration.Initialize();
             Application.Run(new FillerForm());
         }

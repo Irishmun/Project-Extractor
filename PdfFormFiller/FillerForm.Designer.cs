@@ -1,4 +1,7 @@
-﻿namespace PdfFormFiller
+﻿using System.Drawing;
+using System.Windows.Forms;
+
+namespace PdfFormFiller
 {
     partial class FillerForm
     {
@@ -80,11 +83,11 @@
             // BT_CopyList
             // 
             BT_CopyList.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            BT_CopyList.Location = new Point(530, 415);
+            BT_CopyList.Location = new Point(407, 415);
             BT_CopyList.Name = "BT_CopyList";
-            BT_CopyList.Size = new Size(75, 23);
+            BT_CopyList.Size = new Size(198, 23);
             BT_CopyList.TabIndex = 104;
-            BT_CopyList.Text = "Copy";
+            BT_CopyList.Text = "[Debug] Copy Fields to clipboard";
             BT_CopyList.UseVisualStyleBackColor = true;
             BT_CopyList.Visible = false;
             BT_CopyList.Click += BT_CopyList_Click;
@@ -155,18 +158,18 @@
             BT_FillForm.Name = "BT_FillForm";
             BT_FillForm.Size = new Size(170, 61);
             BT_FillForm.TabIndex = 109;
-            BT_FillForm.Text = "Try Fill Form";
+            BT_FillForm.Text = "Fill Form";
             BT_FillForm.UseVisualStyleBackColor = true;
             BT_FillForm.Click += BT_FillForm_Click;
             // 
             // BT_GetPdfFields
             // 
-            BT_GetPdfFields.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            BT_GetPdfFields.Location = new Point(530, 386);
+            BT_GetPdfFields.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            BT_GetPdfFields.Location = new Point(12, 386);
             BT_GetPdfFields.Name = "BT_GetPdfFields";
-            BT_GetPdfFields.Size = new Size(75, 23);
+            BT_GetPdfFields.Size = new Size(202, 23);
             BT_GetPdfFields.TabIndex = 110;
-            BT_GetPdfFields.Text = "fields";
+            BT_GetPdfFields.Text = "[Debug] Get Field names";
             BT_GetPdfFields.UseVisualStyleBackColor = true;
             BT_GetPdfFields.Visible = false;
             BT_GetPdfFields.Click += BT_GetPdfFields_Click;
@@ -183,12 +186,12 @@
             // 
             // BT_DebugFillFields
             // 
-            BT_DebugFillFields.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            BT_DebugFillFields.Location = new Point(449, 386);
+            BT_DebugFillFields.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            BT_DebugFillFields.Location = new Point(12, 415);
             BT_DebugFillFields.Name = "BT_DebugFillFields";
-            BT_DebugFillFields.Size = new Size(75, 23);
+            BT_DebugFillFields.Size = new Size(202, 23);
             BT_DebugFillFields.TabIndex = 112;
-            BT_DebugFillFields.Text = "Fill";
+            BT_DebugFillFields.Text = "[Debug] Fill form with field names";
             BT_DebugFillFields.UseVisualStyleBackColor = true;
             BT_DebugFillFields.Visible = false;
             BT_DebugFillFields.Click += BT_DebugFillFields_Click;

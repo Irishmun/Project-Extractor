@@ -1,17 +1,20 @@
 ﻿using iText.Forms;
 using iText.Kernel.Pdf;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
 #if DEBUG
 using System.Diagnostics;
 #endif
-using System.Text;
-using System.Text.RegularExpressions;
 
 namespace PdfFormFiller
 {
     internal class PdfData
     {
-        //TODO: add project name and number.
-        //TODO: fix missing keywords (belangrijke fields.txt)
+        //TODO:Fix Alias search
         const string KEYWORD_FILE = @"Resources\Keywords.psv";
         static readonly string EXE_PATH = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
         static readonly string OUTPUT_DIRECTORY = Path.Combine(EXE_PATH, "Filled");
@@ -50,10 +53,10 @@ namespace PdfFormFiller
             { return false; }
             string[] lines = File.ReadAllLines(projectPath);
             string projectName = Path.GetFileNameWithoutExtension(projectPath).Replace("Aanvraag WBSO ", "").Trim();
-            if (TryGetProjectNumber(projectName, out string projectNum, out int index))
+            if (TryGetProjectNumber(lines[0], out string projectNum, out int index))
             {
                 form.GetField("Projectnummer").SetValue(projectNum);
-                form.GetField("Projectnaam").SetValue(projectName.Substring(index));
+                form.GetField("Projectnaam").SetValue(lines[0].Substring(index).Trim(' ','-'));
             }
             //TODO: fill form
             ProjectKeyword currentKey;
@@ -148,6 +151,22 @@ namespace PdfFormFiller
             doc.Close();
             return true;
 
+            bool StartsWithKeyOrAlias(string line, PdfAcroForm pdfForm, out ProjectKeyword key)
+            {
+                key = new ProjectKeyword();
+                if (startsWithKeyword(line, out key))
+                {
+                    if (HasField(pdfForm, key.FormKey))
+                    {
+                        if (string.IsNullOrWhiteSpace(pdfForm.GetField(key.FormKey).GetValueAsString()))
+                        {
+                            return startsWithAlias(line, out key);
+                        }
+                    }
+                }
+                return startsWithAlias(line, out key);
+            }
+
             bool startsWithKeyword(string line, out ProjectKeyword key)
             {
                 key = new ProjectKeyword();
@@ -161,6 +180,25 @@ namespace PdfFormFiller
                         {
                             key = item;
                         }
+                    }
+                }
+                if (found)
+                { return true; }
+                return false;
+            }
+            bool startsWithAlias(string line, out ProjectKeyword key)
+            {
+                key = new ProjectKeyword();
+                bool found = false;
+                foreach (ProjectKeyword item in _projectKeywords)
+                {
+                    if (string.IsNullOrWhiteSpace(item.Alias))
+                    { continue; }
+                    if (line.StartsWith(item.Alias, StringComparison.OrdinalIgnoreCase))
+                    {
+                        found = true;
+                        if (item.Alias.Length > key.Alias.Length)
+                        { key = item; }
                     }
                 }
                 if (found)
@@ -235,12 +273,12 @@ namespace PdfFormFiller
 
         private bool TryGetProjectNumber(string line, out string number, out int longestLength)
         {
-            longestLength = -1;
+            longestLength = 0;
             number = line;
-            Match m = Regex.Match(line, @"^(\d+[ .-])*");//get full length if needed
+            Match m = Regex.Match(line, @"^(Project )?((\d+[ .-:])*)");//get full length if needed
             if (!m.Success)
             { return false; }
-            number = Regex.Match(m.Value, @"^(\d+[ .-]){0,3}").Value;
+            number = m.Value.Trim(' ', '.', '-', ':');
             longestLength = m.Length;
             return true;
         }

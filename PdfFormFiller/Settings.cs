@@ -12,10 +12,11 @@ namespace PdfFormFiller
         protected override void InitializeSettings()
         {
             ini = new IniFile(System.Reflection.Assembly.GetExecutingAssembly());
-
         }
 
         public string TemplatePath1 { get => ini.ReadIfExists(KEY_TEMPLATE_ONE_PATH, SECTION_PATHS); set => WriteToIniIfNotStarting(value, KEY_TEMPLATE_ONE_PATH, SECTION_PATHS, isStarting); }
         public string ProjectPath { get => ini.ReadIfExists(KEY_PROJECT_PATH, SECTION_PATHS); set => WriteToIniIfNotStarting(value, KEY_PROJECT_PATH, SECTION_PATHS, isStarting); }
+
+        public bool IsDebugMode { get; set; }
     }
 }
