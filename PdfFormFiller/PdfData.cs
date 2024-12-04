@@ -56,156 +56,147 @@ namespace PdfFormFiller
             if (TryGetProjectNumber(lines[0], out string projectNum, out int index))
             {
                 form.GetField("Projectnummer").SetValue(projectNum);
-                form.GetField("Projectnaam").SetValue(lines[0].Substring(index).Trim(' ','-'));
+                form.GetField("Projectnaam").SetValue(lines[0].Substring(index).Trim(' ', '-'));
             }
             //TODO: fill form
             ProjectKeyword currentKey;
             for (int i = 0; i < lines.Length; i++)
             {
-                if (startsWithKeyword(lines[i], out ProjectKeyword key))
-                {
-                    currentKey = key;
-                    if (key.UseInDocument == false)
-                    { continue; }
-                    if (key.IsNumberedForm)
+                if (!StartsWithKeyOrAlias(lines[i], form, out ProjectKeyword key))
+                //if (startsWithKeyword(lines[i], out ProjectKeyword key))
+                { continue; }
+                currentKey = key;
+                if (key.UseInDocument == false)
+                { continue; }
+                if (key.IsNumberedForm == false)
+                {//write all lines untill next key is found
+                    StringBuilder str = new StringBuilder();
+                    int j;
+                    for (j = i + 1; j < lines.Length; j++)
                     {
-                        i += 1;//current line has keyword, won't have date
-                        for (int num = 1; num < 100; num++)//should not even reach 100
-                        {
-                            string keyString = key.FormKey + num.ToString();
-                            string dateString = key.DateKey + num.ToString();
-                            if (!fields.Contains(keyString) || startsWithKeyword(lines[i], out _))
-                            { break; }
-                            if (key.HasDateValue == true)
-                            {//get date and put that in date field
-                                //get date value as separate string, put it in DateKey field
-                                Match match = Regex.Match(lines[i], @"[0-9]{1,2}(-|/)[0-9]{1,2}(-|/)[0-9]{2,4}");
-                                string date;
-                                string content;
-                                if (match.Success == true)
-                                {//safest
-                                    date = match.Value;
-                                    content = lines[i].Substring(0, match.Index);
+                        if (StartsWithKeyOrAlias(lines[j], form, out _))
+                        //if (startsWithKeyword(lines[j], out _))
+                        { break; }
+                        str.AppendLine(lines[j]);
+                    }
+                    i = j - 1;//next line has key, so don't skip it
+                    //fill key
 #if DEBUG
-                                    Debug.WriteLine($"filling \"{keyString}\" with: {content} and \"{dateString}\" with: {date}");
+                    Debug.WriteLine($"filling \"{key.FormKey}\" with: {str.ToString().Trim()}");
 #endif
-                                    form.GetField(keyString).SetValue(content);
-                                    form.GetField(dateString).SetValue(date);
-                                }
-                                /*else
-                                {//risky, but should be fine
-                                    string text = lines[i].Trim();
-                                    int ind = text.LastIndexOf(' ');
-                                    if (ind < 0)
-                                    { continue; }
-                                    date = text.Substring(ind);
-                                    content = text.Substring(0, ind);
-                                }
-                                //fill entries
-#if DEBUG
-                                Debug.WriteLine($"filling \"{key.FormKey + num.ToString()}\" with: {content} and \"{key.DateKey + num.ToString()}\" with: {date}");
-#endif
-                                //form.GetField(key.FormKey).SetValue(content);
-                                //form.GetField(key.DateKey).SetValue(date);
-                                */
-                            }
-                            else
-                            {//write whole line
+                    if (HasField(form, key.FormKey))
+                    {
+                        string prevContent = form.GetField(key.FormKey).GetValueAsString().Trim();
+                        form.GetField(key.FormKey).SetValue(prevContent + " " + str.ToString().Trim());
+                    }
+                    continue;
+                }
 
+                i += 1;//current line has keyword, won't have date
+                for (int num = 1; num < 100; num++)//should not even reach 100
+                {
+                    string keyString = key.FormKey + num.ToString();
+                    string dateString = key.DateKey + num.ToString();
+                    //if (!fields.Contains(keyString) || StartsWithKeyOrAlias(lines[i], form, out _))
+                    if (!fields.Contains(keyString) || startsWithKeyword(lines[i], out _))
+                    { break; }
+                    if (key.HasDateValue == true)
+                    {//get date and put that in date field
+                     //get date value as separate string, put it in DateKey field
+                        Match match = Regex.Match(lines[i], @"[0-9]{1,2}(-|/)[0-9]{1,2}(-|/)[0-9]{2,4}");
+                        string date;
+                        string content;
+                        if (match.Success == true)
+                        {//safest
+                            date = match.Value;
+                            content = lines[i].Substring(0, match.Index);
 #if DEBUG
-                                Debug.WriteLine($"filling \"{key.FormKey + num.ToString()}\" with: {lines[i]}");
+                            Debug.WriteLine($"filling \"{keyString}\" with: {content} and \"{dateString}\" with: {date}");
 #endif
-
-                                form.GetField(key.FormKey).SetValue(lines[i].Trim());
-                            }
-                            i += 1;
+                            form.GetField(keyString).SetValue(content);
+                            form.GetField(dateString).SetValue(date);
                         }
-                        i -= 1;
-                        continue;
+                        /*
+                        //fill entries
+#if DEBUG
+                        Debug.WriteLine($"filling \"{key.FormKey + num.ToString()}\" with: {content} and \"{key.DateKey + num.ToString()}\" with: {date}");
+#endif
+                        //form.GetField(key.FormKey).SetValue(content);
+                        //form.GetField(key.DateKey).SetValue(date);
+                        */
                     }
                     else
-                    {//write all lines untill next key is found
-                        StringBuilder str = new StringBuilder();
-                        int j;
-                        for (j = i + 1; j < lines.Length; j++)
-                        {
-                            if (startsWithKeyword(lines[j], out _))
-                            { break; }
-                            str.AppendLine(lines[j]);
-                        }
-                        i = j - 1;//next line has key, so don't skip it
-                        //fill key
+                    {//write whole line
 #if DEBUG
-                        Debug.WriteLine($"filling \"{key.FormKey}\" with: {str.ToString().Trim()}");
+                        Debug.WriteLine($"filling \"{key.FormKey + num.ToString()}\" with: {lines[i]}");
 #endif
-
-                        if (HasField(form, key.FormKey))
-                        {
-                            string prevContent = form.GetField(key.FormKey).GetValueAsString().Trim();
-                            form.GetField(key.FormKey).SetValue(prevContent + " " + str.ToString().Trim());
-                        }
-                        continue;
+                        form.GetField(key.FormKey).SetValue(lines[i].Trim());
                     }
+                    i += 1;
                 }
+                i -= 1;
+                continue;
             }
             doc.Close();
             return true;
 
             bool StartsWithKeyOrAlias(string line, PdfAcroForm pdfForm, out ProjectKeyword key)
-            {
-                key = new ProjectKeyword();
-                if (startsWithKeyword(line, out key))
+            {//TODO: fix this, still not working as desired
+                bool starts, possible;
+                starts = startsWithKeyword(line, out key);
+                if (starts)
                 {
                     if (HasField(pdfForm, key.FormKey))
                     {
                         if (string.IsNullOrWhiteSpace(pdfForm.GetField(key.FormKey).GetValueAsString()))
                         {
-                            return startsWithAlias(line, out key);
+                            return starts;
                         }
                     }
-                }
-                return startsWithAlias(line, out key);
-            }
-
-            bool startsWithKeyword(string line, out ProjectKeyword key)
-            {
-                key = new ProjectKeyword();
-                bool found = false;
-                foreach (ProjectKeyword item in _projectKeywords)
-                {
-                    if (line.StartsWith(item.Keyword, StringComparison.OrdinalIgnoreCase))
+                    possible = getAlias(key.Alias, out ProjectKeyword possibleKey);
+                    if (HasField(pdfForm, possibleKey.FormKey))
                     {
-                        found = true;
-                        if (item.Keyword.Length > key.Keyword.Length)
+                        if (string.IsNullOrWhiteSpace(pdfForm.GetField(possibleKey.FormKey).GetValueAsString()))
                         {
-                            key = item;
+                            key = possibleKey;
+                            return possible;
                         }
                     }
                 }
-                if (found)
-                { return true; }
-                return false;
+                return starts;
             }
-            bool startsWithAlias(string line, out ProjectKeyword key)
+            bool getAlias(string alias, out ProjectKeyword key)
             {
-                key = new ProjectKeyword();
+                if (string.IsNullOrWhiteSpace(alias))
+                {
+                    key = ProjectKeyword.BLANK_KEYWORD;
+                    return false;
+                }
+                return startsWithKeyword(alias, out key);
+            }
+            bool startsWithKeyword(string line, out ProjectKeyword key) => StartsWithProperty(x => x.Keyword, line, out key);
+            bool startsWithAlias(string line, out ProjectKeyword key) => StartsWithProperty(x => x.Alias, line, out key);
+            bool StartsWithProperty(Func<ProjectKeyword, string> property, string line, out ProjectKeyword key)
+            {
+                key = ProjectKeyword.BLANK_KEYWORD;
                 bool found = false;
                 foreach (ProjectKeyword item in _projectKeywords)
                 {
-                    if (string.IsNullOrWhiteSpace(item.Alias))
+                    if (string.IsNullOrWhiteSpace(property(item)))
                     { continue; }
-                    if (line.StartsWith(item.Alias, StringComparison.OrdinalIgnoreCase))
+                    if (line.StartsWith(property(item), StringComparison.OrdinalIgnoreCase))
                     {
                         found = true;
-                        if (item.Alias.Length > key.Alias.Length)
+                        if (property(item).Length > property(key).Length)
                         { key = item; }
                     }
                 }
-                if (found)
-                { return true; }
-                return false;
+                return found;
             }
         }
+
+
+
         public bool FillFormsWithNames(string pdfPath, out string outputPath)
         {
             outputPath = string.Empty;

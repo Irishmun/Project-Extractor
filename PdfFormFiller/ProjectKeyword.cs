@@ -4,6 +4,8 @@ namespace PdfFormFiller
 {
     internal struct ProjectKeyword
     {
+        public static ProjectKeyword BLANK_KEYWORD = new ProjectKeyword();
+
         //the document's keyword to assign 
         private string _keyword;
         //use this keyword in the document? if false, all but this and 'keyword' are ignored
@@ -60,7 +62,8 @@ namespace PdfFormFiller
         /// <returns>true if able to parse, false if not.</returns>
         public static bool TryParse(string text, out ProjectKeyword proj)
         {
-            proj = new ProjectKeyword();
+            //keyword|useInDocument|formKey|priority|Alias|isNumberedForm|hasDateValue|dateKey
+            proj = ProjectKeyword.BLANK_KEYWORD;
             if (text.IndexOf('|') < 0)
             { return false; }
             string[] values = text.Split('|', StringSplitOptions.TrimEntries);
@@ -76,7 +79,7 @@ namespace PdfFormFiller
                 bool.TryParse(values[5], out bool isNumbered) &&
                 bool.TryParse(values[6], out bool hasDate))
             {
-                proj = new ProjectKeyword(values[0], useInDoc, values[2], priority, values[6], isNumbered, hasDate, values[7]);
+                proj = new ProjectKeyword(values[0], useInDoc, values[2], priority, values[4], isNumbered, hasDate, values[7]);
                 return true;
             }
             return false;

@@ -1,5 +1,7 @@
+using ProjectUtility;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
@@ -10,7 +12,8 @@ namespace PdfFormFiller
     {
         private PdfData _pdf;
         private List<TemplatePath> _templatePaths;
-
+        //private bool _openedExplorer = false;
+        private Process _explorerProcess;
         public FillerForm()
         {
             Settings.Instance.IsStarting = true;
@@ -181,8 +184,16 @@ namespace PdfFormFiller
                 _templatePaths.Add(new TemplatePath(paths[i]));
             }
             CBB_PdfLocation.DataSource = _templatePaths;
-            if (_templatePaths.Count > 0)
-            { CBB_PdfLocation.SelectedItem = _templatePaths[0]; }
+            if (_templatePaths.Count <= 0)
+            { return; }
+            if (_templatePaths.Count < Settings.Instance.LastSelected || Settings.Instance.LastSelected < 0)
+            {
+                CBB_PdfLocation.SelectedItem = _templatePaths[0];
+            }
+            else
+            {
+                CBB_PdfLocation.SelectedItem = _templatePaths[Settings.Instance.LastSelected];
+            }
         }
         private bool ContainsPath(string path, out TemplatePath p)
         {
@@ -202,21 +213,20 @@ namespace PdfFormFiller
 
         private void SelectFileInExplorer(string path)
         {
-            //TODO: select in open instance of folder if possible
-            if (!File.Exists(path))
-            {
-                MessageBox.Show("Can't find file at:\n" + path);
-                return;
-            }
-            string argument = $"/select, \"{path}\"";
-            System.Diagnostics.Process.Start("explorer.exe", argument);
+            if (!ExplorerUtil.OpenFolderAndSelectItem(path))
+            { MessageBox.Show("Can't find file at:\n" + path); }
+        }
+
+        private void CBB_PdfLocation_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Settings.Instance.LastSelected = CBB_PdfLocation.SelectedIndex;
         }
 
         private struct TemplatePath
         {
             public string FilePath { get; private set; }
             public TemplatePath(string filePath) => FilePath = filePath;
-            public override string ToString() => Path.GetFileNameWithoutExtension(FilePath) + $"({FilePath})";
+            public override string ToString() => Path.GetFileNameWithoutExtension(FilePath) + $" ({FilePath})";
         }
     }
 }
