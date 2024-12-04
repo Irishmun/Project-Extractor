@@ -1,0 +1,33 @@
+;;keyword|useInDocument|formKey|priority|Alias|isNumberedForm|hasDateValue|dateKey
+Aanleiding|false
+- Aanleiding|false
+Beoogde uitkomsten|false
+- Beoogde uitkomsten|false
+Fasering Werkzaamheden|true|Ontwikkeling|1||true|true|DatumGereed
+Kosten en/of uitgaven per project|false
+Kosten opvoeren bij dit project|false
+Omschrijving kosten|false
+Omschrijving uitgaven|false
+Omschrijving|true|WbsoProjectomschrijving|1||false|false|
+Onderzoeksvragen|false
+Opzet en uitvoering|false
+Samenwerking?|false
+Specifieke vragen ontwikkeling|false
+Technische nieuwheid programmatuur|false
+Technologiegebied onderzoek|false
+Totale uitgaven|false
+Totatel kosten|false
+Update Project|true|WbsoToelichtingWijzigingPlanning|1||false|false|
+Wordt er mede programmatuur ontwikkeld?|false
+- Onderzoeksvragen|false
+- Oplossingsrichtingen programmatuur|true|WbsoGekozenOplossingsrichting|1||false|false|
+- Opzet en uitvoering|false
+- Probleemstelling en oplossingsrichting|true|WbsoBeschrijvingTechnischProbleem|1||false|false|
+- Programmeertalen|true|WbsoBestaandeMethodenTechnieken|1||false|false|
+- Technische knelpunten|true|WbsoTWOVraag1|1|- Technische knelpunten programmatuur|false|false|
+- Technische nieuwheid|true|WbsoTWOVraag3|1|- Technische nieuwheid programmatuur|false|false|
+- Technische knelpunten programmatuur|true|WbsoBeschrijvingTechnischProbleem|1||false|false|
+- Technische nieuwheid programmatuur|true|WbsoZelfOntwikkelenMethoden|1||false|false|
+- Technische oplossingsrichtingen|true|WbsoTWOVraag2|1||false|false|
+- Technologiegebied onderzoek|false
+========[END PROJECTS]=========|false

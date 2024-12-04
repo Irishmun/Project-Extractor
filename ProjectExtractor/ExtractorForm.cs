@@ -17,10 +17,6 @@ using System.Windows.Forms;
 
 namespace ProjectExtractor
 {
-    //TODO: implement the following
-    /*
-     * Projects to separate files extraction
-     */
     public partial class ExtractorForm : Form
     {
         private string _programPath = AppContext.BaseDirectory, _exportFile, _batchFolder;

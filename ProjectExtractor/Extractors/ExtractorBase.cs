@@ -138,7 +138,6 @@ namespace ProjectExtractor.Extractors
                 line = (index < 0) ? line : line.Remove(index, match.Value.Length);
             }
         }
-
         protected void RemoveNumbersFromStringStart(ref string line)
         {
             Match match = Regex.Match(line, @"^\b\d\b");//@"^([0-9][ .])"  might work better //^(\d+)
@@ -148,7 +147,6 @@ namespace ProjectExtractor.Extractors
                 line = (index < 0) ? line : line.Remove(index, match.Value.Length);
             }
         }
-
         protected void RemoveIndexFromStringStart(ref string line)
         {
             Match match = Regex.Match(line, @"^[.]");
@@ -158,7 +156,6 @@ namespace ProjectExtractor.Extractors
                 line = (index < 0) ? line : line.Remove(index, match.Value.Length);
             }
         }
-
         /// <summary>
         /// Will try and get the latest date of the project, starting at the given line
         /// </summary>
@@ -208,7 +205,6 @@ namespace ProjectExtractor.Extractors
             }
             return index;
         }
-
         /// <summary>Gets and returns the value that matches the regex expression. returns original if no match</summary>
         /// <param name="input">string to regex against</param>
         /// <param name="regex">regex expression to match</param>
@@ -219,7 +215,6 @@ namespace ProjectExtractor.Extractors
             { return match.Value; }
             return input;
         }
-
         /// <summary>
         /// Performs <see cref="string.Trim()"/>, removing all leading and trailing characters found in <see cref="_removeCharacters"/>
         /// </summary>
@@ -229,7 +224,6 @@ namespace ProjectExtractor.Extractors
         {
             return str.ToString().Trim(_removeCharacters);
         }
-
         /// <summary>Writes the contents of the <see cref="StringBuilder"/> to a text file at path</summary>
         /// <param name="str"><see cref="StringBuilder"/> to write</param>
         /// <param name="path">path to write to</param>
@@ -242,7 +236,6 @@ namespace ProjectExtractor.Extractors
                 sw.Close();
             }
         }
-
         /// <summary>Reports the progress to the backgroundworker</summary>
         /// <param name="currentProgress">The current progress point</param>
         /// <param name="worker">The worker to report to</param>
@@ -251,7 +244,6 @@ namespace ProjectExtractor.Extractors
             double progress = (double)((currentProgress + 1d) * 100d / Lines.Length);
             worker.ReportProgress((int)progress, workerState);
         }
-
         /// <summary>Returns the length of the smaller array</summary>
         protected int SmallestLength(Array arrayA, Array arrayB)
         {

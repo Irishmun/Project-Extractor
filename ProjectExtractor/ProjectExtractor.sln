@@ -8,7 +8,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DatabaseCleaner", "..\Datab
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProjectUtility", "..\ProjectUtility\ProjectUtility.csproj", "{88B6A4B3-17DF-48E1-AC18-C263FE385BD1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConfluenceExtractor", "..\ConfluenceExtractor\ConfluenceExtractor.csproj", "{8F9C706B-5194-4121-8A9E-EB7217DDE3B7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConfluenceExtractor", "..\ConfluenceExtractor\ConfluenceExtractor.csproj", "{8F9C706B-5194-4121-8A9E-EB7217DDE3B7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PdfFormFiller", "..\PdfFormFiller\PdfFormFiller.csproj", "{DFD80565-E00A-4BD2-A5D7-833010BA6B68}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -50,6 +52,14 @@ Global
 		{8F9C706B-5194-4121-8A9E-EB7217DDE3B7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8F9C706B-5194-4121-8A9E-EB7217DDE3B7}.Release|x86.ActiveCfg = Release|Any CPU
 		{8F9C706B-5194-4121-8A9E-EB7217DDE3B7}.Release|x86.Build.0 = Release|Any CPU
+		{DFD80565-E00A-4BD2-A5D7-833010BA6B68}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DFD80565-E00A-4BD2-A5D7-833010BA6B68}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DFD80565-E00A-4BD2-A5D7-833010BA6B68}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{DFD80565-E00A-4BD2-A5D7-833010BA6B68}.Debug|x86.Build.0 = Debug|Any CPU
+		{DFD80565-E00A-4BD2-A5D7-833010BA6B68}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DFD80565-E00A-4BD2-A5D7-833010BA6B68}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DFD80565-E00A-4BD2-A5D7-833010BA6B68}.Release|x86.ActiveCfg = Release|Any CPU
+		{DFD80565-E00A-4BD2-A5D7-833010BA6B68}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
