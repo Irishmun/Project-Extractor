@@ -11,7 +11,7 @@ namespace PdfFormFiller
     public partial class FillerForm : Form
     {
         private PdfData _pdf;
-        private List<TemplatePath> _templatePaths;
+        private List<PathTemplate> _templatePaths;
         //private bool _openedExplorer = false;
         private Process _explorerProcess;
         public FillerForm()
@@ -62,7 +62,7 @@ namespace PdfFormFiller
             //check if it has changed, else leave it as what it is.
             res = string.IsNullOrWhiteSpace(res) ? (string)CBB_PdfLocation.SelectedItem : res;//TB_PDFLocation.Text : res;
             CBB_PdfLocation.DataSource = null;
-            if (ContainsPath(res, out TemplatePath p))
+            if (PathTemplate.ContainsPath(res, _templatePaths, out PathTemplate p))
             {//go to selected item
                 CBB_PdfLocation.DataSource = _templatePaths;
                 CBB_PdfLocation.SelectedItem = p;
@@ -70,12 +70,12 @@ namespace PdfFormFiller
             else
             {//add new item and select it
 
-                TemplatePath template = new TemplatePath(res);
+                PathTemplate template = new PathTemplate(res);
                 _templatePaths.Add(template);
                 CBB_PdfLocation.DataSource = _templatePaths;
                 CBB_PdfLocation.SelectedItem = template;
                 StringBuilder str = new StringBuilder();
-                foreach (TemplatePath item in _templatePaths)
+                foreach (PathTemplate item in _templatePaths)
                 {
                     str.Append(item.FilePath + '|');
                 }
@@ -135,7 +135,7 @@ namespace PdfFormFiller
             }
             if (_pdf == null)
             { _pdf = new PdfData(); }
-            if (_pdf.TryFillForm(((TemplatePath)CBB_PdfLocation.SelectedItem).FilePath, TB_ProjectLocation.Text, out string output))
+            if (_pdf.TryFillForm(((PathTemplate)CBB_PdfLocation.SelectedItem).FilePath, TB_ProjectLocation.Text, out string output))
             {
                 SelectFileInExplorer(output);
             }
@@ -148,7 +148,7 @@ namespace PdfFormFiller
         {
             if (_pdf == null)
             { _pdf = new PdfData(); }
-            if (_pdf.FillFormsWithNames(((TemplatePath)CBB_PdfLocation.SelectedItem).FilePath, out string output))
+            if (_pdf.FillFormsWithNames(((PathTemplate)CBB_PdfLocation.SelectedItem).FilePath, out string output))
             {
                 SelectFileInExplorer(output);
             }
@@ -161,14 +161,14 @@ namespace PdfFormFiller
 
         private bool PdfAndProjectEmpty()
         {
-            return string.IsNullOrWhiteSpace(((TemplatePath)CBB_PdfLocation.SelectedItem).FilePath) && string.IsNullOrWhiteSpace(TB_ProjectLocation.Text);
+            return string.IsNullOrWhiteSpace(((PathTemplate)CBB_PdfLocation.SelectedItem).FilePath) && string.IsNullOrWhiteSpace(TB_ProjectLocation.Text);
         }
         private void BT_GetPdfFields_Click(object sender, EventArgs e)
         {
             if (_pdf == null)
             { _pdf = new PdfData(); }
 
-            IDictionary<string, iText.Forms.Fields.PdfFormField> fields = _pdf.ReadFormFieldsDictionary(((TemplatePath)CBB_PdfLocation.SelectedItem).FilePath);
+            IDictionary<string, iText.Forms.Fields.PdfFormField> fields = _pdf.ReadFormFieldsDictionary(((PathTemplate)CBB_PdfLocation.SelectedItem).FilePath);
             LB_FormContents.Items.Clear();
             foreach (KeyValuePair<string, iText.Forms.Fields.PdfFormField> field in fields)
             {
@@ -177,11 +177,11 @@ namespace PdfFormFiller
         }
         private void FillPdfHistory()
         {
-            _templatePaths = new List<TemplatePath>();
+            _templatePaths = new List<PathTemplate>();
             string[] paths = Settings.Instance.TemplatePath1.Split('|', StringSplitOptions.RemoveEmptyEntries);
             for (int i = 0; i < paths.Length; i++)
             {
-                _templatePaths.Add(new TemplatePath(paths[i]));
+                _templatePaths.Add(new PathTemplate(paths[i]));
             }
             CBB_PdfLocation.DataSource = _templatePaths;
             if (_templatePaths.Count <= 0)
@@ -195,21 +195,7 @@ namespace PdfFormFiller
                 CBB_PdfLocation.SelectedItem = _templatePaths[Settings.Instance.LastSelected];
             }
         }
-        private bool ContainsPath(string path, out TemplatePath p)
-        {
-            p = new TemplatePath(string.Empty);
-            if (_templatePaths == null)
-            { return false; }
-            foreach (TemplatePath item in _templatePaths)
-            {
-                if (item.FilePath.Equals(path))
-                {
-                    p = item;
-                    return true;
-                }
-            }
-            return false;
-        }
+
 
         private void SelectFileInExplorer(string path)
         {
@@ -220,13 +206,6 @@ namespace PdfFormFiller
         private void CBB_PdfLocation_SelectedIndexChanged(object sender, EventArgs e)
         {
             Settings.Instance.LastSelected = CBB_PdfLocation.SelectedIndex;
-        }
-
-        private struct TemplatePath
-        {
-            public string FilePath { get; private set; }
-            public TemplatePath(string filePath) => FilePath = filePath;
-            public override string ToString() => Path.GetFileNameWithoutExtension(FilePath) + $" ({FilePath})";
         }
     }
 }

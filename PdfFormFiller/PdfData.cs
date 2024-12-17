@@ -194,9 +194,6 @@ namespace PdfFormFiller
                 return found;
             }
         }
-
-
-
         public bool FillFormsWithNames(string pdfPath, out string outputPath)
         {
             outputPath = string.Empty;
@@ -299,6 +296,6 @@ namespace PdfFormFiller
             }
         }
 
-
+        public string OutputDirectory => OUTPUT_DIRECTORY;
     }
 }
