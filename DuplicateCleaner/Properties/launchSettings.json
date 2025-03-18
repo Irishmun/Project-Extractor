@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "DuplicateCleaner": {
+      "commandName": "Project",
+      "commandLineArgs": "--nogui\r\n"
+    }
+  }
+}

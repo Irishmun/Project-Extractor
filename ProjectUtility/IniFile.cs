@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -20,7 +21,7 @@ namespace ProjectUtility
         public IniFile(Assembly executingAssembly)
         {
             EXE = executingAssembly.GetName().Name;
-            _path = new FileInfo(EXE + ".ini").FullName;
+            _path = new FileInfo(AppContext.BaseDirectory + "\\" + EXE + ".ini").FullName;
         }
 
         /// <summary>Writes value to key in section</summary>
