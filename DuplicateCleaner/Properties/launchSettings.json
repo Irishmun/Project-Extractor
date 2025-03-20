@@ -2,7 +2,7 @@
   "profiles": {
     "DuplicateCleaner": {
       "commandName": "Project",
-      "commandLineArgs": "--nogui\r\n"
+      "commandLineArgs": "--nogui -v\r\n"
     }
   }
 }

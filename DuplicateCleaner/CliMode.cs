@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 
 namespace DuplicateCleaner
@@ -27,7 +29,7 @@ namespace DuplicateCleaner
         }
         #endregion
 
-        public void ShowOptions(bool clear = true)
+        public void ShowOptions(bool clear = false)
         {
             if (clear)
             {
@@ -63,17 +65,25 @@ namespace DuplicateCleaner
 
         private void CleanFileOrFolder()
         {
+            string[] args = Environment.GetCommandLineArgs();
+            bool verbose = args.Contains("-v") || args.Contains("--verbose");
             Console.WriteLine("Provide path to project file/directory");
             string last = Console.ReadLine();
             last = last.Trim('\"');
             FileAttributes attr = File.GetAttributes(last);
             if ((attr & FileAttributes.Directory) == FileAttributes.Directory)
             {
-                CleanFolder(last);
+                Console.WriteLine("Cleaning directory of projects.");
+                CleanFolder(last, verbose);
+                Console.WriteLine("Done. Press any key to quit.");
+                Console.ReadLine();
             }
             else
             {
-                CleanFile(last);
+                Console.WriteLine("Cleaning duplicates for project...");
+                CleanFile(last, verbose);
+                Console.WriteLine("Done. Press enter key to quit.");
+                Console.ReadLine();
             }
         }
 
@@ -104,7 +114,7 @@ namespace DuplicateCleaner
             while (path.Length == 0)
             {
                 Console.WriteLine("Path to output directory");
-                path = Console.ReadLine();
+                path = Console.ReadLine().Trim('\"');
                 if (replacingPath == true && string.IsNullOrWhiteSpace(path))
                 {
                     Console.WriteLine("Keeping current path...");
@@ -139,20 +149,30 @@ namespace DuplicateCleaner
         }
 
 
-        public void CleanFolder(string path)
+        public void CleanFolder(string path, bool verbose = false)
         {
             CreateCleaner();
-            Console.WriteLine("Cleaning duplicates for projects in folder...");
             SetOutputIfNotExist();
-
-            Console.WriteLine("Done.");
-            Console.ReadLine();
+            string[] files = Directory.GetFiles(path);
+            Console.WriteLine("Cleaning {0} files...", files.Length);
+            for (int i = 0; i < files.Length; i++)
+            {
+                Console.WriteLine("{0}{1}", asciiVal(i == files.Length - 1), Path.GetFileName(files[i]));
+                CleanFile(files[i], verbose);
+            }
+            char asciiVal(bool isLast = false)
+            {
+                if (isLast)
+                {
+                    return '└';
+                }
+                return '├';
+            }
         }
 
-        public void CleanFile(string path)
+        public void CleanFile(string path, bool verbose = false)
         {
             CreateCleaner();
-            Console.WriteLine("Cleaning duplicates for project...");
             SetOutputIfNotExist();
             if (!Path.GetExtension(path).Equals(".txt", StringComparison.OrdinalIgnoreCase))
             {
@@ -160,19 +180,50 @@ namespace DuplicateCleaner
                 return;
             }
             string comp = _cleaner.GetFileCompany(path);
-            Console.WriteLine("Company name: " + comp);
-            string[] projects = _cleaner.GetFilesInCompanyDir(comp);
-            Console.WriteLine("Projects in company folder: " + projects.Length);
+            WriteIfVerbose("Company name: " + comp, verbose);
+            string[] projects = _cleaner.GetFilesInCompanyDir(comp, out bool newCompany);
+            AnounceNewcompany(newCompany, comp);
+            WriteIfVerbose("Projects in company folder: " + projects.Length, verbose);
             string[] matches = _cleaner.TryFindMatches(projects, path);
-            Console.WriteLine("Possible matches: " + matches.Length);
-            Console.WriteLine("Replacing...");
-            //TODO: move all of found matches to old versions folder?
-            for (int i = 0; i < matches.Length; i++)
+            WriteIfVerbose("Possible matches: " + matches.Length, verbose);
+            if (matches.Length == 0)
             {
-                _cleaner.ReplaceProject(matches[i], path, i == 0);
+                WriteIfVerbose("Adding to folder...", verbose);
+                string filename = Path.GetFileName(path);
+                string dir = _cleaner.GetCompanyDirectory(comp, out bool isNew);
+                AnounceNewcompany(isNew, comp);
+                if (isNew)
+                {
+                    Directory.CreateDirectory(dir);
+                }
+                File.Move(path, Path.Join(dir, filename));
             }
-            Console.WriteLine("Done.");
-            Console.ReadLine();
+            else
+            {
+                WriteIfVerbose("Updating file with older project updates...", verbose);
+                _cleaner.UpdateWithMatches(matches, path);
+                WriteIfVerbose("Replacing...", verbose);
+                for (int i = 0; i < matches.Length; i++)
+                {
+                    _cleaner.ReplaceProject(matches[i], path, i == 0);
+                }
+            }
+        }
+
+
+        private void WriteIfVerbose(string val, bool verbose = false)
+        {
+            if (verbose == false)
+            { return; }
+            Console.WriteLine(val);
+        }
+
+        private void AnounceNewcompany(bool isNew, string name)
+        {
+            if (isNew)
+            {
+                Console.WriteLine("Company name \"{0}\" not found, creating folder...", name);
+            }
         }
     }
 }

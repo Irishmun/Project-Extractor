@@ -53,6 +53,7 @@ namespace DuplicateCleaner
             else
             {
                 CliMode con = CliMode.Show();
+                Console.WriteLine("===Duplicate cleaner version {0}===", Util.AssemblyVersion());
                 if (autoClean == false)
                 {
                     con.ShowOptions();
@@ -63,11 +64,17 @@ namespace DuplicateCleaner
                     FileAttributes attr = File.GetAttributes(last);
                     if ((attr & FileAttributes.Directory) == FileAttributes.Directory)
                     {
+                        Console.WriteLine("Cleaning directory of projects.");
                         con.CleanFolder(last);
+                        Console.WriteLine("Done. Press any key to quit.");
+                        Console.ReadLine();
                     }
                     else
                     {
+                        Console.WriteLine("Cleaning duplicates for project...");
                         con.CleanFile(last);
+                        Console.WriteLine("Done. Press enter key to quit.");
+                        Console.ReadLine();
                     }
                 }
             }

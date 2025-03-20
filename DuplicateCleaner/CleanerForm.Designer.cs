@@ -37,8 +37,10 @@ namespace DuplicateCleaner
             openFileToolStripMenuItem = new ToolStripMenuItem();
             statusStrip1 = new StatusStrip();
             splitContainer1 = new SplitContainer();
+            label1 = new Label();
             menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
+            splitContainer1.Panel2.SuspendLayout();
             splitContainer1.SuspendLayout();
             SuspendLayout();
             // 
@@ -61,13 +63,13 @@ namespace DuplicateCleaner
             // openFolderToolStripMenuItem
             // 
             openFolderToolStripMenuItem.Name = "openFolderToolStripMenuItem";
-            openFolderToolStripMenuItem.Size = new Size(180, 22);
+            openFolderToolStripMenuItem.Size = new Size(139, 22);
             openFolderToolStripMenuItem.Text = "Open Folder";
             // 
             // openFileToolStripMenuItem
             // 
             openFileToolStripMenuItem.Name = "openFileToolStripMenuItem";
-            openFileToolStripMenuItem.Size = new Size(180, 22);
+            openFileToolStripMenuItem.Size = new Size(139, 22);
             openFileToolStripMenuItem.Text = "Open File";
             // 
             // statusStrip1
@@ -84,12 +86,26 @@ namespace DuplicateCleaner
             splitContainer1.Location = new Point(0, 24);
             splitContainer1.Name = "splitContainer1";
             splitContainer1.Panel1MinSize = 200;
+            // 
+            // splitContainer1.Panel2
+            // 
+            splitContainer1.Panel2.Controls.Add(label1);
             splitContainer1.Panel2MinSize = 250;
             splitContainer1.Size = new Size(582, 349);
             splitContainer1.SplitterDistance = 200;
             splitContainer1.TabIndex = 2;
             // 
-            // Form1
+            // label1
+            // 
+            label1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            label1.AutoSize = true;
+            label1.Location = new Point(74, 169);
+            label1.Name = "label1";
+            label1.Size = new Size(219, 30);
+            label1.TabIndex = 0;
+            label1.Text = "Sleep een folder van projecten of \r\neen projectbestand (*.txt)  op de exe zelf";
+            // 
+            // CleanerForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
@@ -99,10 +115,12 @@ namespace DuplicateCleaner
             Controls.Add(menuStrip1);
             MainMenuStrip = menuStrip1;
             MinimumSize = new Size(598, 434);
-            Name = "Form1";
+            Name = "CleanerForm";
             Text = "Duplicate Cleaner";
             menuStrip1.ResumeLayout(false);
             menuStrip1.PerformLayout();
+            splitContainer1.Panel2.ResumeLayout(false);
+            splitContainer1.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)splitContainer1).EndInit();
             splitContainer1.ResumeLayout(false);
             ResumeLayout(false);
@@ -117,5 +135,6 @@ namespace DuplicateCleaner
         private ToolStripMenuItem openFileToolStripMenuItem;
         private StatusStrip statusStrip1;
         private SplitContainer splitContainer1;
+        private Label label1;
     }
 }
