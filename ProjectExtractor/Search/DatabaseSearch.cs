@@ -137,6 +137,10 @@ namespace ProjectExtractor.Search
             {//look through each project
                 if (worker.CancellationPending == true)
                 { break; }
+                if (Path.GetDirectoryName(_projects[i].Path).ToLower().EndsWith("oude versies"))
+                {//skip project if old version
+                    continue;
+                }
                 string[] lines;
                 bool foundInContent = false;
                 //check if query is in project description
@@ -187,7 +191,7 @@ namespace ProjectExtractor.Search
             }
 
             bool isMatch(string text, ProjectData project, ref DataGridView grid)
-              {
+            {
                 if (exact == true)// && text.Contains(query, StringComparison.OrdinalIgnoreCase) == true)
                 {
                     if (moreThanOne == false && text.IndexOf(query, StringComparison.OrdinalIgnoreCase) < 0)
