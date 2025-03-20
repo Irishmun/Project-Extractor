@@ -42,7 +42,7 @@ namespace ProjectUtility
         /// <returns>the content of the folder. returns an empty string if the file doesn't exist</returns>
         public string ReadSectionFile(string fileName)
         {
-            string fullPath = Path.Join(_sectionsFolder, fileName);
+            string fullPath = Path.Combine(_sectionsFolder, fileName);
             if (File.Exists(fullPath) == false)
             { return string.Empty; }
             return File.ReadAllText(fullPath);

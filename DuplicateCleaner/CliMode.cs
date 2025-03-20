@@ -196,7 +196,7 @@ namespace DuplicateCleaner
                 {
                     Directory.CreateDirectory(dir);
                 }
-                File.Move(path, Path.Join(dir, filename));
+                File.Move(path, Path.Combine(dir, filename));
             }
             else
             {

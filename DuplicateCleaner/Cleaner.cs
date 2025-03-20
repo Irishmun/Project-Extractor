@@ -141,23 +141,22 @@ namespace DuplicateCleaner
         }
         public void ReplaceProject(string pathToOld, string pathToNew, bool moveNew = true)
         {
-            string dir, oldProjDir, oldDestination, newDestionation;
+            string dir, oldProjDir, oldDestination, newDestionation, oldName, newName;
             dir = Path.GetDirectoryName(pathToOld);
-            oldProjDir = Path.Join(dir, "Oude versies");
+            oldProjDir = Path.Combine(dir, "Oude versies");
             if (!Directory.Exists(oldProjDir))
             {
                 Directory.CreateDirectory(oldProjDir);
             }
-            oldDestination = Path.Join(oldProjDir, Path.GetFileName(pathToOld));
-            newDestionation = Path.Join(dir, Path.GetFileName(pathToNew));
+            oldName = Path.GetFileName(pathToOld);
+            newName = Path.GetFileName(pathToNew);
+            oldDestination = Path.Combine(oldProjDir, oldName);
+            newDestionation = Path.Combine(dir, newName);
+            oldDestination = FileUtil.CreateUniqueFileName(oldName, oldProjDir);
             File.Move(pathToOld, oldDestination);
             if (moveNew)
             {
-                if (File.Exists(newDestionation))
-                {
-                    Console.WriteLine("File exists at destination, skipping... ({0})", newDestionation);
-                    return;
-                }
+                newDestionation = FileUtil.CreateUniqueFileName(newName, dir);
                 File.Move(pathToNew, newDestionation);
             }
         }
