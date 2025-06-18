@@ -85,7 +85,7 @@ namespace PdfFormFiller
             Console.WriteLine("Filling form...");
             if (_pdf == null)
             { _pdf = new PdfData(); }
-            if (_pdf.TryFillForm(template, project, out string output))
+            if (_pdf.TryFillForm(template, project,false, out string output))
             {
                 Console.WriteLine("Done.");
                 SelectFileInExplorer(output);
@@ -121,7 +121,7 @@ namespace PdfFormFiller
             for (int i = 0; i < projectFiles.Length; i++)
             {
                 Console.WriteLine("Filling: " + Path.GetFileNameWithoutExtension(projectFiles[i]));
-                if (!_pdf.TryFillForm(template, projectFiles[i], out output))
+                if (!_pdf.TryFillForm(template, projectFiles[i],false, out output))
                 {
                     Console.WriteLine("Couldn't fill form...\nTry closing the template file if it's open.");
                     output = _pdf.OutputDirectory;

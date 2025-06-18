@@ -12,6 +12,8 @@ namespace PdfFormFiller
         private bool _useInDocument;
         //form field name. if 'numberedForm' is true, remove number suffix
         private string _formKey;
+        //an alternative form field name
+        private string _altFormKey;
         //how important this one is over other ones with the same key
         private int _priority;
         //alternative name for this field, used if the actual field is filled in
@@ -30,6 +32,7 @@ namespace PdfFormFiller
             _priority = -1;
             _alias = string.Empty;
             _formKey = string.Empty;
+            _altFormKey = string.Empty;
             _isNumberedForm = false;
             _hasDateValue = false;
             _dateKey = string.Empty;
@@ -39,11 +42,12 @@ namespace PdfFormFiller
             _keyword = keyword;
             _useInDocument = false;
         }
-        public ProjectKeyword(string keyword, bool useInDocument, string formKey, int priority, string alias, bool isNumberedForm, bool hasDateValue, string dateKey)
+        public ProjectKeyword(string keyword, bool useInDocument, string formKey, string altFormKey, int priority, string alias, bool isNumberedForm, bool hasDateValue, string dateKey)
         {
             _keyword = keyword;
             _useInDocument = useInDocument;
             _formKey = formKey;
+            _altFormKey = altFormKey;
             _priority = priority;
             _alias = alias;
             _isNumberedForm = isNumberedForm;
@@ -75,11 +79,11 @@ namespace PdfFormFiller
                 return true;
             }
             if (bool.TryParse(values[1], out bool useInDoc) &&
-                int.TryParse(values[3], out int priority) &&
-                bool.TryParse(values[5], out bool isNumbered) &&
-                bool.TryParse(values[6], out bool hasDate))
+                int.TryParse(values[4], out int priority) &&
+                bool.TryParse(values[6], out bool isNumbered) &&
+                bool.TryParse(values[7], out bool hasDate))
             {
-                proj = new ProjectKeyword(values[0], useInDoc, values[2], priority, values[4], isNumbered, hasDate, values[7]);
+                proj = new ProjectKeyword(values[0], useInDoc, values[2], values[3], priority, values[5], isNumbered, hasDate, values[8]);
                 return true;
             }
             return false;
@@ -91,7 +95,7 @@ namespace PdfFormFiller
         {
             if (UseInDocument == true)
             {
-                return $"{_keyword}|{_useInDocument}|{_formKey}|{_priority}|{_alias}|{_isNumberedForm}|{_hasDateValue}|{_dateKey}";
+                return $"{_keyword}|{_useInDocument}|{_formKey}|{_altFormKey}|{_priority}|{_alias}|{_isNumberedForm}|{_hasDateValue}|{_dateKey}";
             }
             return $"{_keyword}|{_useInDocument}";
         }
@@ -102,6 +106,8 @@ namespace PdfFormFiller
         public bool UseInDocument { get => _useInDocument; set => _useInDocument = value; }
         /// <summary>form field name. if 'numberedForm' is true, remove number suffix</summary>
         public string FormKey { get => _formKey; set => _formKey = value; }
+        /// <summary>an alternative form field name</summary>
+        public string AltFormKey { get => _altFormKey; set => _altFormKey = value; }
         /// <summary>how important this one is over other ones with the same key</summary>
         public int Priority { get => _priority; set => _priority = value; }
         /// <summary>alternative name for this field, used if the actual field is filled in</summary>

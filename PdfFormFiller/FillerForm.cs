@@ -35,6 +35,7 @@ namespace PdfFormFiller
             FillPdfHistory();
             //CBB_PdfLocation.Text = Settings.Instance.TemplatePath1;
             TB_ProjectLocation.Text = Settings.Instance.ProjectPath;
+            CB_UseAltKeys.Checked = Settings.Instance.UseAltKeys;
         }
 
         #region button Events
@@ -135,7 +136,7 @@ namespace PdfFormFiller
             }
             if (_pdf == null)
             { _pdf = new PdfData(); }
-            if (_pdf.TryFillForm(((PathTemplate)CBB_PdfLocation.SelectedItem).FilePath, TB_ProjectLocation.Text, out string output))
+            if (_pdf.TryFillForm(((PathTemplate)CBB_PdfLocation.SelectedItem).FilePath, TB_ProjectLocation.Text, CB_UseAltKeys.Checked, out string output))
             {
                 SelectFileInExplorer(output);
             }
@@ -206,6 +207,11 @@ namespace PdfFormFiller
         private void CBB_PdfLocation_SelectedIndexChanged(object sender, EventArgs e)
         {
             Settings.Instance.LastSelected = CBB_PdfLocation.SelectedIndex;
+        }
+
+        private void CB_UseAltKeys_CheckedChanged(object sender, EventArgs e)
+        {
+            Settings.Instance.UseAltKeys = CB_UseAltKeys.Checked;
         }
     }
 }

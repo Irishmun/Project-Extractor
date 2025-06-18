@@ -28,7 +28,7 @@ namespace PdfFormFiller
         }
         /// <summary>Parses Project Keyword file</summary>
         /// <param name="path">path to file</param>
-        public bool TryFillForm(string pdfPath, string projectPath, out string outputPath)
+        public bool TryFillForm(string pdfPath, string projectPath, bool useAltFormKeys, out string outputPath)
         {
             outputPath = string.Empty;
             if (File.Exists(pdfPath) == false || File.Exists(projectPath) == false)
@@ -84,10 +84,17 @@ namespace PdfFormFiller
 #if DEBUG
                     Debug.WriteLine($"filling \"{key.FormKey}\" with: {str.ToString().Trim()}");
 #endif
-                    if (HasField(form, key.FormKey))
+                    if (HasField(form, key.FormKey, useAltFormKeys, key.AltFormKey))
                     {
-                        string prevContent = form.GetField(key.FormKey).GetValueAsString().Trim();
-                        form.GetField(key.FormKey).SetValue(prevContent + " " + str.ToString().Trim());
+                        //TODO: fix nullrefexception caused by altkey
+                        string keyString = key.FormKey;
+                        if (useAltFormKeys && !string.IsNullOrWhiteSpace(key.AltFormKey))
+                        {
+                            keyString = key.AltFormKey;
+                        }
+                        iText.Forms.Fields.PdfFormField field = form.GetField(keyString);
+                        string prevContent = field.GetValueAsString().Trim();
+                        field.SetValue(prevContent + " " + str.ToString().Trim());
                     }
                     continue;
                 }
@@ -146,17 +153,36 @@ namespace PdfFormFiller
                 starts = startsWithKeyword(line, out key);
                 if (starts)
                 {
-                    if (HasField(pdfForm, key.FormKey))
+                    iText.Forms.Fields.PdfFormField field;
+                    if (HasField(pdfForm, key.FormKey, useAltFormKeys, key.AltFormKey))
                     {
-                        if (string.IsNullOrWhiteSpace(pdfForm.GetField(key.FormKey).GetValueAsString()))
+                        if (useAltFormKeys && !string.IsNullOrWhiteSpace(key.AltFormKey))
+                        {
+                            field = pdfForm.GetField(key.AltFormKey);
+                        }
+                        else
+                        {
+                            field = pdfForm.GetField(key.FormKey);
+                        }
+
+                        if (field != null && string.IsNullOrWhiteSpace(field.GetValueAsString()))
                         {
                             return starts;
                         }
                     }
                     possible = getAlias(key.Alias, out ProjectKeyword possibleKey);
-                    if (HasField(pdfForm, possibleKey.FormKey))
+                    if (HasField(pdfForm, possibleKey.FormKey, useAltFormKeys, possibleKey.AltFormKey))
                     {
-                        if (string.IsNullOrWhiteSpace(pdfForm.GetField(possibleKey.FormKey).GetValueAsString()))
+                        if (useAltFormKeys && !string.IsNullOrWhiteSpace(possibleKey.AltFormKey))
+                        {
+                            field = pdfForm.GetField(possibleKey.AltFormKey);
+                        }
+                        else
+                        {
+                            field = pdfForm.GetField(possibleKey.FormKey);
+                        }
+
+                        if (field != null && string.IsNullOrWhiteSpace(field.GetValueAsString()))
                         {
                             key = possibleKey;
                             return possible;
@@ -270,7 +296,16 @@ namespace PdfFormFiller
             longestLength = m.Length;
             return true;
         }
-        private bool HasField(PdfAcroForm form, string field) => form.GetField(field) != null;
+
+        private bool HasField(PdfAcroForm form, string field, bool useAltIfAvailable, string altField = "")
+        {
+            if (useAltIfAvailable && !string.IsNullOrWhiteSpace(altField))
+            {
+                return form.GetField(altField) != null;
+            }
+            return form.GetField(field) != null;
+        }
+
         private PdfDocument OpenDoc(string path, out PdfAcroForm form, out string outputPath, string filledName = "filled", bool unethicalReading = true, bool withWriter = true)
         {
             try

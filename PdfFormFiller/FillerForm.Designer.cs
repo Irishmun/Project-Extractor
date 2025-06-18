@@ -44,6 +44,7 @@ namespace PdfFormFiller
             BT_GetPdfFields = new Button();
             CBB_PdfLocation = new ComboBox();
             BT_DebugFillFields = new Button();
+            CB_UseAltKeys = new CheckBox();
             ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
             splitContainer1.Panel1.SuspendLayout();
             splitContainer1.Panel2.SuspendLayout();
@@ -197,11 +198,23 @@ namespace PdfFormFiller
             BT_DebugFillFields.Visible = false;
             BT_DebugFillFields.Click += BT_DebugFillFields_Click;
             // 
+            // CB_UseAltKeys
+            // 
+            CB_UseAltKeys.AutoSize = true;
+            CB_UseAltKeys.Location = new Point(407, 389);
+            CB_UseAltKeys.Name = "CB_UseAltKeys";
+            CB_UseAltKeys.Size = new Size(169, 19);
+            CB_UseAltKeys.TabIndex = 113;
+            CB_UseAltKeys.Text = "Gebruik alternatieve velden";
+            CB_UseAltKeys.UseVisualStyleBackColor = true;
+            CB_UseAltKeys.CheckedChanged += CB_UseAltKeys_CheckedChanged;
+            // 
             // FillerForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(617, 450);
+            Controls.Add(CB_UseAltKeys);
             Controls.Add(BT_DebugFillFields);
             Controls.Add(CBB_PdfLocation);
             Controls.Add(BT_GetPdfFields);
@@ -238,5 +251,6 @@ namespace PdfFormFiller
         private Button BT_GetPdfFields;
         private ComboBox CBB_PdfLocation;
         private Button BT_DebugFillFields;
+        private CheckBox CB_UseAltKeys;
     }
 }
