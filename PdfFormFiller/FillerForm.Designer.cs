@@ -200,7 +200,10 @@ namespace PdfFormFiller
             // 
             // CB_UseAltKeys
             // 
+            CB_UseAltKeys.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             CB_UseAltKeys.AutoSize = true;
+            CB_UseAltKeys.Checked = true;
+            CB_UseAltKeys.CheckState = CheckState.Checked;
             CB_UseAltKeys.Location = new Point(407, 389);
             CB_UseAltKeys.Name = "CB_UseAltKeys";
             CB_UseAltKeys.Size = new Size(169, 19);

@@ -102,6 +102,7 @@ namespace PdfFormFiller
                 i += 1;//current line has keyword, won't have date
                 for (int num = 1; num < 100; num++)//should not even reach 100
                 {
+                    //TODO: rework to search for next line with date before incrementing num
                     string keyString = key.FormKey + num.ToString();
                     string dateString = key.DateKey + num.ToString();
                     //if (!fields.Contains(keyString) || StartsWithKeyOrAlias(lines[i], form, out _))
