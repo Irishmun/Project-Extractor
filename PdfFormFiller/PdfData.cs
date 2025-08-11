@@ -14,6 +14,7 @@ namespace PdfFormFiller
 {
     internal class PdfData
     {
+        const string DATE_REGEX = @"[0-9]{1,2}(-|/)[0-9]{1,2}(-|/)[0-9]{2,4}";
         //TODO:Fix Alias search
         const string KEYWORD_FILE = @"Resources\Keywords.psv";
         static readonly string EXE_PATH = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
@@ -111,27 +112,24 @@ namespace PdfFormFiller
                     if (key.HasDateValue == true)
                     {//get date and put that in date field
                      //get date value as separate string, put it in DateKey field
-                        Match match = Regex.Match(lines[i], @"[0-9]{1,2}(-|/)[0-9]{1,2}(-|/)[0-9]{2,4}");
+                        Match match = Regex.Match(lines[i], DATE_REGEX);
                         string date;
                         string content;
                         if (match.Success == true)
                         {//safest
                             date = match.Value;
-                            content = lines[i].Substring(0, match.Index);
+                            content = lines[i].Substring(0, match.Index).Trim();
+                            if (!string.IsNullOrWhiteSpace(lines[i + 1]) && !Regex.IsMatch(lines[i + 1], DATE_REGEX))
+                            {//not empty, but also not a date. Add to this sentence
+                                content += " " + lines[i + 1].Trim();
+                                i += 1;//can skip next line
+                            }
 #if DEBUG
                             Debug.WriteLine($"filling \"{keyString}\" with: {content} and \"{dateString}\" with: {date}");
 #endif
                             form.GetField(keyString).SetValue(content);
                             form.GetField(dateString).SetValue(date);
                         }
-                        /*
-                        //fill entries
-#if DEBUG
-                        Debug.WriteLine($"filling \"{key.FormKey + num.ToString()}\" with: {content} and \"{key.DateKey + num.ToString()}\" with: {date}");
-#endif
-                        //form.GetField(key.FormKey).SetValue(content);
-                        //form.GetField(key.DateKey).SetValue(date);
-                        */
                     }
                     else
                     {//write whole line
