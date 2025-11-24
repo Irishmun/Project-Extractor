@@ -1357,5 +1357,55 @@ namespace ProjectExtractor
 
 
 
+        private void TB_PDFLocation_DragDrop(object sender, DragEventArgs e)
+        {
+            string[] fileList = (string[])e.Data.GetData(DataFormats.FileDrop, false);
+            if (fileList == null || fileList.Length == 0)
+            { return; }
+
+            FileAttributes attr = File.GetAttributes(fileList[0]);
+
+            if (attr.HasFlag(FileAttributes.Directory))
+            {
+                return;
+            }
+
+            if (Path.GetExtension(fileList[0]).ToLower() != ".pdf")
+            {
+                return;
+            }
+
+            TB_PDFLocation.Text = Path.GetFullPath(fileList[0]);
+        }
+
+        private void TB_ExtractLocation_DragDrop(object sender, DragEventArgs e)
+        {
+            string[] fileList = (string[])e.Data.GetData(DataFormats.FileDrop, false);
+            if (fileList == null || fileList.Length == 0)
+            { return; }
+
+            string path = fileList[0];
+
+            FileAttributes attr = File.GetAttributes(path);
+
+            if (!attr.HasFlag(FileAttributes.Directory))
+            {
+                path = Path.GetDirectoryName(path);
+            }
+
+            TB_ExtractLocation.Text = path;
+        }
+
+        private void TB_DragEnter(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                e.Effect = DragDropEffects.Copy;
+            }
+            else
+            {
+                e.Effect = DragDropEffects.None;
+            }
+        }
     }
 }

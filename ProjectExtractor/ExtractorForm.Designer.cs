@@ -448,7 +448,9 @@ namespace ProjectExtractor
             // 
             // TB_ExtractLocation
             // 
+            TB_ExtractLocation.AllowDrop = true;
             TB_ExtractLocation.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            TB_ExtractLocation.Cursor = System.Windows.Forms.Cursors.IBeam;
             TB_ExtractLocation.Enabled = false;
             TB_ExtractLocation.Location = new System.Drawing.Point(73, 74);
             TB_ExtractLocation.Name = "TB_ExtractLocation";
@@ -456,6 +458,8 @@ namespace ProjectExtractor
             TB_ExtractLocation.Size = new System.Drawing.Size(450, 23);
             TB_ExtractLocation.TabIndex = 4;
             TB_ExtractLocation.TextChanged += TB_ExtractLocation_TextChanged;
+            TB_ExtractLocation.DragDrop += TB_ExtractLocation_DragDrop;
+            TB_ExtractLocation.DragEnter += TB_DragEnter;
             // 
             // BT_BrowseExtract
             // 
@@ -480,13 +484,17 @@ namespace ProjectExtractor
             // 
             // TB_PDFLocation
             // 
+            TB_PDFLocation.AllowDrop = true;
             TB_PDFLocation.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            TB_PDFLocation.Cursor = System.Windows.Forms.Cursors.IBeam;
             TB_PDFLocation.Location = new System.Drawing.Point(73, 21);
             TB_PDFLocation.Name = "TB_PDFLocation";
             TB_PDFLocation.PlaceholderText = "Path to PDF file to extract";
             TB_PDFLocation.Size = new System.Drawing.Size(450, 23);
             TB_PDFLocation.TabIndex = 1;
             TB_PDFLocation.TextChanged += TB_PDFLocation_TextChanged;
+            TB_PDFLocation.DragDrop += TB_PDFLocation_DragDrop;
+            TB_PDFLocation.DragEnter += TB_DragEnter;
             // 
             // BT_BrowsePDF
             // 
