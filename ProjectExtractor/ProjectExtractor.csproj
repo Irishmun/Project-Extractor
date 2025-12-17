@@ -6,14 +6,14 @@
     <ApplicationIcon>Resources\ProjectExtractorIcon.ico</ApplicationIcon>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <Title>Project Extractor</Title>
-    <Copyright>Copyright ©  2022 Steef van de Weijdeven</Copyright>
+    <Copyright>Copyright ©  2026 Steef van de Weijdeven</Copyright>
     <Company>TechNet B.V.</Company>
     <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
     <PackageProjectUrl>
     </PackageProjectUrl>
     <RepositoryUrl>https://github.com/Irishmun/Project-Extractor</RepositoryUrl>
     <NeutralLanguage>en-US</NeutralLanguage>
-    <AssemblyVersion>3.2.0</AssemblyVersion>
+    <AssemblyVersion>3.2.1</AssemblyVersion>
     <Platforms>AnyCPU;x86</Platforms>
   </PropertyGroup>
   <ItemGroup>
@@ -21,9 +21,13 @@
     <None Remove="Resources\ProjectExtractorIcon.ico" />
     <None Remove="Resources\Sections\Rev_2.json" />
     <None Remove="Resources\Sections\Rev_3.json" />
+    <None Remove="Resources\Sections\Rev_4.json" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\Sections\Rev_2.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Sections\Rev_4.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\Sections\Rev_3.json">

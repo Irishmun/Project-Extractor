@@ -59,7 +59,7 @@ namespace ProjectExtractor
             //set version combobox index
             if (_settings.SelectedFileVersionIndex < 0)
             {
-                CbB_FileVersion.SelectedIndex = 2;
+                CbB_FileVersion.SelectedIndex = 3;
             }
             else
             {
@@ -375,6 +375,14 @@ namespace ProjectExtractor
         {
             _settings.PDFPath = TB_PDFLocation.Text;
             DisplayFullExtractionFilePath();
+            if (_settings.DisableExtractionPath == true)
+            {
+                TB_ExtractLocation.Text = Path.GetDirectoryName(TB_PDFLocation.Text);
+                if (!TB_ExtractLocation.Text.EndsWith('\\'))
+                {
+                    TB_ExtractLocation.Text += "\\";
+                }
+            }
         }
         private void TB_ExtractLocation_TextChanged(object sender, EventArgs e)
         {
@@ -1344,6 +1352,10 @@ namespace ProjectExtractor
                     break;
                 case 2://revision 3
                     exportFile += $"Resources\\Sections\\Rev_3.json";
+                    (_extractor as ProjectExtractorBase).RevisionThreeSectionsToJson(exportFile);
+                    break;
+                case 3://revision 4
+                    exportFile += $"Resources\\Sections\\Rev_4.json";
                     (_extractor as ProjectExtractorBase).RevisionThreeSectionsToJson(exportFile);
                     break;
                 default:

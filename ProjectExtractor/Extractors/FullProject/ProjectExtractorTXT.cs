@@ -14,11 +14,12 @@ namespace ProjectExtractor.Extractors.FullProject
     {
         public ProjectExtractorTXT(SectionsFolder sections) : base(sections)
         {//TODO: get project revision, only instantiate that one
-            if (Sections.IsHashDifferent() || (RevTwoSectionDescriptions == null && RevThreeSectionDescriptions == null))
+            if (Sections.IsHashDifferent() || (RevTwoSectionDescriptions == null && RevThreeSectionDescriptions == null && RevFourSectionDescriptions == null))
             {
                 Sections.SetFolderHash();
                 RevTwoSectionDescriptions = SectionsArrayFromJson(Sections.ReadSectionFile(RevTwoFileName));
                 RevThreeSectionDescriptions = SectionsArrayFromJson(Sections.ReadSectionFile(RevThreeFileName));
+                RevFourSectionDescriptions = SectionsArrayFromJson(Sections.ReadSectionFile(RevFourFileName));
             }
         }
 
@@ -53,7 +54,7 @@ namespace ProjectExtractor.Extractors.FullProject
         {
             if (extractToSeparateFiles == false)
             {
-                string res = ExtractRevisionThreeToString(file, Sections, EndProject, Worker, out ExitCode returnCode, workerState);
+                string res = ExtractRevisionThreeToString(file, Sections, EndProject, Worker, out ExitCode returnCode, workerState, false);
                 using (StreamWriter sw = File.CreateText(extractPath))
                 {
                     sw.Write(res);
@@ -63,7 +64,26 @@ namespace ProjectExtractor.Extractors.FullProject
             }
             else
             {
-                ExtractRevisionThreeToString(file, Sections, EndProject, Worker, out ExitCode returnCode, workerState, extractToSeparateFiles, extractPath);
+                ExtractRevisionThreeToString(file, Sections, EndProject, Worker, out ExitCode returnCode, workerState, false, extractToSeparateFiles, extractPath);
+                return returnCode;
+            }
+        }
+
+        protected override ExitCode ExtractRevisionFourProject(string file, string extractPath, string[] Sections, string EndProject, bool extractToSeparateFiles, BackgroundWorker Worker, WorkerStates workerState)
+        {
+            if (extractToSeparateFiles == false)
+            {
+                string res = ExtractRevisionThreeToString(file, Sections, EndProject, Worker, out ExitCode returnCode, workerState, true);
+                using (StreamWriter sw = File.CreateText(extractPath))
+                {
+                    sw.Write(res);
+                    sw.Close();
+                }
+                return returnCode;
+            }
+            else
+            {
+                ExtractRevisionThreeToString(file, Sections, EndProject, Worker, out ExitCode returnCode, workerState, true, extractToSeparateFiles, extractPath);
                 return returnCode;
             }
         }
@@ -132,7 +152,7 @@ namespace ProjectExtractor.Extractors.FullProject
                     {//skip existing
                         continue;
                     }
-                    string result = ExtractRevisionThreeToString(documentPaths[i], Sections, EndProject, Worker, out ExitCode returnCode, workerState);
+                    string result = ExtractRevisionThreeToString(documentPaths[i], Sections, EndProject, Worker, out ExitCode returnCode, workerState, false);
                     if (returnCode == ExitCode.ERROR)
                     {
                         code = ExitCode.BATCH_FLAWED;
@@ -147,7 +167,48 @@ namespace ProjectExtractor.Extractors.FullProject
                 }
                 else
                 {
-                    ExtractRevisionThreeToString(documentPaths[i], Sections, EndProject, Worker, out ExitCode returnCode, workerState, extractToSeparateFiles, extractPath);
+                    ExtractRevisionThreeToString(documentPaths[i], Sections, EndProject, Worker, out ExitCode returnCode, workerState, false, extractToSeparateFiles, extractPath);
+                    if (returnCode == ExitCode.ERROR)
+                    {
+                        code = ExitCode.BATCH_FLAWED;
+                        continue;
+                    }
+                }
+            }
+            return code;
+        }
+
+        protected override ExitCode BatchExtractRevisionFourProject(string folder, string extractPath, string fileExtension, string[] Sections, string EndProject, bool skipExisting, bool extractToSeparateFiles, BackgroundWorker Worker, WorkerStates workerState)
+        {
+            string[] documentPaths = Directory.GetFiles(folder, "*.pdf");
+            ExitCode code = ExitCode.BATCH;
+            if (documentPaths.Length == 0)
+            { return ExitCode.ERROR; }
+            for (int i = 0; i < documentPaths.Length; i++)
+            {
+                if (extractToSeparateFiles == false)
+                {
+                    string exportFile = $"{extractPath}{Path.GetFileNameWithoutExtension(documentPaths[i])} - Projecten.{fileExtension}";//add path and file extension
+                    if (skipExisting == true && File.Exists(exportFile))
+                    {//skip existing
+                        continue;
+                    }
+                    string result = ExtractRevisionThreeToString(documentPaths[i], Sections, EndProject, Worker, out ExitCode returnCode, workerState, true);
+                    if (returnCode == ExitCode.ERROR)
+                    {
+                        code = ExitCode.BATCH_FLAWED;
+                        continue;
+                    }
+                    using (StreamWriter sw = File.CreateText(exportFile))
+                    {
+                        //write the final result to a text document
+                        sw.Write(result);
+                        sw.Close();
+                    }
+                }
+                else
+                {
+                    ExtractRevisionThreeToString(documentPaths[i], Sections, EndProject, Worker, out ExitCode returnCode, workerState, true, extractToSeparateFiles, extractPath);
                     if (returnCode == ExitCode.ERROR)
                     {
                         code = ExitCode.BATCH_FLAWED;
@@ -295,7 +356,7 @@ namespace ProjectExtractor.Extractors.FullProject
         }
         /// <summary>Extracts all projects from the given file in revision three format</summary>
         /// <returns>string containing all projects and formatting</returns>
-        private string ExtractRevisionThreeToString(string file, string[] Sections, string EndProject, BackgroundWorker Worker, out ExitCode returnCode, WorkerStates workerState, bool extractToSeparate = false, string extractPath = "")
+        private string ExtractRevisionThreeToString(string file, string[] Sections, string EndProject, BackgroundWorker Worker, out ExitCode returnCode, WorkerStates workerState, bool useRevisionFour, bool extractToSeparate = false, string extractPath = "")
         {
             returnCode = ExitCode.NONE;
             ExtractTextFromPDF(file);
@@ -323,7 +384,7 @@ namespace ProjectExtractor.Extractors.FullProject
             for (int project = 0; project < ProjectStartIndexes.Count; project++)
             {
                 int nextIndex = project == (ProjectStartIndexes.Count - 1) ? Lines.Length - 1 : ProjectStartIndexes[project + 1];
-                str.AppendLine(ExtractRevisionThreeSingle(file, ProjectStartIndexes[project], nextIndex, Sections, EndProject, projectIndex, ProjectStartIndexes, out bool isEndOfDocument, Worker, workerState).ToString());
+                str.AppendLine(ExtractRevisionThreeSingle(file, ProjectStartIndexes[project], nextIndex, Sections, EndProject, projectIndex, ProjectStartIndexes, useRevisionFour, out bool isEndOfDocument, Worker, workerState).ToString());
                 if (isEndOfDocument == true)
                 { project = ProjectStartIndexes.Count - 1; }
                 if (extractToSeparate == false)
@@ -432,7 +493,7 @@ namespace ProjectExtractor.Extractors.FullProject
         }
         /// <summary>Extracts a single project from the given file in revision three format</summary>
         /// <returns>Stringbuilder containing extracted project</returns>
-        private StringBuilder ExtractRevisionThreeSingle(string file, int start, int end, string[] Sections, string EndProject, int projectIndex, List<int> ProjectStartIndexes, out bool isEndOfDocument, BackgroundWorker Worker, WorkerStates workerState)
+        private StringBuilder ExtractRevisionThreeSingle(string file, int start, int end, string[] Sections, string EndProject, int projectIndex, List<int> ProjectStartIndexes, bool useRevisionFour, out bool isEndOfDocument, BackgroundWorker Worker, WorkerStates workerState)
         {
             isEndOfDocument = false;
             bool continuationDone = false;
@@ -466,7 +527,8 @@ namespace ProjectExtractor.Extractors.FullProject
                 nextLine = lineIndex == Lines.Length - 1 ? string.Empty : Lines[lineIndex + 1];
                 if (searchNextSection == true)
                 {
-                    string res = TryFindSection(Lines[lineIndex], RevThreeSectionDescriptions, out string foundRemaining, out int foundSection, out isEndOfDocument, out bool isEndOfProject, appendNewLines, nextLine);
+                    ProjectSection[] descriptions = !useRevisionFour ? RevThreeSectionDescriptions : RevFourSectionDescriptions;
+                    string res = TryFindSection(Lines[lineIndex], descriptions, out string foundRemaining, out int foundSection, out isEndOfDocument, out bool isEndOfProject, appendNewLines, nextLine);
                     if (isEndOfDocument == true)
                     { break; }
                     if (!string.IsNullOrWhiteSpace(res))
@@ -476,7 +538,7 @@ namespace ProjectExtractor.Extractors.FullProject
                         searchNextSection = false;
                         checkString = foundRemaining;
                         remaining = checkString;
-                        appendNewLines = RevThreeSectionDescriptions[foundSection].AppendNewLines;
+                        appendNewLines = descriptions[foundSection].AppendNewLines;
                     }
                 }
                 else

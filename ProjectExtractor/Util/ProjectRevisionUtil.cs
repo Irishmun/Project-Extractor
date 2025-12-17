@@ -14,10 +14,12 @@ namespace ProjectExtractor.Util
         REVISION_ONE = 0,
         /// <summary>Project using the layout made after 2017 and before 2022 (V2.X)</summary>
         REVISION_TWO = 1,
-        /// <summary>project using the current layout (V3.X)</summary>
+        /// <summary>project using the layout made after 2022 and before 2026 (V3.X)</summary>
         REVISION_THREE = 2,
+        /// <summary>project using the layout made after 2026 (V4.X)</summary>
+        REVISION_FOUR = 3,
         /// <summary>project using an unknown layout</summary>
-        UNKNOWN_REVISION = 3
+        UNKNOWN_REVISION = 99
     }
     class ProjectRevisionUtil
     {
@@ -36,6 +38,7 @@ namespace ProjectExtractor.Util
                 case 2:
                     return ProjectLayoutRevision.REVISION_THREE;
                 case 3:
+                    return ProjectLayoutRevision.REVISION_FOUR;
                 default:
                     return ProjectLayoutRevision.UNKNOWN_REVISION;
             }
