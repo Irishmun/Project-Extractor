@@ -22,7 +22,10 @@ namespace ProjectExtractor.Extractors.Detail
                     return ExtractRevisionTwoDetails(file, extractPath, Keywords, chapters, stopChapters, totalHoursKeyword, WriteTotalHoursToFile, WriteKeywordsToFile, writePhaseDate, barBeforeUpdate, Worker, workerState);
                 case ProjectLayoutRevision.REVISION_THREE:
                     return ExtractRevisionThreeDetails(file, extractPath, Keywords, chapters, stopChapters, totalHoursKeyword, WriteTotalHoursToFile, WriteKeywordsToFile, writePhaseDate, barBeforeUpdate, Worker, workerState);
+                case ProjectLayoutRevision.REVISION_FOUR:
+                    return ExtractRevisionThreeDetails(file, extractPath, Keywords, chapters, stopChapters, totalHoursKeyword, WriteTotalHoursToFile, WriteKeywordsToFile, writePhaseDate, barBeforeUpdate, Worker, workerState);
                 case ProjectLayoutRevision.UNKNOWN_REVISION:
+
                 default:
 #if DEBUG
                     System.Diagnostics.Debug.WriteLine("[ProjectExtractorBase]Unknown revision given...");
@@ -39,6 +42,8 @@ namespace ProjectExtractor.Extractors.Detail
                 case ProjectLayoutRevision.REVISION_TWO:
                     return BatchExtractRevisionTwoDetails(batchPath, extractPath, Keywords, chapters, stopChapters, totalHoursKeyword, WriteTotalHoursToFile, WriteKeywordsToFile, writePhaseDate, skipExisting, barBeforeUpdate, Worker, workerState);
                 case ProjectLayoutRevision.REVISION_THREE:
+                    return BatchExtractRevisionThreeDetails(batchPath, extractPath, Keywords, chapters, stopChapters, totalHoursKeyword, WriteTotalHoursToFile, WriteKeywordsToFile, writePhaseDate, skipExisting, barBeforeUpdate, Worker, workerState);
+                case ProjectLayoutRevision.REVISION_FOUR:
                     return BatchExtractRevisionThreeDetails(batchPath, extractPath, Keywords, chapters, stopChapters, totalHoursKeyword, WriteTotalHoursToFile, WriteKeywordsToFile, writePhaseDate, skipExisting, barBeforeUpdate, Worker, workerState);
                 case ProjectLayoutRevision.UNKNOWN_REVISION:
                 default:
