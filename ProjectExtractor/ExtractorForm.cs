@@ -2,6 +2,7 @@
 using ProjectExtractor.Extractors;
 using ProjectExtractor.Extractors.Detail;
 using ProjectExtractor.Extractors.FullProject;
+using ProjectExtractor.Extractors.Regions;
 using ProjectExtractor.Search;
 using ProjectExtractor.Util;
 using ProjectUtility;
@@ -1419,5 +1420,29 @@ namespace ProjectExtractor
                 e.Effect = DragDropEffects.None;
             }
         }
+
+        #region region extract
+
+        private void BT_GetRects_Click(object sender, EventArgs e)
+        {
+            RegionExtractor extract = new RegionExtractor();
+            LB_GottenRects.Items.Clear();
+            LB_GottenRects.Items.Add(extract.TryFindRectsOnPage(TB_PDFLocation.Text, (int)NUD_PageToExtract.Value)[0].ToString());
+        }
+
+        private void BT_ExtractInRegion_Click(object sender, EventArgs e)
+        {
+            RegionExtractor extract = new RegionExtractor();
+
+            iText.Kernel.Geom.Rectangle rect = new iText.Kernel.Geom.Rectangle(
+                (int)NUD_RectX.Value,
+                (int)NUD_RectY.Value,
+                (int)NUD_RectWidth.Value,
+                (int)NUD_RectHeight.Value);
+
+            RTB_ExtractedRegion.Clear();
+            RTB_ExtractedRegion.Text = string.Join(Environment.NewLine, extract.GetTextInRect(TB_PDFLocation.Text, (int)NUD_PageToExtract.Value, rect));
+        }
+        #endregion
     }
 }

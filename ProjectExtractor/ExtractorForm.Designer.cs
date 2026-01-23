@@ -31,16 +31,16 @@ namespace ProjectExtractor
         {
             components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ExtractorForm));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.ListViewItem listViewItem10 = new System.Windows.Forms.ListViewItem("Projectnummer");
-            System.Windows.Forms.ListViewItem listViewItem11 = new System.Windows.Forms.ListViewItem("Projecttitel");
-            System.Windows.Forms.ListViewItem listViewItem12 = new System.Windows.Forms.ListViewItem("Aantal uren werknemers");
-            System.Windows.Forms.ListViewItem listViewItem13 = new System.Windows.Forms.ListViewItem("Het project wordt/is gestart op");
-            System.Windows.Forms.ListViewItem listViewItem14 = new System.Windows.Forms.ListViewItem("Geef een algemene omschrijving van het");
-            System.Windows.Forms.ListViewItem listViewItem15 = new System.Windows.Forms.ListViewItem("project. Heeft u eerder WBSO");
-            System.Windows.Forms.ListViewItem listViewItem16 = new System.Windows.Forms.ListViewItem("aangevraagd voor dit project? Beschrijf");
-            System.Windows.Forms.ListViewItem listViewItem17 = new System.Windows.Forms.ListViewItem("dan de stand van zaken bij de vraag");
-            System.Windows.Forms.ListViewItem listViewItem18 = new System.Windows.Forms.ListViewItem("“Update project”.");
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.ListViewItem listViewItem19 = new System.Windows.Forms.ListViewItem("Projectnummer");
+            System.Windows.Forms.ListViewItem listViewItem20 = new System.Windows.Forms.ListViewItem("Projecttitel");
+            System.Windows.Forms.ListViewItem listViewItem21 = new System.Windows.Forms.ListViewItem("Aantal uren werknemers");
+            System.Windows.Forms.ListViewItem listViewItem22 = new System.Windows.Forms.ListViewItem("Het project wordt/is gestart op");
+            System.Windows.Forms.ListViewItem listViewItem23 = new System.Windows.Forms.ListViewItem("Geef een algemene omschrijving van het");
+            System.Windows.Forms.ListViewItem listViewItem24 = new System.Windows.Forms.ListViewItem("project. Heeft u eerder WBSO");
+            System.Windows.Forms.ListViewItem listViewItem25 = new System.Windows.Forms.ListViewItem("aangevraagd voor dit project? Beschrijf");
+            System.Windows.Forms.ListViewItem listViewItem26 = new System.Windows.Forms.ListViewItem("dan de stand van zaken bij de vraag");
+            System.Windows.Forms.ListViewItem listViewItem27 = new System.Windows.Forms.ListViewItem("“Update project”.");
             statusStrip1 = new System.Windows.Forms.StatusStrip();
             toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             TSSL_ExtractionProgress = new System.Windows.Forms.ToolStripStatusLabel();
@@ -144,8 +144,27 @@ namespace ProjectExtractor
             panel1 = new System.Windows.Forms.Panel();
             LL_GitHubLink = new System.Windows.Forms.LinkLabel();
             BT_UpdateProgram = new System.Windows.Forms.Button();
+            TabPage_RegionExtract = new System.Windows.Forms.TabPage();
+            groupBox11 = new System.Windows.Forms.GroupBox();
+            NUD_RectHeight = new System.Windows.Forms.NumericUpDown();
+            label14 = new System.Windows.Forms.Label();
+            NUD_RectWidth = new System.Windows.Forms.NumericUpDown();
+            label15 = new System.Windows.Forms.Label();
+            NUD_RectY = new System.Windows.Forms.NumericUpDown();
+            label13 = new System.Windows.Forms.Label();
+            NUD_RectX = new System.Windows.Forms.NumericUpDown();
+            label12 = new System.Windows.Forms.Label();
+            RTB_ExtractedRegion = new System.Windows.Forms.RichTextBox();
+            LB_GottenRects = new System.Windows.Forms.ListBox();
+            BT_ExtractInRegion = new System.Windows.Forms.Button();
+            BT_GetRects = new System.Windows.Forms.Button();
+            NUD_PageToExtract = new System.Windows.Forms.NumericUpDown();
+            label11 = new System.Windows.Forms.Label();
             backgroundWorker = new System.ComponentModel.BackgroundWorker();
             toolTip1 = new System.Windows.Forms.ToolTip(components);
+            label16 = new System.Windows.Forms.Label();
+            label17 = new System.Windows.Forms.Label();
+            label18 = new System.Windows.Forms.Label();
             statusStrip1.SuspendLayout();
             TC_MainView.SuspendLayout();
             TabPage_Extractor.SuspendLayout();
@@ -183,6 +202,13 @@ namespace ProjectExtractor
             tableLayoutPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)logoPictureBox).BeginInit();
             panel1.SuspendLayout();
+            TabPage_RegionExtract.SuspendLayout();
+            groupBox11.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)NUD_RectHeight).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)NUD_RectWidth).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)NUD_RectY).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)NUD_RectX).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)NUD_PageToExtract).BeginInit();
             SuspendLayout();
             // 
             // statusStrip1
@@ -232,6 +258,7 @@ namespace ProjectExtractor
             TC_MainView.Controls.Add(TabPage_DetailSettings);
             TC_MainView.Controls.Add(TabPage_ProjectSettings);
             TC_MainView.Controls.Add(TabPage_About);
+            TC_MainView.Controls.Add(TabPage_RegionExtract);
             TC_MainView.Dock = System.Windows.Forms.DockStyle.Fill;
             TC_MainView.Location = new System.Drawing.Point(0, 0);
             TC_MainView.Name = "TC_MainView";
@@ -627,14 +654,14 @@ namespace ProjectExtractor
             DGV_DatabaseResults.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.Sunken;
             DGV_DatabaseResults.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             DGV_DatabaseResults.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] { Column1 });
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            DGV_DatabaseResults.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle3.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            DGV_DatabaseResults.DefaultCellStyle = dataGridViewCellStyle3;
             DGV_DatabaseResults.Dock = System.Windows.Forms.DockStyle.Fill;
             DGV_DatabaseResults.Location = new System.Drawing.Point(0, 0);
             DGV_DatabaseResults.Name = "DGV_DatabaseResults";
@@ -1129,11 +1156,11 @@ namespace ProjectExtractor
             // 
             LV_Keywords.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
             LV_Keywords.CheckBoxes = true;
-            listViewItem10.StateImageIndex = 0;
-            listViewItem11.StateImageIndex = 0;
-            listViewItem12.StateImageIndex = 0;
-            listViewItem13.StateImageIndex = 0;
-            LV_Keywords.Items.AddRange(new System.Windows.Forms.ListViewItem[] { listViewItem10, listViewItem11, listViewItem12, listViewItem13 });
+            listViewItem19.StateImageIndex = 0;
+            listViewItem20.StateImageIndex = 0;
+            listViewItem21.StateImageIndex = 0;
+            listViewItem22.StateImageIndex = 0;
+            LV_Keywords.Items.AddRange(new System.Windows.Forms.ListViewItem[] { listViewItem19, listViewItem20, listViewItem21, listViewItem22 });
             LV_Keywords.LabelEdit = true;
             LV_Keywords.Location = new System.Drawing.Point(6, 22);
             LV_Keywords.MultiSelect = false;
@@ -1286,7 +1313,7 @@ namespace ProjectExtractor
             // LV_Sections
             // 
             LV_Sections.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-            LV_Sections.Items.AddRange(new System.Windows.Forms.ListViewItem[] { listViewItem14, listViewItem15, listViewItem16, listViewItem17, listViewItem18 });
+            LV_Sections.Items.AddRange(new System.Windows.Forms.ListViewItem[] { listViewItem23, listViewItem24, listViewItem25, listViewItem26, listViewItem27 });
             LV_Sections.LabelEdit = true;
             LV_Sections.Location = new System.Drawing.Point(6, 22);
             LV_Sections.MultiSelect = false;
@@ -1447,6 +1474,168 @@ namespace ProjectExtractor
             BT_UpdateProgram.UseVisualStyleBackColor = true;
             BT_UpdateProgram.Click += BT_UpdateProgram_Click;
             // 
+            // TabPage_RegionExtract
+            // 
+            TabPage_RegionExtract.Controls.Add(label18);
+            TabPage_RegionExtract.Controls.Add(label17);
+            TabPage_RegionExtract.Controls.Add(label16);
+            TabPage_RegionExtract.Controls.Add(groupBox11);
+            TabPage_RegionExtract.Controls.Add(RTB_ExtractedRegion);
+            TabPage_RegionExtract.Controls.Add(LB_GottenRects);
+            TabPage_RegionExtract.Controls.Add(BT_ExtractInRegion);
+            TabPage_RegionExtract.Controls.Add(BT_GetRects);
+            TabPage_RegionExtract.Controls.Add(NUD_PageToExtract);
+            TabPage_RegionExtract.Controls.Add(label11);
+            TabPage_RegionExtract.Location = new System.Drawing.Point(4, 24);
+            TabPage_RegionExtract.Name = "TabPage_RegionExtract";
+            TabPage_RegionExtract.Size = new System.Drawing.Size(564, 319);
+            TabPage_RegionExtract.TabIndex = 6;
+            TabPage_RegionExtract.Text = "region extract";
+            TabPage_RegionExtract.UseVisualStyleBackColor = true;
+            // 
+            // groupBox11
+            // 
+            groupBox11.Controls.Add(NUD_RectHeight);
+            groupBox11.Controls.Add(label14);
+            groupBox11.Controls.Add(NUD_RectWidth);
+            groupBox11.Controls.Add(label15);
+            groupBox11.Controls.Add(NUD_RectY);
+            groupBox11.Controls.Add(label13);
+            groupBox11.Controls.Add(NUD_RectX);
+            groupBox11.Controls.Add(label12);
+            groupBox11.Location = new System.Drawing.Point(230, 7);
+            groupBox11.Name = "groupBox11";
+            groupBox11.Size = new System.Drawing.Size(326, 79);
+            groupBox11.TabIndex = 6;
+            groupBox11.TabStop = false;
+            groupBox11.Text = "Rectangle";
+            // 
+            // NUD_RectHeight
+            // 
+            NUD_RectHeight.Location = new System.Drawing.Point(196, 46);
+            NUD_RectHeight.Maximum = new decimal(new int[] { 10000, 0, 0, 0 });
+            NUD_RectHeight.Name = "NUD_RectHeight";
+            NUD_RectHeight.Size = new System.Drawing.Size(90, 23);
+            NUD_RectHeight.TabIndex = 9;
+            NUD_RectHeight.Value = new decimal(new int[] { 300, 0, 0, 0 });
+            // 
+            // label14
+            // 
+            label14.AutoSize = true;
+            label14.Location = new System.Drawing.Point(144, 48);
+            label14.Name = "label14";
+            label14.Size = new System.Drawing.Size(46, 15);
+            label14.TabIndex = 8;
+            label14.Text = "Height:";
+            // 
+            // NUD_RectWidth
+            // 
+            NUD_RectWidth.Location = new System.Drawing.Point(196, 17);
+            NUD_RectWidth.Maximum = new decimal(new int[] { 10000, 0, 0, 0 });
+            NUD_RectWidth.Name = "NUD_RectWidth";
+            NUD_RectWidth.Size = new System.Drawing.Size(90, 23);
+            NUD_RectWidth.TabIndex = 7;
+            NUD_RectWidth.Value = new decimal(new int[] { 310, 0, 0, 0 });
+            // 
+            // label15
+            // 
+            label15.AutoSize = true;
+            label15.Location = new System.Drawing.Point(144, 19);
+            label15.Name = "label15";
+            label15.Size = new System.Drawing.Size(42, 15);
+            label15.TabIndex = 6;
+            label15.Text = "Width:";
+            // 
+            // NUD_RectY
+            // 
+            NUD_RectY.Location = new System.Drawing.Point(29, 46);
+            NUD_RectY.Maximum = new decimal(new int[] { 10000, 0, 0, 0 });
+            NUD_RectY.Name = "NUD_RectY";
+            NUD_RectY.Size = new System.Drawing.Size(90, 23);
+            NUD_RectY.TabIndex = 5;
+            NUD_RectY.Value = new decimal(new int[] { 290, 0, 0, 0 });
+            // 
+            // label13
+            // 
+            label13.AutoSize = true;
+            label13.Location = new System.Drawing.Point(6, 48);
+            label13.Name = "label13";
+            label13.Size = new System.Drawing.Size(17, 15);
+            label13.TabIndex = 4;
+            label13.Text = "Y:";
+            // 
+            // NUD_RectX
+            // 
+            NUD_RectX.Location = new System.Drawing.Point(29, 17);
+            NUD_RectX.Maximum = new decimal(new int[] { 10000, 0, 0, 0 });
+            NUD_RectX.Name = "NUD_RectX";
+            NUD_RectX.Size = new System.Drawing.Size(90, 23);
+            NUD_RectX.TabIndex = 3;
+            NUD_RectX.Value = new decimal(new int[] { 280, 0, 0, 0 });
+            // 
+            // label12
+            // 
+            label12.AutoSize = true;
+            label12.Location = new System.Drawing.Point(6, 19);
+            label12.Name = "label12";
+            label12.Size = new System.Drawing.Size(17, 15);
+            label12.TabIndex = 2;
+            label12.Text = "X:";
+            // 
+            // RTB_ExtractedRegion
+            // 
+            RTB_ExtractedRegion.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            RTB_ExtractedRegion.Location = new System.Drawing.Point(143, 121);
+            RTB_ExtractedRegion.Name = "RTB_ExtractedRegion";
+            RTB_ExtractedRegion.Size = new System.Drawing.Size(413, 184);
+            RTB_ExtractedRegion.TabIndex = 5;
+            RTB_ExtractedRegion.Text = "";
+            // 
+            // LB_GottenRects
+            // 
+            LB_GottenRects.FormattingEnabled = true;
+            LB_GottenRects.ItemHeight = 15;
+            LB_GottenRects.Location = new System.Drawing.Point(8, 121);
+            LB_GottenRects.Name = "LB_GottenRects";
+            LB_GottenRects.Size = new System.Drawing.Size(129, 184);
+            LB_GottenRects.TabIndex = 4;
+            // 
+            // BT_ExtractInRegion
+            // 
+            BT_ExtractInRegion.Location = new System.Drawing.Point(143, 92);
+            BT_ExtractInRegion.Name = "BT_ExtractInRegion";
+            BT_ExtractInRegion.Size = new System.Drawing.Size(413, 23);
+            BT_ExtractInRegion.TabIndex = 3;
+            BT_ExtractInRegion.Text = "Extract in region";
+            BT_ExtractInRegion.UseVisualStyleBackColor = true;
+            BT_ExtractInRegion.Click += BT_ExtractInRegion_Click;
+            // 
+            // BT_GetRects
+            // 
+            BT_GetRects.Location = new System.Drawing.Point(8, 92);
+            BT_GetRects.Name = "BT_GetRects";
+            BT_GetRects.Size = new System.Drawing.Size(129, 23);
+            BT_GetRects.TabIndex = 2;
+            BT_GetRects.Text = "Get Rects On Page";
+            BT_GetRects.UseVisualStyleBackColor = true;
+            BT_GetRects.Click += BT_GetRects_Click;
+            // 
+            // NUD_PageToExtract
+            // 
+            NUD_PageToExtract.Location = new System.Drawing.Point(50, 7);
+            NUD_PageToExtract.Name = "NUD_PageToExtract";
+            NUD_PageToExtract.Size = new System.Drawing.Size(174, 23);
+            NUD_PageToExtract.TabIndex = 1;
+            // 
+            // label11
+            // 
+            label11.AutoSize = true;
+            label11.Location = new System.Drawing.Point(8, 9);
+            label11.Name = "label11";
+            label11.Size = new System.Drawing.Size(36, 15);
+            label11.TabIndex = 0;
+            label11.Text = "Page:";
+            // 
             // backgroundWorker
             // 
             backgroundWorker.WorkerReportsProgress = true;
@@ -1454,6 +1643,33 @@ namespace ProjectExtractor
             backgroundWorker.DoWork += backgroundWorker_DoWork;
             backgroundWorker.ProgressChanged += backgroundWorker_ProgressChanged;
             backgroundWorker.RunWorkerCompleted += backgroundWorker_RunWorkerCompleted;
+            // 
+            // label16
+            // 
+            label16.AutoSize = true;
+            label16.Location = new System.Drawing.Point(155, 33);
+            label16.Name = "label16";
+            label16.Size = new System.Drawing.Size(69, 15);
+            label16.TabIndex = 7;
+            label16.Text = "Left to right";
+            // 
+            // label17
+            // 
+            label17.AutoSize = true;
+            label17.Location = new System.Drawing.Point(129, 63);
+            label17.Name = "label17";
+            label17.Size = new System.Drawing.Size(95, 15);
+            label17.TabIndex = 8;
+            label17.Text = "72 Units = 1 inch";
+            // 
+            // label18
+            // 
+            label18.AutoSize = true;
+            label18.Location = new System.Drawing.Point(142, 48);
+            label18.Name = "label18";
+            label18.Size = new System.Drawing.Size(82, 15);
+            label18.TabIndex = 9;
+            label18.Text = "Bottom to top";
             // 
             // ExtractorForm
             // 
@@ -1520,6 +1736,15 @@ namespace ProjectExtractor
             ((System.ComponentModel.ISupportInitialize)logoPictureBox).EndInit();
             panel1.ResumeLayout(false);
             panel1.PerformLayout();
+            TabPage_RegionExtract.ResumeLayout(false);
+            TabPage_RegionExtract.PerformLayout();
+            groupBox11.ResumeLayout(false);
+            groupBox11.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)NUD_RectHeight).EndInit();
+            ((System.ComponentModel.ISupportInitialize)NUD_RectWidth).EndInit();
+            ((System.ComponentModel.ISupportInitialize)NUD_RectY).EndInit();
+            ((System.ComponentModel.ISupportInitialize)NUD_RectX).EndInit();
+            ((System.ComponentModel.ISupportInitialize)NUD_PageToExtract).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -1631,6 +1856,25 @@ namespace ProjectExtractor
         private System.Windows.Forms.SplitContainer SC_DataGridPreview;
         private System.Windows.Forms.RichTextBox RTB_DataGridPreview;
         private System.Windows.Forms.Button BT_CloseDataGridPreview;
+        private System.Windows.Forms.TabPage TabPage_RegionExtract;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.RichTextBox RTB_ExtractedRegion;
+        private System.Windows.Forms.ListBox LB_GottenRects;
+        private System.Windows.Forms.Button BT_ExtractInRegion;
+        private System.Windows.Forms.Button BT_GetRects;
+        private System.Windows.Forms.NumericUpDown NUD_PageToExtract;
+        private System.Windows.Forms.GroupBox groupBox11;
+        private System.Windows.Forms.NumericUpDown NUD_RectHeight;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.NumericUpDown NUD_RectWidth;
+        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.NumericUpDown NUD_RectY;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.NumericUpDown NUD_RectX;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.Label label17;
+        private System.Windows.Forms.Label label16;
+        private System.Windows.Forms.Label label18;
     }
 }
 
