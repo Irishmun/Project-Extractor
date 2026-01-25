@@ -8,6 +8,26 @@
         private bool _appendNewLines;
         private bool _isEndOfDocument;
         private bool _isEndOfProject;
+        private bool _hasTrueAddition = true;
+        private string _possibleText = string.Empty;
+
+        /// <param name="title">Text that is put on top of the first found text in the section.</param>
+        /// <param name="textToRemove">Sstring to look for (and remove) from the text?</param>
+        /// <param name="appendNewLines">Should linebreaks be added to the end of each line in this section?</param>
+        /// <param name="isEndOfDocument">Is this section the last section in the ENTIRE document?</param>
+        /// <param name="isEndOfProject">Is this section the last section with needed information for this PROJECT?</param>
+        /// <param name="minimumDifference">Minimum difference for this section to be deemed "found"</param>
+        public ProjectSection(string title, string textToRemove, bool appendNewLines = false, bool isEndOfDocument = false, bool isEndOfProject = false, int minimumDifference = 2, bool hasTrueAddition = false, string possibleText = "")
+        {
+            _sectionTitle = title;
+            _checkString = textToRemove;
+            _appendNewLines = appendNewLines;
+            _isEndOfDocument = isEndOfDocument;
+            _isEndOfProject = isEndOfProject;
+            _minDifference = minimumDifference;
+            _hasTrueAddition = hasTrueAddition;
+            _possibleText = possibleText;
+        }
 
 
         /// <param name="title">Text that is put on top of the first found text in the section.</param>
@@ -65,6 +85,9 @@
         public bool IsEndOfProject { get => _isEndOfProject; set => _isEndOfProject = value; }
         /// <summary>Minimum difference for this section to be deemed "found"</summary>
         public int MinimumDifference { get => _minDifference; set => _minDifference = value; }
-
+        /// <summary>Whether the section has additional text in case of a true/false statement being true</summary>
+        public bool HasTrueAddition { get => _hasTrueAddition; set => _hasTrueAddition = value; }
+        /// <summary>additional text to remove in case <see cref="HasTrueAddition"/> is true</summary>
+        public string PossibleText { get => _possibleText; set => _possibleText = value; }
     }
 }

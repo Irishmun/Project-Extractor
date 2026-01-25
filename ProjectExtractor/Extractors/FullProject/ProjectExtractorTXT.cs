@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -496,14 +497,17 @@ namespace ProjectExtractor.Extractors.FullProject
         private StringBuilder ExtractRevisionThreeSingle(string file, int start, int end, string[] Sections, string EndProject, int projectIndex, List<int> ProjectStartIndexes, bool useRevisionFour, out bool isEndOfDocument, BackgroundWorker Worker, WorkerStates workerState)
         {
             isEndOfDocument = false;
+            int foundSection = -1;
             bool continuationDone = false;
             bool searchNextSection = true;
             bool appendNewLines = false;
+            bool searchedAddition = false;
             string checkString = string.Empty;
             string possibleSection = string.Empty;
             string remaining = string.Empty;
             string nextLine = string.Empty;
             string[] sectionWords = Sections;//ConvertSectionsToArray(Sections);
+            ProjectSection[] descriptions = !useRevisionFour ? RevThreeSectionDescriptions : RevFourSectionDescriptions;
             StringBuilder str = new StringBuilder();
 
             for (int lineIndex = start; lineIndex < end; lineIndex++)
@@ -527,14 +531,14 @@ namespace ProjectExtractor.Extractors.FullProject
                 nextLine = lineIndex == Lines.Length - 1 ? string.Empty : Lines[lineIndex + 1];
                 if (searchNextSection == true)
                 {
-                    ProjectSection[] descriptions = !useRevisionFour ? RevThreeSectionDescriptions : RevFourSectionDescriptions;
-                    string res = TryFindSection(Lines[lineIndex], descriptions, out string foundRemaining, out int foundSection, out isEndOfDocument, out bool isEndOfProject, appendNewLines, nextLine);
+                    string res = TryFindSection(Lines[lineIndex], descriptions, out string foundRemaining, out foundSection, out isEndOfDocument, out bool isEndOfProject, appendNewLines, nextLine);
                     if (isEndOfDocument == true)
                     { break; }
                     if (!string.IsNullOrWhiteSpace(res))
                     { str.Append(res + " "); }
                     if (foundSection > -1)
                     {
+                        searchedAddition = false;
                         searchNextSection = false;
                         checkString = foundRemaining;
                         remaining = checkString;
@@ -553,7 +557,17 @@ namespace ProjectExtractor.Extractors.FullProject
 
                 if (string.IsNullOrWhiteSpace(remaining))
                 {
-                    searchNextSection = true;
+                        bool additionalSearch = str.ToString().Trim().Split().Last().ParseBool();
+
+                    if (additionalSearch && (foundSection > 0 && foundSection < descriptions.Length) && descriptions[foundSection].HasTrueAddition && !searchedAddition)
+                    {
+                        remaining = descriptions[foundSection].PossibleText;
+                        searchedAddition = true;
+                    }
+                    else
+                    {
+                        searchNextSection = true;
+                    }
                 }
                 ReportProgessToWorker(lineIndex, Worker, workerState);
             }
@@ -641,11 +655,18 @@ namespace ProjectExtractor.Extractors.FullProject
         }
         string RemoveMatching(string check, string comparison, out string remaining, bool appendNewLine = false, string safetyCheck = "")
         {
+            if (string.IsNullOrWhiteSpace(comparison))
+            {
+                remaining = comparison;
+                return comparison;
+            }
+
             remaining = string.Empty;
             string res = check;
             string[] checkWords = check.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
             string[] comparisonWords = comparison.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
             StringBuilder toRemove = new StringBuilder();
+
             if (check.Trim().StartsWith(comparisonWords[0]))
             {
                 int searchLength = checkWords.Length < comparisonWords.Length ? checkWords.Length : comparisonWords.Length;//use shortest for search

@@ -9,15 +9,17 @@
   },
   {
     "SectionTitle": "Samenwerking?",
-    "CheckString": "Samenwerking Levert \u00E9\u00E9n of meer partijen een bijdrage aan het project? Naam Bijdrage Plaats",
+    "CheckString": "Samenwerking Levert \u00E9\u00E9n of meer partijen een bijdrage aan het project?",
     "AppendNewLines": true,
     "IsEndOfDocument": false,
     "IsEndOfProject": false,
-    "MinimumDifference": 1
+    "MinimumDifference": 1,
+    "HasTrueAddition": true,
+    "PossibleText": "Naam Bijdrage Plaats"
   },
   {
     "SectionTitle": "Fasering Werkzaamheden",
-    "CheckString": "Fasering werkzaamheden Geef de fasen en de (tussen)resultaten van het project aan. Bijvoorbeeld de afsluiting van een onderzoek, de afronding van een ontwerpfase, de start van de bouw van een prototype, het testen van een prototype (maximaal 25 karakters per veld). Vermeld alleen uw eigen werkzaamheden. U kunt een fase toevoegen door op de \u002B te klikken en een fase verwijderen door op de - te klikken. Naam Datum gereed (voorkeursformaat dd-mm-jjjj)",
+    "CheckString": "Fasering werkzaamheden Geef de fasen en de (tussen)resultaten van het project aan. Bijvoorbeeld de afsluiting van een onderzoek, de afronding van een ontwerpfase, de start van de bouw van een prototype, het testen van een prototype (maximaal 25 karakters per veld). Vermeld alleen uw eigen werkzaamheden. U kunt een fase toevoegen door op de + te klikken en een fase verwijderen door op de - te klikken.  Naam Datum gereed (voorkeursformaat dd-mm-jjjj) ",
     "AppendNewLines": true,
     "IsEndOfDocument": false,
     "IsEndOfProject": false,

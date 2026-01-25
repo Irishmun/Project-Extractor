@@ -18,6 +18,7 @@ namespace ProjectExtractor.Extractors
 
         private readonly char[] _removeCharacters = new char[] { ' ', '\r', '\n' };//whitespaces, carriage returns and linefeeds
         private readonly string[] _newLineCharacters = new string[] { "\r\n", "\r", "\n" };
+
         /// <summary>
         /// Extracts all text from the given pdf file, putting it in <see cref="Lines"/> 
         /// </summary>

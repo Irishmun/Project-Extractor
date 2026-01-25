@@ -243,5 +243,24 @@ namespace ProjectExtractor.Util
         {
             return val.ContainsAll(StringComparison.Ordinal, values);
         }
+
+        /// <summary>
+        /// Tries to parse this string as a boolean value (i.e. yes/no)
+        /// </summary>
+        /// <returns>The boolean value that this string is, false if it isn't</returns>
+        public static bool ParseBool(this string val)
+        {
+            switch (val.Trim().ToLower())
+            {
+                case "yes":
+                case "ja":
+                    return true;
+                case "no":
+                case "nee":
+                    return false;
+                default:
+                    return false;
+            }
+        }
     }
 }
