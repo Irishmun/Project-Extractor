@@ -1347,15 +1347,15 @@ namespace ProjectExtractor
                 case 0://revision 1
                     break;
                 case 1://revision 2
-                    exportFile += $"Resources\\Sections\\Rev_2.json";
+                    exportFile += $"Resources\\Sections\\REVISION_2.json";
                     (_extractor as ProjectExtractorBase).RevisionTwoSectionsToJson(exportFile);
                     break;
                 case 2://revision 3
-                    exportFile += $"Resources\\Sections\\Rev_3.json";
+                    exportFile += $"Resources\\Sections\\REVISION_3.json";
                     (_extractor as ProjectExtractorBase).RevisionThreeSectionsToJson(exportFile);
                     break;
                 case 3://revision 4
-                    exportFile += $"Resources\\Sections\\Rev_4.json";
+                    exportFile += $"Resources\\Sections\\REVISION_4.json";
                     (_extractor as ProjectExtractorBase).RevisionThreeSectionsToJson(exportFile);
                     break;
                 default:

@@ -11,10 +11,11 @@ namespace ProjectExtractor.Extractors.FullProject
         //remove key sentences from found sentences, then combine remaining contents into one sentence (period separated)
         //see text file for example
 
-        protected const string RevOneFileName = "Rev_1.json", RevTwoFileName = "Rev_2.json", RevThreeFileName = "Rev_3.json", RevFourFileName = "Rev_4.json";
+        protected const string RevOneFileName = "Rev_1.json", RevTwoFileName = "Rev_2.json", RevThreeFileName = "Rev_3.json", RevFourFileName = "Rev_4.json", RevFiveFileName = "Rev_5.json";
         protected ProjectSection[] RevTwoSectionDescriptions;
         protected ProjectSection[] RevThreeSectionDescriptions;
         protected ProjectSection[] RevFourSectionDescriptions;
+        protected ProjectSection[] RevFiveSectionDescriptions;
         protected SectionsFolder Sections;
 
         protected ProjectExtractorBase(SectionsFolder sections)
@@ -44,6 +45,8 @@ namespace ProjectExtractor.Extractors.FullProject
                     return ExtractRevisionThreeProject(file, extractPath, Sections, EndProject, extractToSeparateFiles, Worker, workerState);
                 case ProjectLayoutRevision.REVISION_FOUR:
                     return ExtractRevisionFourProject(file, extractPath, Sections, EndProject, extractToSeparateFiles, Worker, workerState);
+                case ProjectLayoutRevision.REVISION_FIVE:
+                    return ExtractRevisionFiveProject(file, extractPath, Sections, EndProject, extractToSeparateFiles, Worker, workerState);
                 case ProjectLayoutRevision.UNKNOWN_REVISION:
                 default:
 #if DEBUG
@@ -77,6 +80,8 @@ namespace ProjectExtractor.Extractors.FullProject
                     return BatchExtractRevisionThreeProject(batchPath, extractPath, exportExtension, Sections, EndProject, skipExisting, extractToSeparateFiles, Worker, workerState);
                 case ProjectLayoutRevision.REVISION_FOUR:
                     return BatchExtractRevisionFourProject(batchPath, extractPath, exportExtension, Sections, EndProject, skipExisting, extractToSeparateFiles, Worker, workerState);
+                case ProjectLayoutRevision.REVISION_FIVE:
+                    return BatchExtractRevisionFiveProject(batchPath, extractPath, exportExtension, Sections, EndProject, skipExisting, extractToSeparateFiles, Worker, workerState);
                 case ProjectLayoutRevision.UNKNOWN_REVISION:
                 default:
 #if DEBUG
@@ -113,11 +118,13 @@ namespace ProjectExtractor.Extractors.FullProject
         protected abstract ExitCode ExtractRevisionTwoProject(string file, string extractPath, string[] Sections, string EndProject, bool extractToSeparateFiles, BackgroundWorker Worker, WorkerStates workerState);
         protected abstract ExitCode ExtractRevisionThreeProject(string file, string extractPath, string[] Sections, string EndProject, bool extractToSeparateFiles, BackgroundWorker Worker, WorkerStates workerState);
         protected abstract ExitCode ExtractRevisionFourProject(string file, string extractPath, string[] Sections, string EndProject, bool extractToSeparateFiles, BackgroundWorker Worker, WorkerStates workerState);
+        protected abstract ExitCode ExtractRevisionFiveProject(string file, string extractPath, string[] Sections, string EndProject, bool extractToSeparateFiles, BackgroundWorker Worker, WorkerStates workerState);
 
         protected abstract ExitCode BatchExtractRevisionOneProject(string folder, string extractPath, string fileExtension, string[] Sections, string EndProject, bool skipExisting, bool extractToSeparateFiles, BackgroundWorker Worker, WorkerStates workerState);
         protected abstract ExitCode BatchExtractRevisionTwoProject(string folder, string extractPath, string fileExtension, string[] Sections, string EndProject, bool skipExisting, bool extractToSeparateFiles, BackgroundWorker Worker, WorkerStates workerState);
         protected abstract ExitCode BatchExtractRevisionThreeProject(string folder, string extractPath, string fileExtension, string[] Sections, string EndProject, bool skipExisting, bool extractToSeparateFiles, BackgroundWorker Worker, WorkerStates workerState);
         protected abstract ExitCode BatchExtractRevisionFourProject(string folder, string extractPath, string fileExtension, string[] Sections, string EndProject, bool skipExisting, bool extractToSeparateFiles, BackgroundWorker Worker, WorkerStates workerState);
+        protected abstract ExitCode BatchExtractRevisionFiveProject(string folder, string extractPath, string fileExtension, string[] Sections, string EndProject, bool skipExisting, bool extractToSeparateFiles, BackgroundWorker Worker, WorkerStates workerState);
 
         /// <summary>
         /// Converts contents of the sections array to a single, space separated, array

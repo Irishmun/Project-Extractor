@@ -13,7 +13,7 @@
     </PackageProjectUrl>
     <RepositoryUrl>https://github.com/Irishmun/Project-Extractor</RepositoryUrl>
     <NeutralLanguage>en-US</NeutralLanguage>
-    <AssemblyVersion>3.2.3</AssemblyVersion>
+    <AssemblyVersion>3.2.4</AssemblyVersion>
     <Platforms>AnyCPU;x86</Platforms>
   </PropertyGroup>
   <ItemGroup>
@@ -22,15 +22,19 @@
     <None Remove="Resources\Sections\Rev_2.json" />
     <None Remove="Resources\Sections\Rev_3.json" />
     <None Remove="Resources\Sections\Rev_4.json" />
+    <None Remove="Resources\Sections\Rev_5.json" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\Sections\Rev_2.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Resources\Sections\Rev_3.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\Sections\Rev_4.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\Sections\Rev_3.json">
+    <Content Include="Resources\Sections\Rev_5.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
