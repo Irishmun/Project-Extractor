@@ -19,22 +19,21 @@
   <ItemGroup>
     <None Remove="Resources\logoPictureBox.Image.png" />
     <None Remove="Resources\ProjectExtractorIcon.ico" />
-    <None Remove="Resources\Sections\Rev_2.json" />
-    <None Remove="Resources\Sections\Rev_3.json" />
-    <None Remove="Resources\Sections\Rev_4.json" />
-    <None Remove="Resources\Sections\Rev_5.json" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Resources\Sections\Rev_2.json">
+    <Content Include="Resources\Sections\Rev_02.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\Sections\Rev_3.json">
+    <Content Include="Resources\Sections\Rev_03.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\Sections\Rev_4.json">
+    <Content Include="Resources\Sections\Rev_05.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\Sections\Rev_5.json">
+    <Content Include="Resources\Sections\Rev_04.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Sections\Rev_04-5.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

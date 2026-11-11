@@ -1,5 +1,4 @@
-﻿using iText.Kernel.Geom;
-using ProjectExtractor.Util;
+﻿using ProjectExtractor.Util;
 using System.ComponentModel;
 using System.Text.RegularExpressions;
 
@@ -12,7 +11,7 @@ namespace ProjectExtractor.Extractors.Detail
         protected const string R2_ENDDETAILSTRING = "Bijlagen";
         protected const string R2_ACTUAL_VALUE_NEXTLINE = " *";//adding this to the end means that the next line contains its value
 
-        public ExitCode ExtractDetails(ProjectLayoutRevision revision, string file, string extractPath, string[] Keywords, string chapters, string stopChapters, string totalHoursKeyword, bool WriteTotalHoursToFile, bool WriteKeywordsToFile, bool writePhaseDate,bool barBeforeUpdate, System.ComponentModel.BackgroundWorker Worker, WorkerStates workerState)
+        public ExitCode ExtractDetails(ProjectLayoutRevision revision, string file, string extractPath, string[] Keywords, string chapters, string stopChapters, string totalHoursKeyword, bool WriteTotalHoursToFile, bool WriteKeywordsToFile, bool writePhaseDate, bool barBeforeUpdate, System.ComponentModel.BackgroundWorker Worker, WorkerStates workerState)
         {
             switch (revision)
             {
@@ -22,6 +21,7 @@ namespace ProjectExtractor.Extractors.Detail
                     return ExtractRevisionTwoDetails(file, extractPath, Keywords, chapters, stopChapters, totalHoursKeyword, WriteTotalHoursToFile, WriteKeywordsToFile, writePhaseDate, barBeforeUpdate, Worker, workerState);
                 case ProjectLayoutRevision.REVISION_THREE:
                 case ProjectLayoutRevision.REVISION_FOUR:
+                case ProjectLayoutRevision.REVISION_FOUR_HALF:
                 case ProjectLayoutRevision.REVISION_FIVE:
                     return ExtractRevisionThreeDetails(file, extractPath, Keywords, chapters, stopChapters, totalHoursKeyword, WriteTotalHoursToFile, WriteKeywordsToFile, writePhaseDate, barBeforeUpdate, Worker, workerState);
                 case ProjectLayoutRevision.UNKNOWN_REVISION:
@@ -43,7 +43,7 @@ namespace ProjectExtractor.Extractors.Detail
                     return BatchExtractRevisionTwoDetails(batchPath, extractPath, Keywords, chapters, stopChapters, totalHoursKeyword, WriteTotalHoursToFile, WriteKeywordsToFile, writePhaseDate, skipExisting, barBeforeUpdate, Worker, workerState);
                 case ProjectLayoutRevision.REVISION_THREE:
                 case ProjectLayoutRevision.REVISION_FOUR:
-                case ProjectLayoutRevision.REVISION_FIVE:
+                case ProjectLayoutRevision.REVISION_FOUR_HALF:
                     return BatchExtractRevisionThreeDetails(batchPath, extractPath, Keywords, chapters, stopChapters, totalHoursKeyword, WriteTotalHoursToFile, WriteKeywordsToFile, writePhaseDate, skipExisting, barBeforeUpdate, Worker, workerState);
                 case ProjectLayoutRevision.UNKNOWN_REVISION:
                 default:

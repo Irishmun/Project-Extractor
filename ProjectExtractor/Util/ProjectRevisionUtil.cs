@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace ProjectExtractor.Util
 {
@@ -18,11 +19,14 @@ namespace ProjectExtractor.Util
         REVISION_THREE = 2,
         /// <summary>project using the layout made after 2026 (V4.X)</summary>
         REVISION_FOUR = 3,
-        /// <summary>project using the layout made after september 2026 (V5.X)</summary>
-        REVISION_FIVE = 4,
+        /// <summary>project using the layout made after september 2026 (V4.5)</summary>
+        REVISION_FOUR_HALF = 4,
+        /// <summary>project using the layout made after 2027 (V5)</summary>
+        REVISION_FIVE = 5,
         /// <summary>project using an unknown layout</summary>
-        UNKNOWN_REVISION = 99
+        UNKNOWN_REVISION = 999
     }
+
     class ProjectRevisionUtil
     {
         /// <summary>Returns a <see cref="ProjectLayoutRevision"/> equivalent to the given integer</summary>
@@ -42,10 +46,21 @@ namespace ProjectExtractor.Util
                 case 3:
                     return ProjectLayoutRevision.REVISION_FOUR;
                 case 4:
+                    return ProjectLayoutRevision.REVISION_FOUR_HALF;
+                case 5:
                     return ProjectLayoutRevision.REVISION_FIVE;
                 default:
                     return ProjectLayoutRevision.UNKNOWN_REVISION;
             }
         }
+
+        public static string[] GetProjectRevisionList() => new string[]{
+                "Version 1.0 [01/2016 - 10/2017]",
+                "Version 2.0 [01/2018 - 08/2021]",
+                "Version 3.0 [09/2021 - 12/2025]",
+                "Version 4.0 [01/2026 - 09/2026]",
+                "Version 4.5 [09/2026 - 12/2026]",
+                "Version 5.0 [01/2027 - ...]"
+            };
     }
 }

@@ -17,13 +17,44 @@ namespace ProjectExtractor.Extractors.FullProject
     {
         public ProjectExtractorTXT(SectionsFolder sections) : base(sections)
         {//TODO: get project revision, only instantiate that one
-            if (Sections.IsHashDifferent() || (RevTwoSectionDescriptions == null && RevThreeSectionDescriptions == null && RevFourSectionDescriptions == null))
+            if (Sections.IsHashDifferent())//invalidate when hashes change
             {
                 Sections.SetFolderHash();
-                RevTwoSectionDescriptions = SectionsArrayFromJson(Sections.ReadSectionFile(RevTwoFileName));
-                RevThreeSectionDescriptions = SectionsArrayFromJson(Sections.ReadSectionFile(RevThreeFileName));
-                RevFourSectionDescriptions = SectionsArrayFromJson(Sections.ReadSectionFile(RevFourFileName));
-                RevFiveSectionDescriptions = SectionsArrayFromJson(Sections.ReadSectionFile(RevFiveFileName));
+                RevTwoSectionDescriptions = null;
+                RevThreeSectionDescriptions = null;
+                RevFourSectionDescriptions = null;
+                RevFourHalfSectionDescriptions = null;
+                RevFiveSectionDescriptions = null;
+            }
+        }
+
+        /// <summary>Get the Revision descriptions, populating them if needed. return null on invalid revision</summary>
+        private ProjectSection[] GetRevisionThreeOrLaterDescriptions(ProjectLayoutRevision revisionToUse)
+        {
+            switch (revisionToUse)
+            {
+                default:
+                case ProjectLayoutRevision.REVISION_ONE:
+                    return null;
+                case ProjectLayoutRevision.REVISION_TWO:
+                    return PopulateIfNeeded(RevTwoSectionDescriptions, RevTwoFileName);
+                case ProjectLayoutRevision.REVISION_THREE:
+                    return PopulateIfNeeded(RevThreeSectionDescriptions, RevThreeFileName);
+                case ProjectLayoutRevision.REVISION_FOUR:
+                    return PopulateIfNeeded(RevFourSectionDescriptions, RevFourFileName);
+                case ProjectLayoutRevision.REVISION_FOUR_HALF:
+                    return PopulateIfNeeded(RevFourHalfSectionDescriptions, RevFourHalfFileName);
+                case ProjectLayoutRevision.REVISION_FIVE:
+                    return PopulateIfNeeded(RevFiveSectionDescriptions, RevFiveFileName);
+            }
+
+            ProjectSection[] PopulateIfNeeded(ProjectSection[] sectionArray, string fileName)
+            {
+                if (sectionArray == null)
+                {
+                    return SectionsArrayFromJson(Sections.ReadSectionFile(fileName));
+                }
+                return sectionArray;
             }
         }
 
@@ -61,6 +92,10 @@ namespace ProjectExtractor.Extractors.FullProject
         protected override ExitCode ExtractRevisionFourProject(string file, string extractPath, string[] Sections, string EndProject, bool extractToSeparateFiles, BackgroundWorker Worker, WorkerStates workerState)
         {
             return ExtractRevisionThreeAndLater(file, extractPath, Sections, EndProject, extractToSeparateFiles, Worker, workerState, ProjectLayoutRevision.REVISION_FOUR);
+        }
+        protected override ExitCode ExtractRevisionFourHalfProject(string file, string extractPath, string[] Sections, string EndProject, bool extractToSeparateFiles, BackgroundWorker Worker, WorkerStates workerState)
+        {
+            return ExtractRevisionThreeAndLater(file, extractPath, Sections, EndProject, extractToSeparateFiles, Worker, workerState, ProjectLayoutRevision.REVISION_FOUR_HALF);
         }
         protected override ExitCode ExtractRevisionFiveProject(string file, string extractPath, string[] Sections, string EndProject, bool extractToSeparateFiles, BackgroundWorker Worker, WorkerStates workerState)
         {
@@ -143,6 +178,10 @@ namespace ProjectExtractor.Extractors.FullProject
         protected override ExitCode BatchExtractRevisionFourProject(string folder, string extractPath, string fileExtension, string[] Sections, string EndProject, bool skipExisting, bool extractToSeparateFiles, BackgroundWorker Worker, WorkerStates workerState)
         {
             return BatchExtractRevisionThreeAndLater(folder, extractPath, fileExtension, Sections, EndProject, skipExisting, extractToSeparateFiles, Worker, workerState, ProjectLayoutRevision.REVISION_FOUR);
+        }
+        protected override ExitCode BatchExtractRevisionFourHalfProject(string folder, string extractPath, string fileExtension, string[] Sections, string EndProject, bool skipExisting, bool extractToSeparateFiles, BackgroundWorker Worker, WorkerStates workerState)
+        {
+            return BatchExtractRevisionThreeAndLater(folder, extractPath, fileExtension, Sections, EndProject, skipExisting, extractToSeparateFiles, Worker, workerState, ProjectLayoutRevision.REVISION_FOUR_HALF);
         }
         protected override ExitCode BatchExtractRevisionFiveProject(string folder, string extractPath, string fileExtension, string[] Sections, string EndProject, bool skipExisting, bool extractToSeparateFiles, BackgroundWorker Worker, WorkerStates workerState)
         {
@@ -480,20 +519,7 @@ namespace ProjectExtractor.Extractors.FullProject
             string[] sectionWords = Sections;//ConvertSectionsToArray(Sections);
             ProjectSection[] descriptions;
             StringBuilder str = new StringBuilder();
-
-            switch (revisionToUse)
-            {
-                default:
-                case ProjectLayoutRevision.REVISION_THREE:
-                    descriptions = RevThreeSectionDescriptions;
-                    break;
-                case ProjectLayoutRevision.REVISION_FOUR:
-                    descriptions = RevFourSectionDescriptions;
-                    break;
-                case ProjectLayoutRevision.REVISION_FIVE:
-                    descriptions = RevFiveSectionDescriptions;
-                    break;
-            }
+            descriptions = GetRevisionThreeOrLaterDescriptions(revisionToUse);
 
             for (int lineIndex = start; lineIndex < end; lineIndex++)
             {
@@ -558,6 +584,8 @@ namespace ProjectExtractor.Extractors.FullProject
             }
             return str;
         }
+
+
 
         string TryFindSection(string check, ProjectSection[] comparisons, out string foundRemaining, out int foundSection, out bool isEndOfDocument, out bool isEndOfProject, bool appendNewLines = false, string safetyCheck = "")
         {

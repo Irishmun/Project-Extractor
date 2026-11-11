@@ -40,6 +40,7 @@ namespace ProjectExtractor
             _sectionsFolder = new SectionsFolder(Path.Combine(AppContext.BaseDirectory));
             InitializeComponent();
             InitializeAbout();
+            CbB_FileVersion.Items.AddRange(ProjectRevisionUtil.GetProjectRevisionList());
             SC_DataGridPreview.Panel2Collapsed = true;
             this.Text = $"{this.Text} - V{AssemblyVersion()}";
 #if !DEBUG
@@ -50,8 +51,6 @@ namespace ProjectExtractor
             CheckForUpdateThenSetAbout();
             UpdateFromSettings();//do this before changing back from isStarting to prevent a change loop
             _settings.IsStarting = false;
-            //MessageBox.Show(_settings.DoesIniExist() + " " + _settings._iniPath);
-            //update extractor keywords on main page
         }
 
         private void UpdateFromSettings()
@@ -248,6 +247,7 @@ namespace ProjectExtractor
             }
 
         }
+
         private void BT_BrowseExtract_Click(object sender, EventArgs e)
         {
             string res = string.Empty;
@@ -278,6 +278,7 @@ namespace ProjectExtractor
                 _settings.ExtractionPath = res;
             }
         }
+
         private void BT_ExtractDetails_Click(object sender, EventArgs e)
         {//extract details from pdf file based on preferences
             if (backgroundWorker.IsBusy)
@@ -317,6 +318,7 @@ namespace ProjectExtractor
                 SetButtonsEnabled(false);
             }
         }
+
         private void BT_ExtractFullProject_Click(object sender, EventArgs e)
         {
             if (backgroundWorker.IsBusy)
@@ -349,6 +351,7 @@ namespace ProjectExtractor
                 SetButtonsEnabled(false);
             }
         }
+
         private void BT_BatchExtract_Click(object sender, EventArgs e)
         {
             if (backgroundWorker.IsBusy)
@@ -388,6 +391,59 @@ namespace ProjectExtractor
         {
             _settings.ExtractionPath = TB_ExtractLocation.Text;
             DisplayFullExtractionFilePath();
+        }
+
+
+
+        private void TB_PDFLocation_DragDrop(object sender, DragEventArgs e)
+        {
+            string[] fileList = (string[])e.Data.GetData(DataFormats.FileDrop, false);
+            if (fileList == null || fileList.Length == 0)
+            { return; }
+
+            FileAttributes attr = File.GetAttributes(fileList[0]);
+
+            if (attr.HasFlag(FileAttributes.Directory))
+            {
+                return;
+            }
+
+            if (Path.GetExtension(fileList[0]).ToLower() != ".pdf")
+            {
+                return;
+            }
+
+            TB_PDFLocation.Text = Path.GetFullPath(fileList[0]);
+        }
+
+        private void TB_ExtractLocation_DragDrop(object sender, DragEventArgs e)
+        {
+            string[] fileList = (string[])e.Data.GetData(DataFormats.FileDrop, false);
+            if (fileList == null || fileList.Length == 0)
+            { return; }
+
+            string path = fileList[0];
+
+            FileAttributes attr = File.GetAttributes(path);
+
+            if (!attr.HasFlag(FileAttributes.Directory))
+            {
+                path = Path.GetDirectoryName(path);
+            }
+
+            TB_ExtractLocation.Text = path;
+        }
+
+        private void TB_DragEnter(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                e.Effect = DragDropEffects.Copy;
+            }
+            else
+            {
+                e.Effect = DragDropEffects.None;
+            }
         }
         #endregion
         #region ComboBox Events
@@ -856,7 +912,7 @@ namespace ProjectExtractor
                     break;
 #if DEBUG
                 case WorkerStates.EXTRACT_DEBUG:
-                    _exportFile = $"{TB_ExtractLocation.Text}\\DEBUG {Path.GetFileNameWithoutExtension(fileName)}{ExtractorBase.DETAIL_SUFFIX}.{_extractor.FileExtension}";//add path and file extension
+                    _exportFile = $"{TB_ExtractLocation.Text}DEBUG {Path.GetFileNameWithoutExtension(fileName)}{ExtractorBase.DETAIL_SUFFIX}.{_extractor.FileExtension}";//add path and file extension
                     _extractionResult = (_extractor as DetailExtractorBase).ExtractDetails(ProjectRevisionUtil.GetProjectRevision(_currentRevision), TB_PDFLocation.Text, _exportFile, _keywords, TB_Chapter.Text, TB_StopChapter.Text, TB_TotalHours.Text, CB_TotalHoursEnabled.Checked, CB_WriteKeywordsToFile.Checked, CB_WritePhaseDateOnly.Checked, CB_BarBeforeUpdate.Checked, sender as System.ComponentModel.BackgroundWorker, workArgument);
                     break;
 #endif
@@ -1366,58 +1422,5 @@ namespace ProjectExtractor
         }
 
         #endregion
-
-
-
-        private void TB_PDFLocation_DragDrop(object sender, DragEventArgs e)
-        {
-            string[] fileList = (string[])e.Data.GetData(DataFormats.FileDrop, false);
-            if (fileList == null || fileList.Length == 0)
-            { return; }
-
-            FileAttributes attr = File.GetAttributes(fileList[0]);
-
-            if (attr.HasFlag(FileAttributes.Directory))
-            {
-                return;
-            }
-
-            if (Path.GetExtension(fileList[0]).ToLower() != ".pdf")
-            {
-                return;
-            }
-
-            TB_PDFLocation.Text = Path.GetFullPath(fileList[0]);
-        }
-
-        private void TB_ExtractLocation_DragDrop(object sender, DragEventArgs e)
-        {
-            string[] fileList = (string[])e.Data.GetData(DataFormats.FileDrop, false);
-            if (fileList == null || fileList.Length == 0)
-            { return; }
-
-            string path = fileList[0];
-
-            FileAttributes attr = File.GetAttributes(path);
-
-            if (!attr.HasFlag(FileAttributes.Directory))
-            {
-                path = Path.GetDirectoryName(path);
-            }
-
-            TB_ExtractLocation.Text = path;
-        }
-
-        private void TB_DragEnter(object sender, DragEventArgs e)
-        {
-            if (e.Data.GetDataPresent(DataFormats.FileDrop))
-            {
-                e.Effect = DragDropEffects.Copy;
-            }
-            else
-            {
-                e.Effect = DragDropEffects.None;
-            }
-        }
     }
 }

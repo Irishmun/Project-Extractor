@@ -268,7 +268,7 @@ namespace ProjectExtractor
             // 
             // panel2
             // 
-            panel2.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
+            panel2.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
             panel2.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             panel2.Controls.Add(CB_BarBeforeUpdate);
             panel2.Controls.Add(CB_ProjectsToSeparateFiles);
@@ -295,7 +295,7 @@ namespace ProjectExtractor
             // CB_ProjectsToSeparateFiles
             // 
             CB_ProjectsToSeparateFiles.AutoSize = true;
-            CB_ProjectsToSeparateFiles.Location = new System.Drawing.Point(1, 56);
+            CB_ProjectsToSeparateFiles.Location = new System.Drawing.Point(3, 56);
             CB_ProjectsToSeparateFiles.Name = "CB_ProjectsToSeparateFiles";
             CB_ProjectsToSeparateFiles.Size = new System.Drawing.Size(192, 19);
             CB_ProjectsToSeparateFiles.TabIndex = 108;
@@ -307,7 +307,7 @@ namespace ProjectExtractor
             // 
             CB_SkipExisting.AutoSize = true;
             CB_SkipExisting.Enabled = false;
-            CB_SkipExisting.Location = new System.Drawing.Point(1, 31);
+            CB_SkipExisting.Location = new System.Drawing.Point(3, 31);
             CB_SkipExisting.Name = "CB_SkipExisting";
             CB_SkipExisting.Size = new System.Drawing.Size(153, 19);
             CB_SkipExisting.TabIndex = 107;
@@ -351,7 +351,7 @@ namespace ProjectExtractor
             // BT_DebugJson
             // 
             BT_DebugJson.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
-            BT_DebugJson.Location = new System.Drawing.Point(8, 174);
+            BT_DebugJson.Location = new System.Drawing.Point(120, 197);
             BT_DebugJson.Name = "BT_DebugJson";
             BT_DebugJson.Size = new System.Drawing.Size(123, 25);
             BT_DebugJson.TabIndex = 104;
@@ -373,7 +373,6 @@ namespace ProjectExtractor
             CbB_FileVersion.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
             CbB_FileVersion.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             CbB_FileVersion.FormattingEnabled = true;
-            CbB_FileVersion.Items.AddRange(new object[] { "Version 1 (V1.X) [01/2016 - 10/2017]", "Version 2 (V2.X) [01/2018 - 08/2021]", "Version 3 (V3.X) [09/2021 - 12/2025]", "Version 4 (V4.X) [01/2026 - 09/2026]", "Version 5 (V5.X) [09/2026 - ]" });
             CbB_FileVersion.Location = new System.Drawing.Point(73, 103);
             CbB_FileVersion.Name = "CbB_FileVersion";
             CbB_FileVersion.Size = new System.Drawing.Size(473, 23);
@@ -397,7 +396,7 @@ namespace ProjectExtractor
             // 
             CB_DebugIncludeWhiteSpace.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
             CB_DebugIncludeWhiteSpace.AutoSize = true;
-            CB_DebugIncludeWhiteSpace.Location = new System.Drawing.Point(318, 178);
+            CB_DebugIncludeWhiteSpace.Location = new System.Drawing.Point(430, 201);
             CB_DebugIncludeWhiteSpace.Name = "CB_DebugIncludeWhiteSpace";
             CB_DebugIncludeWhiteSpace.Size = new System.Drawing.Size(129, 19);
             CB_DebugIncludeWhiteSpace.TabIndex = 100;
@@ -429,7 +428,7 @@ namespace ProjectExtractor
             // BT_DebugExtract
             // 
             BT_DebugExtract.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
-            BT_DebugExtract.Location = new System.Drawing.Point(137, 174);
+            BT_DebugExtract.Location = new System.Drawing.Point(249, 197);
             BT_DebugExtract.Name = "BT_DebugExtract";
             BT_DebugExtract.Size = new System.Drawing.Size(161, 25);
             BT_DebugExtract.TabIndex = 80;
