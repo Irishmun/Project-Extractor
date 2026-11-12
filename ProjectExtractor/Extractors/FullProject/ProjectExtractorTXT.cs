@@ -87,26 +87,26 @@ namespace ProjectExtractor.Extractors.FullProject
         }
         protected override ExitCode ExtractRevisionThreeProject(string file, string extractPath, string[] Sections, string EndProject, bool extractToSeparateFiles, BackgroundWorker Worker, WorkerStates workerState)
         {
-            return ExtractRevisionThreeAndLater(file, extractPath, Sections, EndProject, extractToSeparateFiles, Worker, workerState, ProjectLayoutRevision.REVISION_THREE);
+            return ExtractRevisionThreeAndLater(file, extractPath, Sections, EndProject, extractToSeparateFiles, Worker, workerState, ProjectLayoutRevision.REVISION_THREE, _revOneToRemoveDetails, _revOneToRemoveDescription);
         }
         protected override ExitCode ExtractRevisionFourProject(string file, string extractPath, string[] Sections, string EndProject, bool extractToSeparateFiles, BackgroundWorker Worker, WorkerStates workerState)
         {
-            return ExtractRevisionThreeAndLater(file, extractPath, Sections, EndProject, extractToSeparateFiles, Worker, workerState, ProjectLayoutRevision.REVISION_FOUR);
+            return ExtractRevisionThreeAndLater(file, extractPath, Sections, EndProject, extractToSeparateFiles, Worker, workerState, ProjectLayoutRevision.REVISION_FOUR, _revOneToRemoveDetails, _revOneToRemoveDescription);
         }
         protected override ExitCode ExtractRevisionFourHalfProject(string file, string extractPath, string[] Sections, string EndProject, bool extractToSeparateFiles, BackgroundWorker Worker, WorkerStates workerState)
         {
-            return ExtractRevisionThreeAndLater(file, extractPath, Sections, EndProject, extractToSeparateFiles, Worker, workerState, ProjectLayoutRevision.REVISION_FOUR_HALF);
+            return ExtractRevisionThreeAndLater(file, extractPath, Sections, EndProject, extractToSeparateFiles, Worker, workerState, ProjectLayoutRevision.REVISION_FOUR_HALF, _revOneToRemoveDetails, _revOneToRemoveDescription);
         }
         protected override ExitCode ExtractRevisionFiveProject(string file, string extractPath, string[] Sections, string EndProject, bool extractToSeparateFiles, BackgroundWorker Worker, WorkerStates workerState)
         {
-            return ExtractRevisionThreeAndLater(file, extractPath, Sections, EndProject, extractToSeparateFiles, Worker, workerState, ProjectLayoutRevision.REVISION_FIVE);
+            return ExtractRevisionThreeAndLater(file, extractPath, Sections, EndProject, extractToSeparateFiles, Worker, workerState, ProjectLayoutRevision.REVISION_FIVE, _revFiveToRemoveDetails, _revFiveToRemoveDescription);
         }
 
-        private ExitCode ExtractRevisionThreeAndLater(string file, string extractPath, string[] Sections, string EndProject, bool extractToSeparateFiles, BackgroundWorker Worker, WorkerStates workerState, ProjectLayoutRevision revisionToUse)
+        private ExitCode ExtractRevisionThreeAndLater(string file, string extractPath, string[] Sections, string EndProject, bool extractToSeparateFiles, BackgroundWorker Worker, WorkerStates workerState, ProjectLayoutRevision revisionToUse, string[] detailsToRemove, string[] descriptionToRemove)
         {
             if (extractToSeparateFiles == false)
             {
-                string res = ExtractRevisionThreeToString(file, Sections, EndProject, Worker, out ExitCode returnCode, workerState, revisionToUse);
+                string res = ExtractRevisionThreeToString(file, Sections, EndProject, Worker, out ExitCode returnCode, workerState, revisionToUse, detailsToRemove, descriptionToRemove);
                 using (StreamWriter sw = File.CreateText(extractPath))
                 {
                     sw.Write(res);
@@ -116,7 +116,7 @@ namespace ProjectExtractor.Extractors.FullProject
             }
             else
             {
-                ExtractRevisionThreeToString(file, Sections, EndProject, Worker, out ExitCode returnCode, workerState, revisionToUse, extractToSeparateFiles, extractPath);
+                ExtractRevisionThreeToString(file, Sections, EndProject, Worker, out ExitCode returnCode, workerState, revisionToUse, detailsToRemove, descriptionToRemove, extractToSeparateFiles, extractPath);
                 return returnCode;
             }
         }
@@ -173,22 +173,22 @@ namespace ProjectExtractor.Extractors.FullProject
         }
         protected override ExitCode BatchExtractRevisionThreeProject(string folder, string extractPath, string fileExtension, string[] Sections, string EndProject, bool skipExisting, bool extractToSeparateFiles, BackgroundWorker Worker, WorkerStates workerState)
         {
-            return BatchExtractRevisionThreeAndLater(folder, extractPath, fileExtension, Sections, EndProject, skipExisting, extractToSeparateFiles, Worker, workerState, ProjectLayoutRevision.REVISION_THREE);
+            return BatchExtractRevisionThreeAndLater(folder, extractPath, fileExtension, Sections, EndProject, skipExisting, extractToSeparateFiles, Worker, workerState, ProjectLayoutRevision.REVISION_THREE, _revOneToRemoveDetails,_revOneToRemoveDescription);
         }
         protected override ExitCode BatchExtractRevisionFourProject(string folder, string extractPath, string fileExtension, string[] Sections, string EndProject, bool skipExisting, bool extractToSeparateFiles, BackgroundWorker Worker, WorkerStates workerState)
         {
-            return BatchExtractRevisionThreeAndLater(folder, extractPath, fileExtension, Sections, EndProject, skipExisting, extractToSeparateFiles, Worker, workerState, ProjectLayoutRevision.REVISION_FOUR);
+            return BatchExtractRevisionThreeAndLater(folder, extractPath, fileExtension, Sections, EndProject, skipExisting, extractToSeparateFiles, Worker, workerState, ProjectLayoutRevision.REVISION_FOUR, _revOneToRemoveDetails, _revOneToRemoveDescription);
         }
         protected override ExitCode BatchExtractRevisionFourHalfProject(string folder, string extractPath, string fileExtension, string[] Sections, string EndProject, bool skipExisting, bool extractToSeparateFiles, BackgroundWorker Worker, WorkerStates workerState)
         {
-            return BatchExtractRevisionThreeAndLater(folder, extractPath, fileExtension, Sections, EndProject, skipExisting, extractToSeparateFiles, Worker, workerState, ProjectLayoutRevision.REVISION_FOUR_HALF);
+            return BatchExtractRevisionThreeAndLater(folder, extractPath, fileExtension, Sections, EndProject, skipExisting, extractToSeparateFiles, Worker, workerState, ProjectLayoutRevision.REVISION_FOUR_HALF, _revOneToRemoveDetails, _revOneToRemoveDescription);
         }
         protected override ExitCode BatchExtractRevisionFiveProject(string folder, string extractPath, string fileExtension, string[] Sections, string EndProject, bool skipExisting, bool extractToSeparateFiles, BackgroundWorker Worker, WorkerStates workerState)
         {
-            return BatchExtractRevisionThreeAndLater(folder, extractPath, fileExtension, Sections, EndProject, skipExisting, extractToSeparateFiles, Worker, workerState, ProjectLayoutRevision.REVISION_FIVE);
+            return BatchExtractRevisionThreeAndLater(folder, extractPath, fileExtension, Sections, EndProject, skipExisting, extractToSeparateFiles, Worker, workerState, ProjectLayoutRevision.REVISION_FIVE, _revFiveToRemoveDetails, _revFiveToRemoveDescription);
         }
 
-        private ExitCode BatchExtractRevisionThreeAndLater(string folder, string extractPath, string fileExtension, string[] Sections, string EndProject, bool skipExisting, bool extractToSeparateFiles, BackgroundWorker Worker, WorkerStates workerState, ProjectLayoutRevision revisionToUse)
+        private ExitCode BatchExtractRevisionThreeAndLater(string folder, string extractPath, string fileExtension, string[] Sections, string EndProject, bool skipExisting, bool extractToSeparateFiles, BackgroundWorker Worker, WorkerStates workerState, ProjectLayoutRevision revisionToUse, string[] detailsToRemove, string[] descriptionToRemove)
         {
             string[] documentPaths = Directory.GetFiles(folder, "*.pdf");
             ExitCode code = ExitCode.BATCH;
@@ -203,7 +203,7 @@ namespace ProjectExtractor.Extractors.FullProject
                     {//skip existing
                         continue;
                     }
-                    string result = ExtractRevisionThreeToString(documentPaths[i], Sections, EndProject, Worker, out ExitCode returnCode, workerState, revisionToUse);
+                    string result = ExtractRevisionThreeToString(documentPaths[i], Sections, EndProject, Worker, out ExitCode returnCode, workerState, revisionToUse, detailsToRemove, descriptionToRemove);
                     if (returnCode == ExitCode.ERROR)
                     {
                         code = ExitCode.BATCH_FLAWED;
@@ -218,7 +218,7 @@ namespace ProjectExtractor.Extractors.FullProject
                 }
                 else
                 {
-                    ExtractRevisionThreeToString(documentPaths[i], Sections, EndProject, Worker, out ExitCode returnCode, workerState, revisionToUse, extractToSeparateFiles, extractPath);
+                    ExtractRevisionThreeToString(documentPaths[i], Sections, EndProject, Worker, out ExitCode returnCode, workerState, revisionToUse, detailsToRemove, descriptionToRemove, extractToSeparateFiles, extractPath);
                     if (returnCode == ExitCode.ERROR)
                     {
                         code = ExitCode.BATCH_FLAWED;
@@ -367,7 +367,7 @@ namespace ProjectExtractor.Extractors.FullProject
         }
         /// <summary>Extracts all projects from the given file in revision three format</summary>
         /// <returns>string containing all projects and formatting</returns>
-        private string ExtractRevisionThreeToString(string file, string[] Sections, string EndProject, BackgroundWorker Worker, out ExitCode returnCode, WorkerStates workerState, ProjectLayoutRevision revisionToUse, bool extractToSeparate = false, string extractPath = "")
+        private string ExtractRevisionThreeToString(string file, string[] Sections, string EndProject, BackgroundWorker Worker, out ExitCode returnCode, WorkerStates workerState, ProjectLayoutRevision revisionToUse, string[] detailsToRemove, string[] descriptionToRemove, bool extractToSeparate = false, string extractPath = "")
         {
             returnCode = ExitCode.NONE;
             ExtractTextFromPDF(file);
@@ -395,7 +395,7 @@ namespace ProjectExtractor.Extractors.FullProject
             for (int project = 0; project < ProjectStartIndexes.Count; project++)
             {
                 int nextIndex = project == (ProjectStartIndexes.Count - 1) ? Lines.Length - 1 : ProjectStartIndexes[project + 1];
-                str.AppendLine(ExtractRevisionThreeSingle(file, ProjectStartIndexes[project], nextIndex, Sections, EndProject, projectIndex, ProjectStartIndexes, revisionToUse, out bool isEndOfDocument, Worker, workerState).ToString());
+                str.AppendLine(ExtractRevisionThreeSingle(file, ProjectStartIndexes[project], nextIndex, Sections, EndProject, projectIndex, ProjectStartIndexes, revisionToUse, out bool isEndOfDocument, Worker, workerState, detailsToRemove, descriptionToRemove).ToString());
                 if (isEndOfDocument == true)
                 { project = ProjectStartIndexes.Count - 1; }
                 if (extractToSeparate == false)
@@ -466,8 +466,8 @@ namespace ProjectExtractor.Extractors.FullProject
                     lineIndex = detailEnd;
                     preFirstSection = true;
                 }
-                RemovePageNumberFromString(ref Lines[lineIndex], _revTwoPageRegex);
-                RemovePageNumberFromString(ref Lines[lineIndex], @"WBSO\s+[0-9]+");
+                RemoveMatchFromString(ref Lines[lineIndex], _revTwoPageRegex);
+                RemoveMatchFromString(ref Lines[lineIndex], @"WBSO\s+[0-9]+");
                 //TODO: fix issue where numbers are removed and returned with said number removed when they shouldn't
                 //numbered list should have it removed, but years shouldn't be removed
                 RemoveNumbersFromStringStart(ref Lines[lineIndex]);
@@ -504,7 +504,7 @@ namespace ProjectExtractor.Extractors.FullProject
         }
         /// <summary>Extracts a single project from the given file in revision three format</summary>
         /// <returns>Stringbuilder containing extracted project</returns>
-        private StringBuilder ExtractRevisionThreeSingle(string file, int start, int end, string[] Sections, string EndProject, int projectIndex, List<int> ProjectStartIndexes, ProjectLayoutRevision revisionToUse, out bool isEndOfDocument, BackgroundWorker Worker, WorkerStates workerState)
+        private StringBuilder ExtractRevisionThreeSingle(string file, int start, int end, string[] Sections, string EndProject, int projectIndex, List<int> ProjectStartIndexes, ProjectLayoutRevision revisionToUse, out bool isEndOfDocument, BackgroundWorker Worker, WorkerStates workerState, string[] detailsToRemove, string[] descriptionToRemove)
         {
             isEndOfDocument = false;
             int foundSection = -1;
@@ -525,18 +525,18 @@ namespace ProjectExtractor.Extractors.FullProject
             {
                 if (continuationDone == false)
                 {
-                    bool isContinuation = IsContinuation(start, end);
-                    str.Append(RevThreeTryGetProjecTitle(Lines, start - 1, string.Empty, out projectIndex));
-                    str.AppendLine();
+                    bool isContinuation = IsContinuation(start, end, (int)revisionToUse >= (int)ProjectLayoutRevision.REVISION_FIVE);
+                    str.AppendLine(RevThreeTryGetProjecTitle(Lines, start - 1, string.Empty, out projectIndex));
                     if (isContinuation)
                     {
-                        str.Append("Voortzetting van een vorig project\n");
+                        str.AppendLine("Voortzetting van een vorig project");
                     }
-                    RemoveLines(projectIndex + 1, end, ref str, @"Pagina \d* van \d*", ref possibleSection, _revOneToRemoveDetails, _revOneToRemoveDescription[0], out int detailEnd);
+                    RemoveLines(projectIndex + 1, end, ref str, @"Pagina \d* van \d*", ref possibleSection, detailsToRemove, descriptionToRemove[0], out int detailEnd);
                     lineIndex = detailEnd;
                     continuationDone = true;
                 }
-                RemovePageNumberFromString(ref Lines[lineIndex], @"Pagina \d* van \d*");
+                RemoveMatchFromString(ref Lines[lineIndex], @"Afdrukmoment: ([0-9]{1,4}(-|/|:|\s))+");
+                RemoveMatchFromString(ref Lines[lineIndex], @"Pagina \d* van \d*");
                 RemoveNumbersFromStringStart(ref Lines[lineIndex]);
                 RemoveIndexFromStringStart(ref Lines[lineIndex]);
                 nextLine = lineIndex == Lines.Length - 1 ? string.Empty : Lines[lineIndex + 1];
@@ -783,7 +783,7 @@ namespace ProjectExtractor.Extractors.FullProject
                 {
                     if (removeInbetween == false)
                     {
-                        RemovePageNumberFromString(ref Lines[lineIndex], pageRegex);
+                        RemoveMatchFromString(ref Lines[lineIndex], pageRegex);
                         str.Append(Lines[lineIndex]);
                     }
                 }
@@ -793,11 +793,11 @@ namespace ProjectExtractor.Extractors.FullProject
                 }
             }
         }
-        bool IsContinuation(int startIndex, int endIndex)
+        bool IsContinuation(int startIndex, int endIndex, bool isRevFiveOrLater = false)
         {
             for (int i = startIndex; i < endIndex; i++)
             {
-                if (Lines[i].Contains(ContinuationString))
+                if (Lines[i].Contains(!isRevFiveOrLater ? ContinuationString : ContinuationStringAfterRevFive, StringComparison.OrdinalIgnoreCase))
                 {
                     return true;
                 }
@@ -826,6 +826,14 @@ namespace ProjectExtractor.Extractors.FullProject
                                 ,"Zwaartepunt *"
                                 ,"Product"
                                 ,"Het project wordt/is gestart op *"};
+        private readonly string[] _revFiveToRemoveDescription = { "Algemene omschrijving van het project" };
+        private readonly string[] _revFiveToRemoveDetails = {"Dit is een doorlopend project."
+                                ,"Project gegevens"
+                                ,"Projectnummer"
+                                ,"Het project wordt/is gestart op"
+                                ,"Projecttitel"
+                                ,"Type project"
+                                ,"Zwaartepunt"};
         private readonly string _revTwoRemoveDescription = "Geef een algemene omschrijving van het project.";
         private readonly string _revTwoPageRegex = @"[0-9]+\s+/\s+[0-9]+";
         public override string FileExtension => "txt";

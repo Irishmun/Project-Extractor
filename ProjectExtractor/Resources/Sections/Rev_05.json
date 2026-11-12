@@ -1,7 +1,7 @@
 [
   {
     "SectionTitle": "Omschrijving",
-    "CheckString": "Geef een algemene omschrijving van het project. Heeft u eerder WBSO aangevraagd voor dit project? Beschrijf dan de stand van zaken bij de vraag \u201CUpdate project\u201D.",
+    "CheckString": "Algemene omschrijving van het project",
     "AppendNewLines": false,
     "IsEndOfDocument": false,
     "IsEndOfProject": false,
@@ -19,15 +19,23 @@
   },
   {
     "SectionTitle": "Fasering Werkzaamheden",
-    "CheckString": "Fasering werkzaamheden Geef de fasen en de (tussen)resultaten van het project aan. Bijvoorbeeld de afsluiting van een onderzoek, de afronding van een ontwerpfase, de start van de bouw van een prototype, het testen van een prototype (maximaal 120 karakters per veld). Vermeld alleen uw eigen werkzaamheden. U kunt een fase toevoegen door op de + te klikken en een fase verwijderen door op de - te klikken. Naam Datum gereed (voorkeursformaat dd-mm-jjjj)",
+    "CheckString": "Fasering werkzaamheden Naam (Verwachte) datum gereed Datum gereed vorige aanvraag",
     "AppendNewLines": true,
     "IsEndOfDocument": false,
     "IsEndOfProject": false,
-    "MinimumDifference": 2
+    "MinimumDifference": 6
+  },
+  {
+    "SectionTitle": "Fasering Werkzaamheden",
+    "CheckString": "Fasering werkzaamheden Naam (Verwachte) datum Datum gereed vorige gereed aanvraag",
+    "AppendNewLines": true,
+    "IsEndOfDocument": false,
+    "IsEndOfProject": false,
+    "MinimumDifference": 6
   },
   {
     "SectionTitle": "Update Project",
-    "CheckString": "Vermeld de voortgang van uw S&O-werkzaamheden. Zijn er wijzigingen in de oorspronkelijke projectopzet of -planning en/of in het aantal uren ten opzichte van de vorige aanvraag? Geef dan aan waarom dit het geval is.",
+    "CheckString": "Vraagt u voor dit project voor het eerst WBSO aan?",
     "AppendNewLines": false,
     "IsEndOfDocument": false,
     "IsEndOfProject": false,
@@ -35,7 +43,7 @@
   },
   {
     "SectionTitle": "",
-    "CheckString": "Specifieke vragen ontwikkeling Beantwoord de vragen vanuit een technische invalshoek. Geef hier geen algemene of functionele beschrijving van het project. Ontwikkelen heeft altijd te maken met zoeken en bewijzen. U wilt iets ontwikkelen en loopt hierbij tegen een technisch probleem aan. U zoekt hiervoor een nieuwe technische oplossing waarvan u het werkingsprincipe wilt aantonen.",
+    "CheckString": "Specifieke vragen ontwikkeling",
     "AppendNewLines": false,
     "IsEndOfDocument": false,
     "IsEndOfProject": false,
@@ -43,7 +51,7 @@
   },
   {
     "SectionTitle": "- Technische knelpunten",
-    "CheckString": "Technische knelpunten. Geef aan welke concrete technische knelpunten u zelf tijdens het ontwikkelingsproces moet oplossen om het gewenste projectresultaat te bereiken. Vermeld geen aanleidingen, algemene randvoorwaarden of functionele eisen van het project.",
+    "CheckString": "Technische knelpunten",
     "AppendNewLines": false,
     "IsEndOfDocument": false,
     "IsEndOfProject": false,
@@ -51,7 +59,7 @@
   },
   {
     "SectionTitle": "- Probleemstelling en oplossingsrichting",
-    "CheckString": "Technische knelpunten programmatuur. Geef aan welke concrete technische knelpunten of problemen op het gebied van informatietechnologie u zelf tijdens het ontwikkelen van de programmatuur moet oplossen om het gewenste projectresultaat te bereiken. Vermeld geen aanleidingen, algemene randvoorwaarden of functionele eisen van de programmatuur.",
+    "CheckString": "Technische knelpunten programmatuur",
     "AppendNewLines": false,
     "IsEndOfDocument": false,
     "IsEndOfProject": false,
@@ -59,7 +67,7 @@
   },
   {
     "SectionTitle": "- Technische oplossingsrichtingen",
-    "CheckString": "Technische oplossingsrichtingen. Geef voor ieder genoemd technisch knelpunt aan wat u specifiek zelf gaat ontwikkelen om het knelpunt op te lossen.",
+    "CheckString": "Technische oplossingsrichting",
     "AppendNewLines": false,
     "IsEndOfDocument": false,
     "IsEndOfProject": false,
@@ -75,7 +83,7 @@
   },
   {
     "SectionTitle": "- Technische nieuwheid",
-    "CheckString": "Technische nieuwheid. Geef aan waarom de hiervoor genoemde oplossingsrichtingen technisch nieuw voor u zijn. Oftewel beschrijf waarom het project technisch vernieuwend en uitdagend is en geef aan welke technische risico\u2019s en onzekerheden u hierbij verwacht. Om technische risico\u2019s en onzekerheden in te schatten kijkt RVO naar de stand van de technologie.",
+    "CheckString": "Technische nieuwheid",
     "AppendNewLines": false,
     "IsEndOfDocument": false,
     "IsEndOfProject": false,
@@ -91,7 +99,7 @@
   },
   {
     "SectionTitle": "Wordt er mede programmatuur ontwikkeld?",
-    "CheckString": "Wordt er voor dit product of proces mede programmatuur ontwikkeld?",
+    "CheckString": "Programmatuur Wordt er voor dit product of proces mede programmatuur ontwikkeld?",
     "AppendNewLines": false,
     "IsEndOfDocument": false,
     "IsEndOfProject": false,
@@ -197,6 +205,14 @@
     "SectionTitle": "",
     "CheckString": "Technische nieuwheid programmatuur",
     "AppendNewLines": false,
+    "IsEndOfDocument": false,
+    "IsEndOfProject": false,
+    "MinimumDifference": 3
+  },
+  {
+    "SectionTitle": "Uren",
+    "CheckString": "Uren Geef per deelnemer aan hoeveel uur u in de aanvraagperiode van plan bent aan het project of de projecten te besteden. Deelnemer Uren totaal",
+    "AppendNewLines": true,
     "IsEndOfDocument": false,
     "IsEndOfProject": false,
     "MinimumDifference": 3

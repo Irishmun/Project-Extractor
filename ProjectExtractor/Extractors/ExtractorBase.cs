@@ -13,7 +13,8 @@ namespace ProjectExtractor.Extractors
 
         public const string DETAIL_SUFFIX = " - Details";
         public const string PROJECT_SUFFIX = " - Projecten";
-        protected const string ContinuationString = "Dit project is een voortzetting van een vorig project";
+        protected const string ContinuationString = "dit project is een voortzetting van een vorig project";
+        protected const string ContinuationStringAfterRevFive = "dit is een doorlopend project.";
         protected string[] Lines;
 
         private readonly char[] _removeCharacters = new char[] { ' ', '\r', '\n' };//whitespaces, carriage returns and linefeeds
@@ -73,7 +74,7 @@ namespace ProjectExtractor.Extractors
                     //try and find a project title, containing "Project" with a year , period and number; colon and a title
                     //Match match = Regex.Match(lines[i], @"(Project )\d{4}\.\d*(: )[a-zA-Z0-9 ' ']*");
                     string line = lines[i];
-                    RemovePageNumberFromString(ref line, pageRegex);
+                    RemoveMatchFromString(ref line, pageRegex);
                     Match match = Regex.Match(line, @"^(Project )([^:]{1,25})(\s*[:]).*");
                     if (match.Success)
                     {//if a project title has been found, break out of loop
@@ -90,9 +91,10 @@ namespace ProjectExtractor.Extractors
                 }
                 catch (Exception) { }
             }
-            RemovePageNumberFromString(ref res, pageRegex);
+            RemoveMatchFromString(ref res, pageRegex);
             return res;
         }
+
         protected string RevTwoTryGetProjectTitle(string[] lines, int startIndex, string stopLine, out int index)
         {
             index = startIndex;
@@ -111,8 +113,8 @@ namespace ProjectExtractor.Extractors
                 try
                 {
                     string line = lines[i];
-                    RemovePageNumberFromString(ref line, pageRegex);
-                    RemovePageNumberFromString(ref line, pageRegexTitle);
+                    RemoveMatchFromString(ref line, pageRegex);
+                    RemoveMatchFromString(ref line, pageRegexTitle);
                     if (line.StartsWith("Project") && lines[i + 1].StartsWith("Projectnummer") && lines[i + 2].StartsWith("Projecttitel"))
                     {
                         index = i;//project number is on the line after "projecttitel", the title is on the line after that
@@ -122,41 +124,28 @@ namespace ProjectExtractor.Extractors
                 }
                 catch (Exception) { }
             }
-            RemovePageNumberFromString(ref res, pageRegex);
-            RemovePageNumberFromString(ref res, pageRegexTitle);
+            RemoveMatchFromString(ref res, pageRegex);
+            RemoveMatchFromString(ref res, pageRegexTitle);
             return res;
         }
+
         /// <summary>Removes the page number from string, if present. ("Pagina x van x")</summary>
         /// <param name="line">Line to remove the pagenumber from</param>
-        protected void RemovePageNumberFromString(ref string line, string pageRegex)
+        protected void RemoveMatchFromString(ref string line, string regex)
         {
             //(Pagina \d* van \d*) Pagina (any length of numbers) van (any length of numbers)
             //Regex.Replace(line, @"Pagina \d* van \d*", string.Empty);
-            Match match = Regex.Match(line, pageRegex);
+            Match match = Regex.Match(line, regex);
             if (!string.IsNullOrWhiteSpace(match.Value))
             {
                 int index = line.IndexOf(match.Value);
                 line = (index < 0) ? line : line.Remove(index, match.Value.Length);
             }
         }
-        protected void RemoveNumbersFromStringStart(ref string line)
-        {
-            Match match = Regex.Match(line, @"^\b\d\b");//@"^([0-9][ .])"  might work better //^(\d+)
-            if (!string.IsNullOrWhiteSpace(match.Value))
-            {
-                int index = line.IndexOf(match.Value);
-                line = (index < 0) ? line : line.Remove(index, match.Value.Length);
-            }
-        }
-        protected void RemoveIndexFromStringStart(ref string line)
-        {
-            Match match = Regex.Match(line, @"^[.]");
-            if (!string.IsNullOrWhiteSpace(match.Value))
-            {
-                int index = line.IndexOf(match.Value);
-                line = (index < 0) ? line : line.Remove(index, match.Value.Length);
-            }
-        }
+
+        protected void RemoveNumbersFromStringStart(ref string line) => RemoveMatchFromString(ref line, @"^\b\d\b");
+        protected void RemoveIndexFromStringStart(ref string line) => RemoveMatchFromString(ref line, @"^[.]");
+
         /// <summary>
         /// Will try and get the latest date of the project, starting at the given line
         /// </summary>
@@ -206,6 +195,7 @@ namespace ProjectExtractor.Extractors
             }
             return index;
         }
+
         /// <summary>Gets and returns the value that matches the regex expression. returns original if no match</summary>
         /// <param name="input">string to regex against</param>
         /// <param name="regex">regex expression to match</param>
@@ -216,6 +206,7 @@ namespace ProjectExtractor.Extractors
             { return match.Value; }
             return input;
         }
+
         /// <summary>
         /// Performs <see cref="string.Trim()"/>, removing all leading and trailing characters found in <see cref="_removeCharacters"/>
         /// </summary>
@@ -225,6 +216,7 @@ namespace ProjectExtractor.Extractors
         {
             return str.ToString().Trim(_removeCharacters);
         }
+
         /// <summary>Writes the contents of the <see cref="StringBuilder"/> to a text file at path</summary>
         /// <param name="str"><see cref="StringBuilder"/> to write</param>
         /// <param name="path">path to write to</param>
@@ -237,6 +229,7 @@ namespace ProjectExtractor.Extractors
                 sw.Close();
             }
         }
+
         /// <summary>Reports the progress to the backgroundworker</summary>
         /// <param name="currentProgress">The current progress point</param>
         /// <param name="worker">The worker to report to</param>
@@ -245,11 +238,13 @@ namespace ProjectExtractor.Extractors
             double progress = (double)((currentProgress + 1d) * 100d / Lines.Length);
             worker.ReportProgress((int)progress, workerState);
         }
+
         /// <summary>Returns the length of the smaller array</summary>
         protected int SmallestLength(Array arrayA, Array arrayB)
         {
             return arrayA.Length < arrayB.Length ? arrayA.Length : arrayB.Length;
         }
+
         /// <summary>To which file extension will this extractor extract</summary>
         public abstract string FileExtension { get; }//return file format of extractor, all lowercase, sans period (e.x: text extractor= "txt")
     }

@@ -11,6 +11,8 @@ namespace ProjectExtractor.Util
     */
     public enum ProjectLayoutRevision
     {
+        /// <summary>project using an unknown layout</summary>
+        UNKNOWN_REVISION = -1,
         /// <summary>Project using the layout made before 2017 (V1.X)</summary>
         REVISION_ONE = 0,
         /// <summary>Project using the layout made after 2017 and before 2022 (V2.X)</summary>
@@ -22,9 +24,7 @@ namespace ProjectExtractor.Util
         /// <summary>project using the layout made after september 2026 (V4.5)</summary>
         REVISION_FOUR_HALF = 4,
         /// <summary>project using the layout made after 2027 (V5)</summary>
-        REVISION_FIVE = 5,
-        /// <summary>project using an unknown layout</summary>
-        UNKNOWN_REVISION = 999
+        REVISION_FIVE = 5
     }
 
     class ProjectRevisionUtil
