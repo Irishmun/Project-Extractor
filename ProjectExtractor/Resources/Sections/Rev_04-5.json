@@ -19,10 +19,11 @@
   },
   {
     "SectionTitle": "Fasering Werkzaamheden",
-    "CheckString": "Fasering werkzaamheden Geef de fasen en de (tussen)resultaten van het project aan. Bijvoorbeeld de afsluiting van een onderzoek, de afronding van een ontwerpfase, de start van de bouw van een prototype, het testen van een prototype (maximaal 120 karakters per veld). Vermeld alleen uw eigen werkzaamheden. U kunt een fase toevoegen door op de + te klikken en een fase verwijderen door op de - te klikken. Naam Datum gereed (voorkeursformaat dd-mm-jjjj)",
+    "CheckString": "Fasering werkzaamheden Geef de fasen en de (tussen)resultaten van het project aan. Bijvoorbeeld de afsluiting van een onderzoek, de afronding van een ontwerpfase, de start van de bouw van een prototype, het testen van een prototype (maximaal <d> karakters per veld). Vermeld alleen uw eigen werkzaamheden. U kunt een fase toevoegen door op de + te klikken en een fase verwijderen door op de - te klikken. Naam Datum gereed (voorkeursformaat dd-mm-jjjj)",
     "AppendNewLines": true,
     "IsEndOfDocument": false,
     "IsEndOfProject": false,
+    "HasVarying":true,
     "MinimumDifference": 2
   },
   {

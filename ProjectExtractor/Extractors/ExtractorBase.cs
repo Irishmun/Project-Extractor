@@ -15,6 +15,7 @@ namespace ProjectExtractor.Extractors
         public const string PROJECT_SUFFIX = " - Projecten";
         protected const string ContinuationString = "dit project is een voortzetting van een vorig project";
         protected const string ContinuationStringAfterRevFive = "dit is een doorlopend project.";
+        protected const string PageRegex = @"Pagina \d* van \d*";
         protected string[] Lines;
 
         private readonly char[] _removeCharacters = new char[] { ' ', '\r', '\n' };//whitespaces, carriage returns and linefeeds
@@ -58,7 +59,6 @@ namespace ProjectExtractor.Extractors
         protected string RevThreeTryGetProjecTitle(string[] lines, int startIndex, string stopLine, out int index)
         {
             index = startIndex;
-            string pageRegex = @"Pagina \d* van \d*";
             string res = string.Empty;
             for (int i = startIndex; i < lines.Length; i++)
             {
@@ -74,7 +74,7 @@ namespace ProjectExtractor.Extractors
                     //try and find a project title, containing "Project" with a year , period and number; colon and a title
                     //Match match = Regex.Match(lines[i], @"(Project )\d{4}\.\d*(: )[a-zA-Z0-9 ' ']*");
                     string line = lines[i];
-                    RemoveMatchFromString(ref line, pageRegex);
+                    RemoveMatchFromString(ref line, PageRegex);
                     Match match = Regex.Match(line, @"^(Project )([^:]{1,25})(\s*[:]).*");
                     if (match.Success)
                     {//if a project title has been found, break out of loop
@@ -91,7 +91,7 @@ namespace ProjectExtractor.Extractors
                 }
                 catch (Exception) { }
             }
-            RemoveMatchFromString(ref res, pageRegex);
+            RemoveMatchFromString(ref res, PageRegex);
             return res;
         }
 

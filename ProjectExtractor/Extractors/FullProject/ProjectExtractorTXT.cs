@@ -173,7 +173,7 @@ namespace ProjectExtractor.Extractors.FullProject
         }
         protected override ExitCode BatchExtractRevisionThreeProject(string folder, string extractPath, string fileExtension, string[] Sections, string EndProject, bool skipExisting, bool extractToSeparateFiles, BackgroundWorker Worker, WorkerStates workerState)
         {
-            return BatchExtractRevisionThreeAndLater(folder, extractPath, fileExtension, Sections, EndProject, skipExisting, extractToSeparateFiles, Worker, workerState, ProjectLayoutRevision.REVISION_THREE, _revOneToRemoveDetails,_revOneToRemoveDescription);
+            return BatchExtractRevisionThreeAndLater(folder, extractPath, fileExtension, Sections, EndProject, skipExisting, extractToSeparateFiles, Worker, workerState, ProjectLayoutRevision.REVISION_THREE, _revOneToRemoveDetails, _revOneToRemoveDescription);
         }
         protected override ExitCode BatchExtractRevisionFourProject(string folder, string extractPath, string fileExtension, string[] Sections, string EndProject, bool skipExisting, bool extractToSeparateFiles, BackgroundWorker Worker, WorkerStates workerState)
         {
@@ -491,7 +491,7 @@ namespace ProjectExtractor.Extractors.FullProject
                 }
                 else
                 {
-                    string unique = RemoveMatching(Lines[lineIndex], checkString, out remaining, appendNewLines, nextLine);
+                    string unique = RemoveMatching(Lines[lineIndex], checkString, out remaining, false, appendNewLines, nextLine);
                     if (!string.IsNullOrWhiteSpace(unique))
                     { str.Append(unique + " "); }
                     checkString = remaining;
@@ -531,12 +531,12 @@ namespace ProjectExtractor.Extractors.FullProject
                     {
                         str.AppendLine("Voortzetting van een vorig project");
                     }
-                    RemoveLines(projectIndex + 1, end, ref str, @"Pagina \d* van \d*", ref possibleSection, detailsToRemove, descriptionToRemove[0], out int detailEnd);
+                    RemoveLines(projectIndex + 1, end, ref str, PageRegex, ref possibleSection, detailsToRemove, descriptionToRemove[0], out int detailEnd);
                     lineIndex = detailEnd;
                     continuationDone = true;
                 }
                 RemoveMatchFromString(ref Lines[lineIndex], @"Afdrukmoment: ([0-9]{1,4}(-|/|:|\s))+");
-                RemoveMatchFromString(ref Lines[lineIndex], @"Pagina \d* van \d*");
+                RemoveMatchFromString(ref Lines[lineIndex], PageRegex);
                 RemoveNumbersFromStringStart(ref Lines[lineIndex]);
                 RemoveIndexFromStringStart(ref Lines[lineIndex]);
                 nextLine = lineIndex == Lines.Length - 1 ? string.Empty : Lines[lineIndex + 1];
@@ -558,7 +558,7 @@ namespace ProjectExtractor.Extractors.FullProject
                 }
                 else
                 {
-                    string unique = RemoveMatching(Lines[lineIndex], checkString, out remaining, appendNewLines, nextLine);//RemoveMatching(Lines[lineIndex], checkstringA, _sentencesEither[sectionIndex].SectionTitle, searchNextSection, out bool a, out remaining, out searchNextSection);
+                    string unique = RemoveMatching(Lines[lineIndex], checkString, out remaining, descriptions[foundSection].HasVarying, appendNewLines, nextLine);//RemoveMatching(Lines[lineIndex], checkstringA, _sentencesEither[sectionIndex].SectionTitle, searchNextSection, out bool a, out remaining, out searchNextSection);
                     if (!string.IsNullOrWhiteSpace(unique))
                     {
                         str.Append(unique + " ");
@@ -601,7 +601,7 @@ namespace ProjectExtractor.Extractors.FullProject
             string res = string.Empty;
             for (int i = 0; i < comparisons.Length; i++)
             {
-                string foundRes = RemoveMatching(check, comparisons[i].CheckString, out string resultFoundRemaining, safetyCheck: safetyCheck);//, comparisons[i].AppendNewLines);
+                string foundRes = RemoveMatching(check, comparisons[i].CheckString, out string resultFoundRemaining, comparisons[i].HasVarying, safetyCheck: safetyCheck);//, comparisons[i].AppendNewLines);
                 if (!foundRes.Equals(check))//it removed something
                 {
                     string[] foundRemainingWords = string.IsNullOrWhiteSpace(resultFoundRemaining) ? new string[0] : resultFoundRemaining.Trim().Split(' ');
@@ -666,7 +666,7 @@ namespace ProjectExtractor.Extractors.FullProject
                 return currentDif;
             }
         }
-        string RemoveMatching(string check, string comparison, out string remaining, bool appendNewLine = false, string safetyCheck = "")
+        string RemoveMatching(string check, string comparison, out string remaining, bool hasVarying, bool appendNewLine = false, string safetyCheck = "")
         {
             if (string.IsNullOrWhiteSpace(comparison))
             {
@@ -692,10 +692,11 @@ namespace ProjectExtractor.Extractors.FullProject
                         lastCorrect = i;
                         //toRemove.Append(comparisonWords[i] + " ");
                     }
-                    else
-                    {
-                        break;
+                    else if(hasVarying == true && comparisonWords[i].Equals("<d>"))
+                    {//TODO: check if current checkWord is a number (regex on \d*)
+                        lastCorrect = i;
                     }
+                    else { break; }
                 }
                 if (lastCorrect > -1)
                 {

@@ -8,6 +8,7 @@
         private bool _appendNewLines;
         private bool _isEndOfDocument;
         private bool _isEndOfProject;
+        private bool _hasVarying;
         private bool _hasTrueAddition = true;
         private string _possibleText = string.Empty;
 
@@ -17,13 +18,14 @@
         /// <param name="isEndOfDocument">Is this section the last section in the ENTIRE document?</param>
         /// <param name="isEndOfProject">Is this section the last section with needed information for this PROJECT?</param>
         /// <param name="minimumDifference">Minimum difference for this section to be deemed "found"</param>
-        public ProjectSection(string title, string textToRemove, bool appendNewLines = false, bool isEndOfDocument = false, bool isEndOfProject = false, int minimumDifference = 2, bool hasTrueAddition = false, string possibleText = "")
+        public ProjectSection(string title, string textToRemove, bool appendNewLines = false, bool isEndOfDocument = false, bool isEndOfProject = false,bool hasVarying=false, int minimumDifference = 2, bool hasTrueAddition = false, string possibleText = "")
         {
             _sectionTitle = title;
             _checkString = textToRemove;
             _appendNewLines = appendNewLines;
             _isEndOfDocument = isEndOfDocument;
             _isEndOfProject = isEndOfProject;
+            _hasVarying = hasVarying;
             _minDifference = minimumDifference;
             _hasTrueAddition = hasTrueAddition;
             _possibleText = possibleText;
@@ -36,13 +38,14 @@
         /// <param name="isEndOfDocument">Is this section the last section in the ENTIRE document?</param>
         /// <param name="isEndOfProject">Is this section the last section with needed information for this PROJECT?</param>
         /// <param name="minimumDifference">Minimum difference for this section to be deemed "found"</param>
-        public ProjectSection(string title, string textToRemove, bool appendNewLines = false, bool isEndOfDocument = false, bool isEndOfProject = false, int minimumDifference = 2)
+        public ProjectSection(string title, string textToRemove, bool appendNewLines = false, bool isEndOfDocument = false, bool isEndOfProject = false, bool hasVarying = false, int minimumDifference = 2)
         {
             _sectionTitle = title;
             _checkString = textToRemove;
             _appendNewLines = appendNewLines;
             _isEndOfDocument = isEndOfDocument;
             _isEndOfProject = isEndOfProject;
+            _hasVarying = hasVarying;
             _minDifference = minimumDifference;
         }
 
@@ -51,13 +54,14 @@
         /// <param name="isEndOfDocument">Is this section the last section in the ENTIRE document?</param>
         /// <param name="isEndOfProject">Is this section the last section with needed information for this PROJECT?</param>
         /// <param name="minimumDifference">Minimum difference for this section to be deemed "found"</param>
-        public ProjectSection(string textToRemove, bool appendNewLines = false, bool isEndOfDocument = false, bool isEndOfProject = false, int minimumDifference = 2)
+        public ProjectSection(string textToRemove, bool appendNewLines = false, bool isEndOfDocument = false, bool isEndOfProject = false, bool hasVarying = false, int minimumDifference = 2)
         {
             _sectionTitle = string.Empty;
             _checkString = textToRemove;
             _appendNewLines = appendNewLines;
             _isEndOfDocument = isEndOfDocument;
             _isEndOfProject = isEndOfProject;
+            _hasVarying = hasVarying;
             _minDifference = minimumDifference;
         }
 
@@ -83,6 +87,8 @@
         public bool IsEndOfDocument { get => _isEndOfDocument; set => _isEndOfDocument = value; }
         /// <summary>Is this section the last section with needed information for this PROJECT?</summary>
         public bool IsEndOfProject { get => _isEndOfProject; set => _isEndOfProject = value; }
+        /// <summary>Whether the checkstring has a possible varying field, shown by &lt;d&gt; </summary>
+        public bool HasVarying { get => _hasVarying; set => _hasVarying = value; }
         /// <summary>Minimum difference for this section to be deemed "found"</summary>
         public int MinimumDifference { get => _minDifference; set => _minDifference = value; }
         /// <summary>Whether the section has additional text in case of a true/false statement being true</summary>
