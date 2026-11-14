@@ -666,6 +666,7 @@ namespace ProjectExtractor.Extractors.FullProject
                 return currentDif;
             }
         }
+
         string RemoveMatching(string check, string comparison, out string remaining, bool hasVarying, bool appendNewLine = false, string safetyCheck = "")
         {
             if (string.IsNullOrWhiteSpace(comparison))
@@ -686,15 +687,12 @@ namespace ProjectExtractor.Extractors.FullProject
                 int lastCorrect = -1;
                 for (int i = 0; i < searchLength; ++i)
                 {
-                    if (comparisonWords[i].Equals(checkWords[i]))
+                    if (comparisonWords[i].Equals(checkWords[i]) ||
+                       (hasVarying == true && comparisonWords[i].Equals(ProjectSection.VARYING_SPECIAL) && Regex.IsMatch(checkWords[i], @"\d*")))
                     {//check if words at index match. If they don't the previous index was the last matching part of the sentence.
 
                         lastCorrect = i;
                         //toRemove.Append(comparisonWords[i] + " ");
-                    }
-                    else if(hasVarying == true && comparisonWords[i].Equals("<d>"))
-                    {//TODO: check if current checkWord is a number (regex on \d*)
-                        lastCorrect = i;
                     }
                     else { break; }
                 }

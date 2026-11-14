@@ -2,6 +2,7 @@
 {
     internal struct ProjectSection
     {
+        public const string VARYING_SPECIAL = "<d>";
         private string _sectionTitle;
         private string _checkString;
         private int _minDifference;
